@@ -80,14 +80,29 @@
 		</section>
 	{:else}
 		<section class="empty">
-			<p>
-				No tickets yet. Feed it a DB online ticket, an Interrail pass, a seat reservation - any
-				<strong>UIC&nbsp;918.3</strong> or <strong>918.9</strong> barcode - a Deutschlandticket
-				or other Verbund ticket (<strong>VDV-KA</strong>), a UK National Rail ticket or railcard
-				(<strong>RSP6</strong>), a Swiss mobile ticket (<strong>SwissPass/NOVA</strong>), or an
-				NS Keycard (<strong>SSB</strong>). As an image, PDF, Apple Wallet pass, or straight from
-				the camera.
-			</p>
+			<p>No tickets yet. Drop in an image, PDF or Apple Wallet pass, or scan with the camera.</p>
+			<ul class="formats">
+				<li>
+					<span class="format">UIC 918.3 &amp; 918.9</span>
+					DB online tickets, Interrail passes, seat reservations
+				</li>
+				<li>
+					<span class="format">VDV-KA</span>
+					Deutschlandticket and other Verbund tickets
+				</li>
+				<li>
+					<span class="format">RSP6</span>
+					UK National Rail tickets and railcards
+				</li>
+				<li>
+					<span class="format">SwissPass / NOVA</span>
+					Swiss mobile tickets
+				</li>
+				<li>
+					<span class="format">SSB</span>
+					NS Keycards
+				</li>
+			</ul>
 			<p class="fine">
 				Decoding happens entirely in this browser tab. Ticket data is kept in memory only and
 				never uploaded anywhere.
@@ -186,6 +201,41 @@
 	}
 	.empty p {
 		margin: 0 0 0.6rem;
+	}
+	.formats {
+		list-style: none;
+		margin: 0 0 0.9rem;
+		padding: 0;
+		display: grid;
+		gap: 0.3rem 1rem;
+		grid-template-columns: max-content 1fr;
+	}
+	.formats li {
+		display: grid;
+		grid-column: 1 / -1;
+		grid-template-columns: subgrid;
+		align-items: baseline;
+	}
+	.format {
+		font-family: var(--font-display);
+		text-transform: uppercase;
+		letter-spacing: 0.07em;
+		font-weight: 600;
+		font-size: 0.85rem;
+		color: var(--bg-text);
+		white-space: nowrap;
+	}
+	.formats li {
+		color: var(--bg-text-soft);
+		font-size: 0.92rem;
+	}
+	@supports not (grid-template-columns: subgrid) {
+		.formats li {
+			display: block;
+		}
+		.format::after {
+			content: ' · ';
+		}
 	}
 	.fine {
 		font-size: 0.85rem;
