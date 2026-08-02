@@ -44,6 +44,8 @@ export type TicketContainer =
 	| { kind: 'dosipas'; envelope: DosipasEnvelope }
 	| { kind: 'rsp6'; ticket: import('./rsp/rsp6.ts').Rsp6Ticket }
 	| { kind: 'swisspass'; ticket: import('./swisspass/swisspass.ts').SwissPassTicket }
+	| { kind: 'vdv'; barcode: import('./vdv/vdv.ts').VdvBarcode }
+	| { kind: 'ssb'; envelope: import('./ssb/ssb.ts').SsbEnvelope }
 	| { kind: 'text'; text: string }
 	| { kind: 'unknown' };
 

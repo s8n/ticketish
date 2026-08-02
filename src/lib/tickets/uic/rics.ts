@@ -10,6 +10,7 @@ const RICS_NAMES: Record<number, string> = {
 	1083: 'Trenitalia S.p.A.',
 	84: 'NS',
 	1084: 'NS International',
+	1184: 'Nederlandse Spoorwegen',
 	85: 'SBB',
 	1085: 'SBB CFF FFS',
 	1185: 'SBB CFF FFS',

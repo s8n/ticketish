@@ -19,6 +19,10 @@ installed.
   RSA message recovery with the published RSP keys, then the bit-packed
   ticket record
 - **SwissPass / NOVA** - Swiss mobile tickets (protobuf QR)
+- **VDV-KA** - German Verbund tickets and the Deutschlandticket: BER-TLV
+  envelope with ISO 9796-2 message recovery against the VDV CA certificates,
+  including MOTICS copy-protection containers
+- **SSB** - the older bit-packed UIC format, currently the NS Keycard
 - Anything else falls back to a plain-text / hex view
 
 Inputs: images, PDFs (rendered with pdf.js and scanned), Apple Wallet
@@ -92,5 +96,7 @@ No functions, bindings or environment variables needed.
   RSP6 bit layouts, and SwissPass protobuf schema are ports of its code.
 - RSP6 public keys vendored from
   [eta's rsp6-decoder](https://git.eta.st/eta/rsp6-decoder) (MIT).
+- VDV CA public keys are built from VDV KA's public LDAP directory by
+  `scripts/build-vdv-keys.py`; a monthly GitHub Action refreshes them.
 - DB Leitpunktkürzel and Swiss NOVA organisation names derive from the
   respective operators' open data.

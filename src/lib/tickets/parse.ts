@@ -4,6 +4,8 @@ import { isUic9183, parseUic9183 } from './uic/envelope9183.ts';
 import { parseDosipas } from './uic/dosipas.ts';
 import { isRsp6, parseRsp6 } from './rsp/rsp6.ts';
 import { parseSwissPass } from './swisspass/swisspass.ts';
+import { isVdv, parseVdv } from './vdv/vdv.ts';
+import { isSsb, parseSsb } from './ssb/ssb.ts';
 
 // Record parsers register themselves on import.
 import './records/uhead.ts';
@@ -18,6 +20,20 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 	}
 	if (isRsp6(data)) {
 		return { kind: 'rsp6', ticket: parseRsp6(data) };
+	}
+	if (isVdv(data)) {
+		try {
+			return { kind: 'vdv', barcode: parseVdv(data) };
+		} catch {
+			// fall through to the other formats
+		}
+	}
+	if (isSsb(data)) {
+		try {
+			return { kind: 'ssb', envelope: parseSsb(data) };
+		} catch {
+			// fall through
+		}
 	}
 	try {
 		return { kind: 'dosipas', envelope: parseDosipas(data) };

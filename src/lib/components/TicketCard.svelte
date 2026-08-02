@@ -8,6 +8,8 @@
 	import RawView from './records/RawView.svelte';
 	import Rsp6View from './Rsp6View.svelte';
 	import SwissPassView from './SwissPassView.svelte';
+	import VdvView from './VdvView.svelte';
+	import SsbView from './SsbView.svelte';
 	import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
 	import { store } from '../state/tickets.svelte.ts';
 
@@ -36,6 +38,14 @@
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const org = (t.ticketData as any)?.sale?.issuingOrg as number | undefined;
 			return ricsName(rics) ?? novaOrgName(org) ?? (rics ? `RICS ${rics}` : 'SwissPass');
+		}
+		if (container.kind === 'vdv') {
+			const t = container.barcode.tickets[0];
+			return t ? `VDV org ${t.productOrgId}` : 'VDV ticket';
+		}
+		if (container.kind === 'ssb') {
+			const rics = container.envelope.issuerRics;
+			return ricsName(rics) ?? `RICS ${rics}`;
 		}
 		if (container.kind === 'text' && ticket.source.passInfo?.organizationName) {
 			return ticket.source.passInfo.organizationName;
@@ -85,6 +95,10 @@
 				return container.ticket.ticketType === '08' ? 'RSP6 railcard' : 'RSP6';
 			case 'swisspass':
 				return 'SwissPass / NOVA';
+			case 'vdv':
+				return 'VDV-KA';
+			case 'ssb':
+				return `SSB v${container.envelope.version}`;
 			case 'text':
 				return 'Plain text';
 			default:
@@ -153,6 +167,10 @@
 		<Rsp6View ticket={container.ticket} />
 	{:else if container.kind === 'swisspass'}
 		<SwissPassView ticket={container.ticket} />
+	{:else if container.kind === 'vdv'}
+		<VdvView barcode={container.barcode} />
+	{:else if container.kind === 'ssb'}
+		<SsbView envelope={container.envelope} />
 	{:else if container.kind === 'text'}
 		<pre class="text-payload">{container.text}</pre>
 		<p class="note">This barcode carries plain text, not UIC ticket data.</p>
