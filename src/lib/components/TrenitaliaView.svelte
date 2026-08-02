@@ -22,5 +22,5 @@
 <SimpleTicketView
 	title={`Train ${ticket.trainNumber}`}
 	{rows}
-	note="Trenitalia publishes no specification for this barcode. The fields above were confirmed against printed tickets; the payload carries no departure time or station codes that could be identified."
+	note="Data may be incomplete, specification unavailable."
 />
