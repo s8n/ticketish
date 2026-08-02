@@ -1,0 +1,116 @@
+{
+ "name": "muster-918-9-fv-supersparpreissenior-inklr-ckfahrt",
+ "size": 368,
+ "sha_head": "235554303231303830303030303277c2",
+ "format": "918.3",
+ "envelope_version": 2,
+ "rics": "1080",
+ "key_id": "00002",
+ "records": [
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 275,
+   "data_hex": "62b20086e10dc1a2cc3c15110881051c8452696674daae62a00a81800898c2e6e80ea6c6d0e4d2cce8cc018082222bff808011061c86d0e3daaa1b261c5411b0e8e5af0f2e996f42f24f4c19a128cd8cadce6c4eae4ce12a4dee6cadcd0cad2da48acd2c2744078626070607c90905484a6a05450985e969e8aa852548a8c54869e549c549a040c006930e2b860cc3307dc03001e4c38ac58b0721996ae15ef4c19af42f2412a4dee6cadcd0cad2da128cd8cadce6c4eae4ce3eacd2c2744078626070607c9a5450a6549682548c5e9c548c88525490549090020c006930e2b770d836cbdc032001a00d2c380120210b29bab832b91029b830b9383932b4b99029b2b734b7b900",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 279,
+     "issuingTime": 783,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "R4YNMU9E"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Last",
+       "lastName": "Schrift",
+       "yearOfBirth": 2003,
+       "dayOfBirth": 1,
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "ACH6CGZU",
+        "productIdIA5": "ICE Fahrkarte",
+        "returnIncluded": true,
+        "stationCodeTable": "stationUIC",
+        "fromStationNum": 8001427,
+        "toStationNum": 8020174,
+        "fromStationNameUTF8": "Flensburg",
+        "toStationNameUTF8": "Rosenheim",
+        "validRegionDesc": "Via: <1080>HH*BSP*(L/KOET)*EF*CO*N*M",
+        "validRegion": [
+         {
+          "__choice__": "trainLink",
+          "value": {
+           "trainIA5": "ICE803",
+           "travelDate": 24,
+           "departureTime": 1055,
+           "departureUTCOffset": -4
+          }
+         },
+         {
+          "__choice__": "trainLink",
+          "value": {
+           "trainIA5": "ICE1109",
+           "travelDate": 24,
+           "departureTime": 1205,
+           "departureUTCOffset": -4
+          }
+         }
+        ],
+        "returnDescription": {
+         "fromStationNum": 8020174,
+         "toStationNum": 8001427,
+         "fromStationNameUTF8": "Rosenheim",
+         "toStationNameUTF8": "Flensburg",
+         "validReturnRegionDesc": "Via: <1080>M*(S*KA*F/N*FD)*H*HH",
+         "validReturnRegion": [
+          {
+           "__choice__": "trainLink",
+           "value": {
+            "trainIA5": "ICE786",
+            "travelDate": 26,
+            "departureTime": 815,
+            "departureUTCOffset": -4
+           }
+          }
+         ]
+        },
+        "validFromDay": 24,
+        "validFromTime": 0,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 3,
+        "validUntilTime": 600,
+        "validUntilUTCOffset": -4,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 1,
+          "passengerType": "senior",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Super Sparpreis Senior"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "barcode_format": "Aztec"
+}

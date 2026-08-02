@@ -1,0 +1,88 @@
+{
+ "name": "muster-918-9-l-nderticket-saarland",
+ "size": 404,
+ "sha_head": "2355543031313038303030303031302c",
+ "format": "918.3",
+ "envelope_version": 1,
+ "rics": "1080",
+ "key_id": "00001",
+ "records": [
+  {
+   "id": "U_HEAD",
+   "version": 1,
+   "len": 53,
+   "data_hex": "313038304b594334525756350000000000000000000000003139303432303232313335323044454445"
+  },
+  {
+   "id": "U_TLAY",
+   "version": 1,
+   "len": 185,
+   "data_hex": "504c414930303038303330303031323030303030374b6c617373653a30343030303232303030303036506572732e3a30303030303138303130303039466168726b617274653031303030313230303030313247c3bc6c7469676b6569743a3031313530313230313030313032352e30342e323032323033313930313230313030303132303431393032323031303030313330323030303138303130303135536161726c616e642d5469636b6574"
+  },
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 100,
+   "data_hex": "62b20086e10dc18d8b2015110881051c844bb30da52af59aa00a800008a8d0cac208a8cae6e9010444003e010021acc650e23898c426361d1cb5e1e5d32807438d0022d0058080801ea6c2c2e4d8c2dcc85aa8d2c6d6cae8",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 109,
+     "issuingTime": 712,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "KYC4RWV5"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Thea",
+       "lastName": "Test",
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "5L2CD8L1",
+        "productIdIA5": "Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "validFromDay": 6,
+        "validFromTime": 540,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 1,
+        "validUntilTime": 180,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 3,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Saarland-Ticket"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "0080VU",
+   "version": 1,
+   "len": 52,
+   "data_hex": "0064000000030168f9ed03187403f6187740994800409a1800000e7468f9ed0307dc05101388000d"
+  }
+ ],
+ "barcode_format": "Aztec"
+}

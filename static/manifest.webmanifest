@@ -1,0 +1,20 @@
+{
+	"name": "ticketish",
+	"short_name": "ticketish",
+	"description": "Decode UIC 918.3 / 918.9 train ticket barcodes in your browser — including the DB Zugbindung.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"background_color": "#f0eae1",
+	"theme_color": "#26324b",
+	"icons": [
+		{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+		{ "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+		{
+			"src": "/icons/icon-maskable-512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
+		}
+	]
+}

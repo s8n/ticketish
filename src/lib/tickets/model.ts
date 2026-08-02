@@ -1,0 +1,193 @@
+/**
+ * Normalized display model built from decoded FCB (U_FLEX) data.
+ * Handles the version differences between FCB 1.3 / 2 / 3 that matter for
+ * display, most importantly resolving day-offset fields against the issuing
+ * date — which is how the DB Zugbindung (train binding) is deciphered.
+ */
+import type { Choice } from './asn1/index.ts';
+
+export interface FcbIssuingDetail {
+	issuingYear: number;
+	issuingDay: number;
+	issuingTime?: number;
+	issuerNum?: number;
+	issuerIA5?: string;
+	issuerName?: string;
+	securityProviderNum?: number;
+	specimen?: boolean;
+	activated?: boolean;
+	currency?: string;
+	issuerPNR?: string;
+	[k: string]: unknown;
+}
+
+export interface FcbTicket {
+	issuingDetail: FcbIssuingDetail;
+	travelerDetail?: {
+		traveler?: Traveler[];
+		groupName?: string;
+	};
+	transportDocument?: { ticket: Choice }[];
+	[k: string]: unknown;
+}
+
+export interface Traveler {
+	firstName?: string;
+	secondName?: string;
+	lastName?: string;
+	idCard?: string;
+	passportId?: string;
+	title?: string;
+	yearOfBirth?: number;
+	monthOfBirth?: number;
+	dayOfBirthInMonth?: number;
+	dayOfBirth?: number;
+	passengerType?: string;
+	[k: string]: unknown;
+}
+
+export interface TrainBinding {
+	train: string;
+	departureDate: string; // YYYY-MM-DD (local at departure station)
+	departureTime: string; // HH:MM
+	fromStation?: string;
+	toStation?: string;
+}
+
+export interface DocumentSummary {
+	type: string; // openTicket | reservation | pass | ...
+	data: Record<string, unknown>;
+	trainBindings: TrainBinding[];
+	validFrom?: string; // ISO local date-time
+	validUntil?: string;
+}
+
+const pad = (n: number, w = 2) => String(n).padStart(w, '0');
+
+/** Date of issue as UTC calendar parts (FCB dates are day-of-year based). */
+export function issuingDate(issuing: FcbIssuingDetail): Date {
+	const d = new Date(Date.UTC(issuing.issuingYear, 0, 1));
+	d.setUTCDate(d.getUTCDate() + issuing.issuingDay - 1);
+	return d;
+}
+
+function offsetDate(base: Date, days: number): string {
+	const d = new Date(base);
+	d.setUTCDate(d.getUTCDate() + days);
+	return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+}
+
+function minutes(m: number): string {
+	return `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
+}
+
+function dateTime(base: Date, days: number | undefined, mins: number | undefined): string | undefined {
+	if (days === undefined && mins === undefined) return undefined;
+	const date = offsetDate(base, days ?? 0);
+	return mins !== undefined ? `${date}T${minutes(mins)}` : date;
+}
+
+interface TrainLink {
+	trainNum?: number;
+	trainIA5?: string;
+	travelDate: number;
+	departureTime: number;
+	fromStationNum?: number;
+	fromStationIA5?: string;
+	toStationNum?: number;
+	toStationIA5?: string;
+	fromStationNameUTF8?: string;
+	toStationNameUTF8?: string;
+}
+
+function trainLinkBinding(
+	link: TrainLink,
+	issued: Date,
+	doc: Record<string, unknown>
+): TrainBinding {
+	return {
+		train: link.trainIA5 ?? (link.trainNum !== undefined ? String(link.trainNum) : '?'),
+		departureDate: offsetDate(issued, link.travelDate),
+		departureTime: minutes(link.departureTime),
+		// A trainLink without its own stations binds the document's full route.
+		fromStation:
+			link.fromStationNameUTF8 ??
+			link.fromStationIA5 ??
+			numStr(link.fromStationNum) ??
+			((doc.fromStationNameUTF8 as string) ?? numStr(doc.fromStationNum as number)),
+		toStation:
+			link.toStationNameUTF8 ??
+			link.toStationIA5 ??
+			numStr(link.toStationNum) ??
+			((doc.toStationNameUTF8 as string) ?? numStr(doc.toStationNum as number))
+	};
+}
+
+function numStr(n: number | undefined): string | undefined {
+	return n === undefined ? undefined : String(n);
+}
+
+/** Extract per-document summaries (incl. Zugbindung) from a decoded FCB ticket. */
+export function summarizeFcb(ticket: FcbTicket): DocumentSummary[] {
+	const issued = issuingDate(ticket.issuingDetail);
+	const docs = ticket.transportDocument ?? [];
+	return docs.map((doc) => {
+		const choice = doc.ticket;
+		const type = choice.__choice__;
+		const data = (choice.value ?? {}) as Record<string, unknown>;
+		const bindings: TrainBinding[] = [];
+		let validFrom: string | undefined;
+		let validUntil: string | undefined;
+
+		if (type === 'openTicket' || type === 'pass') {
+			validFrom = dateTime(issued, data.validFromDay as number, data.validFromTime as number);
+			if (data.validUntilDay !== undefined || data.validUntilTime !== undefined) {
+				// validUntilDay counts from the valid-from date
+				const fromDays = (data.validFromDay as number) ?? 0;
+				validUntil = dateTime(
+					issued,
+					fromDays + ((data.validUntilDay as number) ?? 0),
+					data.validUntilTime as number
+				);
+			}
+			const region = (data.validRegion ?? []) as Choice[];
+			for (const r of region) {
+				if (r.__choice__ === 'trainLink')
+					bindings.push(trainLinkBinding(r.value as TrainLink, issued, data));
+			}
+		} else if (type === 'reservation') {
+			const dep = dateTime(issued, (data.departureDate as number) ?? 0, data.departureTime as number);
+			validFrom = dep;
+			if (data.arrivalTime !== undefined) {
+				validUntil = dateTime(
+					issued,
+					((data.departureDate as number) ?? 0) + ((data.arrivalDate as number) ?? 0),
+					data.arrivalTime as number
+				);
+			}
+			const train = (data.trainIA5 as string) ?? numStr(data.trainNum as number);
+			if (train && dep) {
+				bindings.push({
+					train,
+					departureDate: dep.slice(0, 10),
+					departureTime: dep.slice(11) || '',
+					fromStation:
+						(data.fromStationNameUTF8 as string) ??
+						(data.fromStationIA5 as string) ??
+						numStr(data.fromStationNum as number),
+					toStation:
+						(data.toStationNameUTF8 as string) ??
+						(data.toStationIA5 as string) ??
+						numStr(data.toStationNum as number)
+				});
+			}
+		}
+
+		return { type, data, trainBindings: bindings, validFrom, validUntil };
+	});
+}
+
+/** All train bindings (Zugbindung) across a ticket's documents. */
+export function zugbindung(ticket: FcbTicket): TrainBinding[] {
+	return summarizeFcb(ticket).flatMap((d) => d.trainBindings);
+}

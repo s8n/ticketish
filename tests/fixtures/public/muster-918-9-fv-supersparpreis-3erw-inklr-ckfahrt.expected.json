@@ -1,0 +1,133 @@
+{
+ "name": "muster-918-9-fv-supersparpreis-3erw-inklr-ckfahrt",
+ "size": 383,
+ "sha_head": "235554303231303830303030303259e7",
+ "format": "918.3",
+ "envelope_version": 2,
+ "rics": "1080",
+ "key_id": "00002",
+ "records": [
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 290,
+   "data_hex": "62b20086e10dc1a2cd5c15110881051c8430b521945af2ec200a81800898c2e6e80ea6c6d0e4d2cce876018082222bff008010ce5d06712c4b6e1b261c5411b0e8e5af0f2e996f42c82f4c19a0e90c2dac4eae4ce12a4dee6cadcd0cad2da46acd2c2744078626070607c9082a45450aa8a5e9c92525490548c8854509c5e8252549a060c006930e2b572c43c321c03001a4c38addc310f1a0700c007930e2b162c9887916b857bd3066bd0b2084a937b9b2b73432b4b683a430b6b13ab93391ab34b09d101e18981c181f2695142097a71495232215241514272497aaa294952420a90103001e4c38ac58b2601e83ee01800d261c56ee1907a36b8078003800a580160202007a9bab832b91029b830b9383932b4b98",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 279,
+     "issuingTime": 855,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "0ZH2EWKX"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Last",
+       "lastName": "Schrift",
+       "yearOfBirth": 1960,
+       "dayOfBirth": 1,
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "3KP3DXK7",
+        "productIdIA5": "ICE Fahrkarte",
+        "returnIncluded": true,
+        "stationCodeTable": "stationUIC",
+        "fromStationNum": 8001090,
+        "toStationNum": 8020174,
+        "fromStationNameUTF8": "Hamburg",
+        "toStationNameUTF8": "Rosenheim",
+        "validRegionDesc": "Via: <1080>HAR*(UE/NI)*H*FD*(N/A)*M",
+        "validRegion": [
+         {
+          "__choice__": "trainLink",
+          "value": {
+           "trainIA5": "ICE591",
+           "travelDate": 29,
+           "departureTime": 200,
+           "departureUTCOffset": -4
+          }
+         },
+         {
+          "__choice__": "trainLink",
+          "value": {
+           "trainIA5": "ICE781",
+           "travelDate": 29,
+           "departureTime": 416,
+           "departureUTCOffset": -4
+          }
+         },
+         {
+          "__choice__": "trainLink",
+          "value": {
+           "trainIA5": "ICE1121",
+           "travelDate": 29,
+           "departureTime": 557,
+           "departureUTCOffset": -4
+          }
+         }
+        ],
+        "returnDescription": {
+         "fromStationNum": 8020174,
+         "toStationNum": 8001090,
+         "fromStationNameUTF8": "Rosenheim",
+         "toStationNameUTF8": "Hamburg",
+         "validReturnRegionDesc": "Via: <1080>M*(A/N)*FD*H*(NI/UE)*HAR",
+         "validReturnRegion": [
+          {
+           "__choice__": "trainLink",
+           "value": {
+            "trainIA5": "ICE1120",
+            "travelDate": 29,
+            "departureTime": 1055,
+            "departureUTCOffset": -4
+           }
+          },
+          {
+           "__choice__": "trainLink",
+           "value": {
+            "trainIA5": "ICE782",
+            "travelDate": 29,
+            "departureTime": 1133,
+            "departureUTCOffset": -4
+           }
+          }
+         ]
+        },
+        "validFromDay": 29,
+        "validFromTime": 0,
+        "validFromUTCOffset": -4,
+        "validUntilDay": 1,
+        "validUntilTime": 600,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 3,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Super Sparpreis"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "barcode_format": "Aztec"
+}

@@ -1,0 +1,113 @@
+{
+ "name": "muster-918-9-deutschland-ticket",
+ "size": 463,
+ "sha_head": "2355543031313038303030303037302e",
+ "format": "918.3",
+ "envelope_version": 1,
+ "rics": "1080",
+ "key_id": "00007",
+ "records": [
+  {
+   "id": "U_HEAD",
+   "version": 1,
+   "len": 53,
+   "data_hex": "3130383051575859334254410000000000000000000000003237303232303235313031343044454445"
+  },
+  {
+   "id": "U_TLAY",
+   "version": 1,
+   "len": 301,
+   "data_hex": "524354323030313330303138303133333230303039466168726b61727465303035323031303930303030394d75737465726d616e303036323031303930303030334d617830313138303133333130303138446575747363686c616e642d5469636b6574303135323032303230303030313130313535303131363030303130506572736f6e28656e2930333031303130343030303034323032353036303130313035303030303530312e30323036303730313035303030303530303a30303036353230313035303030303530312e30333036353830313035303030303530333a303030363636303130353030303031323132303130323530323030333747c3bc6c74696720766f6d2030312e30322e32303235206269732030312e30332e32303235"
+  },
+  {
+   "id": "U_FLEX",
+   "version": 3,
+   "len": 153,
+   "data_hex": "62a4010dc21b848e51502a2211020a3908a35ec59670aa4140150380069ac2f0149aeae6e8cae4dac2dcdcc800808226000f00c804376d45ccc912a6138784c6c3a396bc3cba65266700316802404012446575747363686c616e642d5469636b65740216a80136bc0001eb44acd9936664e1e0430e80844cac1440244080f5a2566ac18300101014cce0062d00",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2025,
+     "issuingDay": 58,
+     "issuingTime": 554,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "QWXY3BTA"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Max",
+       "lastName": "Mustermann",
+       "yearOfBirth": 2001,
+       "monthOfBirth": 1,
+       "dayOfBirthInMonth": 1,
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "76Q9LHJL",
+        "productIdNum": 9999,
+        "productIdIA5": "Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "validFromDay": 0,
+        "validFromTime": 614,
+        "validFromUTCOffset": -4,
+        "validUntilDay": 2,
+        "validUntilTime": 180,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 1,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Deutschland-Ticket"
+         }
+        ],
+        "price": 5800,
+        "includedAddOns": [
+         {
+          "productOwnerIA5": "VDV6263",
+          "productIdNum": 9999,
+          "externalIssuerId": 6260,
+          "issuerAuthorizationId": 577069218,
+          "stationCodeTable": "stationUIC",
+          "validRegion": [
+           {
+            "__choice__": "zones",
+            "value": {
+             "carrierIA5": "VDV5000",
+             "stationCodeTable": "stationUIC",
+             "zoneId": [
+              1
+             ]
+            }
+           }
+          ],
+          "validFromDay": 0,
+          "validFromTime": 614,
+          "validFromUTCOffset": -4,
+          "validUntilDay": 2,
+          "validUntilTime": 180
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "barcode_format": "Aztec"
+}

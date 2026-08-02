@@ -1,0 +1,103 @@
+/* ticketish — design tokens & base styles.
+   World: UIC ticket stock — apricot guilloche security paper, blue overprint
+   ink, signal red reserved for the Zugbindung stamp. */
+
+:root {
+	/* the desk */
+	--bg: #f0eae1;
+	--bg-text: #33302a;
+	--bg-text-soft: #7d766a;
+	--hairline: #d8d0c2;
+
+	/* the ticket stock */
+	--paper-hi: #fdf2e0;
+	--paper-lo: #f7e2c6;
+	--paper-edge: #e3cba4;
+	--ink: #26324b;
+	--ink-soft: #5c6880;
+	--guilloche: rgba(197, 146, 88, 0.13);
+
+	/* overprint colours */
+	--rail-blue: #2b4c9b;
+	--signal-red: #c7151d;
+	--valid-green: #1d7a4f;
+
+	--font-body: 'Barlow', system-ui, sans-serif;
+	--font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+	--font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+	--radius: 10px;
+	color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		/* night-train desk: dark surround, tickets stay paper under the lamp */
+		--bg: #191c23;
+		--bg-text: #e4ddd0;
+		--bg-text-soft: #97917f;
+		--hairline: #333845;
+		--paper-hi: #f4e6cf;
+		--paper-lo: #e9d3b0;
+		--paper-edge: #c9ad82;
+		color-scheme: dark;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: var(--bg);
+	color: var(--bg-text);
+	font-family: var(--font-body);
+	font-size: 16px;
+	line-height: 1.45;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+	font-family: var(--font-display);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	margin: 0;
+}
+
+button {
+	font: inherit;
+	cursor: pointer;
+}
+
+:focus-visible {
+	outline: 2px solid var(--rail-blue);
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* shared bits */
+.chip {
+	display: inline-block;
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	padding: 0.1rem 0.45rem;
+	border: 1px solid currentcolor;
+	border-radius: 999px;
+	white-space: nowrap;
+}

@@ -1,0 +1,88 @@
+{
+ "name": "muster-918-9-l-nderticket-sachsen-anhalt",
+ "size": 417,
+ "sha_head": "2355543031313038303030303031302c",
+ "format": "918.3",
+ "envelope_version": 1,
+ "rics": "1080",
+ "key_id": "00001",
+ "records": [
+  {
+   "id": "U_HEAD",
+   "version": 1,
+   "len": 53,
+   "data_hex": "31303830454754434c3843560000000000000000000000003139303432303232313335343044454445"
+  },
+  {
+   "id": "U_TLAY",
+   "version": 1,
+   "len": 191,
+   "data_hex": "504c414930303038303330303031323030303030374b6c617373653a30343030303232303030303036506572732e3a30303030303138303130303039466168726b617274653031303030313230303030313247c3bc6c7469676b6569743a3031313530313230313030313032352e30342e3230323230333139303132303130303031323034313930323230313030303133303230303031383031303032315361636873656e2d416e68616c742d5469636b6574"
+  },
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 106,
+   "data_hex": "62b20086e10dc18d8b2815110881051c84458f521cc710eb200a800008a8d0cac208a8cae6e9010444003e01002244699459b0890c26361d1cb5e1e5d32807438d0022d0058080802aa6c2c6d0e6cadc5a82dcd0c2d8e85aa8d2c6d6cae8",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 109,
+     "issuingTime": 714,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "EGTCL8CV"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Thea",
+       "lastName": "Test",
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "HFLQ30DC",
+        "productIdIA5": "Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "validFromDay": 6,
+        "validFromTime": 540,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 1,
+        "validUntilTime": 180,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 3,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Sachsen-Anhalt-Ticket"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "0080VU",
+   "version": 1,
+   "len": 52,
+   "data_hex": "0064000000030168f9ed05187403f8187740994800409a180000100468f9ed0507dc05101388000f"
+  }
+ ],
+ "barcode_format": "Aztec"
+}

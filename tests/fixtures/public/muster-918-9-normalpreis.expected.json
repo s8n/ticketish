@@ -1,0 +1,78 @@
+{
+ "name": "muster-918-9-normalpreis",
+ "size": 229,
+ "sha_head": "2355543032313038303030303032718b",
+ "format": "918.3",
+ "envelope_version": 2,
+ "rics": "1080",
+ "key_id": "00002",
+ "records": [
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 136,
+   "data_hex": "62b20086e10dc1a2cc5015110881051c8433650a3c59516ca00a81800898c2e6e80ea6c6d0e4d2cce8cc018082222b9f8080110e334b332a378e131b0e8e5af0f2e994f4b8d4f4b89c0a9ac2d2dcf40e96dec4d8cadcf41cacd2c2744078626070607c84929c0c8006801168e0048080169cdee4dac2d8e0e4cad2e6",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 279,
+     "issuingTime": 788,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "32BGEJEY"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Last",
+       "lastName": "Schrift",
+       "yearOfBirth": 2003,
+       "dayOfBirth": 1,
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "CF4YLT7G",
+        "productIdIA5": "Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "fromStationNum": 8019051,
+        "toStationNum": 8019023,
+        "fromStationNameUTF8": "Mainz",
+        "toStationNameUTF8": "Koblenz",
+        "validRegionDesc": "Via: <1080>BIN",
+        "validFromDay": 24,
+        "validFromTime": 0,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 1,
+        "validUntilTime": 180,
+        "validUntilUTCOffset": -4,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 1,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Normalpreis"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "barcode_format": "Aztec"
+}

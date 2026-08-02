@@ -1,0 +1,90 @@
+{
+ "name": "muster-918-9-quer-durchs-land-ticket",
+ "size": 447,
+ "sha_head": "2355543031313038303030303031302c",
+ "format": "918.3",
+ "envelope_version": 1,
+ "rics": "1080",
+ "key_id": "00001",
+ "records": [
+  {
+   "id": "U_HEAD",
+   "version": 1,
+   "len": 53,
+   "data_hex": "31303830443254593757444e0000000000000000000000003036313032303232313432353044454445"
+  },
+  {
+   "id": "U_TLAY",
+   "version": 1,
+   "len": 224,
+   "data_hex": "504c414930303038303430303031323030303030374b6c617373653a30353030303232303030303036506572732e3a30303030303138303130303039466168726b617274653031303030313230303030313247c3bc6c7469676b6569743a30313135303232303130303431566f6e2030362e31302e323032322030393a30300a4269732030372e31302e323032322030333a30303034313930313230313030303132303531393032323031303030313530333030303138303130303233517565722d6475726368732d4c616e642d5469636b6574"
+  },
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 112,
+   "data_hex": "62b20086e10dc1a2cba415110881051c84446552cb7af127200a81800898c2e6e80ea6c6d0e4d2cce87601808222000f008010ca94a6d3a94c62131b0e8e5af0f2e994871a0045a00b0102005d45d595c8b591d5c98da1ccb53185b990b551a58dad95d0",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 279,
+     "issuingTime": 745,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "D2TY7WDN"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Last",
+       "lastName": "Schrift",
+       "yearOfBirth": 1960,
+       "dayOfBirth": 1,
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "2RJ6NRL1",
+        "productIdIA5": "Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "validFromDay": 0,
+        "validFromTime": 540,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 1,
+        "validUntilTime": 180,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 5,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Quer-durchs-Land-Ticket"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "0080VU",
+   "version": 1,
+   "len": 52,
+   "data_hex": "006400000005016013e21a187404b118774146480041471800001b586013e21a07dc051013880001"
+  }
+ ],
+ "barcode_format": "Aztec"
+}

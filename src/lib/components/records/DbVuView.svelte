@@ -1,0 +1,50 @@
+<script lang="ts">
+	import type { DbVuData } from '../../tickets/records/dbvu.ts';
+	import { fmtDate, fmtPrice } from '../../tickets/format.ts';
+
+	let { data }: { data: DbVuData } = $props();
+</script>
+
+<div class="vu">
+	<p class="head">
+		Verbund products (VDV-KA) · {data.travellerCount} traveler{data.travellerCount === 1 ? '' : 's'}
+	</p>
+	{#each data.products as p, i (i)}
+		<dl>
+			<dt>Product</dt>
+			<dd>#{p.productNumber} (PV org {p.pvOrgId}, KVP org {p.kvpOrgId})</dd>
+			<dt>Valid</dt>
+			<dd>{fmtDate(p.validFrom)} – {fmtDate(p.validTo)}</dd>
+			{#if p.price !== null}<dt>Price</dt>
+				<dd>{fmtPrice(p.price)}</dd>{/if}
+			<dt>Authorization</dt>
+			<dd><code>{p.authorizationNumber}</code></dd>
+		</dl>
+	{/each}
+</div>
+
+<style>
+	.vu {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+	.head {
+		margin: 0;
+		font-size: 0.85rem;
+		color: var(--ink-soft);
+	}
+	dl {
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		gap: 0.15rem 1rem;
+		margin: 0;
+		font-size: 0.88rem;
+	}
+	dt {
+		color: var(--ink-soft);
+	}
+	dd {
+		margin: 0;
+	}
+</style>

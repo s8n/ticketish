@@ -1,0 +1,83 @@
+{
+ "name": "muster-918-9-bahncard-25",
+ "size": 584,
+ "sha_head": "2355543031313038303030303031302d",
+ "format": "918.3",
+ "envelope_version": 1,
+ "rics": "1080",
+ "key_id": "00001",
+ "records": [
+  {
+   "id": "U_HEAD",
+   "version": 1,
+   "len": 53,
+   "data_hex": "31303830312d32374c3858355336000000000000000000003138303132303234303030303044454445"
+  },
+  {
+   "id": "U_TLAY",
+   "version": 1,
+   "len": 388,
+   "data_hex": "5243543230303037303031323033333930303038384241484e434152442020202020202020202020202020202054595020484b2034390a50726f6265204261686e436172642032352028322e204b6c61737365292842433235290a696e6b6c7573697665205241494c504c5553303035323033313930303036344e75722067c3bc6c7469672062656920566f722d5c6e6c6167652065696e657320616d746c696368656e5c6e4c6963687462696c646175737765697365735c6e3033303130313530343030343547c3bc6c74696720766f6d2031382e30312e323032342047c3bc6c746967206269732031372e30322e323032343036363630313035303030303132303830313034373030303033330a0a0a496e686162657228696e293a4d6178696d652c204d75737465726d616e6e3134303130313330303030323642432d4e756d6d65722037303831343131323435333132363631313530313031333130303032304b617274656e2d494420312d32374c3858355336"
+  },
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 164,
+   "data_hex": "62900086e10dc20220a888440828e50054000064d6178696d650a4d75737465726d616e6e80856b4d4000064d6178696d650a4d75737465726d616e6e883760e18b462c59346acd8b26cd98840486043aa0e4dec4ca4084c2d0dc86c2e4c840646a4050645c4096d8c2e6e6ca520202021d16c548b3a9c99f396b160e180cbd9135b0b93a32b724b2111d111896991ba61c2c1aa99b113e8",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2024,
+     "issuingDay": 18,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Maxime",
+       "lastName": "Mustermann",
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "customerCard",
+       "value": {
+        "customer": {
+         "firstName": "Maxime",
+         "lastName": "Mustermann",
+         "ticketHolder": true
+        },
+        "cardIdIA5": "7081411245312661",
+        "validFromYear": 2024,
+        "validFromDay": 18,
+        "validUntilYear": 0,
+        "validUntilDay": 48,
+        "classCode": "second",
+        "cardTypeDescr": "Probe BahnCard 25 (2. Klasse)",
+        "includedServices": [
+         1
+        ],
+        "extension": {
+         "extensionId": "EXTENSION-1080",
+         "extensionData": {
+          "__bytes__": "7b226b617274656e4964223a22312d32374c3858355336227d"
+         }
+        }
+       }
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "barcode_format": "Aztec"
+}

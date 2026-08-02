@@ -1,0 +1,98 @@
+{
+ "name": "muster-918-9-fv-supersparpreisyoung",
+ "size": 290,
+ "sha_head": "2355543032313038303030303032b926",
+ "format": "918.3",
+ "envelope_version": 2,
+ "rics": "1080",
+ "key_id": "00002",
+ "records": [
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 197,
+   "data_hex": "62b20086e10dc1a2cc2c15110881051c844d66e2ac191161a00a81800898c2e6e80ea6c6d0e4d2cce8cc018082222bdf8080111a5d26d1d846a41b261c5411b0e8e5af0f2e994f4738ef506d20a8ae6e6cadc12a6e8eae8e8cec2e4e848acd2c2744078626070607c50ae5e88aa52549654969e54508c549a825e9ab45254ac8292040c006930e2b964e4330c5c03001a4c362e5cb90ccd5700c80068014b0e004808c2aa6eae0cae440a6e0c2e4e0e4cad2e640b2deeadcce",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 279,
+     "issuingTime": 779,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "M38UAHEC"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Last",
+       "lastName": "Schrift",
+       "yearOfBirth": 2003,
+       "dayOfBirth": 1,
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "FKR6G0FR",
+        "productIdIA5": "ICE Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "fromStationNum": 8010184,
+        "toStationNum": 8029034,
+        "fromStationNameUTF8": "Essen",
+        "toStationNameUTF8": "Stuttgart",
+        "validRegionDesc": "Via: <1080>(W/DU)*K*KO*(F*MA/MZ)*VAI",
+        "validRegion": [
+         {
+          "__choice__": "trainLink",
+          "value": {
+           "trainIA5": "ICE929",
+           "travelDate": 24,
+           "departureTime": 1073,
+           "departureUTCOffset": -4
+          }
+         },
+         {
+          "__choice__": "trainLink",
+          "value": {
+           "trainIA5": "IC1999",
+           "travelDate": 24,
+           "departureTime": 1237,
+           "departureUTCOffset": -4
+          }
+         }
+        ],
+        "validFromDay": 24,
+        "validFromTime": 0,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 1,
+        "validUntilTime": 600,
+        "validUntilUTCOffset": -4,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 1,
+          "passengerType": "youth",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Super Sparpreis Young"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "barcode_format": "Aztec"
+}

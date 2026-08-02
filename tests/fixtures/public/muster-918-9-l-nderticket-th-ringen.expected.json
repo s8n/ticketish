@@ -1,0 +1,90 @@
+{
+ "name": "muster-918-9-l-nderticket-th-ringen",
+ "size": 417,
+ "sha_head": "2355543031313038303030303031302c",
+ "format": "918.3",
+ "envelope_version": 1,
+ "rics": "1080",
+ "key_id": "00001",
+ "records": [
+  {
+   "id": "U_HEAD",
+   "version": 1,
+   "len": 53,
+   "data_hex": "313038304e42343543395a550000000000000000000000003036313032303232313434323044454445"
+  },
+  {
+   "id": "U_TLAY",
+   "version": 1,
+   "len": 218,
+   "data_hex": "504c414930303038303430303031323030303030374b6c617373653a30353030303232303030303036506572732e3a30303030303138303130303039466168726b617274653031303030313230303030313247c3bc6c7469676b6569743a30313135303232303130303431566f6e2032302e31302e323032322030393a30300a4269732032312e31302e323032322030333a303030343139303132303130303031323035313930323230313030303132303330303031383031303031375468c3bc72696e67656e2d5469636b6574"
+  },
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 107,
+   "data_hex": "62b20086e10dc1a2cbe815110881051c844e84d1ac3736aaa00a81800898c2e6e80ea6c6d0e4d2cce87601808222001f0080111d8c5aee61d994131b0e8e5af0f2e99407a1c680116802c04020115468c3bc72696e67656e2d5469636b6574",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 279,
+     "issuingTime": 762,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "NB45C9ZU"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Last",
+       "lastName": "Schrift",
+       "yearOfBirth": 1960,
+       "dayOfBirth": 1,
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "G1EW9CYJ",
+        "productIdIA5": "Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "validFromDay": 14,
+        "validFromTime": 540,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 1,
+        "validUntilTime": 180,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 2,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Thüringen-Ticket"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "0080VU",
+   "version": 1,
+   "len": 52,
+   "data_hex": "006400000002016013e21f187403fb18774154480041551800000ce46013e21f07dc051013880011"
+  }
+ ],
+ "barcode_format": "Aztec"
+}

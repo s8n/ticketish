@@ -1,0 +1,89 @@
+{
+ "name": "muster-918-9-cityticket-international",
+ "size": 338,
+ "sha_head": "23555430323130383030303030321914",
+ "format": "918.3",
+ "envelope_version": 2,
+ "rics": "1080",
+ "key_id": "00002",
+ "records": [
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 192,
+   "data_hex": "62b20086e10dc1a2cc6015110881051c844191225468b119a00a81800898c2e6e80ea6c6d0e4d2cce8cc018082222b9f8880110dc47832225aa81b261c5411b0e8e5af0f2e994f4b8d503ac8e149ac2d2dcf45686d2e8f20886d0eae46eacd2c2744078626070607c50888254848a9ca6549a825484a45eae9e52549682549e8e548ca4548482a6786262706a7cb4eacae4d2c6d00c8006802168e004250009c105aac208cd8caf0e0e4cad2e6408aeae4dee0c2",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 279,
+     "issuingTime": 792,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "AHHJFED3"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Last",
+       "lastName": "Schrift",
+       "yearOfBirth": 2003,
+       "dayOfBirth": 1,
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "C8GAHDZT",
+        "productIdIA5": "ICE Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "fromStationNum": 8019051,
+        "toStationNum": 8509000,
+        "fromStationNameUTF8": "Mainz+City",
+        "toStationNameUTF8": "Chur",
+        "validRegionDesc": "Via: <1080>(DA*BENS*MA*BR/WO)*KA*OG*FR*BAS<1185>Zuerich",
+        "validFromDay": 24,
+        "validFromTime": 0,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 2,
+        "validUntilTime": 180,
+        "validUntilUTCOffset": -4,
+        "classCode": "second",
+        "carrierNum": [
+         1185
+        ],
+        "tariffs": [
+         {
+          "numberOfPassengers": 1,
+          "passengerType": "adult",
+          "ageBelow": 46,
+          "ageAbove": 44,
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Flexpreis Europa"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "0080VU",
+   "version": 1,
+   "len": 53,
+   "data_hex": "006400000001012e8e8234187407d01876415e0000415f18000000002e8e823408dc060d18767a12f0"
+  }
+ ],
+ "barcode_format": "Aztec"
+}

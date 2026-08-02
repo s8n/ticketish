@@ -1,0 +1,88 @@
+{
+ "name": "muster-918-9-fv-supersparpreis-2erw",
+ "size": 264,
+ "sha_head": "235554303231303830303030303217b6",
+ "format": "918.3",
+ "envelope_version": 2,
+ "rics": "1080",
+ "key_id": "00002",
+ "records": [
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 171,
+   "data_hex": "62b20086e10dc1a2cc0415110881051c84506519c59873a2a00a81800898c2e6e80ea6c6d0e4d2cce876018082222bdf00801131ac37162bce821b261c5411b0e8e5af0f2e994f49cc2f4738e0a97876cd8dc0a8ae6e6cadc3cacd2c2744078626070607c50885488aa549a905ea68e548ea4aa9254ae52020c007930e2b160d5c83db63403c003400a580160201007a9bab832b91029b830b9383932b4b98",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 279,
+     "issuingTime": 769,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "P2F8YCNE"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Last",
+       "lastName": "Schrift",
+       "yearOfBirth": 1960,
+       "dayOfBirth": 1,
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "L5C8XWNA",
+        "productIdIA5": "ICE Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "fromStationNum": 8015458,
+        "toStationNum": 8010184,
+        "fromStationNameUTF8": "Köln",
+        "toStationNameUTF8": "Essen",
+        "validRegionDesc": "Via: <1080>(D*DU*MH/SG*GRUI*W)",
+        "validRegion": [
+         {
+          "__choice__": "trainLink",
+          "value": {
+           "trainIA5": "ICE1059",
+           "travelDate": 14,
+           "departureTime": 876,
+           "departureUTCOffset": -8
+          }
+         }
+        ],
+        "validFromDay": 14,
+        "validFromTime": 0,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 1,
+        "validUntilTime": 600,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 2,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Super Sparpreis"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "barcode_format": "Aztec"
+}

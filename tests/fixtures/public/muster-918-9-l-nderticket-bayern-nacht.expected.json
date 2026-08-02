@@ -1,0 +1,88 @@
+{
+ "name": "muster-918-9-l-nderticket-bayern-nacht",
+ "size": 413,
+ "sha_head": "2355543031313038303030303031302c",
+ "format": "918.3",
+ "envelope_version": 1,
+ "rics": "1080",
+ "key_id": "00001",
+ "records": [
+  {
+   "id": "U_HEAD",
+   "version": 1,
+   "len": 53,
+   "data_hex": "31303830343734545a4543480000000000000000000000003139303432303232313332343044454445"
+  },
+  {
+   "id": "U_TLAY",
+   "version": 1,
+   "len": 189,
+   "data_hex": "504c414930303038303330303031323030303030374b6c617373653a30343030303232303030303036506572732e3a30303030303138303130303039466168726b617274653031303030313230303030313247c3bc6c7469676b6569743a3031313530313230313030313032352e30342e32303232303331393031323031303030313230343139303232303130303031333032303030313830313030313942617965726e2d5469636b6574204e61636874"
+  },
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 104,
+   "data_hex": "62b20086e10dc18d8ab015110881051c84346ed2a5a8b0e4200a800008a8d0cac208a8cae6e9010444003e0100218d9ad2e242731c26361d1cb5e1e5d32807870d002690058080802684c2f2cae4dc5aa8d2c6d6cae8409cc2c6d0e8",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 109,
+     "issuingTime": 684,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "474TZECH"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Thea",
+       "lastName": "Test",
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "1YVKDB9G",
+        "productIdIA5": "Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "validFromDay": 6,
+        "validFromTime": 1080,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 1,
+        "validUntilTime": 420,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 3,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Bayern-Ticket Nacht"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "0080VU",
+   "version": 1,
+   "len": 52,
+   "data_hex": "0064000000030168f9ecfd187403ef187740999000409a3800000d4868f9ecfd07dc051013880003"
+  }
+ ],
+ "barcode_format": "Aztec"
+}

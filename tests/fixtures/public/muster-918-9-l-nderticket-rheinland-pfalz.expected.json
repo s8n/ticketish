@@ -1,0 +1,88 @@
+{
+ "name": "muster-918-9-l-nderticket-rheinland-pfalz",
+ "size": 420,
+ "sha_head": "2355543031313038303030303031302c",
+ "format": "918.3",
+ "envelope_version": 1,
+ "rics": "1080",
+ "key_id": "00001",
+ "records": [
+  {
+   "id": "U_HEAD",
+   "version": 1,
+   "len": 53,
+   "data_hex": "3130383041524156475142350000000000000000000000003139303432303232313333383044454445"
+  },
+  {
+   "id": "U_TLAY",
+   "version": 1,
+   "len": 192,
+   "data_hex": "504c414930303038303330303031323030303030374b6c617373653a30343030303232303030303036506572732e3a30303030303138303130303039466168726b617274653031303030313230303030313247c3bc6c7469676b6569743a3031313530313230313030313032352e30342e323032323033313930313230313030303132303431393032323031303030313330323030303138303130303232526865696e6c616e642d5066616c7a2d5469636b6574"
+  },
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 107,
+   "data_hex": "62b20086e10dc18d8ae815110881051c8441a506b47a309aa00a800008a8d0cac208a8cae6e9010444003e0100218d7ad166ca6ecc26361d1cb5e1e5d32807438d0022d0058080802ca4d0cad2dcd8c2dcc85aa0ccc2d8f45aa8d2c6d6cae8",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 109,
+     "issuingTime": 698,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "ARAVGQB5"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Thea",
+       "lastName": "Test",
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "1WVEMJ73",
+        "productIdIA5": "Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "validFromDay": 6,
+        "validFromTime": 540,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 1,
+        "validUntilTime": 180,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 3,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Rheinland-Pfalz-Ticket"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "0080VU",
+   "version": 1,
+   "len": 52,
+   "data_hex": "0064000000030168f9ed01187403f4187740994800409a1800000e7468f9ed0107dc05101388000c"
+  }
+ ],
+ "barcode_format": "Aztec"
+}

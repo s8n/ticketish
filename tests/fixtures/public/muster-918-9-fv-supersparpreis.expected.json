@@ -1,0 +1,86 @@
+{
+ "name": "muster-918-9-fv-supersparpreis",
+ "size": 278,
+ "sha_head": "23555430323130383030303030326f8d",
+ "format": "918.3",
+ "envelope_version": 2,
+ "rics": "1080",
+ "key_id": "00002",
+ "records": [
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 185,
+   "data_hex": "62b20086e10dc18d8a9015110881051c844e82d60cd95659200a800008a8d0cac208a8cae6e901044457be0100225c7ab2dcb88358364c38a82361d1cb5e1e5d329e922ddea11f0213585b9b9a195a5b4294995d5d1b1a5b99d95b8ad59a584e880f0c4c0e0c0f8a12110a90948a9094950bd1d490508a92d04a94118a4a9590524a94ca941313c041800d261c56add981167b4010003400a5801202007a9bab832b91029b830b9383932b4b98",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 109,
+     "issuingTime": 676,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "NA5AMJY2"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Thea",
+       "lastName": "Test",
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "KGUK98AV",
+        "productIdIA5": "ICE Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "fromStationNum": 8014008,
+        "toStationNum": 8029309,
+        "fromStationNameUTF8": "Mannheim",
+        "toStationNameUTF8": "Reutlingen",
+        "validRegionDesc": "Via: <1080>(HD*BR*BRT/GRAB*KA*PF)*VAI*S*PLO",
+        "validRegion": [
+         {
+          "__choice__": "trainLink",
+          "value": {
+           "trainIA5": "ICE573",
+           "travelDate": 3,
+           "departureTime": 719,
+           "departureUTCOffset": -8
+          }
+         }
+        ],
+        "validFromDay": 3,
+        "validFromTime": 0,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 1,
+        "validUntilTime": 600,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 1,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Super Sparpreis"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "barcode_format": "Aztec"
+}

@@ -1,0 +1,81 @@
+{
+ "name": "muster-918-9-cityticket",
+ "size": 340,
+ "sha_head": "23555430323130383030303030325927",
+ "format": "918.3",
+ "envelope_version": 2,
+ "rics": "1080",
+ "key_id": "00002",
+ "records": [
+  {
+   "id": "U_FLEX",
+   "version": 13,
+   "len": 186,
+   "data_hex": "62b20086e10dc18d8a7015110881051c84439b2aa559ce59a00a800008a8d0cac208a8cae6e9010444573e010022334b332ad19750364c38a82361d1cb5e1e5d329e89bd1e8f4e02d2d85cdcd95b0ad0da5d1e45119c985b9ad99d5c9d0a13585a5b8a4ad0da5d1e4c559a584e880f0c4c0e0c0f91d553950a8a1091508a92115494ca91910a91d153138bd0d3d1530a9313d3130a91d24a4a91803000d0042d0048080128cd8caf0e0e4cad2e60",
+   "flex": {
+    "issuingDetail": {
+     "securityProviderNum": 1080,
+     "issuerNum": 1080,
+     "issuingYear": 2022,
+     "issuingDay": 109,
+     "issuingTime": 668,
+     "issuerName": "DB AG",
+     "specimen": false,
+     "securePaperTicket": false,
+     "activated": true,
+     "currency": "EUR",
+     "currencyFract": 2,
+     "issuerPNR": "CMJTUN93"
+    },
+    "travelerDetail": {
+     "traveler": [
+      {
+       "firstName": "Thea",
+       "lastName": "Test",
+       "ticketHolder": true
+      }
+     ]
+    },
+    "transportDocument": [
+     {
+      "ticket": {
+       "__choice__": "openTicket",
+       "value": {
+        "referenceIA5": "F4YLUQKT",
+        "productIdIA5": "ICE Fahrkarte",
+        "returnIncluded": false,
+        "stationCodeTable": "stationUIC",
+        "fromStationNum": 8005365,
+        "toStationNum": 8011065,
+        "fromStationNameUTF8": "Kassel+City",
+        "toStationNameUTF8": "Frankfurt(Main)+City",
+        "validRegionDesc": "Via: <1080>GUNT*(BEB*HERS*FD*GELN/COEL*LOLL*GI)*F",
+        "validFromDay": 2,
+        "validFromTime": 0,
+        "validFromUTCOffset": -8,
+        "validUntilDay": 2,
+        "validUntilTime": 180,
+        "classCode": "second",
+        "tariffs": [
+         {
+          "numberOfPassengers": 1,
+          "passengerType": "adult",
+          "restrictedToCountryOfResidence": false,
+          "tariffDesc": "Flexpreis"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "0080VU",
+   "version": 1,
+   "len": 87,
+   "data_hex": "0064000000010268f9ecfa187407d01876409500004096180000000068f9ecfa08dc060d18767a1e8068f9ecfb187407d01876409500004096180000000068f9ecfb08dc060d18767a1269"
+  }
+ ],
+ "barcode_format": "Aztec"
+}
