@@ -26,6 +26,14 @@ installed.
   reservations, travel tickets, group tickets, passes, and NS/DB Keycards
 - **Renfe** - Spanish tickets, which use their own fixed-width ASCII format
   rather than a UIC one
+- **SSB1** - the 107-byte variant used by VR (Finland)
+- **TCDD** - Turkish e-tickets, a "$"-delimited ASCII record
+- **Trenitalia** - partially decoded: train, seat, PNR and entitlement number
+
+Formats without a public specification were reverse engineered by comparing
+barcodes against the printed tickets they came from, and the tests assert
+against those printed values. Where fields remain unknown, the UI says so
+rather than guessing.
 - Anything else falls back to a plain-text / hex view
 
 Inputs: images, PDFs (rendered with pdf.js and scanned), Apple Wallet

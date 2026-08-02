@@ -7,6 +7,9 @@ import { parseSwissPass } from './swisspass/swisspass.ts';
 import { isVdv, parseVdv } from './vdv/vdv.ts';
 import { isSsb, parseSsb } from './ssb/ssb.ts';
 import { isRenfe, parseRenfe } from './renfe/renfe.ts';
+import { isSsb1, parseSsb1 } from './ssb/ssb1.ts';
+import { isTcdd, parseTcdd } from './tcdd/tcdd.ts';
+import { isTrenitalia, parseTrenitalia } from './trenitalia/trenitalia.ts';
 
 // Record parsers register themselves on import.
 import './records/uhead.ts';
@@ -32,6 +35,27 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 	if (isSsb(data)) {
 		try {
 			return { kind: 'ssb', envelope: parseSsb(data) };
+		} catch {
+			// fall through
+		}
+	}
+	if (isSsb1(data)) {
+		try {
+			return { kind: 'ssb1', ticket: parseSsb1(data) };
+		} catch {
+			// fall through
+		}
+	}
+	if (isTrenitalia(data)) {
+		try {
+			return { kind: 'trenitalia', ticket: parseTrenitalia(data) };
+		} catch {
+			// fall through
+		}
+	}
+	if (isTcdd(data)) {
+		try {
+			return { kind: 'tcdd', ticket: parseTcdd(data) };
 		} catch {
 			// fall through
 		}

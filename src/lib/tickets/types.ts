@@ -47,6 +47,9 @@ export type TicketContainer =
 	| { kind: 'vdv'; barcode: import('./vdv/vdv.ts').VdvBarcode }
 	| { kind: 'ssb'; envelope: import('./ssb/ssb.ts').SsbEnvelope }
 	| { kind: 'renfe'; ticket: import('./renfe/renfe.ts').RenfeTicket }
+	| { kind: 'ssb1'; ticket: import('./ssb/ssb1.ts').Ssb1Ticket }
+	| { kind: 'tcdd'; ticket: import('./tcdd/tcdd.ts').TcddTicket }
+	| { kind: 'trenitalia'; ticket: import('./trenitalia/trenitalia.ts').TrenitaliaTicket }
 	| { kind: 'text'; text: string }
 	| { kind: 'unknown' };
 

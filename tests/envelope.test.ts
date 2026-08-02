@@ -52,7 +52,11 @@ describe('envelope parsing', () => {
 			for (const rec of container.envelope.records) {
 				expect(rec.error, `record ${rec.id} error`).toBeUndefined();
 			}
-		} else if (['swisspass', 'rsp6', 'vdv', 'ssb', 'renfe'].includes(expected.format)) {
+		} else if (
+			['swisspass', 'rsp6', 'vdv', 'ssb', 'renfe', 'ssb1', 'tcdd', 'trenitalia'].includes(
+				expected.format
+			)
+		) {
 			expect(container.kind).toBe(expected.format);
 		} else {
 			// non-UIC payloads (e.g. plain-text QR codes) fall back to text

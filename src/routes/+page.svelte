@@ -106,6 +106,10 @@
 					<span class="format">Renfe</span>
 					Spanish high-speed and long-distance tickets
 				</li>
+				<li>
+					<span class="format">Operator formats</span>
+					TCDD, Trenitalia and VR, which each go their own way
+				</li>
 			</ul>
 			<p class="fine">
 				Decoding happens entirely in this browser tab. Ticket data is kept in memory only and
