@@ -22,6 +22,8 @@
 </div>
 
 <style>
+	/* Single band per binding; swipes sideways on narrow screens instead of
+	   wrapping into lines. */
 	.stamp {
 		border: 2px solid var(--signal-red);
 		border-radius: 6px;
@@ -30,7 +32,9 @@
 		display: flex;
 		gap: 1rem;
 		align-items: baseline;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		scrollbar-width: thin;
 		background:
 			repeating-linear-gradient(
 				-45deg,
@@ -56,8 +60,9 @@
 	li {
 		display: flex;
 		gap: 0.7rem;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		align-items: baseline;
+		white-space: nowrap;
 	}
 	.train {
 		font-family: var(--font-display);

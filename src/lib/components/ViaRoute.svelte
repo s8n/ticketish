@@ -63,12 +63,16 @@
 {/if}
 
 <style>
+	/* One horizontal band; on narrow screens it scrolls (swipes) sideways
+	   instead of wrapping, so the route stays readable left to right. */
 	.via {
 		display: flex;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		gap: 0.6rem 1.2rem;
 		overflow-x: auto;
-		padding: 0.1rem 0;
+		padding: 0.1rem 0 0.35rem;
+		max-width: 100%;
+		scrollbar-width: thin;
 	}
 	.carrier {
 		display: flex;
@@ -85,8 +89,7 @@
 	.chain {
 		display: flex;
 		align-items: center;
-		flex-wrap: wrap;
-		row-gap: 0.3rem;
+		flex-wrap: nowrap;
 	}
 	.stop {
 		font-size: 0.78rem;

@@ -316,6 +316,12 @@
 		gap: 0.7rem;
 		align-items: baseline;
 	}
+	/* let the route band shrink inside the flex row so it scrolls instead of
+	   forcing the card wider */
+	.via-block > :global(.via) {
+		min-width: 0;
+		flex: 1;
+	}
 	.via-label {
 		font-family: var(--font-display);
 		text-transform: uppercase;
