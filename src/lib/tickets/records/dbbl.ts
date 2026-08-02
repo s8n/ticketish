@@ -1,4 +1,4 @@
-/** DB 0080BL record — Bahn "Leipzig" block with S-field key/values. Port of zuegli's parser. */
+/** DB 0080BL record - Bahn "Leipzig" block with S-field key/values. Port of zuegli's parser. */
 import { registerRecordParser } from '../registry.ts';
 import type { RawRecord } from '../types.ts';
 

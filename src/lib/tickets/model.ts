@@ -2,7 +2,7 @@
  * Normalized display model built from decoded FCB (U_FLEX) data.
  * Handles the version differences between FCB 1.3 / 2 / 3 that matter for
  * display, most importantly resolving day-offset fields against the issuing
- * date — which is how the DB Zugbindung (train binding) is deciphered.
+ * date - which is how the DB Zugbindung (train binding) is deciphered.
  */
 import type { Choice } from './asn1/index.ts';
 

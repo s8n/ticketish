@@ -13,7 +13,7 @@ export function isUic9183(data: Uint8Array): boolean {
 /**
  * Split the decompressed payload into records. Record headers declare a total
  * length (including the 12 header bytes); some issuers count UTF-8 characters
- * instead of bytes — the same heuristic zuegli uses handles both.
+ * instead of bytes - the same heuristic zuegli uses handles both.
  */
 function splitRecords(raw: Uint8Array): RawRecord[] {
 	const records: RawRecord[] = [];

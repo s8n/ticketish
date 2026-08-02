@@ -33,10 +33,10 @@
 </script>
 
 <svelte:head>
-	<title>ticketish — read your train ticket</title>
+	<title>ticketish - read your train ticket</title>
 	<meta
 		name="description"
-		content="Decode UIC 918.3 / 918.9 train ticket barcodes in your browser — including the DB Zugbindung. Nothing leaves your device."
+		content="Decode UIC 918.3 / 918.9 train ticket barcodes in your browser - including the DB Zugbindung. Nothing leaves your device."
 	/>
 </svelte:head>
 
@@ -81,13 +81,13 @@
 	{:else}
 		<section class="empty">
 			<p>
-				No tickets yet. Feed it a DB online ticket, an Interrail pass, a seat reservation — any
+				No tickets yet. Feed it a DB online ticket, an Interrail pass, a seat reservation - any
 				<strong>UIC&nbsp;918.3</strong> or <strong>918.9</strong> barcode as an image, PDF, Apple
 				Wallet pass, or straight from the camera.
 			</p>
 			<p class="fine">
 				Decoding happens entirely in this browser tab. Ticket data is kept in memory only and
-				never uploaded anywhere. Signatures are not verified — this reads tickets, it doesn't
+				never uploaded anywhere. Signatures are not verified - this reads tickets, it doesn't
 				judge them.
 			</p>
 			<button class="sample" onclick={() => loadSamples()}>Try it with DB sample tickets</button>

@@ -58,7 +58,7 @@
 		</svg>
 	</span>
 	<span class="label">
-		{#if busy}Reading…{:else}Drop a ticket here — image, PDF or .pkpass{/if}
+		{#if busy}Reading…{:else}Drop a ticket here - image, PDF or .pkpass{/if}
 	</span>
 	<span class="hint">or click to choose a file · paste works too</span>
 </button>

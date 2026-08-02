@@ -1,7 +1,7 @@
 # ticketish
 
 Reads what your train ticket really says. A fully client-side SvelteKit PWA
-that decodes the 2D barcodes on European rail tickets — including the
+that decodes the 2D barcodes on European rail tickets - including the
 deciphered **Zugbindung** (train binding) hidden in DB tickets.
 
 Everything runs in the browser: no server, no uploads, works offline once
@@ -9,17 +9,17 @@ installed.
 
 ## What it reads
 
-- **UIC 918.3** — the classic `#UT` Aztec envelope (U_HEAD, U_TLAY/RCT2
+- **UIC 918.3** - the classic `#UT` Aztec envelope (U_HEAD, U_TLAY/RCT2
   layout, DB `0080BL` fare data, DB `0080VU` Verbund products)
-- **UIC 918.9 / FCB** — `U_FLEX` records (FCB versions 1.3, 2 and 3), decoded
+- **UIC 918.9 / FCB** - `U_FLEX` records (FCB versions 1.3, 2 and 3), decoded
   with a from-scratch unaligned-PER (ASN.1 UPER) decoder
-- **DOSIPAS** — the `U1`/`U2` dynamic barcode header carrying FCB payloads
+- **DOSIPAS** - the `U1`/`U2` dynamic barcode header carrying FCB payloads
   (e.g. Interrail passes)
 - Anything else falls back to a plain-text / hex view
 
 Inputs: images, PDFs (rendered with pdf.js and scanned), Apple Wallet
 `.pkpass` files, live camera, raw payload files. Signatures are deliberately
-**not** verified — this reads tickets, it doesn't judge them.
+**not** verified - this reads tickets, it doesn't judge them.
 
 ## Development
 
@@ -35,15 +35,15 @@ npm run build    # static site in build/
 
 The parsing pipeline is modular by design:
 
-- `src/lib/tickets/asn1/` — generic UPER decoder (`uper.ts`) driven by JSON
+- `src/lib/tickets/asn1/` - generic UPER decoder (`uper.ts`) driven by JSON
   schemas generated from the official UIC ASN.1 specs
   (`npm run gen:asn` regenerates them from `scripts/asn-specs/`).
-- `src/lib/tickets/registry.ts` — record-parser registry. Each record type
+- `src/lib/tickets/registry.ts` - record-parser registry. Each record type
   (U_HEAD, U_FLEX, 0080BL, …) registers itself; add a parser + a view
   component in `src/lib/components/records/` to support a new record type.
-- `src/lib/tickets/model.ts` — FCB display model; resolves the day-offset
-  date encoding and extracts `trainLink` entries — the Zugbindung.
-- `src/lib/input/` — barcode extraction from images (zxing-wasm), PDFs
+- `src/lib/tickets/model.ts` - FCB display model; resolves the day-offset
+  date encoding and extracts `trainLink` entries - the Zugbindung.
+- `src/lib/input/` - barcode extraction from images (zxing-wasm), PDFs
   (pdf.js), pkpass (fflate) and camera. All WASM/workers are bundled and
   served same-origin so the PWA works offline.
 
@@ -57,7 +57,7 @@ from the same ASN.1 specs. Fixtures come from the official DB Muster tickets
 `scripts/extract-fixtures.py` (see its docstring).
 
 **`static/samples/` ships with the site and must only ever contain the public
-DB Muster specimens — never personal tickets.** `tests/samples-guard.test.ts`
+DB Muster specimens - never personal tickets.** `tests/samples-guard.test.ts`
 enforces this.
 
 ## Deploying to Cloudflare Pages

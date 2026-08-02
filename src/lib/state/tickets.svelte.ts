@@ -1,6 +1,6 @@
 import type { ParsedTicket } from '../tickets/types.ts';
 
-/** In-memory ticket list — nothing is persisted, nothing leaves the device. */
+/** In-memory ticket list - nothing is persisted, nothing leaves the device. */
 class TicketStore {
 	tickets = $state<ParsedTicket[]>([]);
 	errors = $state<string[]>([]);

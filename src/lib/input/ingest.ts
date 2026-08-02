@@ -11,7 +11,7 @@ export interface IngestResult {
 
 function sniff(bytes: Uint8Array, file: File): 'pdf' | 'zip' | 'image' | 'unknown' {
 	if (bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46) return 'pdf';
-	if (bytes[0] === 0x50 && bytes[1] === 0x4b) return 'zip'; // PK — pkpass
+	if (bytes[0] === 0x50 && bytes[1] === 0x4b) return 'zip'; // PK - pkpass
 	if (file.type.startsWith('image/') || /\.(png|jpe?g|webp|gif|bmp|avif)$/i.test(file.name))
 		return 'image';
 	if (/\.pdf$/i.test(file.name)) return 'pdf';

@@ -117,9 +117,9 @@
 
 			{#if st.from || st.to}
 				<div class="route">
-					<span class="station">{st.from ?? '—'}</span>
+					<span class="station">{st.from ?? '–'}</span>
 					<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
-					<span class="station">{st.to ?? '—'}</span>
+					<span class="station">{st.to ?? '–'}</span>
 				</div>
 			{/if}
 

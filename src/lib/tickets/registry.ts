@@ -1,7 +1,7 @@
 /**
  * Record-parser registry. Each UIC record type (U_HEAD, U_FLEX, 0080BL, …)
  * registers a parser here; unknown records fall through to a hex/raw view.
- * Add support for new record types by calling registerRecordParser — nothing
+ * Add support for new record types by calling registerRecordParser - nothing
  * else needs to change.
  */
 import type { ParsedRecord, RawRecord } from './types.ts';

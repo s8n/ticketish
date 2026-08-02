@@ -1,7 +1,7 @@
 {
 	"name": "ticketish",
 	"short_name": "ticketish",
-	"description": "Decode UIC 918.3 / 918.9 train ticket barcodes in your browser — including the DB Zugbindung.",
+	"description": "Decode UIC 918.3 / 918.9 train ticket barcodes in your browser - including the DB Zugbindung.",
 	"start_url": "/",
 	"scope": "/",
 	"display": "standalone",

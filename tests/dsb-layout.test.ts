@@ -16,7 +16,7 @@ describe.skipIf(!existsSync(BIN))('DSB RCT2 layout ticket', () => {
 		expect(layout).toBeDefined();
 		expect(layout!.error).toBeUndefined();
 		const data = layout!.data as LayoutData;
-		// DSB writes the standard tag as "RTC2" (sic) — display it verbatim.
+		// DSB writes the standard tag as "RTC2" (sic) - display it verbatim.
 		expect(data.standard).toBe('RTC2');
 		const texts = data.fields.map((f) => f.text);
 		expect(texts).toContain('Hamburg Hbf');

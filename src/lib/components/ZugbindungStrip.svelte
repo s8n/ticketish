@@ -6,7 +6,7 @@
 </script>
 
 <!-- The red overprint stamp: the deciphered Zugbindung. -->
-<div class="stamp" role="note" aria-label="Zugbindung — ticket bound to specific trains">
+<div class="stamp" role="note" aria-label="Zugbindung - ticket bound to specific trains">
 	<span class="title">Zugbindung</span>
 	<ul>
 		{#each bindings as b, i (i)}

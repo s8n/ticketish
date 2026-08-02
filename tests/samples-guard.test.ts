@@ -1,6 +1,6 @@
 /**
  * Privacy guard: the bundled sample tickets shipped with the site
- * (static/samples) must only ever be the public DB Muster specimens —
+ * (static/samples) must only ever be the public DB Muster specimens,
  * never personal tickets.
  */
 import { describe, expect, it } from 'vitest';

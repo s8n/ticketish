@@ -1,7 +1,7 @@
 /** Display formatting helpers (German locale conventions, de-DE dates). */
 
 export function fmtDate(iso: string | null | undefined): string {
-	if (!iso) return '—';
+	if (!iso) return '–';
 	const [date, time] = iso.split('T');
 	const [y, m, d] = date.split('-');
 	if (!y || !m || !d) return iso;

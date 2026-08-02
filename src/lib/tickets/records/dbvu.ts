@@ -1,5 +1,5 @@
 /**
- * DB 0080VU record — VDV-KA product authorizations (Verbund tickets).
+ * DB 0080VU record - VDV-KA product authorizations (Verbund tickets).
  * Light port: product/org identifiers, validity window and price. The deeply
  * nested VDV spatial-validity structures are kept as raw bytes.
  */

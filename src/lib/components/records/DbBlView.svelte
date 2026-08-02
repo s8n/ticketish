@@ -18,9 +18,9 @@
 <div class="bl">
 	{#if data.fromStationName || data.toStationName}
 		<div class="route">
-			<span class="station">{data.fromStationName ?? '—'}</span>
+			<span class="station">{data.fromStationName ?? '–'}</span>
 			<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
-			<span class="station">{data.toStationName ?? '—'}</span>
+			<span class="station">{data.toStationName ?? '–'}</span>
 		</div>
 	{/if}
 	<dl>
@@ -44,7 +44,7 @@
 			<dd>{data.priceLevel}</dd>{/if}
 		{#if data.returnFromStationName}
 			<dt>Return</dt>
-			<dd>{data.returnFromStationName} → {data.returnToStationName ?? '—'}</dd>
+			<dd>{data.returnFromStationName} → {data.returnToStationName ?? '–'}</dd>
 		{/if}
 	</dl>
 	{#if Object.keys(data.blocks).length}

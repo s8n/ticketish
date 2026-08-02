@@ -75,7 +75,7 @@ function parseRange(text) {
 function parseType(expr) {
 	expr = expr.trim().replace(/\s+/g, ' ');
 	let m;
-	// Inline constructed types (rare — e.g. the `ticket CHOICE {...}` in DocumentData).
+	// Inline constructed types (rare - e.g. the `ticket CHOICE {...}` in DocumentData).
 	if ((m = expr.match(/^CHOICE ?\{([\s\S]*)\}$/))) return parseChoice(m[1]);
 	if ((m = expr.match(/^ENUMERATED ?\{([\s\S]*)\}$/))) return parseEnum(m[1]);
 	if ((m = expr.match(/^SEQUENCE ?\{([\s\S]*)\}$/)) && !/^SEQUENCE ?( SIZE)? ?(\([^)]*\))? ?OF /.test(expr)) {
