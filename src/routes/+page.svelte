@@ -181,7 +181,6 @@
 	.empty {
 		border-top: 1px solid var(--hairline);
 		padding-top: 1rem;
-		max-width: 60ch;
 	}
 	.empty p {
 		margin: 0 0 0.6rem;
