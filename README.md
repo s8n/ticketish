@@ -22,11 +22,11 @@ installed.
 - **VDV-KA** - German Verbund tickets and the Deutschlandticket: BER-TLV
   envelope with ISO 9796-2 message recovery against the VDV CA certificates,
   including MOTICS copy-protection containers
-- **SSB** - an older bit-packed UIC barcode still issued by some operators:
-  reservations, travel tickets, group tickets, passes, and NS/DB Keycards
+- **SSB and SSB1** - older bit-packed UIC barcodes still issued by some
+  operators: reservations, travel tickets, group tickets, passes, and NS/DB
+  Keycards, plus the 107-byte SSB1 variant used by VR (Finland)
 - **Renfe** - Spanish tickets, which use their own fixed-width ASCII format
   rather than a UIC one
-- **SSB1** - the 107-byte variant used by VR (Finland)
 - **TCDD** - Turkish e-tickets, a "$"-delimited ASCII record
 - **Trenitalia** - partially decoded: train, seat, PNR and entitlement number
 

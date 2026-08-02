@@ -99,8 +99,8 @@
 					Swiss mobile tickets
 				</li>
 				<li>
-					<span class="format">SSB</span>
-					An older barcode some operators still issue, plus NS and DB Keycards
+					<span class="format">SSB &amp; SSB1</span>
+					Older barcodes operators like VR still issue, plus NS and DB Keycards
 				</li>
 				<li>
 					<span class="format">Renfe</span>
@@ -108,7 +108,7 @@
 				</li>
 				<li>
 					<span class="format">Operator formats</span>
-					TCDD, Trenitalia and VR, which each go their own way
+					TCDD and Trenitalia, which each go their own way
 				</li>
 			</ul>
 			<p class="fine">
