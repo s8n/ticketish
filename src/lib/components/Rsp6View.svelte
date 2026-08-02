@@ -1,8 +1,19 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import type { Rsp6Ticket, Rsp6TicketData, Rsp6RailcardData } from '../tickets/rsp/rsp6.ts';
 	import { fmtDate } from '../tickets/format.ts';
+	import { loadNlcNames, nlcEntry, nlcLabel, type NlcEntry } from '../tickets/rsp/nlc.ts';
 
 	let { ticket }: { ticket: Rsp6Ticket } = $props();
+
+	// The NLC table is large, so it loads only once an RSP ticket is on screen.
+	let nlcNames = $state<Record<string, NlcEntry> | null>(null);
+	onMount(async () => {
+		nlcNames = await loadNlcNames();
+	});
+
+	const station = (code: string) => nlcLabel(nlcNames, code);
+	const crs = (code: string) => nlcEntry(nlcNames, code)?.c;
 
 	const data = $derived(ticket.data);
 	const t = $derived(data?.kind === 'ticket' ? (data as Rsp6TicketData) : null);
@@ -32,9 +43,13 @@
 
 	{#if t}
 		<div class="route">
-			<span class="station">NLC {t.originNlc || '?'}</span>
+			<span class="station" title={t.originNlc ? `NLC ${t.originNlc}` : undefined}>
+				{station(t.originNlc)}{#if crs(t.originNlc)}<span class="crs">{crs(t.originNlc)}</span>{/if}
+			</span>
 			<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
-			<span class="station">NLC {t.destinationNlc || '?'}</span>
+			<span class="station" title={t.destinationNlc ? `NLC ${t.destinationNlc}` : undefined}>
+				{station(t.destinationNlc)}{#if crs(t.destinationNlc)}<span class="crs">{crs(t.destinationNlc)}</span>{/if}
+			</span>
 		</div>
 		<dl>
 			<dt>Fare</dt>
@@ -69,7 +84,7 @@
 				{/if}
 			{/if}
 			{#if t.sellingNlc}<dt>Sold by</dt>
-				<dd>NLC {t.sellingNlc}</dd>{/if}
+				<dd>{station(t.sellingNlc)}</dd>{/if}
 			{#if t.freeUse}<dt>Notes</dt>
 				<dd class="small">{t.freeUse}</dd>{/if}
 		</dl>
@@ -102,9 +117,6 @@
 		<dt>Issuer</dt>
 		<dd>RSP issuer {ticket.issuerId}</dd>
 	</dl>
-	<p class="small note">
-		UK station name data isn't bundled; NLC codes are shown as-is.
-	</p>
 </div>
 
 <style>
@@ -129,6 +141,14 @@
 		font-weight: 700;
 		font-size: 1.3rem;
 		text-transform: uppercase;
+	}
+	.crs {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		font-weight: 400;
+		color: var(--ink-soft);
+		margin-left: 0.35rem;
+		vertical-align: 0.15em;
 	}
 	.line {
 		flex: 1;
@@ -168,9 +188,5 @@
 	.envelope-info {
 		border-top: 1px dashed var(--paper-edge);
 		padding-top: 0.6rem;
-	}
-	.note {
-		margin: 0;
-		color: var(--ink-soft);
 	}
 </style>
