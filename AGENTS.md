@@ -26,6 +26,12 @@ data under `tests/fixtures/` is byte-faithful barcode content and exempt.
 - Fixtures are regenerated with `scripts/extract-fixtures.py` (see its
   docstring for the venv setup).
 
+## When adding a new ticket type
+
+Besides the parser and view, update the two places that list supported
+formats: the empty-state text in `src/routes/+page.svelte` and the
+"What it reads" section in `README.md`.
+
 ## Projects worth reading
 
 - [zuegli](https://github.com/TheEnbyperor/zuegli) (EUPL-1.2): the main

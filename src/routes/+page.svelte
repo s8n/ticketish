@@ -82,8 +82,10 @@
 		<section class="empty">
 			<p>
 				No tickets yet. Feed it a DB online ticket, an Interrail pass, a seat reservation - any
-				<strong>UIC&nbsp;918.3</strong> or <strong>918.9</strong> barcode as an image, PDF, Apple
-				Wallet pass, or straight from the camera.
+				<strong>UIC&nbsp;918.3</strong> or <strong>918.9</strong> barcode - a UK National Rail
+				ticket or railcard (<strong>RSP6</strong>), or a Swiss mobile ticket
+				(<strong>SwissPass/NOVA</strong>). As an image, PDF, Apple Wallet pass, or straight from
+				the camera.
 			</p>
 			<p class="fine">
 				Decoding happens entirely in this browser tab. Ticket data is kept in memory only and
