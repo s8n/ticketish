@@ -17,7 +17,13 @@
 	<dd>{data.language}{data.secondLanguage ? ` / ${data.secondLanguage}` : ''}</dd>
 	{#if data.flags.internationalTicket}<dt>Scope</dt>
 		<dd>International</dd>{/if}
-	{#if data.flags.specimen}<dt>Note</dt>
+	{#if data.flags.specimen && data.specimenSuspect}
+		<dt>Note</dt>
+		<dd>
+			Specimen flag is set, but this issuer is known to misuse the flags field on genuine
+			tickets - likely not a specimen.
+		</dd>
+	{:else if data.flags.specimen}<dt>Note</dt>
 		<dd>Specimen ticket</dd>{/if}
 </dl>
 

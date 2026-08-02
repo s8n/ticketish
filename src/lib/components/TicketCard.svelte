@@ -32,8 +32,10 @@
 
 	const specimen = $derived.by(() => {
 		for (const r of records) {
-			if (r.kind === 'head' && (r.data as { flags: { specimen: boolean } }).flags.specimen)
-				return true;
+			if (r.kind === 'head') {
+				const head = r.data as { flags: { specimen: boolean }; specimenSuspect: boolean };
+				if (head.flags.specimen && !head.specimenSuspect) return true;
+			}
 			if (r.kind === 'flex' && ((r.data as FlexData).ticket as FcbTicket).issuingDetail.specimen)
 				return true;
 		}
