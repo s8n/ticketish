@@ -40,6 +40,22 @@
 		return false;
 	});
 
+	// FCB carries an "activated" flag; only meaningful when a flex record exists.
+	const activated = $derived.by(() => {
+		for (const r of records) {
+			if (r.kind === 'flex') {
+				return ((r.data as FlexData).ticket as FcbTicket).issuingDetail.activated === true;
+			}
+		}
+		return null;
+	});
+
+	const validUntil = $derived(
+		container.kind === 'dosipas' && container.envelope.endOfValidity
+			? container.envelope.endOfValidity.slice(0, 16).replace('T', ' ')
+			: null
+	);
+
 	const envelopeLabel = $derived(
 		container.kind === 'uic9183'
 			? `UIC 918.3 v${container.envelope.envelopeVersion}`
@@ -79,12 +95,15 @@
 	<header>
 		<div class="issuer-line">
 			<span class="issuer">{issuer ?? 'Unrecognized ticket'}</span>
-			{#if specimen}<span class="chip specimen-chip">Muster</span>{/if}
+			{#if specimen}<span class="chip specimen-chip">Specimen</span>{/if}
+			{#if activated === true}<span class="chip activated">activated</span>
+			{:else if activated === false}<span class="chip inactive">not activated</span>{/if}
 		</div>
 		<div class="meta">
 			<span class="chip">{envelopeLabel}</span>
 			{#if ticket.barcodeFormat}<span class="chip">{ticket.barcodeFormat}</span>{/if}
 			<span class="chip src">{sourceLabel}{ticket.source.fileName ? ` · ${ticket.source.fileName}` : ''}</span>
+			{#if validUntil}<span class="chip">barcode valid until {validUntil} UTC</span>{/if}
 		</div>
 		<button class="remove" onclick={() => store.remove(ticket.id)} aria-label="Remove ticket">✕</button>
 	</header>
@@ -199,6 +218,13 @@
 	.specimen-chip {
 		color: var(--signal-red);
 		font-weight: 600;
+	}
+	.chip.activated {
+		color: var(--valid-green);
+	}
+	.chip.inactive {
+		color: var(--ink-soft);
+		border-style: dashed;
 	}
 	.remove {
 		position: absolute;

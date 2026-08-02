@@ -3,7 +3,10 @@
 	import { summarizeFcb, type FcbTicket, type Traveler } from '../../tickets/model.ts';
 	import { docTypeLabel, fmtClass, fmtDate, fmtPrice } from '../../tickets/format.ts';
 	import { ricsName } from '../../tickets/uic/rics.ts';
+	import { parseDbVia } from '../../tickets/via.ts';
+	import { uicCountryName, isoNumericCountryName } from '../../tickets/countries.ts';
 	import ZugbindungStrip from '../ZugbindungStrip.svelte';
+	import ViaRoute from '../ViaRoute.svelte';
 	import JsonTree from '../JsonTree.svelte';
 
 	let { data }: { data: FlexData } = $props();
@@ -12,6 +15,7 @@
 	const issuing = $derived(ticket.issuingDetail);
 	const docs = $derived(summarizeFcb(ticket));
 	const travelers = $derived((ticket.travelerDetail?.traveler ?? []) as Traveler[]);
+	const control = $derived(ticket.controlDetail as Record<string, unknown> | undefined);
 	const currency = $derived((issuing.currency as string) ?? 'EUR');
 	const fract = $derived((issuing.currencyFract as number) ?? 2);
 
@@ -20,11 +24,14 @@
 		return name || 'Traveler';
 	}
 
-	function stations(d: Record<string, unknown>): { from?: string; to?: string } {
-		return {
-			from: (d.fromStationNameUTF8 as string) ?? (d.fromStationIA5 as string),
-			to: (d.toStationNameUTF8 as string) ?? (d.toStationIA5 as string)
-		};
+	function birthDate(t: Traveler): string | null {
+		if (t.yearOfBirth === undefined) return null;
+		if (t.monthOfBirth !== undefined && t.dayOfBirthInMonth !== undefined) {
+			return fmtDate(
+				`${t.yearOfBirth}-${String(t.monthOfBirth).padStart(2, '0')}-${String(t.dayOfBirthInMonth).padStart(2, '0')}`
+			);
+		}
+		return String(t.yearOfBirth);
 	}
 
 	function tariffsOf(d: Record<string, unknown>): Record<string, unknown>[] {
@@ -44,15 +51,65 @@
 			.filter(Boolean)
 			.join(' · ');
 	}
+
+	function stations(d: Record<string, unknown>): { from?: string; to?: string } {
+		return {
+			from: (d.fromStationNameUTF8 as string) ?? (d.fromStationIA5 as string),
+			to: (d.toStationNameUTF8 as string) ?? (d.toStationIA5 as string)
+		};
+	}
+
+	function productName(type: string, d: Record<string, unknown>): string | null {
+		if (type === 'pass') return (d.passDescription as string) ?? (d.productIdIA5 as string) ?? null;
+		return (d.productIdIA5 as string) ?? null;
+	}
+
+	function activatedDays(d: Record<string, unknown>, validFrom?: string): string[] {
+		const days = d.activatedDay as number[] | undefined;
+		if (!days?.length || !validFrom) return [];
+		const base = new Date(`${validFrom.slice(0, 10)}T00:00:00Z`);
+		return days.map((offset) => {
+			const day = new Date(base);
+			day.setUTCDate(day.getUTCDate() + offset);
+			return fmtDate(day.toISOString().slice(0, 10));
+		});
+	}
+
+	function countriesOf(d: Record<string, unknown>): number[] {
+		return (d.countries as number[]) ?? [];
+	}
+
+	function carrierList(d: Record<string, unknown>): string[] {
+		const nums = (d.includedCarrierNum as number[]) ?? [];
+		const ia5 = (d.includedCarrierIA5 as string[]) ?? [];
+		return [
+			...nums.map((n) => ricsName(n) ?? `RICS ${n}`),
+			...ia5
+		];
+	}
+
+	const CONTROL_LABELS: Record<string, string> = {
+		identificationByIdCard: 'ID card required at inspection',
+		identificationByPassportId: 'Passport required at inspection',
+		passportValidationRequired: 'Passport validation required',
+		onlineValidationRequired: 'Online validation required',
+		ageCheckRequired: 'Age check required',
+		reductionCardCheckRequired: 'Reduction card check required',
+		identificationItem: 'Identification item'
+	};
 </script>
 
 <div class="flex-view">
 	{#each docs as doc, i (i)}
 		{@const st = stations(doc.data)}
+		{@const via = parseDbVia((doc.data.validRegionDesc as string) ?? '')}
+		{@const activated = activatedDays(doc.data, doc.validFrom)}
+		{@const carriers = carrierList(doc.data)}
 		<section class="doc">
 			<header>
 				<span class="doctype">{docTypeLabel(doc.type)}</span>
-				{#if doc.data.productIdIA5}<span class="product">{doc.data.productIdIA5}</span>
+				{#if productName(doc.type, doc.data)}
+					<span class="product">{productName(doc.type, doc.data)}</span>
 				{:else if doc.data.trainIA5 || doc.data.trainNum}
 					<span class="product">Train {doc.data.trainIA5 ?? doc.data.trainNum}</span>{/if}
 				{#if fmtClass(doc.data.classCode as string)}<span class="chip">{fmtClass(doc.data.classCode as string)}</span>{/if}
@@ -70,20 +127,44 @@
 				<ZugbindungStrip bindings={doc.trainBindings} />
 			{/if}
 
+			{#if via}
+				<div class="via-block" title={doc.data.validRegionDesc as string}>
+					<span class="via-label">Via</span>
+					<ViaRoute route={via} />
+				</div>
+			{/if}
+
 			<dl>
 				{#if doc.validFrom}<dt>Valid from</dt>
 					<dd>{fmtDate(doc.validFrom)}</dd>{/if}
 				{#if doc.validUntil}<dt>Valid until</dt>
 					<dd>{fmtDate(doc.validUntil)}</dd>{/if}
+				{#if activated.length}
+					<dt>Activated day{activated.length > 1 ? 's' : ''}</dt>
+					<dd>{activated.join(', ')}</dd>
+				{/if}
 				{#if seats(doc.data)}<dt>Place</dt>
 					<dd>{seats(doc.data)}</dd>{/if}
-				{#if doc.data.validRegionDesc}<dt>Route</dt>
+				{#if !via && doc.data.validRegionDesc}<dt>Route</dt>
 					<dd class="small">{doc.data.validRegionDesc}</dd>{/if}
 				{#if doc.data.price !== undefined}<dt>Price</dt>
 					<dd>{fmtPrice(doc.data.price as number, currency, fract)}</dd>{/if}
+				{#if carriers.length}
+					<dt>Carrier{carriers.length > 1 ? 's' : ''}</dt>
+					<dd>{carriers.join(', ')}</dd>
+				{/if}
 				{#if doc.data.infoText}<dt>Info</dt>
 					<dd class="small">{doc.data.infoText}</dd>{/if}
 			</dl>
+
+			{#if countriesOf(doc.data).length}
+				<div class="countries">
+					{#each countriesOf(doc.data) as c (c)}
+						<span class="country">{uicCountryName(c)}</span>
+					{/each}
+				</div>
+			{/if}
+
 			{#if tariffsOf(doc.data).length}
 				<ul class="tariffs">
 					{#each tariffsOf(doc.data) as tariff, ti (ti)}
@@ -98,6 +179,50 @@
 			{/if}
 		</section>
 	{/each}
+
+	{#if travelers.length}
+		<section class="travelers">
+			<h4>Traveler{travelers.length > 1 ? 's' : ''}</h4>
+			{#each travelers as t, i (i)}
+				<dl>
+					<dt>Name</dt>
+					<dd>
+						{travelerName(t)}
+						{#if t.ticketHolder}<span class="chip holder">ticket holder</span>{/if}
+					</dd>
+					{#if birthDate(t)}<dt>Born</dt>
+						<dd>{birthDate(t)}</dd>{/if}
+					{#if t.passengerType}<dt>Type</dt>
+						<dd>{t.passengerType}</dd>{/if}
+					{#if t.passportId}<dt>Passport</dt>
+						<dd><code>{t.passportId}</code></dd>{/if}
+					{#if t.idCard}<dt>ID card</dt>
+						<dd><code>{t.idCard}</code></dd>{/if}
+					{#if t.countryOfResidence}
+						<dt>Residence</dt>
+						<dd>{isoNumericCountryName(t.countryOfResidence as number)}</dd>
+					{/if}
+				</dl>
+			{/each}
+		</section>
+	{/if}
+
+	{#if control}
+		{@const flags = Object.entries(CONTROL_LABELS).filter(([k]) => control[k] === true)}
+		{#if flags.length || control.infoText}
+			<section class="control">
+				<h4>Inspection</h4>
+				{#if flags.length}
+					<ul>
+						{#each flags as [k, label] (k)}
+							<li>{label}</li>
+						{/each}
+					</ul>
+				{/if}
+				{#if control.infoText}<p class="small">{control.infoText}</p>{/if}
+			</section>
+		{/if}
+	{/if}
 
 	<dl class="issuing">
 		<dt>Issuer</dt>
@@ -115,16 +240,8 @@
 				new Date(Date.UTC(issuing.issuingYear, 0, issuing.issuingDay)).toISOString().slice(0, 10)
 			)}
 		</dd>
-		{#if travelers.length}
-			<dt>Traveler{travelers.length > 1 ? 's' : ''}</dt>
-			<dd>
-				{travelers
-					.map((t) => travelerName(t) + (t.yearOfBirth ? ` (*${t.yearOfBirth})` : ''))
-					.join(', ')}
-			</dd>
-		{/if}
-		{#if issuing.specimen}<dt>Note</dt>
-			<dd>Specimen ticket</dd>{/if}
+		{#if issuing.securePaperTicket}<dt>Medium</dt>
+			<dd>Secure paper ticket</dd>{/if}
 	</dl>
 
 	<details class="alldata">
@@ -194,6 +311,19 @@
 		height: 0;
 		border-top: 2px solid var(--ink);
 	}
+	.via-block {
+		display: flex;
+		gap: 0.7rem;
+		align-items: baseline;
+	}
+	.via-label {
+		font-family: var(--font-display);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		font-size: 0.78rem;
+		color: var(--ink-soft);
+		padding-top: 0.2rem;
+	}
 	dl {
 		display: grid;
 		grid-template-columns: max-content 1fr;
@@ -207,13 +337,55 @@
 	dd {
 		margin: 0;
 	}
-	dd.small {
+	dd.small,
+	p.small {
 		font-size: 0.8rem;
+	}
+	.countries {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+	}
+	.country {
+		font-size: 0.75rem;
+		padding: 0.08rem 0.45rem;
+		border: 1px solid var(--paper-edge);
+		border-radius: 999px;
+		color: var(--ink-soft);
 	}
 	.tariffs {
 		margin: 0;
 		padding-left: 1.1rem;
 		font-size: 0.85rem;
+	}
+	.travelers,
+	.control {
+		border-top: 1px dashed var(--paper-edge);
+		padding-top: 0.6rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+	}
+	h4 {
+		margin: 0;
+		font-family: var(--font-display);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		font-size: 0.78rem;
+		color: var(--ink-soft);
+		font-weight: 600;
+	}
+	.holder {
+		font-size: 0.68rem;
+		margin-left: 0.4rem;
+	}
+	.control ul {
+		margin: 0;
+		padding-left: 1.1rem;
+		font-size: 0.85rem;
+	}
+	.control p {
+		margin: 0;
 	}
 	.issuing {
 		border-top: 1px dashed var(--paper-edge);

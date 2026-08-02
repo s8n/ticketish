@@ -90,7 +90,7 @@
 				never uploaded anywhere. Signatures are not verified — this reads tickets, it doesn't
 				judge them.
 			</p>
-			<button class="sample" onclick={loadSamples}>Try it with DB sample tickets</button>
+			<button class="sample" onclick={() => loadSamples()}>Try it with DB sample tickets</button>
 		</section>
 	{/if}
 
