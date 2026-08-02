@@ -6,6 +6,7 @@ import { isRsp6, parseRsp6 } from './rsp/rsp6.ts';
 import { parseSwissPass } from './swisspass/swisspass.ts';
 import { isVdv, parseVdv } from './vdv/vdv.ts';
 import { isSsb, parseSsb } from './ssb/ssb.ts';
+import { isRenfe, parseRenfe } from './renfe/renfe.ts';
 
 // Record parsers register themselves on import.
 import './records/uhead.ts';
@@ -31,6 +32,13 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 	if (isSsb(data)) {
 		try {
 			return { kind: 'ssb', envelope: parseSsb(data) };
+		} catch {
+			// fall through
+		}
+	}
+	if (isRenfe(data)) {
+		try {
+			return { kind: 'renfe', ticket: parseRenfe(data) };
 		} catch {
 			// fall through
 		}

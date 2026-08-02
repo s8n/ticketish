@@ -46,6 +46,7 @@ export type TicketContainer =
 	| { kind: 'swisspass'; ticket: import('./swisspass/swisspass.ts').SwissPassTicket }
 	| { kind: 'vdv'; barcode: import('./vdv/vdv.ts').VdvBarcode }
 	| { kind: 'ssb'; envelope: import('./ssb/ssb.ts').SsbEnvelope }
+	| { kind: 'renfe'; ticket: import('./renfe/renfe.ts').RenfeTicket }
 	| { kind: 'text'; text: string }
 	| { kind: 'unknown' };
 

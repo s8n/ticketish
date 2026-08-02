@@ -10,6 +10,7 @@
 	import SwissPassView from './SwissPassView.svelte';
 	import VdvView from './VdvView.svelte';
 	import SsbView from './SsbView.svelte';
+	import RenfeView from './RenfeView.svelte';
 	import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
 	import { store } from '../state/tickets.svelte.ts';
 
@@ -47,6 +48,7 @@
 			const rics = container.envelope.issuerRics;
 			return ricsName(rics) ?? `RICS ${rics}`;
 		}
+		if (container.kind === 'renfe') return 'Renfe';
 		if (container.kind === 'text' && ticket.source.passInfo?.organizationName) {
 			return ticket.source.passInfo.organizationName;
 		}
@@ -99,6 +101,8 @@
 				return 'VDV-KA';
 			case 'ssb':
 				return `SSB v${container.envelope.version}`;
+			case 'renfe':
+				return 'Renfe';
 			case 'text':
 				return 'Plain text';
 			default:
@@ -171,6 +175,8 @@
 		<VdvView barcode={container.barcode} />
 	{:else if container.kind === 'ssb'}
 		<SsbView envelope={container.envelope} />
+	{:else if container.kind === 'renfe'}
+		<RenfeView ticket={container.ticket} />
 	{:else if container.kind === 'text'}
 		<pre class="text-payload">{container.text}</pre>
 		<p class="note">This barcode carries plain text, not UIC ticket data.</p>

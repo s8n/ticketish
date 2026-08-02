@@ -100,7 +100,11 @@
 				</li>
 				<li>
 					<span class="format">SSB</span>
-					An older barcode operators like Renfe still issue, plus NS and DB Keycards
+					An older barcode some operators still issue, plus NS and DB Keycards
+				</li>
+				<li>
+					<span class="format">Renfe</span>
+					Spanish high-speed and long-distance tickets
 				</li>
 			</ul>
 			<p class="fine">

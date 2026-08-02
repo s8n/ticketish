@@ -22,9 +22,10 @@ installed.
 - **VDV-KA** - German Verbund tickets and the Deutschlandticket: BER-TLV
   envelope with ISO 9796-2 message recovery against the VDV CA certificates,
   including MOTICS copy-protection containers
-- **SSB** - an older bit-packed UIC barcode still issued by operators such as
-  Renfe: reservations, travel tickets, group tickets, passes, and NS/DB
-  Keycards
+- **SSB** - an older bit-packed UIC barcode still issued by some operators:
+  reservations, travel tickets, group tickets, passes, and NS/DB Keycards
+- **Renfe** - Spanish tickets, which use their own fixed-width ASCII format
+  rather than a UIC one
 - Anything else falls back to a plain-text / hex view
 
 Inputs: images, PDFs (rendered with pdf.js and scanned), Apple Wallet

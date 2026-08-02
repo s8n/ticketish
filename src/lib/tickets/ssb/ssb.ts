@@ -361,7 +361,11 @@ function parsePass(d: Bits, now: Date): SsbPass {
 export function isSsb(data: Uint8Array): boolean {
 	if (data.length < 114) return false;
 	const version = (data[0] >> 4) & 0x0f;
-	return version === 2 || version === 3;
+	if (version !== 2 && version !== 3) return false;
+	// SSB is bit-packed binary with a raw signature; an all-printable payload
+	// is some issuer's own ASCII format (e.g. Renfe) that happens to start
+	// with a byte whose top nibble looks like a version.
+	return data.some((b) => b < 0x20 || b > 0x7e);
 }
 
 const hex = (b: Uint8Array) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
