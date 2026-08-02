@@ -20,8 +20,8 @@ describe.skipIf(!existsSync(BIN))('SSB NS Keycard', () => {
 		expect(e.ticketType).toBe(exp.envelope.ticket_type);
 
 		const k = e.data;
-		expect(k).not.toBeNull();
-		if (!k) return;
+		expect(k?.kind).toBe('ns-keycard');
+		if (k?.kind !== 'ns-keycard') return;
 		expect(k.cardId).toBe(exp.keycard.card_id);
 		expect(k.numAdults).toBe(exp.keycard.num_adults);
 		expect(k.numChildren).toBe(exp.keycard.num_children);
@@ -42,5 +42,6 @@ describe.skipIf(!existsSync(BIN))('SSB NS Keycard', () => {
 		// resolve into the future
 		const e = parseSsb(data, new Date('2026-08-03T00:00:00Z'));
 		expect(e.data?.issuingDate.startsWith('201')).toBe(true);
+		expect(e.data?.kind).toBe('ns-keycard');
 	});
 });

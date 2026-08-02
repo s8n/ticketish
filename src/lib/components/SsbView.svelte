@@ -1,40 +1,119 @@
 <script lang="ts">
-	import type { SsbEnvelope } from '../tickets/ssb/ssb.ts';
+	import type { SsbEnvelope, SsbStation } from '../tickets/ssb/ssb.ts';
 	import { fmtDate } from '../tickets/format.ts';
+	import { ricsName } from '../tickets/uic/rics.ts';
+	import { uicCountryName } from '../tickets/countries.ts';
 
 	let { envelope }: { envelope: SsbEnvelope } = $props();
 
-	const k = $derived(envelope.data);
+	const r = $derived(envelope.data);
 	const travelClass = $derived(
-		k?.travelClass === 1 ? '1st class' : k?.travelClass === 2 ? '2nd class' : null
+		r && 'travelClass' in r
+			? r.travelClass === 1
+				? '1st class'
+				: r.travelClass === 2
+					? '2nd class'
+					: null
+			: null
 	);
+
+	function stationLabel(s: SsbStation): string {
+		if (s.type === 'uic') return `UIC ${s.value}`;
+		if (s.type === 'benerail') return `${s.value} (Benerail)`;
+		if (s.type === 'other') return `code ${s.value}`;
+		return s.value;
+	}
+
+	function travelers(adults: number, children: number): string {
+		return [
+			`${adults} adult${adults === 1 ? '' : 's'}`,
+			children ? `${children} child${children === 1 ? '' : 'ren'}` : null
+		]
+			.filter(Boolean)
+			.join(', ');
+	}
 </script>
 
 <div class="ssb">
-	{#if k}
+	{#if r}
 		<header>
-			<span class="product">{k.productName}</span>
+			<span class="product">
+				{#if r.kind === 'ns-keycard'}{r.productName}
+				{:else if r.kind === 'reservation'}Reservation
+				{:else if r.kind === 'non-reservation'}Travel ticket
+				{:else if r.kind === 'group'}Group ticket
+				{:else}Pass{/if}
+			</span>
 			{#if travelClass}<span class="chip">{travelClass}</span>{/if}
+			{#if r.specimen}<span class="chip specimen">Specimen</span>{/if}
 		</header>
+
+		{#if r.kind !== 'ns-keycard' && r.kind !== 'pass'}
+			<div class="route">
+				<span class="station">{stationLabel(r.departureStation)}</span>
+				<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
+				<span class="station">{stationLabel(r.arrivalStation)}</span>
+			</div>
+		{/if}
+
 		<dl>
-			<dt>Card number</dt>
-			<dd><code>{k.cardId}</code></dd>
-			<dt>Valid</dt>
-			<dd>{fmtDate(k.validityStart)} – {fmtDate(k.validityEnd)}</dd>
-			<dt>Issued</dt>
-			<dd>{fmtDate(k.issuingDate)}</dd>
-			<dt>Travelers</dt>
-			<dd>
-				{k.numAdults} adult{k.numAdults === 1 ? '' : 's'}{k.numChildren
-					? `, ${k.numChildren} child${k.numChildren === 1 ? '' : 'ren'}`
-					: ''}
-			</dd>
-			{#if k.numTravelDays}<dt>Travel days</dt>
-				<dd>{k.numTravelDays}</dd>{/if}
-			{#if k.stationUic}<dt>Station</dt>
-				<dd>UIC {k.stationUic}</dd>{/if}
-			{#if k.extraText}<dt>Notes</dt>
-				<dd class="small">{k.extraText}</dd>{/if}
+			{#if r.kind === 'ns-keycard'}
+				<dt>Card number</dt>
+				<dd><code>{r.cardId}</code></dd>
+				<dt>Valid</dt>
+				<dd>{fmtDate(r.validityStart)} – {fmtDate(r.validityEnd)}</dd>
+				<dt>Issued</dt>
+				<dd>{fmtDate(r.issuingDate)}</dd>
+				<dt>Travelers</dt>
+				<dd>{travelers(r.numAdults, r.numChildren)}</dd>
+				{#if r.numTravelDays}<dt>Travel days</dt>
+					<dd>{r.numTravelDays}</dd>{/if}
+				{#if r.stationUic}<dt>Station</dt>
+					<dd>UIC {r.stationUic}</dd>{/if}
+			{:else}
+				{#if r.kind === 'reservation'}
+					<dt>Departure</dt>
+					<dd>{fmtDate(r.departure)}</dd>
+					<dt>Train</dt>
+					<dd>
+						{r.trainNumber || '?'}
+						{#if r.coachNumber}· coach {r.coachNumber}{/if}
+						{#if r.seatNumber}· seat {r.seatNumber}{/if}
+						{#if r.overbooked}<span class="warn">· overbooked</span>{/if}
+					</dd>
+				{:else}
+					<dt>Valid</dt>
+					<dd>{fmtDate(r.validityStart)} – {fmtDate(r.validityEnd)}</dd>
+				{/if}
+				{#if r.kind === 'pass'}
+					{#if r.travelDays}<dt>Travel days</dt>
+						<dd>{r.travelDays}</dd>{/if}
+					{#if r.countries.length}
+						<dt>Countries</dt>
+						<dd>{r.countries.map((c) => uicCountryName(c)).join(', ')}</dd>
+					{/if}
+				{/if}
+				{#if r.kind === 'group'}
+					{#if r.groupLeader}<dt>Group leader</dt>
+						<dd>{r.groupLeader}</dd>{/if}
+					{#if r.countermark}<dt>Countermark</dt>
+						<dd>{r.countermark}</dd>{/if}
+				{/if}
+				{#if (r.kind === 'non-reservation' || r.kind === 'group') && r.returnIncluded}
+					<dt>Return</dt>
+					<dd>Included</dd>
+				{/if}
+				<dt>Travelers</dt>
+				<dd>{travelers(r.numAdults, r.numChildren)}</dd>
+				{#if r.pnr}<dt>Reference</dt>
+					<dd><code>{r.pnr}</code></dd>{/if}
+				<dt>Issued</dt>
+				<dd>{fmtDate(r.issuingDate)}</dd>
+			{/if}
+			{#if 'extraText' in r && r.extraText}
+				<dt>Notes</dt>
+				<dd class="small">{r.extraText}</dd>
+			{/if}
 		</dl>
 	{:else}
 		<p class="note">{envelope.unsupported ?? 'This SSB ticket type is not decoded yet.'}</p>
@@ -48,7 +127,7 @@
 		<dt>Ticket type</dt>
 		<dd>{envelope.ticketTypeName} <span class="soft">({envelope.ticketType})</span></dd>
 		<dt>Issuer</dt>
-		<dd>RICS {envelope.issuerRics}</dd>
+		<dd>{ricsName(envelope.issuerRics) ?? `RICS ${envelope.issuerRics}`}</dd>
 	</dl>
 </div>
 
@@ -73,6 +152,37 @@
 	.chip {
 		color: var(--rail-blue);
 	}
+	.chip.specimen {
+		color: var(--signal-red);
+	}
+	.route {
+		display: flex;
+		align-items: center;
+		gap: 0.7rem;
+		flex-wrap: wrap;
+	}
+	.station {
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 1.2rem;
+		text-transform: uppercase;
+	}
+	.line {
+		flex: 1;
+		min-width: 3rem;
+		display: flex;
+		align-items: center;
+	}
+	.dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--ink);
+	}
+	.rail {
+		flex: 1;
+		border-top: 2px solid var(--ink);
+	}
 	dl {
 		display: grid;
 		grid-template-columns: max-content 1fr;
@@ -91,6 +201,9 @@
 	}
 	.soft {
 		color: var(--ink-soft);
+	}
+	.warn {
+		color: var(--signal-red);
 	}
 	.note {
 		margin: 0;

@@ -84,11 +84,11 @@
 			<ul class="formats">
 				<li>
 					<span class="format">UIC 918.3 &amp; 918.9</span>
-					DB online tickets, Interrail passes, seat reservations
+					European train tickets: DB online tickets, Interrail passes, seat reservations
 				</li>
 				<li>
 					<span class="format">VDV-KA</span>
-					Deutschlandticket and other Verbund tickets
+					German public transport: the Deutschlandticket and Verbund tickets
 				</li>
 				<li>
 					<span class="format">RSP6</span>
@@ -100,7 +100,7 @@
 				</li>
 				<li>
 					<span class="format">SSB</span>
-					NS Keycards
+					An older barcode operators like Renfe still issue, plus NS and DB Keycards
 				</li>
 			</ul>
 			<p class="fine">
