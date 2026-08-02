@@ -124,10 +124,13 @@
 			{/if}
 
 			{#if doc.trainBindings.length}
-				<ZugbindungStrip bindings={doc.trainBindings} />
-			{/if}
-
-			{#if via}
+				<!-- The bound route belongs with the trains, so it moves inside the stamp. -->
+				<ZugbindungStrip
+					bindings={doc.trainBindings}
+					{via}
+					viaTitle={doc.data.validRegionDesc as string}
+				/>
+			{:else if via}
 				<div class="via-block" title={doc.data.validRegionDesc as string}>
 					<span class="via-label">Via</span>
 					<ViaRoute route={via} />

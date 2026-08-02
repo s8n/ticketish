@@ -1,29 +1,42 @@
 <script lang="ts">
 	import type { TrainBinding } from '../tickets/model.ts';
+	import type { ViaCarrier } from '../tickets/via.ts';
 	import { fmtDate } from '../tickets/format.ts';
+	import ViaRoute from './ViaRoute.svelte';
 
-	let { bindings }: { bindings: TrainBinding[] } = $props();
+	let {
+		bindings,
+		via = null,
+		viaTitle = undefined
+	}: { bindings: TrainBinding[]; via?: ViaCarrier[] | null; viaTitle?: string } = $props();
 </script>
 
-<!-- The red overprint stamp: the deciphered Zugbindung. -->
+<!-- The red overprint stamp: the deciphered Zugbindung. The bound route
+     belongs with the trains it binds, so the via map sits inside. -->
 <div class="stamp" role="note" aria-label="Zugbindung - ticket bound to specific trains">
 	<span class="title">Zugbindung</span>
-	<ul>
-		{#each bindings as b, i (i)}
-			<li>
-				<strong class="train">{b.train}</strong>
-				<span class="when">{fmtDate(b.departureDate)} · dep {b.departureTime}</span>
-				{#if b.fromStation || b.toStation}
-					<span class="route">{b.fromStation ?? '?'} → {b.toStation ?? '?'}</span>
-				{/if}
-			</li>
-		{/each}
-	</ul>
+	<div class="body">
+		<ul>
+			{#each bindings as b, i (i)}
+				<li>
+					<strong class="train">{b.train}</strong>
+					<span class="when">{fmtDate(b.departureDate)} · dep {b.departureTime}</span>
+					{#if b.fromStation || b.toStation}
+						<span class="route">{b.fromStation ?? '?'} → {b.toStation ?? '?'}</span>
+					{/if}
+				</li>
+			{/each}
+		</ul>
+		{#if via}
+			<div class="via-row" title={viaTitle}>
+				<span class="via-label">Via</span>
+				<ViaRoute route={via} tone="stamp" />
+			</div>
+		{/if}
+	</div>
 </div>
 
 <style>
-	/* Single band per binding; swipes sideways on narrow screens instead of
-	   wrapping into lines. */
 	.stamp {
 		border: 2px solid var(--signal-red);
 		border-radius: 6px;
@@ -33,8 +46,6 @@
 		gap: 1rem;
 		align-items: baseline;
 		flex-wrap: nowrap;
-		overflow-x: auto;
-		scrollbar-width: thin;
 		background:
 			repeating-linear-gradient(
 				-45deg,
@@ -42,12 +53,23 @@
 				color-mix(in srgb, var(--signal-red) 4%, transparent) 10px 11px
 			);
 	}
+	/* The label stays put; only the content swipes sideways on narrow screens. */
+	.body {
+		min-width: 0;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		overflow-x: auto;
+		scrollbar-width: thin;
+	}
 	.title {
 		font-family: var(--font-display);
 		text-transform: uppercase;
 		font-weight: 700;
 		letter-spacing: 0.12em;
 		font-size: 0.95rem;
+		white-space: nowrap;
 	}
 	ul {
 		list-style: none;
@@ -75,5 +97,19 @@
 	}
 	.route {
 		font-size: 0.85rem;
+	}
+	.via-row {
+		display: flex;
+		gap: 0.6rem;
+		align-items: baseline;
+		border-top: 1px dashed color-mix(in srgb, var(--signal-red) 40%, transparent);
+		padding-top: 0.35rem;
+	}
+	.via-label {
+		font-family: var(--font-display);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		font-size: 0.72rem;
+		white-space: nowrap;
 	}
 </style>

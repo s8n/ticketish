@@ -5,12 +5,19 @@
 	let {
 		route = null,
 		items = null,
-		nested = false
-	}: { route?: ViaCarrier[] | null; items?: ViaItem[] | null; nested?: boolean } = $props();
+		nested = false,
+		tone = 'default'
+	}: {
+		route?: ViaCarrier[] | null;
+		items?: ViaItem[] | null;
+		nested?: boolean;
+		/** "stamp" tints the map to the surrounding colour (the Zugbindung). */
+		tone?: 'default' | 'stamp';
+	} = $props();
 </script>
 
 {#if route}
-	<div class="via" class:nested>
+	<div class="via" class:nested class:stamp={tone === 'stamp'}>
 		{#each route as carrier, ci (ci)}
 			<div class="carrier">
 				{#if carrier.carriers.length}
@@ -30,7 +37,7 @@
 								{#each item.choices as choice, oi (oi)}
 									<div class="choice">
 										<span class="link" aria-hidden="true"></span>
-										<ViaRoute items={choice} nested />
+										<ViaRoute items={choice} nested {tone} />
 										<span class="link" aria-hidden="true"></span>
 									</div>
 								{/each}
@@ -42,7 +49,7 @@
 		{/each}
 	</div>
 {:else if items}
-	<div class="chain">
+	<div class="chain" class:stamp={tone === 'stamp'}>
 		{#each items as item, i (i)}
 			{#if i > 0}<span class="link" aria-hidden="true"></span>{/if}
 			{#if item.kind === 'point'}
@@ -99,6 +106,16 @@
 		border-radius: 999px;
 		background: color-mix(in srgb, var(--paper-hi) 60%, white 40%);
 		white-space: nowrap;
+	}
+	/* Inside the Zugbindung stamp the map borrows the stamp's ink. */
+	.stamp .stop,
+	.stamp .carrier-label {
+		border-color: color-mix(in srgb, currentcolor 40%, transparent);
+		color: inherit;
+	}
+	.stamp .link,
+	.stamp .options {
+		border-color: color-mix(in srgb, currentcolor 40%, transparent);
 	}
 	.link {
 		display: inline-block;
