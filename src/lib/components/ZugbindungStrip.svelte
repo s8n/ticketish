@@ -71,6 +71,12 @@
 		font-size: 0.95rem;
 		white-space: nowrap;
 	}
+	/* Rows size to their content but never narrower than the visible band, so
+	   the divider spans the full width and everything scrolls as one. */
+	.body > * {
+		width: max-content;
+		min-width: 100%;
+	}
 	ul {
 		list-style: none;
 		margin: 0;

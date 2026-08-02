@@ -289,6 +289,10 @@
 	}
 	.chip.src {
 		border-style: dashed;
+		/* long file names must wrap rather than push the page sideways */
+		white-space: normal;
+		overflow-wrap: anywhere;
+		max-width: 100%;
 	}
 	.specimen-chip {
 		color: var(--signal-red);

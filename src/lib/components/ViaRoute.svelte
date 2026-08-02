@@ -107,6 +107,15 @@
 		background: color-mix(in srgb, var(--paper-hi) 60%, white 40%);
 		white-space: nowrap;
 	}
+	/* Nested in the Zugbindung stamp, the map must not be its own scroll
+	   container: the stamp body scrolls, and the map grows to its width so
+	   the trains and the route move together. */
+	.via.stamp {
+		overflow-x: visible;
+		max-width: none;
+		width: max-content;
+		padding-bottom: 0;
+	}
 	/* Inside the Zugbindung stamp the map borrows the stamp's ink. */
 	.stamp .stop,
 	.stamp .carrier-label {
