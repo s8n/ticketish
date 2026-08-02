@@ -42,6 +42,8 @@ export interface DosipasEnvelope {
 export type TicketContainer =
 	| { kind: 'uic9183'; envelope: Uic9183Envelope }
 	| { kind: 'dosipas'; envelope: DosipasEnvelope }
+	| { kind: 'rsp6'; ticket: import('./rsp/rsp6.ts').Rsp6Ticket }
+	| { kind: 'swisspass'; ticket: import('./swisspass/swisspass.ts').SwissPassTicket }
 	| { kind: 'text'; text: string }
 	| { kind: 'unknown' };
 

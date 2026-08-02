@@ -52,6 +52,8 @@ describe('envelope parsing', () => {
 			for (const rec of container.envelope.records) {
 				expect(rec.error, `record ${rec.id} error`).toBeUndefined();
 			}
+		} else if (expected.format === 'swisspass' || expected.format === 'rsp6') {
+			expect(container.kind).toBe(expected.format);
 		} else {
 			// non-UIC payloads (e.g. plain-text QR codes) fall back to text
 			expect(container.kind).toBe('text');

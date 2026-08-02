@@ -2,6 +2,8 @@
 import type { ParsedTicket, TicketContainer, TicketSource } from './types.ts';
 import { isUic9183, parseUic9183 } from './uic/envelope9183.ts';
 import { parseDosipas } from './uic/dosipas.ts';
+import { isRsp6, parseRsp6 } from './rsp/rsp6.ts';
+import { parseSwissPass } from './swisspass/swisspass.ts';
 
 // Record parsers register themselves on import.
 import './records/uhead.ts';
@@ -14,10 +16,18 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 	if (isUic9183(data)) {
 		return { kind: 'uic9183', envelope: parseUic9183(data) };
 	}
+	if (isRsp6(data)) {
+		return { kind: 'rsp6', ticket: parseRsp6(data) };
+	}
 	try {
 		return { kind: 'dosipas', envelope: parseDosipas(data) };
 	} catch {
-		// not DOSIPAS either
+		// not DOSIPAS
+	}
+	try {
+		return { kind: 'swisspass', ticket: parseSwissPass(data) };
+	} catch {
+		// not SwissPass
 	}
 	const text = tryText(data);
 	if (text !== null) return { kind: 'text', text };

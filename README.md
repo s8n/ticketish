@@ -15,6 +15,10 @@ installed.
   with a from-scratch unaligned-PER (ASN.1 UPER) decoder
 - **DOSIPAS** - the `U1`/`U2` dynamic barcode header carrying FCB payloads
   (e.g. Interrail passes)
+- **UK RSP6** - National Rail tickets ("06") and railcards ("08"): base26
+  RSA message recovery with the published RSP keys, then the bit-packed
+  ticket record
+- **SwissPass / NOVA** - Swiss mobile tickets (protobuf QR)
 - Anything else falls back to a plain-text / hex view
 
 Inputs: images, PDFs (rendered with pdf.js and scanned), Apple Wallet
@@ -83,5 +87,10 @@ No functions, bindings or environment variables needed.
   [UIC-barcode](https://github.com/UnionInternationalCheminsdeFer/UIC-barcode)
   (EUPL-1.2 / Apache-2.0), vendored in `scripts/asn-specs/`.
 - Format knowledge and record quirks studied from
-  [zuegli](https://github.com/TheEnbyperor/zuegli), which also verifies
-  signatures if you want the full treatment.
+  [zuegli](https://github.com/TheEnbyperor/zuegli) (EUPL-1.2), which also
+  verifies signatures if you want the full treatment. The via-route parser,
+  RSP6 bit layouts, and SwissPass protobuf schema are ports of its code.
+- RSP6 public keys vendored from
+  [eta's rsp6-decoder](https://git.eta.st/eta/rsp6-decoder) (MIT).
+- DB Leitpunktkürzel and Swiss NOVA organisation names derive from the
+  respective operators' open data.

@@ -28,6 +28,7 @@ const RICS_NAMES: Record<number, string> = {
 	1076: 'Norske tog / Entur',
 	1251: 'Koleje Mazowieckie',
 	3153: 'Snälltåget',
+	3342: 'Schweizerische Südostbahn (SOB)',
 	5008: 'Flix Train',
 	5197: 'WESTbahn',
 	5245: 'European Sleeper',

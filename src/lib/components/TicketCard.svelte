@@ -6,6 +6,9 @@
 	import { hexDump } from '../tickets/format.ts';
 	import { recordViews, recordLabel } from './records/index.ts';
 	import RawView from './records/RawView.svelte';
+	import Rsp6View from './Rsp6View.svelte';
+	import SwissPassView from './SwissPassView.svelte';
+	import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
 	import { store } from '../state/tickets.svelte.ts';
 
 	let { ticket }: { ticket: ParsedTicket } = $props();
@@ -24,6 +27,16 @@
 			const sp = container.envelope.securityProvider;
 			return ricsName(sp) ?? (sp !== null ? `Provider ${sp}` : 'Unknown issuer');
 		}
+		if (container.kind === 'rsp6') {
+			return `National Rail (issuer ${container.ticket.issuerId})`;
+		}
+		if (container.kind === 'swisspass') {
+			const t = container.ticket;
+			const rics = t.keyMeta?.rics;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const org = (t.ticketData as any)?.sale?.issuingOrg as number | undefined;
+			return ricsName(rics) ?? novaOrgName(org) ?? (rics ? `RICS ${rics}` : 'SwissPass');
+		}
 		if (container.kind === 'text' && ticket.source.passInfo?.organizationName) {
 			return ticket.source.passInfo.organizationName;
 		}
@@ -31,6 +44,10 @@
 	});
 
 	const specimen = $derived.by(() => {
+		if (container.kind === 'swisspass') {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			return (container.ticket.ticketData as any)?.extra?.specimen === true;
+		}
 		for (const r of records) {
 			if (r.kind === 'head') {
 				const head = r.data as { flags: { specimen: boolean }; specimenSuspect: boolean };
@@ -58,15 +75,22 @@
 			: null
 	);
 
-	const envelopeLabel = $derived(
-		container.kind === 'uic9183'
-			? `UIC 918.3 v${container.envelope.envelopeVersion}`
-			: container.kind === 'dosipas'
-				? `DOSIPAS U${container.envelope.headerVersion}`
-				: container.kind === 'text'
-					? 'Plain text'
-					: 'Unknown format'
-	);
+	const envelopeLabel = $derived.by(() => {
+		switch (container.kind) {
+			case 'uic9183':
+				return `UIC 918.3 v${container.envelope.envelopeVersion}`;
+			case 'dosipas':
+				return `DOSIPAS U${container.envelope.headerVersion}`;
+			case 'rsp6':
+				return container.ticket.ticketType === '08' ? 'RSP6 railcard' : 'RSP6';
+			case 'swisspass':
+				return 'SwissPass / NOVA';
+			case 'text':
+				return 'Plain text';
+			default:
+				return 'Unknown format';
+		}
+	});
 
 	// Prefer the richest record as the initially open tab.
 	const defaultOpen = $derived.by(() => {
@@ -125,7 +149,11 @@
 		</section>
 	{/if}
 
-	{#if container.kind === 'text'}
+	{#if container.kind === 'rsp6'}
+		<Rsp6View ticket={container.ticket} />
+	{:else if container.kind === 'swisspass'}
+		<SwissPassView ticket={container.ticket} />
+	{:else if container.kind === 'text'}
 		<pre class="text-payload">{container.text}</pre>
 		<p class="note">This barcode carries plain text, not UIC ticket data.</p>
 	{:else if container.kind === 'unknown'}
