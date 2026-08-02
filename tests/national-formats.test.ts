@@ -71,17 +71,70 @@ describe.skipIf(!existsSync(fixture('fi-vr-hki-tpe')))('VR (SSB1) tickets', () =
 	});
 });
 
-describe.skipIf(!existsSync(fixture('it-trenitalia-roma-firenze')))('Trenitalia tickets', () => {
-	it('parses the fields confirmed against the printed ticket', () => {
-		const c = parsePayload(load('it-trenitalia-roma-firenze'));
+// Every expectation is read off the printed ticket. Between them these four
+// cover Frecciarossa, Intercity and a regional fare with no reservation, and
+// they disagree on every field the parser claims to decode.
+const TRENITALIA = [
+	{
+		name: 'it-trenitalia-napoli-roma',
+		printed: 'Frecciarossa 9544, 15/07/2026, coach 5, seat 6D, PNR TESTAA',
+		dayOfYear: 196,
+		train: 9544,
+		coach: 5,
+		seat: '6D',
+		pnr: 'TESTAA',
+		entitlement: 1234567890
+	},
+	{
+		name: 'it-trenitalia-roma-firenze',
+		printed: 'Frecciarossa 8418, 17/07/2026, coach 8, seat 4D, PNR TESTAB',
+		dayOfYear: 198,
+		train: 8418,
+		coach: 8,
+		seat: '4D',
+		pnr: 'TESTAB',
+		entitlement: 1234567891
+	},
+	{
+		name: 'it-trenitalia-intercity',
+		printed: 'Intercity 592, 17/07/2026, coach 6, seat 21D, PNR TESTAC',
+		dayOfYear: 198,
+		train: 592,
+		coach: 6,
+		// the seat number is a 6-bit integer, so 21 is one symbol, not two
+		seat: '21D',
+		pnr: 'TESTAC',
+		entitlement: 1234567892
+	},
+	{
+		name: 'it-trenitalia-regionale',
+		printed: 'Regionale 91595, 18/07/2026, no reservation, no PNR',
+		dayOfYear: 199,
+		train: 91595,
+		coach: 0,
+		seat: '',
+		pnr: '',
+		entitlement: 1234567893
+	}
+];
+
+describe.skipIf(!TRENITALIA.every((t) => existsSync(fixture(t.name))))('Trenitalia tickets', () => {
+	it.each(TRENITALIA)('parses $printed', (t) => {
+		const c = parsePayload(load(t.name));
 		expect(c.kind).toBe('trenitalia');
 		if (c.kind !== 'trenitalia') return;
-		// printed: carrier 1183, Frecciarossa 8418, seat 4D, PNR TESTAB,
-		// entitlement number 1234567891
 		expect(c.ticket.issuerRics).toBe(83);
-		expect(c.ticket.trainNumber).toBe(8418);
-		expect(c.ticket.seat).toBe('4D');
-		expect(c.ticket.pnr).toBe('TESTAB');
-		expect(c.ticket.entitlementNumber).toBe(1234567891);
+		expect(c.ticket.dayOfYear).toBe(t.dayOfYear);
+		expect(c.ticket.trainNumber).toBe(t.train);
+		expect(c.ticket.coach).toBe(t.coach);
+		expect(c.ticket.seat).toBe(t.seat);
+		expect(c.ticket.pnr).toBe(t.pnr);
+		expect(c.ticket.entitlementNumber).toBe(t.entitlement);
+	});
+
+	it('resolves the day of year against a reference date', async () => {
+		const { parseTrenitalia } = await import('../src/lib/tickets/trenitalia/trenitalia.ts');
+		const ticket = parseTrenitalia(load('it-trenitalia-intercity'), new Date('2026-07-20T00:00:00Z'));
+		expect(ticket.departureDate).toBe('2026-07-17');
 	});
 });

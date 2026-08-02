@@ -28,7 +28,9 @@ installed.
 - **Renfe** - Spanish tickets, which use their own fixed-width ASCII format
   rather than a UIC one
 - **TCDD** - Turkish e-tickets, a "$"-delimited ASCII record
-- **Trenitalia** - partially decoded: train, seat, PNR and entitlement number
+- **Trenitalia** - departure date, train, coach, seat, PNR and entitlement
+  number, reverse engineered from four tickets; the payload appears to carry
+  no departure time or station codes
 
 Formats without a public specification were reverse engineered by comparing
 barcodes against the printed tickets they came from, and the tests assert
