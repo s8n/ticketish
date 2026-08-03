@@ -29,7 +29,7 @@
 		const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		const hits = await scanImageData(image, BINARIZERS[binarizerIndex % BINARIZERS.length]);
 		if (!hits.length) return false;
-		for (const hit of hits) store.add(makeTicket(hit.bytes, { kind: 'camera' }, hit.format));
+		for (const hit of hits) store.add(makeTicket(hit.bytes, { kind: 'camera' }, hit));
 		return true;
 	}
 

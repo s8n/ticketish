@@ -27,7 +27,7 @@ export async function ingestFile(file: File): Promise<IngestResult> {
 	const tickets: ParsedTicket[] = [];
 
 	const add = (hits: BarcodeHit[], source: TicketSource) => {
-		for (const hit of hits) tickets.push(makeTicket(hit.bytes, source, hit.format));
+		for (const hit of hits) tickets.push(makeTicket(hit.bytes, source, hit));
 	};
 
 	try {

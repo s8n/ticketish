@@ -1,5 +1,5 @@
 /** Entry point: classify and parse a scanned barcode payload. */
-import type { ParsedTicket, TicketContainer, TicketSource } from './types.ts';
+import type { BarcodeSymbology, ParsedTicket, TicketContainer, TicketSource } from './types.ts';
 import { isUic9183, parseUic9183 } from './uic/envelope9183.ts';
 import { parseDosipas } from './uic/dosipas.ts';
 import { isRsp6, parseRsp6 } from './rsp/rsp6.ts';
@@ -124,12 +124,12 @@ let counter = 0;
 export function makeTicket(
 	data: Uint8Array,
 	source: TicketSource,
-	barcodeFormat?: string
+	symbology?: BarcodeSymbology
 ): ParsedTicket {
 	return {
 		id: `t${Date.now()}-${counter++}`,
 		source,
-		barcodeFormat,
+		symbology,
 		raw: data,
 		container: parsePayload(data),
 		scannedAt: Date.now()

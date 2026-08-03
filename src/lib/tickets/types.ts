@@ -56,6 +56,20 @@ export type TicketContainer =
 	| { kind: 'text'; text: string }
 	| { kind: 'unknown' };
 
+/**
+ * How the payload was encoded in the symbol it was read from, as reported by
+ * the decoder. Enough to re-encode the same bytes into the same kind of
+ * symbol; see input/render.ts for what carries over and what does not.
+ */
+export interface BarcodeSymbology {
+	/** zxing format name, e.g. "Aztec", "PDF417", "QRCode", "DataMatrix". */
+	format: string;
+	/** "L"/"M"/"Q"/"H" for QR, a percentage for Aztec and PDF417, else blank. */
+	ecLevel?: string;
+	/** Aztec layer count or QR version as a number; DataMatrix as "24x64". */
+	version?: string;
+}
+
 /** Where a scanned payload came from. */
 export interface TicketSource {
 	kind: 'image' | 'pdf' | 'pkpass' | 'camera' | 'raw';
@@ -74,7 +88,7 @@ export interface PkpassInfo {
 export interface ParsedTicket {
 	id: string;
 	source: TicketSource;
-	barcodeFormat?: string;
+	symbology?: BarcodeSymbology;
 	raw: Uint8Array;
 	container: TicketContainer;
 	scannedAt: number;

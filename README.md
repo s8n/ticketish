@@ -54,6 +54,24 @@ Inputs: images, PDFs (rendered with pdf.js and scanned), Apple Wallet
 `.pkpass` files, live camera, raw payload files. Signatures are deliberately
 **not** verified - this reads tickets, it doesn't judge them.
 
+## The barcode tab
+
+Every ticket gets a **Barcode** tab that re-encodes the payload and draws it
+as vector modules, rather than showing the image it was scanned from. The
+bytes always come back exactly, non-UTF-8 payloads included, and the symbol
+is decoded again before it is shown, so the tab can say how close it got:
+
+- **Aztec** and **QR** come back at the original symbol size. The reader
+  reports the Aztec layer count, which maps onto the writer's version
+  numbering, and QR's L/M/Q/H is a setting the writer honours directly
+- **PDF417** and **DataMatrix** are written at the encoder's own defaults,
+  since the original's column count and size index are not recoverable
+
+The tab never claims the pattern is module for module identical: how an
+encoder segments its data is not recoverable from a decode. The error
+correction figures shown usually differ, because the decoder derives them
+from spare capacity instead of reading a setting.
+
 ## Development
 
 ```sh

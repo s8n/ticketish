@@ -20,6 +20,8 @@
 	import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
 	import { vdvOrgName } from '../tickets/vdv/orgs.ts';
 	import { store } from '../state/tickets.svelte.ts';
+	import { canRender } from '../input/render.ts';
+	import BarcodeView from './BarcodeView.svelte';
 
 	let { ticket }: { ticket: ParsedTicket } = $props();
 
@@ -140,12 +142,21 @@
 			const i = records.findIndex((r) => r.kind === kind);
 			if (i >= 0) return i;
 		}
-		return records.length ? 0 : -1;
+		if (records.length) return 0;
+		// formats without records have only the barcode to show, at index 0
+		return canRender(ticket.symbology) ? 0 : -1;
 	});
 	let openIdx = $state(-1);
 	const activeIdx = $derived(openIdx >= 0 ? openIdx : defaultOpen);
 	const active = $derived(records[activeIdx]);
 	const ActiveView = $derived(active && !active.error ? recordViews[active.kind] : undefined);
+
+	// The barcode sits after the records as one more tab. It needs to know how
+	// the payload was encoded, so it is only offered for tickets that came from
+	// a symbol this app can also write.
+	const showBarcode = $derived(canRender(ticket.symbology));
+	const barcodeIdx = $derived(records.length);
+	const barcodeOpen = $derived(showBarcode && activeIdx === barcodeIdx);
 
 	const sourceLabel = $derived(
 		{
@@ -168,7 +179,7 @@
 		</div>
 		<div class="meta">
 			<span class="chip">{envelopeLabel}</span>
-			{#if ticket.barcodeFormat}<span class="chip">{ticket.barcodeFormat}</span>{/if}
+			{#if ticket.symbology}<span class="chip">{ticket.symbology.format}</span>{/if}
 			<span class="chip src">{sourceLabel}{ticket.source.fileName ? ` · ${ticket.source.fileName}` : ''}</span>
 			{#if validUntil}<span class="chip">barcode valid until {validUntil} UTC</span>{/if}
 		</div>
@@ -220,7 +231,7 @@
 		<pre class="text-payload">{hexDump(ticket.raw.subarray(0, 512))}</pre>
 	{/if}
 
-	{#if records.length}
+	{#if records.length || showBarcode}
 		<nav class="tabs" aria-label="Ticket records">
 			{#each records as r, i (i)}
 				<button
@@ -232,8 +243,17 @@
 					{recordLabel(r.id, r.kind)}
 				</button>
 			{/each}
+			{#if showBarcode}
+				<button class="tab" class:active={barcodeOpen} onclick={() => (openIdx = barcodeIdx)}>
+					Barcode
+				</button>
+			{/if}
 		</nav>
-		{#if active}
+		{#if barcodeOpen && ticket.symbology}
+			<div class="record-body">
+				<BarcodeView raw={ticket.raw} symbology={ticket.symbology} />
+			</div>
+		{:else if active}
 			<div class="record-body">
 				{#if ActiveView}
 					<ActiveView data={active.data} />
