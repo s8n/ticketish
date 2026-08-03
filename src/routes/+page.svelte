@@ -104,7 +104,7 @@
 				</li>
 				<li>
 					<span class="format">Custom formats</span>
-					Renfe, TCDD, Trenitalia and EAV, which each go their own way
+					Renfe, SNCF, Eurostar, TCDD, Trenitalia and EAV, which each go their own way
 				</li>
 			</ul>
 			<p class="fine">

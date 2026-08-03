@@ -12,6 +12,8 @@
 	import SsbView from './SsbView.svelte';
 	import RenfeView from './RenfeView.svelte';
 	import TcddView from './TcddView.svelte';
+	import SncfReservationView from './SncfReservationView.svelte';
+	import SncfETicketView from './SncfETicketView.svelte';
 	import Ssb1View from './Ssb1View.svelte';
 	import TrenitaliaView from './TrenitaliaView.svelte';
 	import EavView from './EavView.svelte';
@@ -206,6 +208,10 @@
 		<TrenitaliaView ticket={container.ticket} />
 	{:else if container.kind === 'eav'}
 		<EavView ticket={container.ticket} />
+	{:else if container.kind === 'sncf-reservation'}
+		<SncfReservationView ticket={container.ticket} />
+	{:else if container.kind === 'sncf-eticket'}
+		<SncfETicketView ticket={container.ticket} />
 	{:else if container.kind === 'text'}
 		<pre class="text-payload">{container.text}</pre>
 		<p class="note">This barcode carries plain text, not UIC ticket data.</p>

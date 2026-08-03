@@ -28,6 +28,16 @@ installed.
   Keycards, plus the 107-byte SSB1 variant used by VR (Finland)
 - **Renfe** - Spanish tickets, which use their own fixed-width ASCII format
   rather than a UIC one
+- **SNCF / Eurostar** - two unrelated fixed-width ASCII formats:
+  - the reservation record, magic `e` plus a three letter document type
+    (`eRIV`, `eRIZ`, `eEDV`), issued as both PDF417 and Aztec on Eurostar home
+    print and SNCF card stock alike. PNR, ticket number, both station
+    mnemonics, train, coach, seat, class and tariff are read; the record
+    appears to carry no travel date
+  - the e-billet, magic `i0CV`, a 131 character Aztec on TGV INOUI and
+    sncf-connect tickets. Adds passenger name, date of birth and customer
+    reference, and carries a travel date with no year, but has no coach or
+    seat even when the ticket prints them. Ported from zuegli
 - **TCDD** - Turkish e-tickets, a "$"-delimited ASCII record
 - **Trenitalia** - departure date, train, coach, seat, PNR and entitlement
   number, reverse engineered from four tickets; the payload appears to carry
