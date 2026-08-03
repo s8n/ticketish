@@ -159,28 +159,32 @@ const GENERIC_CLASS = 'ticketish_generic';
 const MAX_TEXT_MODULES = 10;
 
 /**
- * A transit class per operator, because its issuer name is per operator.
+ * One transit class, whatever the operator.
  *
- * The leg carries a transitOperatorName and it does not come through on the
- * card, so the class's issuer name is in practice the only place a transit
- * pass names who is running the train. That field lives on the class, and an
- * object cannot override it, so an operator apiece is what naming them costs.
+ * The card takes its top line from the class's issuer name and an object
+ * cannot override it, so that field carries both names: the leg's
+ * transitOperatorName does not come through on the card, and without this the
+ * operator goes unnamed. Writing a per-ticket name into a shared class is a
+ * known compromise. A class id is a key, so whichever operator wins the race
+ * to create the class decides the name every pass shows, or, if a save link
+ * does update an existing class, the last one saved renames the passes
+ * already in the wallet.
+ *
+ * The alternative, a class per operator, is the one that fits the API and it
+ * is not free: each class is a resource of its own to be reviewed and
+ * approved, and an app that scans whatever ticket it is handed would grow
+ * them without limit. The wallet apps that do this in the wild share one
+ * class, so this does too.
  *
  * The version is part of the id because a save link creates a class the
  * issuer does not have and is not a way to edit one it does: changing what a
  * class says means pointing at one that does not exist yet. Old ones stay
  * behind in the issuer account, unused.
  */
-const TRANSIT_CLASS_VERSION = 2;
+const TRANSIT_CLASS_VERSION = 3;
 
-function transitClassId(issuerId: string, issuer: string): string {
-	const slug = issuer
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '_')
-		.replace(/^_|_$/g, '')
-		.slice(0, 40);
-	return `${issuerId}.ticketish_rail_v${TRANSIT_CLASS_VERSION}_${slug || 'operator'}`;
-}
+const transitClassId = (issuerId: string) =>
+	`${issuerId}.ticketish_rail_v${TRANSIT_CLASS_VERSION}`;
 
 /**
  * A transit class needs a logo, and a logo is a URI Google's servers fetch,
@@ -345,7 +349,7 @@ export function buildTransitObject(
 	const covered = new Set(['train', 'departs', 'class', 'coach', 'seat']);
 	const object: Record<string, unknown> = {
 		id: `${issuerId}.${serialForPayload(payload)}`,
-		classId: transitClassId(issuerId, trip.issuer),
+		classId: transitClassId(issuerId),
 		state: 'ACTIVE',
 		tripType: 'ONE_WAY',
 		hexBackgroundColor: passColors(trip.operator).hex,
@@ -388,7 +392,7 @@ export function buildPassPayload(
 		return {
 			transitClasses: [
 				{
-					id: transitClassId(issuerId, trip.issuer),
+					id: transitClassId(issuerId),
 					issuerName: passIssuerName(trip),
 					reviewStatus: 'UNDER_REVIEW',
 					transitType: 'RAIL',
