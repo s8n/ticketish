@@ -19,7 +19,7 @@ describe('TCDD tickets', () => {
 		'TCDD_B', '6', '3', '0',
 		'240010TESTTKT1', 'TESTPNR01', '20240519103000',
 		'11111111111', '49549', '1', '2',
-		'12345', '234516259', '234516104', '99999999999',
+		'12345', '111111111', '222222222', '99999999999',
 		'7', '12b', '1', '150.00', '200.00', '20240501121500',
 		'null', 'null', '0', '', '250', 'a'.repeat(40)
 	];
@@ -34,8 +34,8 @@ describe('TCDD tickets', () => {
 		expect(c.ticket.departure).toBe('2024-05-19T10:30');
 		expect(c.ticket.purchased).toBe('2024-05-01T12:15');
 		expect(c.ticket.trainNumber).toBe('12345');
-		expect(c.ticket.originCode).toBe('234516259');
-		expect(c.ticket.destinationCode).toBe('234516104');
+		expect(c.ticket.originCode).toBe('111111111');
+		expect(c.ticket.destinationCode).toBe('222222222');
 		expect(c.ticket.coach).toBe('7');
 		expect(c.ticket.seat).toBe('12b');
 		expect(c.ticket.price).toBe('150.00');
@@ -139,7 +139,7 @@ describe('Trenitalia tickets', () => {
 		seatNumber = 4,
 		seatLetter = 'D',
 		pnr = 'ABCDEF',
-		entitlement = 1234567891
+		entitlement = 1234567890
 	} = {}) {
 		const w = new BitWriter();
 		w.int(2, 4).int(83, 14).int(0, 4).int(16, 5); // version, RICS, key id, type 16
@@ -167,7 +167,7 @@ describe('Trenitalia tickets', () => {
 		expect(t.coach).toBe(8);
 		expect(t.seat).toBe('4D');
 		expect(t.pnr).toBe('ABCDEF');
-		expect(t.entitlementNumber).toBe(1234567891);
+		expect(t.entitlementNumber).toBe(1234567890);
 	});
 
 	it('stores the seat number as an integer, not as digits', () => {
