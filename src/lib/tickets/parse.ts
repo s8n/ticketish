@@ -150,16 +150,44 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 	return { kind: 'unknown' };
 }
 
+/**
+ * Text QRs are not all UTF-8. Portuguese CP tickets carry the operator's own
+ * address, and it is ISO-8859-1: a strict UTF-8 decode throws on the ç in
+ * "Calçada", which used to leave the whole payload showing as unidentified
+ * binary.
+ *
+ * The printability test runs on the bytes rather than on the decoded string,
+ * for a reason worth knowing. Labelling a decoder "iso-8859-1" gets you
+ * windows-1252, because that is what the WHATWG encoding standard maps the
+ * label to, and windows-1252 fills 0x80 to 0x9f with quotes and dashes
+ * instead of leaving them as controls. So a run of 0x85 decodes to a line of
+ * ellipses and reads as perfectly good text. Checking the bytes keeps that
+ * range out, which matters because it is a quarter of what binary is made
+ * of, and Latin-1 has no invalid byte to fail on the way UTF-8 does.
+ */
+function isTextByte(b: number): boolean {
+	if (b === 0x09 || b === 0x0a || b === 0x0d) return true; // tab, newline
+	if (b >= 0x20 && b <= 0x7e) return true; // ASCII printable
+	return b >= 0xa0; // Latin-1's upper half, skipping the C1 controls
+}
+
 function tryText(data: Uint8Array): string | null {
 	if (data.length === 0) return null;
+
+	// UTF-8 first, since it rejects anything that is not, and most text
+	// barcodes are written in it.
 	try {
 		const s = new TextDecoder('utf-8', { fatal: true }).decode(data);
-		// Require mostly printable characters
-		const printable = [...s].filter((c) => c >= ' ' || c === '\n' || c === '\t' || c === '\r');
-		return printable.length / [...s].length > 0.95 ? s : null;
+		const printable = [...s].filter((c) => c >= ' ' || c === '\n' || c === '\r' || c === '\t');
+		if (printable.length / [...s].length > 0.95) return s;
 	} catch {
-		return null;
+		// not UTF-8, so try the other encoding a text barcode is written in
 	}
+
+	let printable = 0;
+	for (const b of data) if (isTextByte(b)) printable++;
+	if (printable / data.length <= 0.95) return null;
+	return new TextDecoder('iso-8859-1').decode(data);
 }
 
 let counter = 0;
