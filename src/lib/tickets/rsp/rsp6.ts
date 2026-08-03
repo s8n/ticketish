@@ -12,13 +12,16 @@
 import keysJson from './keys.json' with { type: 'json' };
 import { sha256 } from './sha256.ts';
 
-interface RspKey {
+export interface RspKey {
 	issuer_id: string;
 	modulus_hex: string;
 	public_exponent_hex: string;
 }
 
-const KEYS = keysJson as unknown as Record<string, RspKey[]>;
+/** Key store, overridable so tests can sign with their own throwaway key. */
+export type RspKeyStore = Record<string, RspKey[]>;
+
+const KEYS = keysJson as unknown as RspKeyStore;
 
 export interface Rsp6Reservation {
 	serviceId: string;
@@ -146,8 +149,8 @@ function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
 }
 
 /** Recover the signed message; returns null if padding or hash don't check out. */
-function recoverPayload(b26: string, issuerId: string): Uint8Array | null {
-	const keys = KEYS[issuerId];
+function recoverPayload(b26: string, issuerId: string, keys_: RspKeyStore): Uint8Array | null {
+	const keys = keys_[issuerId];
 	if (!keys) return null;
 	const num = base26ToBigInt(b26);
 	for (const key of keys) {
@@ -316,7 +319,7 @@ function parseRailcardData(payload: Uint8Array): Rsp6RailcardData {
 	};
 }
 
-export function parseRsp6(data: Uint8Array): Rsp6Ticket {
+export function parseRsp6(data: Uint8Array, keys: RspKeyStore = KEYS): Rsp6Ticket {
 	const s = asciiOrNull(data);
 	if (!s || !isRsp6(data)) throw new Error('not an RSP6 barcode');
 	const ticketType = s.slice(0, 2) as '06' | '08';
@@ -326,12 +329,12 @@ export function parseRsp6(data: Uint8Array): Rsp6Ticket {
 		issuerId: s.slice(13, 15)
 	};
 
-	const payload = recoverPayload(s.slice(15), base.issuerId);
+	const payload = recoverPayload(s.slice(15), base.issuerId, keys);
 	if (!payload) {
 		return {
 			...base,
 			keyRecovered: false,
-			error: KEYS[base.issuerId]
+			error: keys[base.issuerId]
 				? 'signature recovery failed with all known keys for this issuer'
 				: `no published key for issuer ${base.issuerId}`,
 			data: null

@@ -11,7 +11,8 @@ const FIXTURES = fileURLToPath(new URL('./fixtures', import.meta.url));
 
 function loadCases() {
 	const cases = [];
-	for (const sub of ['public', 'private']) {
+	// Only the published DB specimen tickets: real tickets never go in tests.
+	for (const sub of ['public']) {
 		const dir = join(FIXTURES, sub);
 		if (!existsSync(dir)) continue;
 		for (const f of readdirSync(dir)) {

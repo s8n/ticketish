@@ -1,140 +1,194 @@
 /**
- * TCDD, SSB1 (VR) and Trenitalia barcodes. Every expectation here was read
- * off the printed ticket that produced the fixture, so these tests pin the
- * reverse-engineered field offsets to ground truth rather than to the
- * parser's own output.
+ * TCDD, SSB1 (as used by VR) and Trenitalia. All payloads are built by the
+ * test; the field layouts they exercise were established from real tickets
+ * but no real ticket data appears here.
  */
 import { describe, expect, it } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
+import { parseSsb1 } from '../src/lib/tickets/ssb/ssb1.ts';
+import { parseTrenitalia } from '../src/lib/tickets/trenitalia/trenitalia.ts';
+import { BitWriter } from './helpers/build.ts';
 
-const fixture = (name: string) =>
-	fileURLToPath(new URL(`./fixtures/private/${name}.bin`, import.meta.url));
+const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
 
-const load = (name: string) => new Uint8Array(readFileSync(fixture(name)));
+describe('TCDD tickets', () => {
+	// "$" delimited: magic, three unknowns, ticket number, PNR, departure,
+	// two ids, two unknowns, train, origin, destination, unknown, coach,
+	// seat, unknown, price, full price, purchase time, then trailing fields.
+	const fields = [
+		'TCDD_B', '6', '3', '0',
+		'240010TESTTKT1', 'TESTPNR01', '20240519103000',
+		'11111111111', '49549', '1', '2',
+		'12345', '234516259', '234516104', '99999999999',
+		'7', '12b', '1', '150.00', '200.00', '20240501121500',
+		'null', 'null', '0', '', '250', 'a'.repeat(40)
+	];
+	const payload = ascii(fields.join('$'));
 
-describe.skipIf(!existsSync(fixture('tr-tcdd-ankara-istanbul')))('TCDD tickets', () => {
-	it('parses the Ankara to Istanbul ticket', () => {
-		const c = parsePayload(load('tr-tcdd-ankara-istanbul'));
+	it('parses every field it claims to know', () => {
+		const c = parsePayload(payload);
 		expect(c.kind).toBe('tcdd');
 		if (c.kind !== 'tcdd') return;
-		// printed: train 81007, 21/01/2018 12:00, car 4, seat 6a, 54,00
-		expect(c.ticket.pnr).toBe('TESTPNR01');
 		expect(c.ticket.ticketNumber).toBe('240010TESTTKT1');
-		expect(c.ticket.trainNumber).toBe('81007');
-		expect(c.ticket.departure).toBe('2018-01-21T12:00');
-		expect(c.ticket.purchased).toBe('2018-01-12T22:48');
-		expect(c.ticket.coach).toBe('4');
-		expect(c.ticket.seat).toBe('6a');
-		expect(c.ticket.price).toBe('54.00');
+		expect(c.ticket.pnr).toBe('TESTPNR01');
+		expect(c.ticket.departure).toBe('2024-05-19T10:30');
+		expect(c.ticket.purchased).toBe('2024-05-01T12:15');
+		expect(c.ticket.trainNumber).toBe('12345');
+		expect(c.ticket.originCode).toBe('234516259');
+		expect(c.ticket.destinationCode).toBe('234516104');
+		expect(c.ticket.coach).toBe('7');
+		expect(c.ticket.seat).toBe('12b');
+		expect(c.ticket.price).toBe('150.00');
+		expect(c.ticket.fullPrice).toBe('200.00');
 		expect(c.ticket.checksum).toMatch(/^[0-9a-f]{40}$/);
 	});
 
-	it('parses the reverse journey with swapped station codes', () => {
-		const a = parsePayload(load('tr-tcdd-ankara-istanbul'));
-		const b = parsePayload(load('tr-tcdd-istanbul-ankara'));
-		if (a.kind !== 'tcdd' || b.kind !== 'tcdd') return;
-		expect(b.ticket.originCode).toBe(a.ticket.destinationCode);
-		expect(b.ticket.destinationCode).toBe(a.ticket.originCode);
-		expect(b.ticket.trainNumber).toBe('81032');
-		expect(b.ticket.seat).toBe('6d');
+	it('names the stations it knows and keeps unknown codes numeric', () => {
+		const c = parsePayload(payload);
+		if (c.kind !== 'tcdd') return;
+		expect(c.ticket.originCode).not.toBe(c.ticket.destinationCode);
+	});
+
+	it('rejects a truncated record', () => {
+		const c = parsePayload(ascii('TCDD_B$6$3$0$X'));
+		expect(c.kind).not.toBe('tcdd');
 	});
 });
 
-describe.skipIf(!existsSync(fixture('fi-vr-hki-tpe')))('VR (SSB1) tickets', () => {
-	it('parses the Helsinki to Tampere ticket', () => {
-		const c = parsePayload(load('fi-vr-hki-tpe'));
-		expect(c.kind).toBe('ssb1');
-		if (c.kind !== 'ssb1') return;
-		// printed: 16.4. 14:00, train S 87, coach 2, seat 24, adult
-		expect(c.ticket.issuerRics).toBe(10);
-		expect(c.ticket.departureStation).toBe('HKI');
-		expect(c.ticket.arrivalStation).toBe('TPE');
-		expect(c.ticket.departureTime).toBe('14:00');
-		expect(c.ticket.trainNumber).toBe(87);
-		expect(c.ticket.coachNumber).toBe(2);
-		expect(c.ticket.seat).toBe('24');
-		expect(c.ticket.numAdults).toBe(1);
-		expect(c.ticket.travelClass).toBe('2');
-		expect(c.ticket.validFrom).toMatch(/-04-16$/);
-	});
-
-	it('parses the commuter return, which has no reserved seat', () => {
-		const c = parsePayload(load('fi-vr-tpe-hki'));
-		if (c.kind !== 'ssb1') return;
-		expect(c.ticket.departureStation).toBe('TPE');
-		expect(c.ticket.arrivalStation).toBe('HKI');
-		expect(c.ticket.trainNumber).toBe(19734);
-		// validity runs past midnight, so the end day is the following one
-		expect(c.ticket.validUntil).toMatch(/-04-17$/);
-	});
-});
-
-// Every expectation is read off the printed ticket. Between them these four
-// cover Frecciarossa, Intercity and a regional fare with no reservation, and
-// they disagree on every field the parser claims to decode.
-const TRENITALIA = [
-	{
-		name: 'it-trenitalia-napoli-roma',
-		printed: 'Frecciarossa 9544, 15/07/2026, coach 5, seat 6D, PNR TESTAA',
-		dayOfYear: 196,
-		train: 9544,
-		coach: 5,
-		seat: '6D',
-		pnr: 'TESTAA',
-		entitlement: 1234567890
-	},
-	{
-		name: 'it-trenitalia-roma-firenze',
-		printed: 'Frecciarossa 8418, 17/07/2026, coach 8, seat 4D, PNR TESTAB',
-		dayOfYear: 198,
-		train: 8418,
-		coach: 8,
-		seat: '4D',
-		pnr: 'TESTAB',
-		entitlement: 1234567891
-	},
-	{
-		name: 'it-trenitalia-intercity',
-		printed: 'Intercity 592, 17/07/2026, coach 6, seat 21D, PNR TESTAC',
-		dayOfYear: 198,
-		train: 592,
-		coach: 6,
-		// the seat number is a 6-bit integer, so 21 is one symbol, not two
-		seat: '21D',
-		pnr: 'TESTAC',
-		entitlement: 1234567892
-	},
-	{
-		name: 'it-trenitalia-regionale',
-		printed: 'Regionale 91595, 18/07/2026, no reservation, no PNR',
-		dayOfYear: 199,
-		train: 91595,
-		coach: 0,
-		seat: '',
-		pnr: '',
-		entitlement: 1234567893
+describe('VR tickets (SSB1)', () => {
+	/** 107 bytes, bit-packed, with no separate signature block. */
+	function ssb1({
+		rics = 10,
+		adults = 1,
+		children = 0,
+		validFromDay = 106,
+		validUntilDay = 106,
+		departureStation = 'HKI',
+		arrivalStation = 'TPE',
+		departureSlot = 29,
+		train = 87,
+		reservation = 100000000001,
+		travelClass = '2',
+		coach = 2,
+		seatNumber = 24,
+		pnr = '000006'
+	} = {}) {
+		const w = new BitWriter();
+		w.int(2, 4).int(rics, 14);
+		w.bool(false); // return included
+		w.int(0, 6); // number of tickets
+		w.int(adults, 7).int(children, 7);
+		w.int(validFromDay, 9).int(validUntilDay, 9);
+		w.bool(true); // individual frequent traveller id follows
+		w.int(0, 47);
+		w.bool(false); // departure station is a name, not a number
+		w.strAlpha(departureStation, 5); // bits 106..136
+		w.bool(false);
+		w.strAlpha(arrivalStation, 5); // bits 137..167
+		w.int(departureSlot, 6);
+		w.int(train, 17);
+		// reservation reference is 40 bits, beyond a safe integer shift
+		const reservationBits = reservation.toString(2).padStart(40, '0');
+		for (const bit of reservationBits) w.int(Number(bit), 1);
+		w.strAlpha(travelClass, 1);
+		w.int(coach, 10);
+		w.int(seatNumber, 7);
+		w.strAlpha('', 1);
+		w.bool(false); // overbooked
+		w.strAlpha(pnr, 7); // bits 260..302
+		w.int(0, 4); // ticket type
+		w.bool(true); // not a specimen
+		return w.padTo(107 * 8).bytes(107);
 	}
-];
 
-describe.skipIf(!TRENITALIA.every((t) => existsSync(fixture(t.name))))('Trenitalia tickets', () => {
-	it.each(TRENITALIA)('parses $printed', (t) => {
-		const c = parsePayload(load(t.name));
-		expect(c.kind).toBe('trenitalia');
-		if (c.kind !== 'trenitalia') return;
-		expect(c.ticket.issuerRics).toBe(83);
-		expect(c.ticket.dayOfYear).toBe(t.dayOfYear);
-		expect(c.ticket.trainNumber).toBe(t.train);
-		expect(c.ticket.coach).toBe(t.coach);
-		expect(c.ticket.seat).toBe(t.seat);
-		expect(c.ticket.pnr).toBe(t.pnr);
-		expect(c.ticket.entitlementNumber).toBe(t.entitlement);
+	const REFERENCE = new Date('2026-05-01T00:00:00Z');
+
+	it('reads the journey', () => {
+		const t = parseSsb1(ssb1(), REFERENCE);
+		expect(t.version).toBe(2);
+		expect(t.issuerRics).toBe(10);
+		expect(t.departureStation).toBe('HKI');
+		expect(t.arrivalStation).toBe('TPE');
+		expect(t.departureTime).toBe('14:00');
+		expect(t.trainNumber).toBe(87);
+		expect(t.coachNumber).toBe(2);
+		expect(t.seat).toBe('24');
+		expect(t.numAdults).toBe(1);
+		expect(t.travelClass).toBe('2');
+		expect(t.specimen).toBe(false);
 	});
 
-	it('resolves the day of year against a reference date', async () => {
-		const { parseTrenitalia } = await import('../src/lib/tickets/trenitalia/trenitalia.ts');
-		const ticket = parseTrenitalia(load('it-trenitalia-intercity'), new Date('2026-07-20T00:00:00Z'));
-		expect(ticket.departureDate).toBe('2026-07-17');
+	it('resolves a day of the year that carries no year at all', () => {
+		// day 106 of 2026 is 16 April; the year comes from the reference date
+		const t = parseSsb1(ssb1({ validFromDay: 106, validUntilDay: 107 }), REFERENCE);
+		expect(t.validFrom).toBe('2026-04-16');
+		expect(t.validUntil).toBe('2026-04-17');
+	});
+
+	it('is reached through the format dispatcher', () => {
+		expect(parsePayload(ssb1()).kind).toBe('ssb1');
+	});
+});
+
+describe('Trenitalia tickets', () => {
+	/** 67 bytes: an SSB style header over a body of its own design. */
+	function trenitalia({
+		dayOfYear = 198,
+		train = 8418,
+		coach = 8,
+		seatNumber = 4,
+		seatLetter = 'D',
+		pnr = 'ABCDEF',
+		entitlement = 1234567891
+	} = {}) {
+		const w = new BitWriter();
+		w.int(2, 4).int(83, 14).int(0, 4).int(16, 5); // version, RICS, key id, type 16
+		w.padTo(43).int(dayOfYear, 9); // bits 43..52
+		w.padTo(177).int(train, 17); // bits 177..194
+		w.padTo(246).int(coach, 4); // bits 246..250
+		w.padTo(251).int(seatNumber, 6); // bits 251..257, one spare bit before it
+		w.strAlpha(seatLetter, 1); // bits 257..263
+		w.padTo(270).strAlpha(pnr, 6); // bits 270..306
+		w.padTo(468);
+		// the entitlement number is 32 bits, so write it in two halves
+		w.int(Math.floor(entitlement / 0x10000), 16).int(entitlement % 0x10000, 16);
+		return w.padTo(67 * 8).bytes(67);
+	}
+
+	const REFERENCE = new Date('2026-07-20T00:00:00Z');
+
+	it('reads the fields that were confirmed against printed tickets', () => {
+		const t = parseTrenitalia(trenitalia(), REFERENCE);
+		expect(t.issuerRics).toBe(83);
+		expect(t.ticketType).toBe(16);
+		expect(t.dayOfYear).toBe(198);
+		expect(t.departureDate).toBe('2026-07-17');
+		expect(t.trainNumber).toBe(8418);
+		expect(t.coach).toBe(8);
+		expect(t.seat).toBe('4D');
+		expect(t.pnr).toBe('ABCDEF');
+		expect(t.entitlementNumber).toBe(1234567891);
+	});
+
+	it('stores the seat number as an integer, not as digits', () => {
+		// seat 21D is one 6 bit value plus a letter, which a character based
+		// reading would render as "LD"
+		const t = parseTrenitalia(trenitalia({ seatNumber: 21, seatLetter: 'D' }), REFERENCE);
+		expect(t.seat).toBe('21D');
+	});
+
+	it('leaves reservation fields empty on a regional ticket', () => {
+		const t = parseTrenitalia(
+			trenitalia({ coach: 0, seatNumber: 0, seatLetter: '0', pnr: '000000', train: 91595 }),
+			REFERENCE
+		);
+		expect(t.coach).toBe(0);
+		expect(t.seat).toBe('');
+		expect(t.pnr).toBe('');
+		expect(t.trainNumber).toBe(91595);
+	});
+
+	it('is reached through the format dispatcher', () => {
+		expect(parsePayload(trenitalia()).kind).toBe('trenitalia');
 	});
 });

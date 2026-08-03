@@ -15,14 +15,17 @@ import caKeys from './ca-keys.json' with { type: 'json' };
 import { parseFirstTlv, parseTlv, tlvMap } from './tlv.ts';
 import { sha1 } from './sha1.ts';
 
-interface CaKey {
+export interface CaKey {
 	name: string;
 	profile: number;
 	modulus_hex: string;
 	exponent_hex: string;
 }
 
-const CA_KEYS = caKeys as unknown as Record<string, CaKey>;
+/** Key store, overridable so tests can sign with their own throwaway key. */
+export type VdvCaKeyStore = Record<string, CaKey>;
+
+const CA_KEYS = caKeys as unknown as VdvCaKeyStore;
 
 const TAG_SIGNATURE = 0x9e;
 const TAG_REMAINDER = 0x9a;
@@ -423,7 +426,7 @@ export function isVdv(data: Uint8Array): boolean {
 	}
 }
 
-export function parseVdv(data: Uint8Array): VdvBarcode {
+export function parseVdv(data: Uint8Array, caKeys_: VdvCaKeyStore = CA_KEYS): VdvBarcode {
 	let tags = tlvMap(data);
 	let container: 'plain' | 'motics' = 'plain';
 	let containerIdentifier: string | undefined;
@@ -462,7 +465,7 @@ export function parseVdv(data: Uint8Array): VdvBarcode {
 		const certSig = certTags.get(TAG_CERT_SIGNATURE);
 		const certRem = certTags.get(TAG_CERT_REMAINDER);
 		if (!certSig || !certRem) return { ...base, error: 'incomplete CV certificate' };
-		const caKey = caReference ? CA_KEYS[caReference] : undefined;
+		const caKey = caReference ? caKeys_[caReference] : undefined;
 		if (!caKey) {
 			return { ...base, error: `no published CA key for ${caReference ?? 'unknown CA'}` };
 		}

@@ -32,6 +32,25 @@ Besides the parser and view, update the two places that list supported
 formats: the empty-state text in `src/routes/+page.svelte` and the
 "What it reads" section in `README.md`.
 
+## Never put real tickets in tests
+
+Tests must not use ave's tickets, and must not contain values taken from
+them: no PNRs, ticket numbers, station codes, dates, names or prices copied
+off a real ticket, even in a comment or a commit message.
+
+Build the payload instead. `tests/helpers/` has the tools: bit writers, TLV
+and UIC 918.3 envelope builders, and throwaway RSA keys for the formats that
+hide their data inside a signature (`buildVdv`, `buildRsp6`). Parsers that
+read a bundled key store accept an override so a test can pass its own.
+
+Real tickets are still useful for *finding* a layout. Once you have it,
+express the finding as a synthetic payload. If a behaviour genuinely cannot
+be reproduced synthetically, ask before using a real ticket rather than
+adding one.
+
+`tests/fixtures/public/` holds DB's published Muster specimens, which are
+fine to use and are committed.
+
 ## Projects worth reading
 
 - [zuegli](https://github.com/TheEnbyperor/zuegli) (EUPL-1.2): the main

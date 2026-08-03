@@ -1,49 +1,74 @@
-/** RSP6 (UK) parsing against Python-generated ground truth (private fixtures). */
+/**
+ * UK RSP6. The ticket data lives inside an RSA signature with message
+ * recovery, so the test signs a payload of its own with a throwaway key and
+ * hands the parser the matching public key. No real ticket is involved.
+ */
 import { describe, expect, it } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { parsePayload } from '../src/lib/tickets/parse.ts';
-import type { Rsp6TicketData } from '../src/lib/tickets/rsp/rsp6.ts';
+import { parseRsp6, isRsp6, type Rsp6TicketData } from '../src/lib/tickets/rsp/rsp6.ts';
+import { buildRsp6, rsp6TicketBody, type Rsp6Fields } from './helpers/rsp6.ts';
 
-const CASES = ['uk-heathrow-london', 'uk-london-cardiff'].map((name) => ({
-	name,
-	bin: fileURLToPath(new URL(`./fixtures/private/${name}.bin`, import.meta.url)),
-	expected: fileURLToPath(new URL(`./fixtures/private/${name}.expected.json`, import.meta.url))
-}));
+const FIELDS: Rsp6Fields = {
+	ticketReference: 'TESTREF01',
+	standardClass: true,
+	lennonTicketType: 'SDS',
+	fareLabel: 'ABC',
+	originNlc: '1234',
+	destinationNlc: '5678',
+	sellingNlc: '9012',
+	childTicket: false,
+	couponType: 0,
+	discountCode: 11,
+	routeCode: 222,
+	// 1997-01-01 plus 10000 days is 2024-05-19
+	startDay: 10000,
+	startMinutes: 9 * 60 + 45,
+	specVersion: 1
+};
 
-describe.skipIf(!CASES.every((c) => existsSync(c.bin)))('RSP6 tickets', () => {
-	it.each(CASES)('recovers and parses $name', ({ bin, expected }) => {
-		const exp = JSON.parse(readFileSync(expected, 'utf8'));
-		const container = parsePayload(new Uint8Array(readFileSync(bin)));
-		expect(container.kind).toBe('rsp6');
-		if (container.kind !== 'rsp6') return;
-		const t = container.ticket;
-		expect(t.keyRecovered).toBe(true);
-		expect(t.error).toBeUndefined();
-		expect(t.ticketType).toBe(exp.envelope.ticket_type);
-		expect(t.ticketRef).toBe(exp.envelope.ticket_ref);
-		expect(t.issuerId).toBe(exp.envelope.issuer_id);
-		expect(t.payloadHex).toBe(exp.recovered_hex);
+describe('RSP6 tickets', () => {
+	const built = buildRsp6(rsp6TicketBody(FIELDS));
 
-		const d = t.data as Rsp6TicketData;
+	it('recognises the barcode shape', () => {
+		expect(isRsp6(built.barcode)).toBe(true);
+	});
+
+	it('recovers the payload and reads the ticket fields', () => {
+		const ticket = parseRsp6(built.barcode, built.keys);
+		expect(ticket.error).toBeUndefined();
+		expect(ticket.keyRecovered).toBe(true);
+		expect(ticket.ticketType).toBe('06');
+		expect(ticket.ticketRef).toBe(built.ticketRef);
+		expect(ticket.issuerId).toBe(built.issuerId);
+
+		const d = ticket.data as Rsp6TicketData;
 		expect(d.kind).toBe('ticket');
-		expect(d.ticketReference).toBe(exp.ticket.ticket_reference);
-		expect(d.standardClass).toBe(exp.ticket.standard_class);
-		expect(d.lennonTicketType).toBe(exp.ticket.lennon_ticket_type);
-		expect(d.fareLabel).toBe(exp.ticket.fare_label);
-		expect(d.originNlc).toBe(exp.ticket.origin_nlc);
-		expect(d.destinationNlc).toBe(exp.ticket.destination_nlc);
-		expect(d.sellingNlc).toBe(exp.ticket.selling_nlc);
-		expect(d.childTicket).toBe(exp.ticket.child_ticket);
-		expect(d.discountCode).toBe(exp.ticket.discount_code);
-		expect(d.routeCode).toBe(exp.ticket.route_code);
-		expect(d.startDate).toBe(`${exp.ticket.start_date}T${exp.ticket.start_time}`);
-		expect(d.specVersion).toBe(exp.ticket.spec_version);
-		if (exp.ticket.purchase) {
-			expect(d.purchase).not.toBeNull();
-			expect(d.purchase!.pricePence).toBe(exp.ticket.purchase.price_pence);
-			expect(d.purchase!.purchaseReference).toBe(exp.ticket.purchase.purchase_reference);
-			expect(d.purchase!.daysOfValidity).toBe(exp.ticket.purchase.days_of_validity);
-		}
+		expect(d.ticketReference).toBe(FIELDS.ticketReference);
+		expect(d.standardClass).toBe(true);
+		expect(d.lennonTicketType).toBe(FIELDS.lennonTicketType);
+		expect(d.fareLabel).toBe(FIELDS.fareLabel);
+		expect(d.originNlc).toBe(FIELDS.originNlc);
+		expect(d.destinationNlc).toBe(FIELDS.destinationNlc);
+		expect(d.sellingNlc).toBe(FIELDS.sellingNlc);
+		expect(d.couponType).toBe('single');
+		expect(d.discountCode).toBe(FIELDS.discountCode);
+		expect(d.routeCode).toBe(FIELDS.routeCode);
+		expect(d.startDate).toBe('2024-05-19T09:45');
+		expect(d.specVersion).toBe(FIELDS.specVersion);
+		expect(d.purchase).toBeNull();
+	});
+
+	it('reports an unknown issuer instead of throwing', () => {
+		const ticket = parseRsp6(built.barcode, {});
+		expect(ticket.keyRecovered).toBe(false);
+		expect(ticket.error).toMatch(/no published key/);
+		expect(ticket.ticketRef).toBe(built.ticketRef);
+	});
+
+	it('reports failure when no key matches the signature', () => {
+		const other = buildRsp6(rsp6TicketBody(FIELDS), { issuerId: 'ZZ' });
+		// right issuer id, wrong key material
+		const ticket = parseRsp6(built.barcode, other.keys);
+		expect(ticket.keyRecovered).toBe(false);
+		expect(ticket.error).toMatch(/recovery failed/);
 	});
 });

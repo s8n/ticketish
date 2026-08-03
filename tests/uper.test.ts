@@ -1,8 +1,7 @@
 /**
  * Validates the UPER runtime against ground truth produced by the Python
  * `asn1tools` library from the same sample barcodes (see tests/fixtures).
- * Fixtures in fixtures/private are personal tickets and not committed; the
- * suite picks up whatever is present.
+ * Only the published DB specimen tickets are used, never personal ones.
  */
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
@@ -62,7 +61,8 @@ interface Expected {
 
 function loadCases(): { name: string; expected: Expected; payload: Uint8Array }[] {
 	const cases = [];
-	for (const sub of ['public', 'private']) {
+	// Only the published DB specimen tickets: real tickets never go in tests.
+	for (const sub of ['public']) {
 		const dir = join(FIXTURES, sub);
 		if (!existsSync(dir)) continue;
 		for (const f of readdirSync(dir)) {
