@@ -103,12 +103,8 @@
 					Older barcodes operators like VR still issue, plus NS and DB Keycards
 				</li>
 				<li>
-					<span class="format">Renfe</span>
-					Spanish high-speed and long-distance tickets
-				</li>
-				<li>
-					<span class="format">Operator formats</span>
-					TCDD and Trenitalia, which each go their own way
+					<span class="format">Custom formats</span>
+					Renfe, TCDD and Trenitalia, which each go their own way
 				</li>
 			</ul>
 			<p class="fine">
