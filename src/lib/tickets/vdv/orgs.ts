@@ -34,7 +34,7 @@ const ORGS: Record<number, OrgEntry> = {
 	6068: { name: 'Verkehrsverbund Oberelbe (VVO)', source: 'VVO product table' },
 
 	// Identified from sample tickets.
-	6292: { name: 'MVG München', source: 'MVG ticket samples' }
+	6292: { name: 'Münchner Verkehrsgesellschaft (MVG)', source: 'MVG ticket samples' }
 };
 
 export function vdvOrgName(code: number | undefined | null): string | null {
