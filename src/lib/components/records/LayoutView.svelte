@@ -1,12 +1,21 @@
 <script lang="ts">
-	import type { LayoutData } from '../../tickets/records/utlay.ts';
+	import type { LayoutData, LayoutField } from '../../tickets/records/utlay.ts';
 
 	let { data }: { data: LayoutData } = $props();
 
-	// RCT2 layouts address a 72-column grid; render faithfully in monospace.
-	const columns = $derived(
-		Math.max(72, ...data.fields.map((f) => f.column + Math.max(f.width, f.text.length)))
-	);
+	/**
+	 * Rightmost column a field actually prints into. Declared widths are often
+	 * far wider than the text in them, so measuring the text instead is what
+	 * keeps the grid from trailing off into empty columns.
+	 */
+	function contentEnd(f: LayoutField): number {
+		const longest = Math.max(0, ...f.text.split('\n').map((line) => line.trimEnd().length));
+		return f.column + longest;
+	}
+
+	// RCT2 layouts address a 72-column grid, but few tickets fill it, so the
+	// grid is cut to the last printed column and centred instead.
+	const columns = $derived(Math.max(1, ...data.fields.map(contentEnd)));
 	const rows = $derived(
 		Math.max(...data.fields.map((f) => f.line + Math.max(f.height, f.text.split('\n').length)), 18)
 	);
@@ -20,7 +29,10 @@
 				class:bold={f.bold}
 				class:italic={f.italic}
 				class:small={f.smallFont}
-				style:grid-column="{f.column + 1} / span {Math.max(f.width, 1)}"
+				style:grid-column="{f.column + 1} / span {Math.max(
+					Math.min(f.width, columns - f.column),
+					1
+				)}"
 				style:grid-row="{f.line + 1} / span {Math.max(f.height, f.text.split('\n').length, 1)}"
 			>{f.text}</div>
 		{/each}
@@ -35,6 +47,12 @@
 		border-radius: 4px;
 		background: color-mix(in srgb, var(--paper-hi) 60%, white 40%);
 		padding: 0.6rem;
+		/* hug the printed area rather than stretching past its last column,
+		   and centre what is left; a layout too wide to fit fills the row and
+		   scrolls instead */
+		width: max-content;
+		max-width: 100%;
+		margin-inline: auto;
 	}
 	.grid {
 		display: grid;
@@ -43,7 +61,7 @@
 		font-family: var(--font-mono);
 		font-size: 0.72rem;
 		color: var(--ink);
-		min-width: calc(var(--cols) * 1ch);
+		width: max-content;
 	}
 	.field {
 		white-space: pre;
