@@ -59,6 +59,7 @@ export type TicketContainer =
 	| { kind: 'viarail'; ticket: import('./viarail/viarail.ts').ViaRailTicket }
 	| { kind: 'hzpp'; ticket: import('./hzpp/hzpp.ts').HzppTicket }
 	| { kind: 'cd-legacy'; ticket: import('./cd/legacy.ts').CdLegacyTicket }
+	| { kind: 'nsb'; ticket: import('./nsb/nsb.ts').NsbTicket }
 	| { kind: 'sncf-eticket'; ticket: import('./sncf/eticket.ts').SncfETicket }
 	| { kind: 'text'; text: string }
 	| { kind: 'unknown' };

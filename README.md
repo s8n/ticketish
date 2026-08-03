@@ -58,6 +58,9 @@ installed.
   on which side of the 2023 switchover it was sold. The encrypted form (`A1`)
   is recognised but cannot be opened, since HŽPP does not publish the key, so
   the card says so instead of showing a hex string
+- **NSB / Vy** - Norwegian tickets, barely decoded: base64 in the QR, and
+  bit-packed binary behind it with no published specification anywhere. Only
+  the departure and arrival times are placed, and the card says as much
 - **ČD `#CD01`** - the older Czech layout, 63 bytes with no published
   specification. The issuing stamp and both validity dates are read, as OLE
   automation dates; the rest is shown as bytes rather than guessed at

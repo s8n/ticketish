@@ -19,6 +19,7 @@ import { isMav, parseMav } from './mav/mav.ts';
 import { isViaRail, parseViaRail } from './viarail/viarail.ts';
 import { isHzpp, parseHzpp } from './hzpp/hzpp.ts';
 import { isCdLegacy, parseCdLegacy } from './cd/legacy.ts';
+import { isNsb, parseNsb } from './nsb/nsb.ts';
 import { isSncfETicket, parseSncfETicket } from './sncf/eticket.ts';
 
 // Record parsers register themselves on import.
@@ -88,6 +89,13 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 	if (isMav(data)) {
 		try {
 			return { kind: 'mav', ticket: parseMav(data) };
+		} catch {
+			// fall through
+		}
+	}
+	if (isNsb(data)) {
+		try {
+			return { kind: 'nsb', ticket: parseNsb(data) };
 		} catch {
 			// fall through
 		}
