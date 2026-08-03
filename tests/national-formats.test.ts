@@ -12,23 +12,31 @@ import { BitWriter } from './helpers/build.ts';
 const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
 
 describe('TCDD tickets', () => {
-	// "$" delimited: magic, three unknowns, ticket number, PNR, departure,
-	// two ids, two unknowns, train, origin, destination, unknown, coach,
-	// seat, unknown, price, full price, purchase time, then trailing fields.
-	const fields = [
+	// Older layout: magic first, then a version digit.
+	const classic = [
 		'TCDD_B', '6', '3', '0',
 		'240010TESTTKT1', 'TESTPNR01', '20240519103000',
 		'11111111111', '49549', '1', '2',
-		'12345', '111111111', '222222222', '99999999999',
+		'12345-19052024', '111111111', '222222222', '99999999999',
 		'7', '12b', '1', '150.00', '200.00', '20240501121500',
 		'null', 'null', '0', '', '250', 'a'.repeat(40)
 	];
-	const payload = ascii(fields.join('$'));
 
-	it('parses every field it claims to know', () => {
-		const c = parsePayload(payload);
+	// Newer layout: opens with the separator, then the magic and a product
+	// name where the older one has a version digit.
+	const modern = [
+		'', 'TCDD_B', 'tcddprod',
+		'T24TESTPNR000000000001', '24TESTPN', '20240519000000',
+		'31832', 'AH', '2', '54321-19052024',
+		'98', '1323', '2', '6', '21', '999.0', '20240501153142',
+		'178579', '50', 'b'.repeat(40)
+	];
+
+	it('parses the older layout', () => {
+		const c = parsePayload(ascii(classic.join('$')));
 		expect(c.kind).toBe('tcdd');
 		if (c.kind !== 'tcdd') return;
+		expect(c.ticket.variant).toBe('classic');
 		expect(c.ticket.ticketNumber).toBe('240010TESTTKT1');
 		expect(c.ticket.pnr).toBe('TESTPNR01');
 		expect(c.ticket.departure).toBe('2024-05-19T10:30');
@@ -43,15 +51,43 @@ describe('TCDD tickets', () => {
 		expect(c.ticket.checksum).toMatch(/^[0-9a-f]{40}$/);
 	});
 
-	it('names the stations it knows and keeps unknown codes numeric', () => {
+	it('parses the newer layout, which starts with a separator', () => {
+		const payload = ascii(modern.join('$'));
+		// the magic is no longer the first thing in the record
+		expect(new TextDecoder().decode(payload).startsWith('$')).toBe(true);
 		const c = parsePayload(payload);
+		expect(c.kind).toBe('tcdd');
 		if (c.kind !== 'tcdd') return;
-		expect(c.ticket.originCode).not.toBe(c.ticket.destinationCode);
+		expect(c.ticket.variant).toBe('tcddprod');
+		expect(c.ticket.ticketNumber).toBe('T24TESTPNR000000000001');
+		expect(c.ticket.pnr).toBe('24TESTPN');
+		expect(c.ticket.trainNumber).toBe('54321');
+		expect(c.ticket.seat).toBe('21');
+		expect(c.ticket.price).toBe('999.0');
+		expect(c.ticket.purchased).toBe('2024-05-01T15:31');
+		expect(c.ticket.checksum).toMatch(/^[0-9a-f]{40}$/);
+	});
+
+	it('drops a zeroed departure time rather than claiming midnight', () => {
+		const c = parsePayload(ascii(modern.join('$')));
+		if (c.kind !== 'tcdd') return;
+		expect(c.ticket.departure).toBe('2024-05-19');
+	});
+
+	it('leaves fields it cannot place in the newer layout unclaimed', () => {
+		const c = parsePayload(ascii(modern.join('$')));
+		if (c.kind !== 'tcdd') return;
+		// no station codes or coach could be identified there
+		expect(c.ticket.originCode).toBe('');
+		expect(c.ticket.destinationCode).toBe('');
+		expect(c.ticket.coach).toBe('');
+		expect(c.ticket.extraFields).toContain('tcddprod');
+		expect(c.ticket.extraFields).toContain('AH');
 	});
 
 	it('rejects a truncated record', () => {
-		const c = parsePayload(ascii('TCDD_B$6$3$0$X'));
-		expect(c.kind).not.toBe('tcdd');
+		expect(parsePayload(ascii('TCDD_B$6$3$0$X')).kind).not.toBe('tcdd');
+		expect(parsePayload(ascii('$TCDD_B$tcddprod$X')).kind).not.toBe('tcdd');
 	});
 });
 

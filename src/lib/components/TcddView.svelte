@@ -6,9 +6,18 @@
 
 	let { ticket }: { ticket: TcddTicket } = $props();
 
+	const hasRoute = $derived(!!(ticket.originCode || ticket.destinationCode));
+
 	const rows = $derived<[string, string | null | undefined][]>([
 		['Departure', ticket.departure ? fmtDate(ticket.departure) : null],
-		['Place', ticket.coach || ticket.seat ? `car ${ticket.coach} · seat ${ticket.seat}` : null],
+		[
+			'Place',
+			ticket.coach || ticket.seat
+				? [ticket.coach ? `car ${ticket.coach}` : null, ticket.seat ? `seat ${ticket.seat}` : null]
+						.filter(Boolean)
+						.join(' · ')
+				: null
+		],
 		['Price', ticket.price ? `${ticket.price} TRY` : null],
 		[
 			'Full fare',
@@ -22,7 +31,10 @@
 
 <SimpleTicketView
 	title={`Train ${ticket.trainNumber}`}
-	from={tcddStationName(ticket.originCode)}
-	to={tcddStationName(ticket.destinationCode)}
+	from={hasRoute ? tcddStationName(ticket.originCode) : null}
+	to={hasRoute ? tcddStationName(ticket.destinationCode) : null}
 	{rows}
+	note={ticket.variant === 'tcddprod'
+		? 'Data may be incomplete, specification unavailable.'
+		: null}
 />
