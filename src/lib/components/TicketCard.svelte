@@ -275,7 +275,7 @@
 		<SncfETicketView ticket={container.ticket} />
 	{:else if container.kind === 'text'}
 		<pre class="text-payload">{container.text}</pre>
-		<p class="note">This barcode carries plain text, not UIC ticket data.</p>
+		<p class="note">This barcode carries plain text, not any form of supported ticket data.</p>
 	{:else if container.kind === 'unknown'}
 		<p class="note">Could not recognize this payload. Raw bytes:</p>
 		<pre class="text-payload">{hexDump(ticket.raw.subarray(0, 512))}</pre>
