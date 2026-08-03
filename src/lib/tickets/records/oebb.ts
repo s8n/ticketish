@@ -17,6 +17,15 @@ export interface OebbRecord {
 	extra: Record<string, string>;
 }
 
+/**
+ * True when the record carried nothing at all. ÖBB does issue a bare "{}"
+ * here, and without saying so the view would just be a gap above the raw
+ * record, reading as a parser that gave up rather than an empty record.
+ */
+export function isEmptyOebb(data: OebbRecord): boolean {
+	return !data.validFrom && !data.validUntil && Object.keys(data.extra).length === 0;
+}
+
 /** YYMMDDHHMM to an ISO UTC timestamp. */
 function parseTimestamp(value: string): string | null {
 	const m = value.match(/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/);

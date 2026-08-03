@@ -8,7 +8,7 @@
 import { describe, expect, it } from 'vitest';
 import { zlibSync, strToU8 } from 'fflate';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
-import { fmtVienna, type OebbRecord } from '../src/lib/tickets/records/oebb.ts';
+import { fmtVienna, isEmptyOebb, type OebbRecord } from '../src/lib/tickets/records/oebb.ts';
 
 /** Frame a UIC 918.3 record: 6 char id, 2 digit version, 4 digit total length. */
 function record(id: string, version: number, body: string): string {
@@ -59,6 +59,29 @@ describe('OeBB validity record', () => {
 		if (withExtra.kind !== 'uic9183') return;
 		const data = withExtra.envelope.records.find((r) => r.kind === 'oebb')?.data as OebbRecord;
 		expect(data.extra).toEqual({ X: '7' });
+	});
+
+	it('parses a bare "{}" as an empty record rather than failing', () => {
+		const bare = parsePayload(envelope(1181, record('118199', 1, '{}')));
+		if (bare.kind !== 'uic9183') return;
+		const parsed = bare.envelope.records.find((r) => r.kind === 'oebb');
+		expect(parsed?.error).toBeUndefined();
+
+		const data = parsed?.data as OebbRecord;
+		expect(data).toEqual({ validFrom: null, validUntil: null, extra: {} });
+		// the view says so instead of leaving a gap above the raw record
+		expect(isEmptyOebb(data)).toBe(true);
+	});
+
+	it('does not call a record empty when it carried anything at all', () => {
+		expect(isEmptyOebb({ validFrom: '2024-05-11T07:30:00Z', validUntil: null, extra: {} })).toBe(
+			false
+		);
+		expect(isEmptyOebb({ validFrom: null, validUntil: '2024-05-12T07:30:00Z', extra: {} })).toBe(
+			false
+		);
+		// an unknown key is still something worth showing
+		expect(isEmptyOebb({ validFrom: null, validUntil: null, extra: { X: '7' } })).toBe(false);
 	});
 
 	it('shows Austrian local time, an hour ahead of stored UTC in winter', () => {
