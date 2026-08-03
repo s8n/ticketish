@@ -1,0 +1,63 @@
+/**
+ * ÖBB issuer record "118199".
+ *
+ * A small JSON object carrying the validity window, with German initials for
+ * keys: V for "von" and B for "bis", each YYMMDDHHMM. The timestamps are UTC:
+ * on a Salzburg ticket valid from 09:09 UTC the printed local time is 10:09,
+ * which is Austria in January.
+ */
+import { registerRecordParser } from '../registry.ts';
+import type { RawRecord } from '../types.ts';
+
+export interface OebbRecord {
+	/** ISO UTC timestamps */
+	validFrom: string | null;
+	validUntil: string | null;
+	/** Anything else the record carried, so nothing is silently dropped. */
+	extra: Record<string, string>;
+}
+
+/** YYMMDDHHMM to an ISO UTC timestamp. */
+function parseTimestamp(value: string): string | null {
+	const m = value.match(/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+	if (!m) return null;
+	const [, yy, month, day, hour, minute] = m;
+	return `20${yy}-${month}-${day}T${hour}:${minute}:00Z`;
+}
+
+function parseOebb(record: RawRecord): OebbRecord {
+	const text = new TextDecoder('utf-8').decode(record.data).replace(/\0+$/, '').trim();
+	const raw = JSON.parse(text) as Record<string, unknown>;
+
+	const extra: Record<string, string> = {};
+	for (const [key, value] of Object.entries(raw)) {
+		if (key === 'V' || key === 'B') continue;
+		extra[key] = String(value);
+	}
+
+	return {
+		validFrom: typeof raw.V === 'string' ? parseTimestamp(raw.V) : null,
+		validUntil: typeof raw.B === 'string' ? parseTimestamp(raw.B) : null,
+		extra
+	};
+}
+
+/** Format an ISO UTC timestamp in Austrian local time, as printed on the ticket. */
+export function fmtVienna(iso: string | null): string | null {
+	if (!iso) return null;
+	const formatted = new Intl.DateTimeFormat('de-AT', {
+		timeZone: 'Europe/Vienna',
+		day: '2-digit',
+		month: '2-digit',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit'
+	}).format(new Date(iso));
+	return formatted.replace(',', '');
+}
+
+registerRecordParser({
+	kind: 'oebb',
+	matches: (id) => id === '118199',
+	parse: parseOebb
+});

@@ -17,6 +17,7 @@ import './records/utlay.ts';
 import './records/uflex.ts';
 import './records/dbbl.ts';
 import './records/dbvu.ts';
+import './records/oebb.ts';
 
 export function parsePayload(data: Uint8Array): TicketContainer {
 	if (isUic9183(data)) {

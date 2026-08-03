@@ -9,6 +9,7 @@ import LayoutView from './LayoutView.svelte';
 import FlexView from './FlexView.svelte';
 import DbBlView from './DbBlView.svelte';
 import DbVuView from './DbVuView.svelte';
+import OebbView from './OebbView.svelte';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const recordViews: Record<string, Component<{ data: any }>> = {
@@ -16,7 +17,8 @@ export const recordViews: Record<string, Component<{ data: any }>> = {
 	layout: LayoutView,
 	flex: FlexView,
 	'db-bl': DbBlView,
-	'db-vu': DbVuView
+	'db-vu': DbVuView,
+	oebb: OebbView
 };
 
 /** Friendly names for record ids shown on the tab strip. */
@@ -27,7 +29,8 @@ export function recordLabel(id: string, kind: string): string {
 		U_FLEX: 'Ticket data',
 		'0080BL': 'DB fare data',
 		'0080VU': 'DB Verbund',
-		'0080ID': 'DB ident'
+		'0080ID': 'DB ident',
+		'118199': 'ÖBB validity'
 	};
 	return labels[id.trim()] ?? (kind !== 'unknown' ? kind : id.trim());
 }

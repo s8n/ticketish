@@ -11,13 +11,15 @@ import { parsePayload } from '../src/lib/tickets/parse.ts';
 const sample = (name: string) => fileURLToPath(new URL(`../sample-tickets/${name}`, import.meta.url));
 
 const INTERRAIL = sample('interrail.png');
-const DIFFICULT = 'difficult-images';
 // Photographed on patterned security paper, slightly blurred and angled.
 // zxing-cpp 2.x could not decode these in any configuration; 3.x reads them
 // straight from the original JPEG, which is why the library version matters.
-const PHOTOS = [`${DIFFICULT}/IMG_20230203_175657.jpg`, `${DIFFICULT}/IMG_20230203_175702.jpg`];
+const PHOTOS = [
+	'austria-oebb/IMG_20230203_175657.jpg',
+	'austria-oebb/IMG_20230203_175702.jpg'
+];
 // Cropped flush to the symbol, so it has no quiet zone at all.
-const CROPPED = sample(`${DIFFICULT}/Screenshot_20220518-131809_MVG Fahrinfo~2.png`);
+const CROPPED = sample('difficult-images/Screenshot_20220518-131809_MVG Fahrinfo~2.png');
 
 const OPTIONS: ReaderOptions = {
 	formats: ['Aztec', 'QRCode', 'DataMatrix', 'PDF417'],
