@@ -7,6 +7,24 @@ commit messages. Use hyphens, commas, colons, or restructure the sentence.
 For missing-value placeholders in the UI, use an en dash. Generated fixture
 data under `tests/fixtures/` is byte-faithful barcode content and exempt.
 
+## Offline first
+
+The app is a PWA that has to work with no network at all, so everything it
+needs belongs in the install. `src/service-worker.ts` precaches every built
+asset, and new assets should stay in that precache rather than being fetched
+on demand to save install bytes.
+
+Install size is not the thing to optimise here. The zxing reader WASM is
+about 1 MB and the writer another 648 KB, and both are precached on purpose:
+an installed app that cannot decode or re-encode a ticket offline has failed
+at its one job. Lazy-load large assets off the *initial page load* by all
+means, which is why the writer is a dynamic import, but let the service
+worker cache them anyway.
+
+Do not add anything that needs a network round trip at runtime. Lookup tables
+that a parser depends on (station names, keys, product lists) are generated
+into the repo by a script under `scripts/` and bundled, never fetched.
+
 ## Sample tickets and what may ship
 
 - `sample-tickets/` holds real scanned tickets, organised by country. It is
