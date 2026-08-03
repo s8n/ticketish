@@ -161,8 +161,12 @@ fine to use and are committed.
   `standards/` (gitignored, so fetch it from era.europa.eu) when working on
   ELB. B.12 also covers the other TAP TSI barcodes, so it is worth a look
   before reverse engineering anything new.
-- [trainticket.wiki](https://trainticket.wiki/ticket-standards/domestic-standards/france/)
-  and [train-barcode-kaitai-spec](https://github.com/NeoRail/train-barcode-kaitai-spec)
-  (MIT, `sncf/sncf.ksy`): two independent reverse engineerings of the SNCF
-  e-billet. They agree with each other and with zuegli field for field, and
-  settled the last unknowns in `src/lib/tickets/sncf/eticket.ts`.
+- [trainticket.wiki](https://trainticket.wiki/ticket-standards/) and
+  [train-barcode-kaitai-spec](https://github.com/NeoRail/train-barcode-kaitai-spec)
+  (MIT, Kaitai files CC0): the reference for the national formats nobody
+  specifies. Between them they cover the SNCF e-billet, where they agree with
+  zuegli field for field and settled its last unknowns, and MÁV, where
+  `mav/mav.ksy` is what `src/lib/tickets/mav/` implements. Check the open
+  branches too: Volker Krause's `work/vkrause/mav-ticket-medium` carries the
+  MÁV ticket medium enum and the version dependent validity width, neither of
+  which is on main.

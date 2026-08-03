@@ -41,6 +41,11 @@ installed.
   passenger name, date of birth and customer reference, and carries a travel
   date with no year, but has no coach or seat even when the ticket prints
   them. Ported from zuegli
+- **MÁV** - Hungarian tickets, versions 2 to 6: a short plaintext head, a gzip
+  compressed body of counted blocks (traveler, trip, supplements, seat
+  reservations, passes) and an appended signature. Aztec and PDF417 alike.
+  Station ids are UIC codes up to version 4, which the bundled table names,
+  and MÁV's own numbering from version 5, which it cannot
 - **TCDD** - Turkish e-tickets, a "$"-delimited ASCII record
 - **Trenitalia** - departure date, train, coach, seat, PNR and entitlement
   number, reverse engineered from four tickets; the payload appears to carry
@@ -189,5 +194,8 @@ No functions, bindings or environment variables needed.
   and [train-barcode-kaitai-spec](https://github.com/NeoRail/train-barcode-kaitai-spec)
   (MIT), which between them settled the Latin-1 encoding and the constant at
   offset 19.
+- The MÁV layout follows the same project's `mav/mav.ksy` (CC0), plus the
+  ticket medium enum and version dependent validity width from Volker
+  Krause's branch of it.
 - DB Leitpunktkürzel and Swiss NOVA organisation names derive from the
   respective operators' open data.

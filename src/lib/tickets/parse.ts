@@ -15,6 +15,7 @@ import { isTcdd, parseTcdd } from './tcdd/tcdd.ts';
 import { isTrenitalia, parseTrenitalia } from './trenitalia/trenitalia.ts';
 import { isEav, parseEav } from './eav/eav.ts';
 import { isElb, parseElb } from './elb/elb.ts';
+import { isMav, parseMav } from './mav/mav.ts';
 import { isSncfETicket, parseSncfETicket } from './sncf/eticket.ts';
 
 // Record parsers register themselves on import.
@@ -77,6 +78,13 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 	if (isRenfe(data)) {
 		try {
 			return { kind: 'renfe', ticket: parseRenfe(data) };
+		} catch {
+			// fall through
+		}
+	}
+	if (isMav(data)) {
+		try {
+			return { kind: 'mav', ticket: parseMav(data) };
 		} catch {
 			// fall through
 		}

@@ -16,6 +16,7 @@
 	import RenfeView from './RenfeView.svelte';
 	import TcddView from './TcddView.svelte';
 	import ElbView from './ElbView.svelte';
+	import MavView from './MavView.svelte';
 	import SncfETicketView from './SncfETicketView.svelte';
 	import Ssb1View from './Ssb1View.svelte';
 	import TrenitaliaView from './TrenitaliaView.svelte';
@@ -71,6 +72,9 @@
 			return ricsName(rics) ?? `RICS ${rics}`;
 		}
 		if (container.kind === 'renfe') return 'Renfe';
+		if (container.kind === 'mav') {
+			return ricsName(container.ticket.issuerRics) ?? 'MÁV';
+		}
 		if (container.kind === 'tcdd') return 'TCDD Taşımacılık';
 		if (container.kind === 'sncf-eticket') return 'SNCF';
 		// ELB is not one operator's format. The ticket code is the prefix printed
@@ -97,6 +101,8 @@
 	const specimen = $derived.by(() => {
 		// ELB says so outright: B.12 reads 1 as a real ticket and 0 as a specimen.
 		if (container.kind === 'elb') return container.ticket.specimen;
+		// MÁV flags it the same way round, inside the trip block.
+		if (container.kind === 'mav') return container.ticket.specimen;
 		if (container.kind === 'swisspass') {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			return (container.ticket.ticketData as any)?.extra?.specimen === true;
@@ -152,6 +158,8 @@
 				return 'Trenitalia';
 			case 'eav':
 				return 'EAV';
+			case 'mav':
+				return `MÁV v${container.ticket.version}`;
 			case 'elb':
 				return 'ELB (Element List Barcode)';
 			case 'sncf-eticket':
@@ -279,6 +287,8 @@
 		<EavView ticket={container.ticket} />
 	{:else if container.kind === 'elb'}
 		<ElbView ticket={container.ticket} />
+	{:else if container.kind === 'mav'}
+		<MavView ticket={container.ticket} />
 	{:else if container.kind === 'sncf-eticket'}
 		<SncfETicketView ticket={container.ticket} />
 	{:else if container.kind === 'text'}
