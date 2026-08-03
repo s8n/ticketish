@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
 """Build src/lib/tickets/tcdd/stations.json from TCDD's published station list.
 
 The newer TCDD barcode layout identifies the origin and destination by the

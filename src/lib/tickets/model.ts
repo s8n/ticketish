@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Normalized display model built from decoded FCB (U_FLEX) data.
  * Handles the version differences between FCB 1.3 / 2 / 3 that matter for

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Customer cards (BahnCard and the like) are the one FCB document that dates
  * itself absolutely: a year plus a day of that year, where every other

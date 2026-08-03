@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import type { DbVuData } from '../../tickets/records/dbvu.ts';
 	import { fmtDate, fmtPrice } from '../../tickets/format.ts';
 

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Record-parser registry. Each UIC record type (U_HEAD, U_FLEX, 0080BL, …)
  * registers a parser here; unknown records fall through to a hex/raw view.

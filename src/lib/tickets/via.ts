@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: EUPL-1.2
+// Ported from zuegli (EUPL-1.2), so it cannot also be offered under MIT.
+
 /**
  * Parser for DB "Via" route strings as found on tickets, e.g.
  *   Via: <1080>HAR*(HH*LWL*WBE/UE*SAW*SDL)*BSP

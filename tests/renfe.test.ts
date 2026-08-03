@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Renfe barcodes: fixed width printable ASCII, "~" padded, ending in a base64
  * signature. The payloads are built by the test.

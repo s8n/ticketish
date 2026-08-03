@@ -8,6 +8,10 @@ satisfy both.
 The exceptions are listed below, and they are all files that either port
 someone else's work or bundle someone else's data.
 
+Every code file states its own terms in an SPDX header, so `MIT OR EUPL-1.2`
+or `EUPL-1.2` at the top of a file is the answer for that file. This document
+covers the data files too, which are JSON and cannot carry a comment.
+
 ## Code ported from zuegli (EUPL-1.2)
 
 [zuegli](https://github.com/TheEnbyperor/zuegli) is EUPL-1.2, and MIT is not on

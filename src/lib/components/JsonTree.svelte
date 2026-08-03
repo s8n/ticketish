@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import JsonTree from './JsonTree.svelte';
 
 	let { value, label = null }: { value: unknown; label?: string | null } = $props();

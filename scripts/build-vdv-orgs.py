@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
 """Rebuild the VDV organisation name table from the eTicketInfo Android app.
 
 Provenance, please read before touching this data

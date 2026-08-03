@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: EUPL-1.2
+// Ported from zuegli (EUPL-1.2), so it cannot also be offered under MIT.
+
 /**
  * SSB barcodes (the older bit-packed UIC format still used for e.g. NS
  * Keycards). 114+ bytes: a bit-packed header and body, with the trailing 56

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** Entry point: classify and parse a scanned barcode payload. */
 import type { BarcodeSymbology, ParsedTicket, TicketContainer, TicketSource } from './types.ts';
 import { isUic9183, parseUic9183 } from './uic/envelope9183.ts';

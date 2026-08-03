@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 import type { ParsedTicket } from '../tickets/types.ts';
 
 /** In-memory ticket list - nothing is persisted, nothing leaves the device. */

@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import type { SsbEnvelope, SsbStation } from '../tickets/ssb/ssb.ts';
 	import { fmtDate } from '../tickets/format.ts';
 	import { ricsName } from '../tickets/uic/rics.ts';

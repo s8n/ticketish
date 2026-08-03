@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import type { DbBlData } from '../../tickets/records/dbbl.ts';
 	import { fmtDate } from '../../tickets/format.ts';
 	import { loadUicStations, uicStationLabel, type StationTable } from '../../tickets/stations.ts';

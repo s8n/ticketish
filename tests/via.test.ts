@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 import { describe, expect, it } from 'vitest';
 import { parseDbVia, type ViaItem } from '../src/lib/tickets/via.ts';
 

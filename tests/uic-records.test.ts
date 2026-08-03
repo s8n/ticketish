@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * UIC 918.3 records that are not covered elsewhere: the printed layout, and
  * the header flags including an issuer whose specimen bit cannot be trusted.

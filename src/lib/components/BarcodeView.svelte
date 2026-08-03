@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	/**
 	 * The payload re-encoded as a barcode. Drawn from the module grid as an SVG
 	 * path rather than shown as the scanned image, so it stays sharp at any

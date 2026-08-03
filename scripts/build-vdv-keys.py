@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
 """Build src/lib/tickets/vdv/ca-keys.json from the VDV KA CA certificates.
 
 The certificates are published in VDV's public LDAP directory

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Builds a synthetic UK RSP6 barcode. The ticket data lives inside an RSA
  * signature with message recovery, so a throwaway key signs it and the test

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** Core data model shared by the parsing pipeline and the UI. */
 
 /** A raw record inside a UIC 918.x envelope (or DOSIPAS data sequence). */

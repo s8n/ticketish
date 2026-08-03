@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Station names for the two identifier spaces that turn up on tickets:
  * seven digit UIC location codes, and the five letter mnemonics SNCF prints

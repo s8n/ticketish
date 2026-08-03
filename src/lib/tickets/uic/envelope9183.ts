@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** UIC 918.3 "#UT" static barcode envelope (also carries U_FLEX for 918.9-era DB tickets). */
 import { unzlibSync } from 'fflate';
 import type { RawRecord, Uic9183Envelope } from '../types.ts';

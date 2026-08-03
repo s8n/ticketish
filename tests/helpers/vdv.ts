@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Builds a complete synthetic VDV barcode: a ticket body, an issuer CV
  * certificate signed by a throwaway CA key, and the ISO 9796-2 signature over

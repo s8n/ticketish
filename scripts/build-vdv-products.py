@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
 """Merge the vendored VDV product name files into one lookup table.
 
 Input:  scripts/vdv-products/productids_*.json  (see the README there)

@@ -7,6 +7,42 @@ commit messages. Use hyphens, commas, colons, or restructure the sentence.
 For missing-value placeholders in the UI, use an en dash. Generated fixture
 data under `tests/fixtures/` is byte-faithful barcode content and exempt.
 
+## Licence headers
+
+Every code file carries an SPDX header, and a new one is not finished until it
+has one. `LICENSE` has the full picture; the headers are what a tool reads.
+
+Two lines at the very top, before any doc comment:
+
+```ts
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+```
+
+`//` for `.ts`, `.js`, `.mjs` and `.svelte`, `#` for `.py`, `.yml` and
+`.yaml`. In a `.svelte` file the header goes *inside* the opening
+`<script lang="ts">`, tab indented like the rest of the block, so it never
+reaches the DOM. In a `.py` file it goes after the shebang and before the
+module docstring.
+
+`MIT OR EUPL-1.2` is the default and is disjunctive: the recipient picks one,
+they do not have to satisfy both. Use it for anything written here.
+
+Files ported from [zuegli](https://github.com/TheEnbyperor/zuegli) are
+`EUPL-1.2` only, with a third line saying why:
+
+```ts
+// SPDX-License-Identifier: EUPL-1.2
+// Ported from zuegli (EUPL-1.2), so it cannot also be offered under MIT.
+```
+
+zuegli is EUPL-1.2 and MIT is not on the EUPL's compatibility list, so
+relicensing a port is not ours to do. If you port anything else from it, the
+new file is EUPL-1.2 and belongs in the list in `LICENSE` as well. Studying
+zuegli to learn a format and then writing the parser here is different: that
+is a fact about a barcode, not its code, and stays on the default. Say which
+one it was in the file's header comment, the way the existing parsers do.
+
 ## Offline first
 
 The app is a PWA that has to work with no network at all, so everything it

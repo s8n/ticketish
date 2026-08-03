@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import '@fontsource/barlow/400.css';
 	import '@fontsource/barlow/500.css';
 	import '@fontsource/barlow-condensed/600.css';

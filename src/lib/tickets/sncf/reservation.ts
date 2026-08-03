@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * SNCF and Eurostar reservation barcodes: a fixed-width ASCII record whose
  * magic is a lowercase "e" followed by a three letter document type.

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * TCDD, SSB1 (as used by VR) and Trenitalia. All payloads are built by the
  * test; the field layouts they exercise were established from real tickets

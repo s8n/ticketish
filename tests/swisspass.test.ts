@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * SwissPass / NOVA: a protobuf SignedTicket in a QR code. The message is
  * encoded by the test, so no real ticket is involved.

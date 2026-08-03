@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import { onMount } from 'svelte';
 	import type { VdvBarcode } from '../tickets/vdv/vdv.ts';
 	import { fmtDate } from '../tickets/format.ts';

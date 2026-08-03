@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: EUPL-1.2
+// Ported from zuegli (EUPL-1.2), so it cannot also be offered under MIT.
+
 /**
  * SSB1: the 107-byte bit-packed barcode used by VR (Finland) among others.
  * Layout ported from zuegli's main/ssb1 (EUPL-1.2).

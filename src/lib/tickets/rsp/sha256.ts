@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** Small synchronous SHA-256 (needed for the RSP6 integrity check; WebCrypto
  * is async and this runs inside the synchronous parse pipeline). */
 

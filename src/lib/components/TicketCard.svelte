@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import type { ParsedRecord, ParsedTicket } from '../tickets/types.ts';
 	import type { FlexData } from '../tickets/records/uflex.ts';
 	import type { FcbTicket } from '../tickets/model.ts';

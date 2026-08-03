@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * SSB: bit-packed UIC barcodes, here the NS Keycard record. The payloads are
  * built by the test.

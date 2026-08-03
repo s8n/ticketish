@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import ViaRoute from './ViaRoute.svelte';
 	import type { ViaCarrier, ViaItem } from '../tickets/via.ts';
 

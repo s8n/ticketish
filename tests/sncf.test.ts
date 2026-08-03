@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * The two SNCF formats: the reservation record (eRIV, eRIZ, eEDV) and the
  * e-billet (i0CV).

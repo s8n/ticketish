@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** Minimal BER-TLV reader for the VDV structures (definite lengths only). */
 
 export interface TlvItem {

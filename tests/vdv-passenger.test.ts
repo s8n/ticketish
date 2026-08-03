@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * VDV passenger element (tag 0xDB): a gender byte, a four byte BCD date of
  * birth, then the name in ISO-8859-15. The payload is synthetic.

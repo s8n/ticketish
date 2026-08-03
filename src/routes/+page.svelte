@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import DropZone from '$lib/components/DropZone.svelte';
 	import CameraScanner from '$lib/components/CameraScanner.svelte';
 	import TicketCard from '$lib/components/TicketCard.svelte';

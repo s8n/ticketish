@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import { ingestFile } from '../input/ingest.ts';
 	import { store } from '../state/tickets.svelte.ts';
 

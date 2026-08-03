@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * End to end scanning: encode a barcode, decode it back, and run the result
  * through the parser. The images are generated here, so no real ticket is

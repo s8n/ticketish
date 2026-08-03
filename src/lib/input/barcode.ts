@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Barcode decoding via zxing-wasm. The WASM binary is bundled and served from
  * our own origin so scanning works offline (PWA).

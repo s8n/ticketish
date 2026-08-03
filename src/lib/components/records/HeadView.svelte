@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import type { HeadData } from '../../tickets/records/uhead.ts';
 	import { ricsName } from '../../tickets/uic/rics.ts';
 	import { fmtDate } from '../../tickets/format.ts';

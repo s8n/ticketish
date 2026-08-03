@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** Render PDF pages with pdf.js and scan each page image for barcodes. */
 import { scanImageData, type BarcodeHit } from './barcode.ts';
 

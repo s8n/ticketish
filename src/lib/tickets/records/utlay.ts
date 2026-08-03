@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 import { registerRecordParser, type RecordContext } from '../registry.ts';
 import type { RawRecord } from '../types.ts';
 

@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import type { TcddTicket } from '../tickets/tcdd/tcdd.ts';
 	import { loadTcddStations, tcddStationName } from '../tickets/tcdd/stations.ts';
 	import { fmtDate } from '../tickets/format.ts';

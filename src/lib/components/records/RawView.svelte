@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import { hexDump } from '../../tickets/format.ts';
 
 	let { raw, error }: { raw: Uint8Array; error?: string } = $props();

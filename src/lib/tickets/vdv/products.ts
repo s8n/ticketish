@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * VDV product names, merged from the vendored tariff data by
  * scripts/build-vdv-products.py. Loaded on demand so the table stays out of

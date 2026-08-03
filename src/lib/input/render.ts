@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Re-encode a scanned payload back into a barcode, so a ticket can be shown as
  * a crisp symbol rather than as the photo it was scanned from.

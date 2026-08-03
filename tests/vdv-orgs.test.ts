@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * VDV organisation names: the bundled eTicketInfo table plus this repo's
  * overrides on top.

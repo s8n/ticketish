@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** Synchronous SHA-1, used for the ISO 9796-2 message recovery check. */
 export function sha1(data: Uint8Array): Uint8Array {
 	const ml = data.length * 8;

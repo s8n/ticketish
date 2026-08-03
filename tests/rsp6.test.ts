@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * UK RSP6. The ticket data lives inside an RSA signature with message
  * recovery, so the test signs a payload of its own with a throwaway key and

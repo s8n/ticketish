@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** File ingestion: sniff type, extract barcode payload(s), parse tickets. */
 import { makeTicket } from '../tickets/parse.ts';
 import type { ParsedTicket, TicketSource } from '../tickets/types.ts';

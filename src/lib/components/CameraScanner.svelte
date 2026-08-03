@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import { onMount } from 'svelte';
 	import { scanImageData, BINARIZERS } from '../input/barcode.ts';
 	import { makeTicket } from '../tickets/parse.ts';

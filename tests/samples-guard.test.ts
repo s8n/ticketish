@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Privacy guard: the bundled sample tickets shipped with the site
  * (static/samples) must only ever be the public DB Muster specimens,

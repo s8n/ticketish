@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
 """Build src/lib/tickets/rsp/nlc.json from the RDG/National Rail fares feed.
 
 UK RSP6 tickets identify stations by NLC code only. The fares feed's .LOC

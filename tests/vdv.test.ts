@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * VDV-KA. The ticket is recovered out of an ISO 9796-2 signature, and the
  * issuer key out of a CV certificate signed by a CA, so the test builds that

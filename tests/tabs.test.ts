@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Which tabs a ticket card offers. The card itself is not rendered here; the
  * decision is a pure function so the awkward combinations can be checked.

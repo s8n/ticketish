@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import type { OebbRecord } from '../../tickets/records/oebb.ts';
 	import { fmtVienna, isEmptyOebb } from '../../tickets/records/oebb.ts';
 

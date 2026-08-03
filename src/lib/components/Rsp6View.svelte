@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import { onMount } from 'svelte';
 	import type { Rsp6Ticket, Rsp6TicketData, Rsp6RailcardData } from '../tickets/rsp/rsp6.ts';
 	import { fmtDate } from '../tickets/format.ts';

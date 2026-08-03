@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /// <reference types="@sveltejs/kit" />
 /// <reference lib="webworker" />
 // Offline support: precache the app shell and all built assets (including the

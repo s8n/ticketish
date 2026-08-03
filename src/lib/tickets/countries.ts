@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** Country name lookups: UIC country codes (from the UIC reference data) and
  * ISO 3166-1 numeric (used by FCB countryOfResidence). */
 import uicCountries from './data/uic-countries.json' with { type: 'json' };

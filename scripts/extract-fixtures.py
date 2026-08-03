@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
 """Regenerate the committed test fixtures from DB's published Muster tickets.
 
 Extracts each specimen barcode into a .bin file alongside asn1tools-decoded

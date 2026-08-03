@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** UIC 918.9 / DOSIPAS dynamic barcode: UPER-encoded UicBarcodeHeader envelope. */
 import { decodeBarcodeHeader } from '../asn1/index.ts';
 import { parseRecord } from '../registry.ts';

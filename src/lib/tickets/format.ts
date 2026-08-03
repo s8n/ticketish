@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** Display formatting helpers (German locale conventions, de-DE dates). */
 
 export function fmtDate(iso: string | null | undefined): string {

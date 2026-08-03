@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: EUPL-1.2
+// Ported from zuegli (EUPL-1.2), so it cannot also be offered under MIT.
+
 /**
  * SNCF e-billet barcodes: a 131 character fixed-width ASCII record with the
  * magic `i0CV`, carried in an Aztec code on TGV INOUI / sncf-connect tickets.

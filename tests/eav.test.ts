@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * EAV / UNICO Campania: a plain text QR with one field per line. The payloads
  * are written by the test.

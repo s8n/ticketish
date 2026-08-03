@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Validates the UPER runtime against ground truth produced by the Python
  * `asn1tools` library from the same sample barcodes (see tests/fixtures).

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 // Compiles the vendored UIC ASN.1 specs (scripts/asn-specs/*.asn) into JSON
 // schemas consumed by the UPER runtime (src/lib/tickets/asn1/uper.ts).
 //

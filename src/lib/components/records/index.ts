@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Maps record parser kinds (see src/lib/tickets/registry.ts) to view
  * components. To support a new record type: register a parser and add its

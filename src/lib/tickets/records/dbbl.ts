@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: EUPL-1.2
+// Ported from zuegli (EUPL-1.2), so it cannot also be offered under MIT.
+
 /** DB 0080BL record - Bahn "Leipzig" block with S-field key/values. Port of zuegli's parser. */
 import { registerRecordParser } from '../registry.ts';
 import type { RawRecord } from '../types.ts';

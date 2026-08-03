@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * OeBB issuer record 118199: a JSON validity window keyed with German
  * initials, V for "von" and B for "bis", stored as UTC YYMMDDHHMM.

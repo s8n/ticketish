@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	import type { LayoutData, LayoutField } from '../../tickets/records/utlay.ts';
 
 	let { data }: { data: LayoutData } = $props();

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * UK NLC (National Location Code) names, built from the RDG fares feed by
  * scripts/build-nlc-names.py. The table is a few hundred KiB, so it is

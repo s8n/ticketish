@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Minimal unaligned PER (X.691) decoder, driven by JSON schemas produced by
  * scripts/compile-asn.mjs from the UIC ASN.1 specs.

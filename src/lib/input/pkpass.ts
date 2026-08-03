@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /** Apple Wallet .pkpass: a zip with pass.json carrying the barcode message. */
 import { unzipSync, strFromU8 } from 'fflate';
 import type { PkpassInfo } from '../tickets/types.ts';

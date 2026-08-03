@@ -1,4 +1,7 @@
 <script lang="ts">
+	// SPDX-FileCopyrightText: 2026 ave
+	// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 	/**
 	 * Shared presentation for the smaller national formats: an optional route
 	 * line, a label/value list, and an optional note about undecoded fields.

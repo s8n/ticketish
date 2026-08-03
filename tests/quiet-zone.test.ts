@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * Screenshots cropped flush to a barcode have no quiet zone, which stops
  * zxing locating the symbol at all. Scanning adds one back before giving up.

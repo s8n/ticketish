@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
 """Build the UIC station and SNCF mnemonic name tables from trainline-eu/stations.
 
 Provenance

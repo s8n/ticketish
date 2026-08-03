@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 /**
  * DB 0080VU record - VDV-KA product authorizations (Verbund tickets).
  * Light port: product/org identifiers, validity window and price. The deeply

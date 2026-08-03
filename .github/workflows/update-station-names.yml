@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
 name: Update station names
 
 # UIC location codes and SNCF mnemonics both come from trainline-eu/stations,

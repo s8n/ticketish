@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 ave
+// SPDX-License-Identifier: MIT OR EUPL-1.2
+
 import { decodeUper, type AsnSchema } from './uper.ts';
 import fcb1 from './schemas/fcb1.json' with { type: 'json' };
 import fcb2 from './schemas/fcb2.json' with { type: 'json' };
