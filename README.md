@@ -57,7 +57,8 @@ Inputs: images, PDFs (rendered with pdf.js and scanned), Apple Wallet
 ## The barcode tab
 
 Every ticket gets a **Barcode** tab that re-encodes the payload and draws it
-as vector modules, rather than showing the image it was scanned from. The
+as vector modules, rather than showing the image it was scanned from. It can
+be downloaded as a PNG, and the raw payload is there behind a toggle. The
 bytes always come back exactly, non-UTF-8 payloads included, and the symbol
 is decoded again before it is shown, so the tab can say how close it got:
 

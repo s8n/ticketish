@@ -10,6 +10,7 @@ import { readBarcodes } from 'zxing-wasm/reader';
 import {
 	canRender,
 	modulesToPath,
+	modulesToRgba,
 	renderBarcode,
 	writerOptions,
 	type BarcodeModules
@@ -127,24 +128,9 @@ describe('rendering', () => {
 });
 
 describe('the grid that gets drawn', () => {
-	/** Blow the module grid up to pixels, the way the SVG paints it. */
-	function toImage(modules: BarcodeModules, scale: number, quiet: number) {
-		const width = (modules.width + quiet * 2) * scale;
-		const height = (modules.height + quiet * 2) * scale;
-		const data = new Uint8ClampedArray(width * height * 4).fill(255);
-		for (let y = 0; y < modules.height; y++) {
-			for (let x = 0; x < modules.width; x++) {
-				if (!modules.dark[y * modules.width + x]) continue;
-				for (let dy = 0; dy < scale; dy++) {
-					for (let dx = 0; dx < scale; dx++) {
-						const px = ((y + quiet) * scale + dy) * width + (x + quiet) * scale + dx;
-						data[px * 4] = data[px * 4 + 1] = data[px * 4 + 2] = 0;
-					}
-				}
-			}
-		}
-		return { data, width, height, colorSpace: 'srgb' } satisfies ImageData;
-	}
+	/** The same rasteriser the PNG download uses. */
+	const toImage = (modules: BarcodeModules, scale: number, quiet: number) =>
+		({ ...modulesToRgba(modules, scale, quiet), colorSpace: 'srgb' }) satisfies ImageData;
 
 	it('is a scannable barcode in its own right, not just zxing internals', async () => {
 		// what the tab shows is drawn from `modules`, so that grid is what has
@@ -156,6 +142,22 @@ describe('the grid that gets drawn', () => {
 			expect(back?.isValid, `${format} grid should decode`).toBe(true);
 			expect(new Uint8Array(back!.bytes)).toEqual(binary);
 		}
+	});
+
+	it('rasterises at the requested scale with a quiet zone all round', () => {
+		const modules: BarcodeModules = { width: 2, height: 2, dark: [true, false, false, true] };
+		const { data, width, height } = modulesToRgba(modules, 3, 1);
+		expect([width, height]).toEqual([12, 12]);
+
+		const at = (x: number, y: number) => data[(y * width + x) * 4];
+		// the quiet zone is white on every side
+		expect(at(0, 0)).toBe(255);
+		expect(at(11, 11)).toBe(255);
+		// and each dark module fills its whole 3x3 block
+		expect(at(3, 3)).toBe(0);
+		expect(at(5, 5)).toBe(0);
+		expect(at(6, 3)).toBe(255);
+		expect(at(8, 8)).toBe(0);
 	});
 });
 

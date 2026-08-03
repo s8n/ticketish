@@ -5,7 +5,13 @@
 	 * size and scans as well as the original did.
 	 */
 	import type { BarcodeSymbology } from '../tickets/types.ts';
-	import { modulesToPath, renderBarcode, type RenderedBarcode } from '../input/render.ts';
+	import {
+		modulesToPath,
+		modulesToRgba,
+		renderBarcode,
+		type RenderedBarcode
+	} from '../input/render.ts';
+	import RawView from './records/RawView.svelte';
 
 	let { raw, symbology }: { raw: Uint8Array; symbology: BarcodeSymbology } = $props();
 
@@ -29,6 +35,8 @@
 	// four modules of white on every side, which is the usual quiet zone and
 	// what a scanner needs to find the symbol at all
 	const QUIET = 4;
+	/** Pixels per module in the download, big enough to print or scan off glass. */
+	const PNG_SCALE = 8;
 
 	const path = $derived(result ? modulesToPath(result.modules) : '');
 	const viewBox = $derived(
@@ -36,8 +44,12 @@
 			? `${-QUIET} ${-QUIET} ${result.modules.width + QUIET * 2} ${result.modules.height + QUIET * 2}`
 			: '0 0 1 1'
 	);
-	// keep tall symbols from filling the card; PDF417 is very wide and short
-	const wide = $derived(!!result && result.modules.width > result.modules.height * 2);
+	// PDF417 is very wide and short; everything else the app reads is squarish.
+	// Knowing this up front lets the box keep its size while the symbol encodes,
+	// instead of the card collapsing and springing back.
+	const wide = $derived(
+		result ? result.modules.width > result.modules.height * 2 : symbology.format === 'PDF417'
+	);
 
 	const describe = (s: BarcodeSymbology | null | undefined) =>
 		s
@@ -45,32 +57,76 @@
 					.filter(Boolean)
 					.join(' · ')
 			: '–';
+
+	// what the not-yet-known rows say; an encode that failed is never coming
+	const pending = $derived(error ? '–' : 'encoding…');
+
+	function download() {
+		if (!result) return;
+		const name = `barcode-${(result.actual?.format ?? symbology.format).toLowerCase()}.png`;
+		const { data, width, height } = modulesToRgba(result.modules, PNG_SCALE, QUIET);
+		const canvas = document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
+		ctx.putImageData(new ImageData(data, width, height), 0, 0);
+		canvas.toBlob((blob) => {
+			if (!blob) return;
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = name;
+			a.click();
+			// revoking in the same tick can cancel the download before it starts
+			setTimeout(() => URL.revokeObjectURL(url), 10_000);
+		}, 'image/png');
+	}
 </script>
 
 <div class="barcode">
 	{#if error}
-		<p class="note">Could not re-encode this payload: {error}</p>
-	{:else if !result}
-		<p class="note">Encoding…</p>
+		<p class="note warn">Could not re-encode this payload: {error}</p>
 	{:else}
 		<div class="symbol" class:wide>
-			<svg {viewBox} shape-rendering="crispEdges" role="img" aria-label={`${result.actual?.format ?? symbology.format} barcode`}>
-				<rect x={-QUIET} y={-QUIET} width={result.modules.width + QUIET * 2} height={result.modules.height + QUIET * 2} fill="#fff" />
-				<path d={path} fill="#000" />
-			</svg>
+			{#if result}
+				<svg
+					{viewBox}
+					shape-rendering="crispEdges"
+					role="img"
+					aria-label={`${result.actual?.format ?? symbology.format} barcode`}
+				>
+					<rect
+						x={-QUIET}
+						y={-QUIET}
+						width={result.modules.width + QUIET * 2}
+						height={result.modules.height + QUIET * 2}
+						fill="#fff"
+					/>
+					<path d={path} fill="#000" />
+				</svg>
+			{:else}
+				<div class="placeholder">Encoding…</div>
+			{/if}
 		</div>
 
-		<dl>
-			<dt>Original</dt>
-			<dd>{describe(symbology)}</dd>
-			<dt>Re-encoded</dt>
-			<dd>{describe(result.actual)}</dd>
-			<dt>Modules</dt>
-			<dd>{result.modules.width} × {result.modules.height}</dd>
-			<dt>Payload</dt>
-			<dd>{raw.length} bytes</dd>
-		</dl>
+		<div class="actions">
+			<button onclick={download} disabled={!result}>Download barcode</button>
+		</div>
+	{/if}
 
+	<dl>
+		<dt>Original</dt>
+		<dd>{describe(symbology)}</dd>
+		<dt>Re-encoded</dt>
+		<dd>{result ? describe(result.actual) : pending}</dd>
+		<dt>Modules</dt>
+		<dd>{result ? `${result.modules.width} × ${result.modules.height}` : pending}</dd>
+		<dt>Payload</dt>
+		<dd>{raw.length} bytes</dd>
+	</dl>
+
+	{#if result}
 		{#if result.fidelity === 'broken'}
 			<p class="note warn">
 				This symbol did not decode back to the payload it was made from, so do not rely on it. It
@@ -86,12 +142,6 @@
 				Same bytes, re-encoded rather than photographed. This format does not report the original
 				symbol's size, so how closely the layout matches cannot be checked.
 			</p>
-		{:else}
-			<p class="note">
-				Same bytes, same symbology, same symbol size as the one that was scanned, so it scans
-				wherever the original did. The module pattern itself may still differ: how an encoder
-				packs the data is not recoverable from a decode.
-			</p>
 		{/if}
 		{#if result.actual?.ecLevel && result.actual.ecLevel !== symbology.ecLevel}
 			<p class="note">
@@ -101,6 +151,11 @@
 			</p>
 		{/if}
 	{/if}
+
+	<details class="rawtoggle">
+		<summary>Raw payload ({raw.length} bytes)</summary>
+		<RawView {raw} />
+	</details>
 </div>
 
 <style>
@@ -115,16 +170,46 @@
 		border-radius: 4px;
 		padding: 0.5rem;
 		align-self: start;
+		/* holds its size while encoding, so the card does not jump */
+		box-sizing: border-box;
+		width: 16rem;
 		max-width: 100%;
+	}
+	.symbol.wide {
+		width: 27rem;
 	}
 	.symbol svg {
 		display: block;
-		width: 15rem;
-		max-width: 100%;
+		width: 100%;
 		height: auto;
 	}
-	.symbol.wide svg {
-		width: 26rem;
+	.placeholder {
+		display: grid;
+		place-items: center;
+		aspect-ratio: 1;
+		color: #767676;
+		font-size: 0.8rem;
+	}
+	.wide .placeholder {
+		/* PDF417 with its quiet zone lands near 2.8:1 */
+		aspect-ratio: 2.8 / 1;
+	}
+	.actions {
+		display: flex;
+		gap: 0.5rem;
+	}
+	.actions button {
+		font-size: 0.82rem;
+		padding: 0.35rem 0.9rem;
+		border: 1px solid var(--paper-edge);
+		border-radius: 999px;
+		background: transparent;
+		color: var(--ink);
+		cursor: pointer;
+	}
+	.actions button:disabled {
+		opacity: 0.45;
+		cursor: default;
 	}
 	dl {
 		display: grid;
@@ -146,5 +231,13 @@
 	}
 	.note.warn {
 		color: var(--signal-red);
+	}
+	.rawtoggle summary {
+		font-size: 0.8rem;
+		color: var(--ink-soft);
+		cursor: pointer;
+	}
+	.rawtoggle[open] summary {
+		margin-bottom: 0.4rem;
 	}
 </style>

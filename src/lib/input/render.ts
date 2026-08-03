@@ -181,6 +181,34 @@ async function verify(image: Blob, format: WritableFormat) {
 }
 
 /**
+ * Paint the module grid into RGBA pixels, `scale` pixels per module with a
+ * `quiet` module white border. Used for the PNG export, and by the tests to
+ * check that the grid the UI draws is itself scannable.
+ */
+export function modulesToRgba(
+	modules: BarcodeModules,
+	scale: number,
+	quiet: number
+): { data: Uint8ClampedArray<ArrayBuffer>; width: number; height: number } {
+	const width = (modules.width + quiet * 2) * scale;
+	const height = (modules.height + quiet * 2) * scale;
+	const data = new Uint8ClampedArray(width * height * 4).fill(255);
+	for (let y = 0; y < modules.height; y++) {
+		for (let x = 0; x < modules.width; x++) {
+			if (!modules.dark[y * modules.width + x]) continue;
+			for (let dy = 0; dy < scale; dy++) {
+				const row = ((y + quiet) * scale + dy) * width;
+				for (let dx = 0; dx < scale; dx++) {
+					const px = (row + (x + quiet) * scale + dx) * 4;
+					data[px] = data[px + 1] = data[px + 2] = 0;
+				}
+			}
+		}
+	}
+	return { data, width, height };
+}
+
+/**
  * An SVG path covering every dark module, merging horizontal runs so the path
  * stays short. Coordinates are module units; the caller sets the viewBox.
  */
