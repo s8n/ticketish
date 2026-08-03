@@ -77,6 +77,22 @@ export interface BarcodeSymbology {
 	ecLevel?: string;
 	/** Aztec layer count or QR version as a number; DataMatrix as "24x64". */
 	version?: string;
+	/**
+	 * True when the content was found in one of the symbology's text modes
+	 * rather than its binary one. Which of the two the issuer used decides the
+	 * whole codeword stream, so it has to be reproduced to get the same symbol.
+	 * Undefined when the decoder did not say.
+	 */
+	textMode?: boolean;
+	/** QR mask pattern, 0-7. Undefined for the other formats. */
+	dataMask?: number;
+	/**
+	 * The symbol's size in modules, as read off the scan. Undefined where the
+	 * decoder does not reconstruct it (PDF417). This is the one unambiguous
+	 * measure of the symbol: `version` means different sizes in different
+	 * numberings, and the decoder does not always say which one it used.
+	 */
+	size?: { width: number; height: number };
 }
 
 /** Where a scanned payload came from. */

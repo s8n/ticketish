@@ -18,6 +18,7 @@
 import { prepareZXingModule, readBarcodes, type ReaderOptions, type ReadResult } from 'zxing-wasm/reader';
 import wasmUrl from 'zxing-wasm/reader/zxing_reader.wasm?url';
 import type { BarcodeSymbology } from '../tickets/types.ts';
+import { symbologyOf } from './render.ts';
 
 let prepared = false;
 
@@ -34,8 +35,8 @@ function prepare() {
 
 /**
  * A decoded symbol, carrying enough of how it was encoded to re-create it
- * (see input/render.ts). ecLevel and version are best effort: zxing derives
- * them from the symbol, and not every format reports both.
+ * (see input/render.ts). Everything but the format is best effort: zxing
+ * derives it from the symbol, and no format reports all of it.
  */
 export interface BarcodeHit extends BarcodeSymbology {
 	bytes: Uint8Array;
@@ -57,12 +58,7 @@ const BASE_OPTIONS: ReaderOptions = {
 function toHits(results: ReadResult[]): BarcodeHit[] {
 	return results
 		.filter((r) => r.isValid && r.bytes.length > 0)
-		.map((r) => ({
-			format: r.format,
-			ecLevel: r.ecLevel || undefined,
-			version: r.version || undefined,
-			bytes: new Uint8Array(r.bytes)
-		}));
+		.map((r) => ({ ...symbologyOf(r), bytes: new Uint8Array(r.bytes) }));
 }
 
 type Source = Blob | ImageData;
