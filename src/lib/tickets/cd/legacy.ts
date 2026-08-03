@@ -26,6 +26,8 @@
  * turn up at any offset or width, so they are left as bytes rather than
  * guessed at. Stations are printed as names and are plainly not in 63 bytes.
  */
+import { hex } from '../bytes.ts';
+import { isoDate, pad } from '../dates.ts';
 
 /** The whole record, magic included. */
 const LENGTH = 63;
@@ -54,11 +56,7 @@ function oleDate(view: DataView, at: number): string | null {
 	if (!Number.isFinite(days) || days < 36526 || days > 55153) return null; // 2000 to 2051
 	const ms = Math.round((days - OLE_EPOCH_DAYS) * 86400000);
 	const d = new Date(ms);
-	const p = (n: number) => String(n).padStart(2, '0');
-	return (
-		`${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())}` +
-		`T${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`
-	);
+	return `${isoDate(d)}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
 }
 
 const view = (data: Uint8Array) => new DataView(data.buffer, data.byteOffset, data.byteLength);
@@ -80,8 +78,6 @@ export function parseCdLegacy(data: Uint8Array): CdLegacyTicket {
 		issued: oleDate(v, 17),
 		validFrom: oleDate(v, 34),
 		validUntil: oleDate(v, 42),
-		bodyHex: [...data.subarray(MAGIC.length)]
-			.map((b) => b.toString(16).padStart(2, '0'))
-			.join('')
+		bodyHex: hex(data.subarray(MAGIC.length))
 	};
 }

@@ -3,6 +3,7 @@
 
 import { registerRecordParser, type RecordContext } from '../registry.ts';
 import type { RawRecord } from '../types.ts';
+import { ascii } from '../bytes.ts';
 
 export interface LayoutField {
 	line: number;
@@ -25,7 +26,6 @@ const ONE_INDEXED_RICS = new Set([
 	60, 1060, 1160, 84, 1084, 1184, 3268, 5188, 9901, 3095, 3606, 3306, 3626, 1174, 1088, 3602
 ]);
 
-const ascii = (b: Uint8Array) => String.fromCharCode(...b);
 const utf8 = new TextDecoder('utf-8');
 
 function parseLayout(record: RawRecord, ctx: RecordContext): LayoutData {

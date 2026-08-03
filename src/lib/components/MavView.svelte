@@ -4,7 +4,7 @@
 
 	import type { MavTicket } from '../tickets/mav/mav.ts';
 	import { mavStationLabel } from '../tickets/mav/mav.ts';
-	import { fmtDate, fmtPrice } from '../tickets/format.ts';
+	import { fmtDate, fmtPrice, fmtZoned } from '../tickets/format.ts';
 	import { ricsName } from '../tickets/uic/rics.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
 	import { loadUicStations, type StationTable } from '../tickets/stations.ts';
@@ -23,16 +23,7 @@
 	const trip = $derived(ticket.trip);
 
 	/** Local time, since a MÁV ticket is read where the train runs. */
-	function fmtTime(iso: string | null): string | null {
-		if (!iso) return null;
-		const d = new Date(iso);
-		const time = d.toLocaleTimeString('en-GB', {
-			hour: '2-digit',
-			minute: '2-digit',
-			timeZone: 'Europe/Budapest'
-		});
-		return `${fmtDate(iso.slice(0, 10))} ${time}`;
-	}
+	const fmtTime = (iso: string | null) => fmtZoned(iso, 'Europe/Budapest');
 
 	/** Validity periods run to days, so minutes alone read badly. */
 	function fmtMinutes(total: number): string | null {
@@ -93,8 +84,8 @@
 
 {#each ticket.reservations as r, i (i)}
 	<section class="block">
-		<h4>Reservation</h4>
-		<dl>
+		<h4 class="block-title">Reservation</h4>
+		<dl class="fields">
 			<dt>Route</dt>
 			<dd>{station(r.departureStation) ?? '–'} → {station(r.destinationStation) ?? '–'}</dd>
 			{#if r.trainNumber}<dt>Train</dt>
@@ -113,8 +104,8 @@
 
 {#each ticket.supplements as s, i (i)}
 	<section class="block">
-		<h4>Supplement</h4>
-		<dl>
+		<h4 class="block-title">Supplement</h4>
+		<dl class="fields">
 			<dt>Route</dt>
 			<dd>{station(s.departureStation) ?? '–'} → {station(s.destinationStation) ?? '–'}</dd>
 			{#if s.validFrom}<dt>Valid from</dt>
@@ -129,8 +120,8 @@
 
 {#each ticket.passes as p, i (i)}
 	<section class="block">
-		<h4>Pass</h4>
-		<dl>
+		<h4 class="block-title">Pass</h4>
+		<dl class="fields">
 			<dt>Type</dt>
 			<dd><code>{hex(p.passName)}</code></dd>
 			{#if p.validFrom}<dt>Valid from</dt>
@@ -151,36 +142,6 @@
 {/if}
 
 <style>
-	.block {
-		border-top: 1px dashed var(--paper-edge);
-		padding-top: 0.6rem;
-		margin-top: 0.7rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-	}
-	h4 {
-		margin: 0;
-		font-family: var(--font-display);
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		font-size: 0.78rem;
-		color: var(--ink-soft);
-		font-weight: 600;
-	}
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
-	}
 	.note {
 		margin: 0.7rem 0 0;
 		font-size: 0.8rem;

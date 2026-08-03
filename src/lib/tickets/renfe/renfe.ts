@@ -12,6 +12,7 @@
  * printed contents, so treat unlabelled regions as unknown rather than
  * assuming they are empty.
  */
+import { isPrintableAscii } from '../bytes.ts';
 
 export interface RenfeTicket {
 	/** "aztec" carries both blocks; "qr" is the short second block only. */
@@ -35,11 +36,6 @@ export interface RenfeTicket {
 }
 
 const DIGITS = /^\d+$/;
-
-function isPrintableAscii(data: Uint8Array): boolean {
-	for (const b of data) if (b < 0x20 || b > 0x7e) return false;
-	return true;
-}
 
 const stripZeros = (s: string) => s.replace(/^0+/, '') || '0';
 

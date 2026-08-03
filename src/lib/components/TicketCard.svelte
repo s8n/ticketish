@@ -5,29 +5,11 @@
 	import type { ParsedRecord, ParsedTicket } from '../tickets/types.ts';
 	import type { FlexData } from '../tickets/records/uflex.ts';
 	import type { FcbTicket } from '../tickets/model.ts';
-	import { ricsName } from '../tickets/uic/rics.ts';
 	import { hexDump } from '../tickets/format.ts';
 	import { recordViews, recordLabel } from './records/index.ts';
 	import RawView from './records/RawView.svelte';
-	import Rsp6View from './Rsp6View.svelte';
-	import SwissPassView from './SwissPassView.svelte';
-	import VdvView from './VdvView.svelte';
-	import SsbView from './SsbView.svelte';
-	import RenfeView from './RenfeView.svelte';
-	import TcddView from './TcddView.svelte';
-	import ElbView from './ElbView.svelte';
-	import MavView from './MavView.svelte';
-	import ViaRailView from './ViaRailView.svelte';
-	import HzppView from './HzppView.svelte';
-	import CdLegacyView from './CdLegacyView.svelte';
-	import NsbView from './NsbView.svelte';
-	import UzView from './UzView.svelte';
-	import SncfETicketView from './SncfETicketView.svelte';
-	import Ssb1View from './Ssb1View.svelte';
-	import TrenitaliaView from './TrenitaliaView.svelte';
-	import EavView from './EavView.svelte';
-	import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
-	import { loadVdvOrgs, vdvOrgName } from '../tickets/vdv/orgs.ts';
+	import { containerInfo } from './containers.ts';
+	import { loadVdvOrgs } from '../tickets/vdv/orgs.ts';
 	import { store } from '../state/tickets.svelte.ts';
 	import { canRender } from '../input/render.ts';
 	import { tabModel } from './tabs.ts';
@@ -46,67 +28,10 @@
 		if (container.kind === 'vdv') loadVdvOrgs().then((o) => (vdvOrgs = o));
 	});
 
-	const issuer = $derived.by(() => {
-		if (container.kind === 'uic9183') {
-			const rics = container.envelope.issuerRics;
-			return ricsName(rics) ?? (rics ? `RICS ${rics}` : 'Unknown issuer');
-		}
-		if (container.kind === 'dosipas') {
-			const sp = container.envelope.securityProvider;
-			return ricsName(sp) ?? (sp !== null ? `Provider ${sp}` : 'Unknown issuer');
-		}
-		if (container.kind === 'rsp6') {
-			return `National Rail (issuer ${container.ticket.issuerId})`;
-		}
-		if (container.kind === 'swisspass') {
-			const t = container.ticket;
-			const rics = t.keyMeta?.rics;
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const org = (t.ticketData as any)?.sale?.issuingOrg as number | undefined;
-			return ricsName(rics) ?? novaOrgName(org) ?? (rics ? `RICS ${rics}` : 'SwissPass');
-		}
-		if (container.kind === 'vdv') {
-			const t = container.barcode.tickets[0];
-			if (!t) return 'VDV ticket';
-			// vdvOrgs is null until the table loads, so this shows the numeric id
-			// first and fills the name in, the way it did before any table existed
-			return vdvOrgName(vdvOrgs, t.productOrgId) ?? `VDV org ${t.productOrgId}`;
-		}
-		if (container.kind === 'ssb') {
-			const rics = container.envelope.issuerRics;
-			return ricsName(rics) ?? `RICS ${rics}`;
-		}
-		if (container.kind === 'renfe') return 'Renfe';
-		if (container.kind === 'viarail') return 'VIA Rail Canada';
-		if (container.kind === 'hzpp') return 'HŽPP';
-		if (container.kind === 'cd-legacy') return 'České dráhy';
-		if (container.kind === 'nsb') return 'NSB / Vy';
-		if (container.kind === 'uz') return 'Укрзалізниця (UZ)';
-		if (container.kind === 'mav') {
-			return ricsName(container.ticket.issuerRics) ?? 'MÁV';
-		}
-		if (container.kind === 'tcdd') return 'TCDD Taşımacılık';
-		if (container.kind === 'sncf-eticket') return 'SNCF';
-		// ELB is not one operator's format. The ticket code is the prefix printed
-		// beside the ticket number, and is the only thing in the record that says
-		// who issued it. Eurostar tickets are SNCF stock and carry its logo, with
-		// Eurostar named as the carrier inside the record rather than as issuer.
-		if (container.kind === 'elb') {
-			return (
-				{ IV: 'Eurostar', IZ: 'Eurostar', DV: 'SNCF' }[container.ticket.ticketCode] ?? 'ELB ticket'
-			);
-		}
-		if (container.kind === 'trenitalia') return 'Trenitalia';
-		if (container.kind === 'eav') return 'EAV / UNICO Campania';
-		if (container.kind === 'ssb1') {
-			const rics = container.ticket.issuerRics;
-			return ricsName(rics) ?? `RICS ${rics}`;
-		}
-		if (container.kind === 'text' && ticket.source.passInfo?.organizationName) {
-			return ticket.source.passInfo.organizationName;
-		}
-		return null;
-	});
+	const info = $derived(containerInfo(container));
+	const issuer = $derived(
+		info.issuer?.(container, { vdvOrgs, passInfo: ticket.source.passInfo }) ?? null
+	);
 
 	const specimen = $derived.by(() => {
 		// ELB says so outright: B.12 reads 1 as a real ticket and 0 as a specimen.
@@ -144,57 +69,7 @@
 			: null
 	);
 
-	const envelopeLabel = $derived.by(() => {
-		switch (container.kind) {
-			case 'uic9183':
-				return `UIC 918.3 v${container.envelope.envelopeVersion}`;
-			case 'dosipas':
-				return `DOSIPAS U${container.envelope.headerVersion}`;
-			case 'rsp6':
-				return container.ticket.ticketType === '08' ? 'RSP6 railcard' : 'RSP6';
-			case 'swisspass':
-				return 'SwissPass / NOVA';
-			case 'vdv':
-				return 'VDV-KA';
-			case 'ssb':
-				return `SSB v${container.envelope.version}`;
-			case 'renfe':
-				return 'Renfe';
-			case 'tcdd':
-				return 'TCDD';
-			case 'ssb1':
-				return `SSB1 v${container.ticket.version}`;
-			case 'trenitalia':
-				return 'Trenitalia';
-			case 'eav':
-				return 'EAV';
-			case 'mav':
-				return `MÁV v${container.ticket.version}`;
-			case 'viarail':
-				return 'VIA Rail';
-			case 'hzpp':
-				return container.ticket.encrypted ? 'HŽPP (encrypted)' : 'HŽPP';
-			case 'cd-legacy':
-				return 'ČD #CD01';
-			case 'nsb':
-				return 'NSB';
-			case 'uz':
-				return 'UZ boarding document';
-			case 'elb':
-				return 'ELB (Element List Barcode)';
-			case 'sncf-eticket':
-				return 'SNCF e-billet';
-			case 'text':
-				return 'Plain text';
-			case 'unknown':
-				return 'Unknown';
-		}
-		// Every container kind has to be named above. Without this a new format
-		// falls through to "Unknown" while rendering perfectly well, and now
-		// that the tab is labelled from here it would be named that too.
-		const unhandled: never = container;
-		throw new Error(`unlabelled container ${(unhandled as { kind: string }).kind}`);
-	});
+	const envelopeLabel = $derived(info.label(container));
 
 	// The barcode tab needs to know how the payload was encoded, so it is only
 	// offered for tickets that came from a symbol this app can also write.
@@ -287,40 +162,9 @@
 
 	{#if barcodeOpen && ticket.symbology}
 		<BarcodeView raw={ticket.raw} symbology={ticket.symbology} />
-	{:else if container.kind === 'rsp6'}
-		<Rsp6View ticket={container.ticket} />
-	{:else if container.kind === 'swisspass'}
-		<SwissPassView ticket={container.ticket} />
-	{:else if container.kind === 'vdv'}
-		<VdvView barcode={container.barcode} />
-	{:else if container.kind === 'ssb'}
-		<SsbView envelope={container.envelope} />
-	{:else if container.kind === 'renfe'}
-		<RenfeView ticket={container.ticket} />
-	{:else if container.kind === 'tcdd'}
-		<TcddView ticket={container.ticket} />
-	{:else if container.kind === 'ssb1'}
-		<Ssb1View ticket={container.ticket} />
-	{:else if container.kind === 'trenitalia'}
-		<TrenitaliaView ticket={container.ticket} />
-	{:else if container.kind === 'eav'}
-		<EavView ticket={container.ticket} />
-	{:else if container.kind === 'elb'}
-		<ElbView ticket={container.ticket} />
-	{:else if container.kind === 'mav'}
-		<MavView ticket={container.ticket} />
-	{:else if container.kind === 'viarail'}
-		<ViaRailView ticket={container.ticket} />
-	{:else if container.kind === 'hzpp'}
-		<HzppView ticket={container.ticket} />
-	{:else if container.kind === 'cd-legacy'}
-		<CdLegacyView ticket={container.ticket} />
-	{:else if container.kind === 'nsb'}
-		<NsbView ticket={container.ticket} />
-	{:else if container.kind === 'uz'}
-		<UzView ticket={container.ticket} />
-	{:else if container.kind === 'sncf-eticket'}
-		<SncfETicketView ticket={container.ticket} />
+	{:else if info.view}
+		{@const FormatView = info.view}
+		<FormatView {...info.props?.(container)} />
 	{:else if container.kind === 'text'}
 		<pre class="text-payload">{container.text}</pre>
 		<p class="note">This barcode carries plain text, not any form of supported ticket data.</p>

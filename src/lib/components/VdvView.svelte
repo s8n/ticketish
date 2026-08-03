@@ -37,7 +37,7 @@
 					{orgLabel(t.productOrgId)}{#if productName(t.productOrgId, t.productNumber)} · product {t.productNumber}{/if}
 				</span>
 			</header>
-			<dl>
+			<dl class="fields">
 				<dt>Valid from</dt>
 				<dd>{fmtDate(t.validityStart)}</dd>
 				<dt>Valid until</dt>
@@ -63,7 +63,7 @@
 					{@const p = el.passenger}
 					<div class="element">
 						<span class="element-name">Passenger</span>
-						<dl>
+						<dl class="fields">
 							{#if p.forename || p.surname}
 								<dt>Name</dt>
 								<dd>
@@ -84,7 +84,7 @@
 				{:else if el.data}
 					<div class="element">
 						<span class="element-name">{el.name}</span>
-						<dl>
+						<dl class="fields">
 							{#each Object.entries(el.data) as [k, v] (k)}
 								{#if v !== null && v !== undefined && v !== 0}
 									<dt>{k}</dt>
@@ -108,7 +108,7 @@
 		</section>
 	{/each}
 
-	<dl class="envelope-info">
+	<dl class="fields divider">
 		{#if barcode.certificateHolder}
 			<dt>Signed by</dt>
 			<dd>{barcode.certificateHolder}</dd>
@@ -149,25 +149,6 @@
 		align-items: baseline;
 		flex-wrap: wrap;
 	}
-	.product {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 1.2rem;
-		text-transform: uppercase;
-	}
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
-	}
 	.soft {
 		color: var(--ink-soft);
 		font-size: 0.82rem;
@@ -199,10 +180,6 @@
 		word-break: break-all;
 		display: block;
 		margin-top: 0.3rem;
-	}
-	.envelope-info {
-		border-top: 1px dashed var(--paper-edge);
-		padding-top: 0.6rem;
 	}
 	.note {
 		margin: 0;

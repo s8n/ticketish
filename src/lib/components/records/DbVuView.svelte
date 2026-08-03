@@ -13,7 +13,7 @@
 		Verbund products (VDV-KA) · {data.travellerCount} traveler{data.travellerCount === 1 ? '' : 's'}
 	</p>
 	{#each data.products as p, i (i)}
-		<dl>
+		<dl class="fields">
 			<dt>Product</dt>
 			<dd>#{p.productNumber} (PV org {p.pvOrgId}, KVP org {p.kvpOrgId})</dd>
 			<dt>Valid</dt>
@@ -36,18 +36,5 @@
 		margin: 0;
 		font-size: 0.85rem;
 		color: var(--ink-soft);
-	}
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
 	}
 </style>

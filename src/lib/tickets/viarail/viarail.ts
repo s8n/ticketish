@@ -19,6 +19,8 @@
  * at the station concerned, with no zone in the record, which matters in a
  * country spanning six of them.
  */
+import { isPrintableAscii } from '../bytes.ts';
+import { pad } from '../dates.ts';
 
 /** Fields through the purchase time. Printers pad past this with spaces. */
 const LENGTH = 124;
@@ -57,8 +59,6 @@ export interface ViaRailTicket {
 	purchaseTime: string | null;
 }
 
-const isPrintableAscii = (data: Uint8Array) => data.every((b) => b >= 0x20 && b <= 0x7e);
-
 /** YYYYMMDDHHMM, with optional seconds. Local time, so no zone is added. */
 function timestamp(value: string): string | null {
 	if (!/^\d{12}(\d{2})?$/.test(value)) return null;
@@ -72,7 +72,6 @@ function timestamp(value: string): string | null {
 	const second = value.length === 14 ? +value.slice(12, 14) : null;
 	if (month < 1 || month > 12 || day < 1 || day > 31) return null;
 	if (hour > 23 || minute > 59 || (second !== null && second > 59)) return null;
-	const pad = (n: number) => String(n).padStart(2, '0');
 	const time = `${pad(hour)}:${pad(minute)}${second === null ? '' : `:${pad(second)}`}`;
 	return `${year}-${pad(month)}-${pad(day)}T${time}`;
 }

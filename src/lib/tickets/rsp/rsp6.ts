@@ -15,6 +15,10 @@
  */
 import keysJson from './keys.json' with { type: 'json' };
 import { sha256 } from './sha256.ts';
+import { Bits } from '../bits.ts';
+import { bigIntToBytes, bytesToBigInt, modPow } from '../bigint.ts';
+import { hex, isPrintableAscii } from '../bytes.ts';
+import { isoDate, plusDays, timeOfDay } from '../dates.ts';
 
 export interface RspKey {
 	issuer_id: string;
@@ -108,12 +112,7 @@ export function isRsp6(data: Uint8Array): boolean {
 }
 
 function asciiOrNull(data: Uint8Array): string | null {
-	let s = '';
-	for (const b of data) {
-		if (b < 0x20 || b > 0x7e) return null;
-		s += String.fromCharCode(b);
-	}
-	return s;
+	return isPrintableAscii(data) ? new TextDecoder().decode(data) : null;
 }
 
 /** eta-style base26: digits read back to front, then the bytes reversed. */
@@ -125,31 +124,6 @@ function base26ToBigInt(s: string): bigint {
 	const bytes = bigIntToBytes(num);
 	bytes.reverse();
 	return bytesToBigInt(bytes);
-}
-
-function bigIntToBytes(n: bigint): Uint8Array {
-	let hex = n.toString(16);
-	if (hex.length % 2) hex = '0' + hex;
-	const out = new Uint8Array(hex.length / 2);
-	for (let i = 0; i < out.length; i++) out[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
-	return out;
-}
-
-function bytesToBigInt(b: Uint8Array): bigint {
-	let n = 0n;
-	for (const x of b) n = n * 256n + BigInt(x);
-	return n;
-}
-
-function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
-	let result = 1n;
-	base %= mod;
-	while (exp > 0n) {
-		if (exp & 1n) result = (result * base) % mod;
-		base = (base * base) % mod;
-		exp >>= 1n;
-	}
-	return result;
 }
 
 /** Recover the signed message; returns null if padding or hash don't check out. */
@@ -181,36 +155,16 @@ function recoverPayload(b26: string, issuerId: string, keys_: RspKeyStore): Uint
 	return null;
 }
 
-/** Bit-addressed reads over the recovered payload. */
-class Bits {
-	constructor(private d: Uint8Array) {}
-	bit(i: number): number {
-		return (this.d[i >> 3] >> (7 - (i & 7))) & 1;
-	}
-	bool(i: number): boolean {
-		return this.bit(i) === 1;
-	}
-	int(start: number, end: number): number {
-		let v = 0;
-		for (let i = start; i < end; i++) v = v * 2 + this.bit(i);
-		return v;
-	}
-	/** 6-bit chars offset by 0x20 */
-	str(start: number, end: number): string {
-		let s = '';
-		for (let i = start; i < end; i += 6) s += String.fromCharCode(this.int(i, i + 6) + 0x20);
-		return s.trim();
-	}
+/** RSP6 dates count days from this one. */
+const RSP_EPOCH = new Date(Date.UTC(1997, 0, 1));
+
+/** Bit-addressed reads over the recovered payload, plus RSP6's own encodings. */
+class RspBits extends Bits {
 	date(start: number, end: number): string {
-		// days since 1997-01-01
-		const d = new Date(Date.UTC(1997, 0, 1));
-		d.setUTCDate(d.getUTCDate() + this.int(start, end));
-		return d.toISOString().slice(0, 10);
+		return isoDate(plusDays(RSP_EPOCH, this.int(start, end)));
 	}
 	time(start: number, end: number): string {
-		const v = this.int(start, end);
-		const p = (n: number) => String(n).padStart(2, '0');
-		return `${p(Math.floor(v / 60) % 24)}:${p(v % 60)}`;
+		return timeOfDay(this.int(start, end));
 	}
 }
 
@@ -235,7 +189,7 @@ const RAILCARD_NAMES: Record<string, string> = {
 
 function parseTicketData(payload: Uint8Array): Rsp6TicketData {
 	if (payload.length < 108) throw new Error(`RSP6 payload too short (${payload.length} bytes)`);
-	const d = new Bits(payload);
+	const d = new RspBits(payload);
 	const hasOptional = d.bool(384);
 	const numReservations = d.int(386, 390);
 
@@ -299,7 +253,7 @@ function parseTicketData(payload: Uint8Array): Rsp6TicketData {
 
 function parseRailcardData(payload: Uint8Array): Rsp6RailcardData {
 	if (payload.length < 108) throw new Error(`RSP6 payload too short (${payload.length} bytes)`);
-	const d = new Bits(payload);
+	const d = new RspBits(payload);
 	const fullName = (title: string, forename: string, surname: string) =>
 		[title, forename, surname].filter(Boolean).join(' ').trim();
 	const p1 = fullName(d.str(108, 132), d.str(132, 222), d.str(222, 312));
@@ -358,5 +312,3 @@ export function parseRsp6(data: Uint8Array, keys: RspKeyStore = KEYS): Rsp6Ticke
 		};
 	}
 }
-
-const hex = (b: Uint8Array) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('');

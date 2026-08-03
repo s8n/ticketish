@@ -31,6 +31,9 @@
  * of the three sample tickets will not decode at all, and reading them would
  * settle the leg question immediately.
  */
+import { Bits } from '../bits.ts';
+import { hex, isPrintableAscii } from '../bytes.ts';
+import { timeOfDay } from '../dates.ts';
 
 /** Every sample opens with this, and nothing else here does. */
 const MAGIC = [0xe0, 0x00, 0x80, 0x01, 0x5f];
@@ -55,13 +58,9 @@ export interface NsbTicket {
 const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
 
 function decodeBase64(data: Uint8Array): Uint8Array | null {
-	if (data.length < 120) return null;
-	let text = '';
-	for (const b of data) {
-		// base64 is ASCII, so anything else rules the payload out at once
-		if (b < 0x20 || b > 0x7e) return null;
-		text += String.fromCharCode(b);
-	}
+	// base64 is ASCII, so anything else rules the payload out at once
+	if (data.length < 120 || !isPrintableAscii(data)) return null;
+	const text = new TextDecoder().decode(data);
 	if (!BASE64.test(text)) return null;
 	const padded = text + '='.repeat((4 - (text.length % 4)) % 4);
 	try {
@@ -74,19 +73,9 @@ function decodeBase64(data: Uint8Array): Uint8Array | null {
 	}
 }
 
-function bits(d: Uint8Array, start: number, width: number): number {
-	let v = 0;
-	for (let i = start; i < start + width; i++) {
-		v = v * 2 + ((d[i >> 3] >> (7 - (i & 7))) & 1);
-	}
-	return v;
-}
-
 /** Minutes since midnight as HH:MM, or null when it is not a time of day. */
-function timeOfDay(minutes: number): string | null {
-	if (minutes >= 1440) return null;
-	const p = (n: number) => String(n).padStart(2, '0');
-	return `${p(Math.floor(minutes / 60))}:${p(minutes % 60)}`;
+function departureOrNull(minutes: number): string | null {
+	return minutes < 1440 ? timeOfDay(minutes) : null;
 }
 
 export function isNsb(data: Uint8Array): boolean {
@@ -98,10 +87,11 @@ export function isNsb(data: Uint8Array): boolean {
 export function parseNsb(data: Uint8Array): NsbTicket {
 	const body = decodeBase64(data);
 	if (!body || !isNsb(data)) throw new Error('not an NSB ticket');
+	const d = new Bits(body);
 	return {
-		departure: timeOfDay(bits(body, DEPARTURE_BIT, TIME_BITS)),
-		arrival: timeOfDay(bits(body, ARRIVAL_BIT, TIME_BITS)),
+		departure: departureOrNull(d.int(DEPARTURE_BIT, DEPARTURE_BIT + TIME_BITS)),
+		arrival: departureOrNull(d.int(ARRIVAL_BIT, ARRIVAL_BIT + TIME_BITS)),
 		byteLength: body.length,
-		bodyHex: [...body].map((b) => b.toString(16).padStart(2, '0')).join('')
+		bodyHex: hex(body)
 	};
 }

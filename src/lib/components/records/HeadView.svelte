@@ -9,7 +9,7 @@
 	let { data }: { data: HeadData } = $props();
 </script>
 
-<dl>
+<dl class="fields">
 	<dt>Ticket ID</dt>
 	<dd><code>{data.ticketId}</code></dd>
 	<dt>Distributor</dt>
@@ -31,17 +31,4 @@
 </dl>
 
 <style>
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
-	}
 </style>

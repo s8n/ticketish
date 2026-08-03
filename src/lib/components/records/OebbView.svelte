@@ -15,7 +15,7 @@
 {#if empty}
 	<p class="empty">– empty record –</p>
 {:else}
-	<dl>
+	<dl class="fields">
 		{#if data.validFrom}
 			<dt>Valid from</dt>
 			<dd>{fmtVienna(data.validFrom)} <span class="soft">von</span></dd>
@@ -35,19 +35,6 @@
 {/if}
 
 <style>
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
-	}
 	.soft {
 		color: var(--ink-soft);
 		font-size: 0.8rem;

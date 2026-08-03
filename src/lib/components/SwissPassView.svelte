@@ -4,6 +4,7 @@
 
 	import type { SwissPassTicket } from '../tickets/swisspass/swisspass.ts';
 	import { fmtZurich, novaOrgName } from '../tickets/swisspass/swisspass.ts';
+	import RouteLine from './RouteLine.svelte';
 
 	let { ticket }: { ticket: SwissPassTicket } = $props();
 
@@ -38,17 +39,13 @@
 
 <div class="sp">
 	<header>
-		<span class="product">{tariff.product?.name ?? 'SwissPass ticket'}</span>
+		<span class="product-sm">{tariff.product?.name ?? 'SwissPass ticket'}</span>
 		{#if classLabel}<span class="chip">{classLabel}</span>{/if}
 		{#if tariff.tariff}<span class="chip">{tariff.tariff}</span>{/if}
 	</header>
 
 	{#if tariff.departureStation || tariff.arrivalStation}
-		<div class="route">
-			<span class="station">{tariff.departureStation ?? '–'}</span>
-			<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
-			<span class="station">{tariff.arrivalStation ?? '–'}</span>
-		</div>
+		<RouteLine from={tariff.departureStation} to={tariff.arrivalStation} size="sm" />
 	{/if}
 
 	{#if tariff.zones?.length}
@@ -62,7 +59,7 @@
 		</div>
 	{/if}
 
-	<dl>
+	<dl class="fields">
 		{#if tariff.route?.length}<dt>Route</dt>
 			<dd>{tariff.route.join(' · ')}</dd>{/if}
 		{#if tariff.validFrom}<dt>Valid from</dt>
@@ -84,7 +81,7 @@
 	</dl>
 
 	{#if data.transport?.length}
-		<dl>
+		<dl class="fields">
 			{#each data.transport as tr, i (i)}
 				<dt>Service</dt>
 				<dd>
@@ -97,9 +94,9 @@
 	{/if}
 
 	{#if traveler}
-		<section class="traveler">
-			<h4>Traveler</h4>
-			<dl>
+		<section class="divider">
+			<h4 class="block-title">Traveler</h4>
+			<dl class="fields">
 				{#if traveler.forename || traveler.surname}
 					<dt>Name</dt>
 					<dd>{[traveler.forename, traveler.surname].filter(Boolean).join(' ')}</dd>
@@ -118,7 +115,7 @@
 		</section>
 	{/if}
 
-	<dl class="issuing">
+	<dl class="fields divider">
 		{#if novaOrgName(sale.issuingOrg)}
 			<dt>Issued by</dt>
 			<dd>{novaOrgName(sale.issuingOrg)} <span class="soft">(org {sale.issuingOrg})</span></dd>
@@ -143,40 +140,12 @@
 		gap: 0.6rem;
 		flex-wrap: wrap;
 	}
-	.product {
+	.product-sm {
 		font-weight: 600;
 		font-size: 1.05rem;
 	}
 	.chip {
 		color: var(--rail-blue);
-	}
-	.route {
-		display: flex;
-		align-items: center;
-		gap: 0.7rem;
-		flex-wrap: wrap;
-	}
-	.station {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 1.3rem;
-		text-transform: uppercase;
-	}
-	.line {
-		flex: 1;
-		min-width: 3.5rem;
-		display: flex;
-		align-items: center;
-	}
-	.dot {
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
-		background: var(--ink);
-	}
-	.rail {
-		flex: 1;
-		border-top: 2px solid var(--ink);
 	}
 	.zones {
 		display: flex;
@@ -194,34 +163,8 @@
 		margin-left: 0.3rem;
 		font-size: 0.72rem;
 	}
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
-	}
-	.soft {
-		color: var(--ink-soft);
-	}
+	/* The only block heading here that wants air under it. */
 	h4 {
 		margin: 0 0 0.3rem;
-		font-family: var(--font-display);
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		font-size: 0.78rem;
-		color: var(--ink-soft);
-		font-weight: 600;
-	}
-	.traveler,
-	.issuing {
-		border-top: 1px dashed var(--paper-edge);
-		padding-top: 0.6rem;
 	}
 </style>

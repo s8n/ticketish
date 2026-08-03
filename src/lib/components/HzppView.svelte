@@ -3,7 +3,7 @@
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
 	import type { HzppSegment, HzppTicket } from '../tickets/hzpp/hzpp.ts';
-	import { fmtDate, fmtPrice } from '../tickets/format.ts';
+	import { fmtPrice, fmtZoned } from '../tickets/format.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
 	import RouteLine from './RouteLine.svelte';
 	import { loadUicStations, uicStationLabel, type StationTable } from '../tickets/stations.ts';
@@ -22,15 +22,7 @@
 	const inward = $derived(ticket.encrypted ? null : (ticket.segments[1] ?? null));
 
 	/** Local time, since an HŽPP ticket is read where the train runs. */
-	function fmtLocal(iso: string | null): string | null {
-		if (!iso) return null;
-		const time = new Date(iso).toLocaleTimeString('en-GB', {
-			hour: '2-digit',
-			minute: '2-digit',
-			timeZone: 'Europe/Zagreb'
-		});
-		return `${fmtDate(iso.slice(0, 10))} ${time}`;
-	}
+	const fmtLocal = (iso: string | null) => fmtZoned(iso, 'Europe/Zagreb');
 
 	function trains(seg: HzppSegment): string | null {
 		if (!seg.trains.length) return null;
@@ -102,8 +94,8 @@
 		{rows}
 	/>
 	{#if inward}
-		<div class="leg">
-			<h4>Return</h4>
+		<div class="block">
+			<h4 class="block-title">Return</h4>
 			<RouteLine
 				from={station(inward.originStation)}
 				to={station(inward.destinationStation)}
@@ -119,32 +111,9 @@
 		flex-direction: column;
 		gap: 0.6rem;
 	}
-	.product {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 1.2rem;
-		text-transform: uppercase;
-	}
 	.note {
 		margin: 0;
 		font-size: 0.82rem;
 		color: var(--ink-soft);
-	}
-	.leg {
-		border-top: 1px dashed var(--paper-edge);
-		padding-top: 0.6rem;
-		margin-top: 0.7rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-	}
-	h4 {
-		margin: 0;
-		font-family: var(--font-display);
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		font-size: 0.78rem;
-		color: var(--ink-soft);
-		font-weight: 600;
 	}
 </style>

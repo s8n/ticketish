@@ -23,21 +23,42 @@
 	 * line on a phone, which a container query could not manage: the card is
 	 * narrower than any sensible threshold whatever the names are.
 	 */
+	import type { Snippet } from 'svelte';
+
 	let {
 		from = null,
 		to = null,
-		size = 'lg'
+		size = 'lg',
+		fromTitle = null,
+		toTitle = null,
+		fromBadge,
+		toBadge
 	}: {
 		from?: string | null;
 		to?: string | null;
 		/** The smaller national formats set their route a shade smaller. */
 		size?: 'lg' | 'sm';
+		/**
+		 * Hover text for a station, where the view has the code a name was
+		 * resolved from and wants to keep it within reach.
+		 */
+		fromTitle?: string | null;
+		toTitle?: string | null;
+		/**
+		 * Rendered inside the station, after its name. For the views that hang
+		 * something off it, such as RSP6's CRS letters. Styled by the caller,
+		 * which is where the markup is written.
+		 */
+		fromBadge?: Snippet;
+		toBadge?: Snippet;
 	} = $props();
 </script>
 
 <div class="route" class:sm={size === 'sm'}>
 	<span class="leg depart">
-		<span class="station from">{from ?? '–'}</span>
+		<span class="station from" title={fromTitle ?? undefined}
+			>{from ?? '–'}{#if fromBadge}{@render fromBadge()}{/if}</span
+		>
 		<span class="half out" aria-hidden="true">
 			<span class="dot"></span><span class="rail"></span>
 		</span>
@@ -48,7 +69,9 @@
 		<span class="half in" aria-hidden="true">
 			<span class="rail"></span><span class="head"></span>
 		</span>
-		<span class="station to">{to ?? '–'}</span>
+		<span class="station to" title={toTitle ?? undefined}
+			>{to ?? '–'}{#if toBadge}{@render toBadge()}{/if}</span
+		>
 	</span>
 </div>
 

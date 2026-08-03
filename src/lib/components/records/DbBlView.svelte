@@ -34,7 +34,7 @@
 	{#if from || to}
 		<RouteLine {from} {to} />
 	{/if}
-	<dl>
+	<dl class="fields">
 		{#if data.product}<dt>Product</dt>
 			<dd>{data.product}</dd>{/if}
 		{#if data.serviceClass}<dt>Class</dt>
@@ -61,7 +61,7 @@
 	{#if Object.keys(data.blocks).length}
 		<details>
 			<summary>Other S-blocks ({Object.keys(data.blocks).length})</summary>
-			<dl class="mono">
+			<dl class="fields mono">
 				{#each Object.entries(data.blocks) as [k, v] (k)}
 					<dt>{k}</dt>
 					<dd>{v}</dd>
@@ -76,19 +76,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.6rem;
-	}
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
 	}
 	dd.small {
 		font-size: 0.8rem;

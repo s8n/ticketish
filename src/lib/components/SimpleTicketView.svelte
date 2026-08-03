@@ -32,7 +32,7 @@
 		<RouteLine {from} {to} size="sm" />
 	{/if}
 
-	<dl>
+	<dl class="fields">
 		{#each visible as [label, value] (label)}
 			<dt>{label}</dt>
 			<dd>{value}</dd>
@@ -55,25 +55,6 @@
 		gap: 0.6rem;
 		align-items: baseline;
 		flex-wrap: wrap;
-	}
-	.product {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 1.2rem;
-		text-transform: uppercase;
-	}
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
 	}
 	.note {
 		margin: 0;

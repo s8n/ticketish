@@ -8,6 +8,7 @@
  * EUPL-1.2); decoded here with a small hand-written proto3 wire reader.
  */
 import orgsJson from './orgs.json' with { type: 'json' };
+import { fmtZoned } from '../format.ts';
 
 const ORGS = orgsJson as Record<string, string>;
 
@@ -270,15 +271,5 @@ export function novaOrgName(code: number | undefined): string | null {
 }
 
 /** Format an epoch-milliseconds timestamp in Swiss local time. */
-export function fmtZurich(msecs: number | null | undefined): string | null {
-	if (!msecs) return null;
-	const fmt = new Intl.DateTimeFormat('de-CH', {
-		timeZone: 'Europe/Zurich',
-		day: '2-digit',
-		month: '2-digit',
-		year: 'numeric',
-		hour: '2-digit',
-		minute: '2-digit'
-	});
-	return fmt.format(new Date(msecs)).replace(',', '');
-}
+export const fmtZurich = (msecs: number | null | undefined) =>
+	msecs ? fmtZoned(msecs, 'Europe/Zurich') : null;

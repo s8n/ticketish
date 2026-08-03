@@ -32,7 +32,9 @@
  * specimen flag, the barcode version and ticket sequence, the passenger
  * counts, and the dates.
  */
+import { isPrintableAscii } from '../bytes.ts';
 import { dayOfYearDate, lastDigitYear } from '../dates.ts';
+import { meaningful } from '../format.ts';
 
 export interface ElbSegment {
 	/** Five character station mnemonic, the same space SNCF e-billets use. */
@@ -99,8 +101,6 @@ const SEGMENT_SIZE = 36;
 const MIN_LENGTH = HEADER_SIZE + SEGMENT_SIZE;
 const TWO_SEGMENTS = HEADER_SIZE + 2 * SEGMENT_SIZE;
 
-const isPrintableAscii = (data: Uint8Array) => data.every((b) => b >= 0x20 && b <= 0x7e);
-
 export function isElb(data: Uint8Array): boolean {
 	if (data.length < MIN_LENGTH) return false;
 	if (!isPrintableAscii(data)) return false;
@@ -118,9 +118,6 @@ export function isElb(data: Uint8Array): boolean {
 
 /** Drop leading zeros but keep a single one, so "000" reads as "0". */
 const unpad = (value: string) => value.replace(/^0+(?=\d)/, '');
-
-/** Blank and all-zero blocks carry nothing, so they are not worth showing. */
-const meaningful = (value: string) => (/^[0\s]*$/.test(value) ? null : value.trim());
 
 function count(value: string): number | null {
 	return /^\d+$/.test(value) ? parseInt(value, 10) : null;

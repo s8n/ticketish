@@ -18,6 +18,9 @@
 import caKeys from './ca-keys.json' with { type: 'json' };
 import { parseFirstTlv, parseTlv, tlvMap } from './tlv.ts';
 import { sha1 } from './sha1.ts';
+import { bigIntToBytes, bytesToBigInt, modPow } from '../bigint.ts';
+import { ascii, hex, isPrintableAscii } from '../bytes.ts';
+import { isoDate, pad } from '../dates.ts';
 
 export interface CaKey {
 	name: string;
@@ -95,32 +98,6 @@ export interface VdvBarcode {
 	payloadHex?: string;
 }
 
-function bytesToBigInt(b: Uint8Array): bigint {
-	let n = 0n;
-	for (const x of b) n = (n << 8n) | BigInt(x);
-	return n;
-}
-
-function bigIntToBytes(n: bigint, length: number): Uint8Array {
-	const out = new Uint8Array(length);
-	for (let i = length - 1; i >= 0; i--) {
-		out[i] = Number(n & 0xffn);
-		n >>= 8n;
-	}
-	return out;
-}
-
-function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
-	let result = 1n;
-	base %= mod;
-	while (exp > 0n) {
-		if (exp & 1n) result = (result * base) % mod;
-		base = (base * base) % mod;
-		exp >>= 1n;
-	}
-	return result;
-}
-
 /** ISO 9796-2 scheme 2 message recovery: returns the full message or null. */
 function recover(
 	signature: Uint8Array,
@@ -144,7 +121,6 @@ function recover(
 }
 
 function caReferenceString(data: Uint8Array): string {
-	const ascii = (b: Uint8Array) => String.fromCharCode(...b);
 	const unBcd = (byte: number) => (byte >> 4) * 10 + (byte & 0x0f);
 	return [
 		ascii(data.subarray(0, 2)),
@@ -162,8 +138,6 @@ interface CertKey {
 	exponentHex: string;
 }
 
-const hex = (b: Uint8Array) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
-
 /** Pull the issuer public key out of a CV certificate's recovered content. */
 function certificateKey(content: Uint8Array): CertKey {
 	const profile = content[0];
@@ -180,7 +154,7 @@ function certificateKey(content: Uint8Array): CertKey {
 		if (remaining - modulusLen >= 1 && remaining - modulusLen <= 4) break;
 	}
 	return {
-		name: String.fromCharCode(...content.subarray(21, 27)),
+		name: ascii(content.subarray(21, 27)),
 		modulusHex: hex(content.subarray(offset, offset + modulusLen)),
 		exponentHex: hex(content.subarray(offset + modulusLen)) || '03'
 	};
@@ -195,11 +169,10 @@ function vdvDateTime(d: Uint8Array): string | null {
 	const hour = (d[2] & 0xf8) >> 3;
 	const minute = ((d[2] & 0x07) << 3) | ((d[3] & 0xe0) >> 5);
 	const second = (d[3] & 0x1f) * 2;
-	const p = (n: number) => String(n).padStart(2, '0');
 	// hour can exceed 23 to mean "next day"
 	const extraDays = Math.floor(hour / 24);
 	const date = new Date(Date.UTC(year, month - 1, day + extraDays));
-	return `${date.getUTCFullYear()}-${p(date.getUTCMonth() + 1)}-${p(date.getUTCDate())}T${p(hour % 24)}:${p(minute)}:${p(second)}`;
+	return `${isoDate(date)}T${pad(hour % 24)}:${pad(minute)}:${pad(second)}`;
 }
 
 function versionNumber(d: Uint8Array): string {
@@ -272,7 +245,7 @@ function parsePassengerData(d: Uint8Array): VdvPassenger | null {
 	const day = unBcd(dob[3]);
 	const dateOfBirth =
 		dob.some((b) => b !== 0) && month >= 1 && month <= 12 && day >= 1 && day <= 31
-			? `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+			? `${year}-${pad(month)}-${pad(day)}`
 			: null;
 
 	const text = new TextDecoder('iso-8859-15').decode(d.subarray(5)).replace(/\0+$/, '');
@@ -327,9 +300,7 @@ function parseBasicData(d: Uint8Array): Record<string, unknown> {
 
 /** ASCII text, or null when the bytes are not printable. */
 function asAsciiText(data: Uint8Array): string | null {
-	if (!data.length) return null;
-	for (const b of data) if (b < 0x20 || b > 0x7e) return null;
-	return String.fromCharCode(...data);
+	return data.length && isPrintableAscii(data) ? ascii(data) : null;
 }
 
 function parseProductData(
@@ -358,7 +329,7 @@ function parseProductData(
 function parseTicket(data: Uint8Array, container: 'plain' | 'motics'): VdvTicket {
 	if (data.length < 111) throw new Error(`VDV ticket too short (${data.length} bytes)`);
 	const trailer = data.subarray(data.length - 5);
-	if (String.fromCharCode(...trailer.subarray(0, 3)) !== 'VDV') {
+	if (ascii(trailer.subarray(0, 3)) !== 'VDV') {
 		throw new Error('missing VDV trailer');
 	}
 

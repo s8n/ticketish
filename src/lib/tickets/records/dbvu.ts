@@ -8,6 +8,8 @@
  */
 import { registerRecordParser } from '../registry.ts';
 import type { RawRecord } from '../types.ts';
+import { hex } from '../bytes.ts';
+import { pad } from '../dates.ts';
 
 export interface DbVuProduct {
 	authorizationNumber: number;
@@ -34,8 +36,7 @@ function compactDateTime(v: number): string {
 	const day = (v >>> 16) & 0x1f;
 	const month = (v >>> 21) & 0xf;
 	const year = 1990 + ((v >>> 25) & 0x7f);
-	const p = (n: number) => String(n).padStart(2, '0');
-	return `${year}-${p(month)}-${p(day)}T${p(hour)}:${p(minute)}:${p(second)}`;
+	return `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:${pad(second)}`;
 }
 
 function u(d: Uint8Array, off: number, len: number): number {
@@ -43,8 +44,6 @@ function u(d: Uint8Array, off: number, len: number): number {
 	for (let i = 0; i < len; i++) v = v * 256 + d[off + i];
 	return v;
 }
-
-const hex = (b: Uint8Array) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
 
 function parseDbVu(record: RawRecord): DbVuData {
 	if (record.version !== 1) throw new Error(`unsupported 0080VU version ${record.version}`);

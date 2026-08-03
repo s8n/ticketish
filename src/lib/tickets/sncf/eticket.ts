@@ -34,6 +34,8 @@
  * here, so it is read as zuegli reads it but has never been observed
  * populated.
  */
+import { isLatin1Text } from '../bytes.ts';
+import { meaningful } from '../format.ts';
 
 export interface SncfReturnLeg {
 	travelClass: string;
@@ -76,14 +78,6 @@ const LENGTH = 131;
 /** The constant that sits between the ticket number and the date of birth. */
 const MARKER = '1211';
 
-/**
- * ISO-8859-1, so a name with an accent in it is text rather than a reason to
- * reject the record. C1 stays out: nothing in the layout can produce it, and
- * letting it through would make other formats' payloads look like e-billets.
- */
-const isLatin1Text = (data: Uint8Array) =>
-	data.every((b) => (b >= 0x20 && b <= 0x7e) || b >= 0xa0);
-
 const decode = (data: Uint8Array) => new TextDecoder('iso-8859-1').decode(data);
 
 export function isSncfETicket(data: Uint8Array): boolean {
@@ -94,9 +88,6 @@ export function isSncfETicket(data: Uint8Array): boolean {
 
 /** Drop leading zeros but keep a single one, so "000" reads as "0". */
 const unpad = (value: string) => value.replace(/^0+(?=\d)/, '');
-
-/** Blank and all-zero blocks carry nothing, so they are not worth showing. */
-const meaningful = (value: string) => (/^[0\s]*$/.test(value) ? null : value.trim());
 
 function parseDob(value: string): string | null {
 	const m = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);

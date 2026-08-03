@@ -7,6 +7,7 @@
 	import { ricsName } from '../tickets/uic/rics.ts';
 	import { uicCountryName } from '../tickets/countries.ts';
 	import { loadUicStations, uicStationName, type StationTable } from '../tickets/stations.ts';
+	import RouteLine from './RouteLine.svelte';
 
 	let { envelope }: { envelope: SsbEnvelope } = $props();
 
@@ -76,14 +77,14 @@
 		</header>
 
 		{#if r.kind !== 'ns-keycard' && r.kind !== 'pass' && r.kind !== 'cd-oneticket'}
-			<div class="route">
-				<span class="station">{stationLabel(r.departureStation)}</span>
-				<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
-				<span class="station">{stationLabel(r.arrivalStation)}</span>
-			</div>
+			<RouteLine
+				from={stationLabel(r.departureStation)}
+				to={stationLabel(r.arrivalStation)}
+				size="sm"
+			/>
 		{/if}
 
-		<dl>
+		<dl class="fields">
 			{#if r.kind === 'ns-keycard'}
 				<dt>Card number</dt>
 				<dd><code>{r.cardId}</code></dd>
@@ -164,7 +165,7 @@
 		</details>
 	{/if}
 
-	<dl class="envelope-info">
+	<dl class="fields divider">
 		<dt>Ticket type</dt>
 		<dd>{envelope.ticketTypeName} <span class="soft">({envelope.ticketType})</span></dd>
 		<dt>Issuer</dt>
@@ -184,11 +185,9 @@
 		align-items: baseline;
 		flex-wrap: wrap;
 	}
+	/* A shade larger than the shared one: an SSB record carries little else. */
 	.product {
-		font-family: var(--font-display);
-		font-weight: 700;
 		font-size: 1.25rem;
-		text-transform: uppercase;
 	}
 	.chip {
 		color: var(--rail-blue);
@@ -196,52 +195,8 @@
 	.chip.specimen {
 		color: var(--signal-red);
 	}
-	.route {
-		display: flex;
-		align-items: center;
-		gap: 0.7rem;
-		flex-wrap: wrap;
-	}
-	.station {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 1.2rem;
-		text-transform: uppercase;
-	}
-	.line {
-		flex: 1;
-		min-width: 3rem;
-		display: flex;
-		align-items: center;
-	}
-	.dot {
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
-		background: var(--ink);
-	}
-	.rail {
-		flex: 1;
-		border-top: 2px solid var(--ink);
-	}
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
-	}
 	dd.small {
 		font-size: 0.8rem;
-	}
-	.soft {
-		color: var(--ink-soft);
 	}
 	.warn {
 		color: var(--signal-red);
@@ -261,9 +216,5 @@
 		word-break: break-all;
 		display: block;
 		margin-top: 0.3rem;
-	}
-	.envelope-info {
-		border-top: 1px dashed var(--paper-edge);
-		padding-top: 0.6rem;
 	}
 </style>

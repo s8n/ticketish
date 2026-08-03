@@ -91,7 +91,12 @@ button {
 	}
 }
 
-/* shared bits */
+/* shared bits
+
+   These live here rather than in each component because every ticket view
+   draws its data the same way, and thirteen scoped copies of one rule is
+   thirteen chances for them to drift apart. Component styles stay in the
+   component; this is only what is common to all of them. */
 .chip {
 	display: inline-block;
 	font-family: var(--font-mono);
@@ -100,4 +105,60 @@ button {
 	border: 1px solid currentcolor;
 	border-radius: 999px;
 	white-space: nowrap;
+}
+
+/* The label/value list a ticket's fields are set in. */
+.fields {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	gap: 0.15rem 1rem;
+	margin: 0;
+	font-size: 0.88rem;
+}
+.fields dt {
+	color: var(--ink-soft);
+}
+.fields dd {
+	margin: 0;
+}
+
+/* Envelope-level detail, ruled off from the ticket it belongs to. */
+.divider {
+	border-top: 1px dashed var(--paper-edge);
+	padding-top: 0.6rem;
+}
+
+/* A section of a ticket below the main one, torn off along a dashed rule. */
+.block {
+	border-top: 1px dashed var(--paper-edge);
+	padding-top: 0.6rem;
+	margin-top: 0.7rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+
+/* Its heading, set small and wide the way a ticket's captions are. */
+.block-title {
+	margin: 0;
+	font-family: var(--font-display);
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	font-size: 0.78rem;
+	color: var(--ink-soft);
+	font-weight: 600;
+}
+
+/* Secondary text inside a value: the code a name came from, a note in
+   brackets, anything the eye should pass over first. */
+.soft {
+	color: var(--ink-soft);
+}
+
+/* The name of the product a ticket is, at the top of its view. */
+.product {
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 1.2rem;
+	text-transform: uppercase;
 }

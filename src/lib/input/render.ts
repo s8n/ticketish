@@ -68,6 +68,7 @@ import { readBarcodes } from 'zxing-wasm/reader';
 import type { BarcodeSymbol } from 'zxing-wasm/writer';
 import writerWasmUrl from 'zxing-wasm/writer/zxing_writer.wasm?url';
 import type { BarcodeSymbology } from '../tickets/types.ts';
+import { isPrintableAsciiByte } from '../tickets/bytes.ts';
 
 /** One byte per module in the symbol, without a quiet zone. */
 export interface BarcodeModules {
@@ -160,7 +161,7 @@ const sameBytes = (a: Uint8Array, b: Uint8Array) =>
  */
 function asText(bytes: Uint8Array): string | null {
 	const printable = bytes.every(
-		(b) => (b >= 0x20 && b <= 0x7e) || b === 0x09 || b === 0x0a || b === 0x0d
+		(b) => isPrintableAsciiByte(b) || b === 0x09 || b === 0x0a || b === 0x0d
 	);
 	return printable ? new TextDecoder('ascii').decode(bytes) : null;
 }

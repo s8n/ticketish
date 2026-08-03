@@ -11,6 +11,7 @@
  */
 import { generateKeyPairSync } from 'node:crypto';
 import { zlibSync, strToU8 } from 'fflate';
+import { hex } from '../../src/lib/tickets/bytes.ts';
 import { createHash } from 'node:crypto';
 
 // ---------------------------------------------------------------- RSA -----
@@ -49,7 +50,7 @@ export function testKey(modulusLength = 1024): TestKey {
 	}
 }
 
-function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
+export function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
 	let result = 1n;
 	base %= mod;
 	while (exp > 0n) {
@@ -246,5 +247,4 @@ export function concat(...parts: Uint8Array[]): Uint8Array {
 	return out;
 }
 
-export const hex = (b: Uint8Array) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
-export { sha256 };
+export { hex, sha256 };

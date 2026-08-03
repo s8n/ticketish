@@ -19,6 +19,7 @@
  * 9 digit ids of the retired api-yebsp backend, the newer one the small ids
  * of the current one. See stations.ts.
  */
+import { isPrintableAscii } from '../bytes.ts';
 
 export type TcddVariant = 'classic' | 'tcddprod';
 
@@ -56,8 +57,7 @@ const money = (v: string | undefined) => (v && /^\d+(\.\d+)?$/.test(v) ? v : nul
 const trainOf = (value: string | undefined) => (value ?? '').split('-')[0] ?? '';
 
 export function isTcdd(data: Uint8Array): boolean {
-	if (data.length < 20) return false;
-	for (const b of data) if (b < 0x20 || b > 0x7e) return false;
+	if (data.length < 20 || !isPrintableAscii(data)) return false;
 	const fields = new TextDecoder().decode(data).split('$');
 	// the newer layout opens with the separator, so the magic can be second
 	return fields[0].startsWith('TCDD_') || fields[1]?.startsWith('TCDD_') === true;

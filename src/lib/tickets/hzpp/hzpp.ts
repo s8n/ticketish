@@ -33,6 +33,7 @@
  * ones. Route numbers identify a list of stations a ticket is valid via;
  * that table is not bundled, so the number is shown as issued.
  */
+import { meaningful } from '../format.ts';
 
 /** 2003-01-01T00:00:00+01:00, the instant the minute counters run from. */
 const HZPP_EPOCH = 1041375600;
@@ -192,9 +193,6 @@ const int = (value: string) => {
 	if (!Number.isFinite(n)) throw new Error('HŽPP field is not a number');
 	return n;
 };
-
-/** Blank and all-zero blocks carry nothing, so they are not worth showing. */
-const meaningful = (value: string) => (/^[0\s]*$/.test(value) ? null : value.trim());
 
 function train(number: string, reservation: string, seat: string): HzppTrain | null {
 	const trainNumber = int(number);

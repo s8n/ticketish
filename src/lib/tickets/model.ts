@@ -8,6 +8,7 @@
  * date - which is how the DB Zugbindung (train binding) is deciphered.
  */
 import type { Choice } from './asn1/index.ts';
+import { dayOfYearDate, dayOfYearUtc, isoDate, plusDays, timeOfDay } from './dates.ts';
 import { isUicCodeTable, uicStationName, type StationTable } from './stations.ts';
 
 export interface FcbIssuingDetail {
@@ -66,20 +67,12 @@ export interface DocumentSummary {
 	validUntil?: string;
 }
 
-const pad = (n: number, w = 2) => String(n).padStart(w, '0');
-
 /** Date of issue as UTC calendar parts (FCB dates are day-of-year based). */
 export function issuingDate(issuing: FcbIssuingDetail): Date {
-	const d = new Date(Date.UTC(issuing.issuingYear, 0, 1));
-	d.setUTCDate(d.getUTCDate() + issuing.issuingDay - 1);
-	return d;
+	return dayOfYearUtc(issuing.issuingYear, issuing.issuingDay);
 }
 
-function offsetDate(base: Date, days: number): string {
-	const d = new Date(base);
-	d.setUTCDate(d.getUTCDate() + days);
-	return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
-}
+const offsetDate = (base: Date, days: number) => isoDate(plusDays(base, days));
 
 /**
  * Absolute FCB date: a year plus a day of that year (1.1. = 1). Customer
@@ -89,19 +82,13 @@ function offsetDate(base: Date, days: number): string {
 function yearDay(year: number | undefined, day: number | undefined): string | undefined {
 	if (year === undefined) return undefined;
 	if (!day) return String(year);
-	const d = new Date(Date.UTC(year, 0, 1));
-	d.setUTCDate(d.getUTCDate() + day - 1);
-	return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
-}
-
-function minutes(m: number): string {
-	return `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
+	return dayOfYearDate(year, day) ?? String(year);
 }
 
 function dateTime(base: Date, days: number | undefined, mins: number | undefined): string | undefined {
 	if (days === undefined && mins === undefined) return undefined;
 	const date = offsetDate(base, days ?? 0);
-	return mins !== undefined ? `${date}T${minutes(mins)}` : date;
+	return mins !== undefined ? `${date}T${timeOfDay(mins)}` : date;
 }
 
 interface TrainLink {
@@ -133,7 +120,7 @@ function trainLinkBinding(
 	return {
 		train: link.trainIA5 ?? (link.trainNum !== undefined ? String(link.trainNum) : '?'),
 		departureDate: offsetDate(issued, link.travelDate),
-		departureTime: minutes(link.departureTime),
+		departureTime: timeOfDay(link.departureTime),
 		// A trainLink without its own stations binds the document's full route.
 		fromStation:
 			link.fromStationNameUTF8 ??

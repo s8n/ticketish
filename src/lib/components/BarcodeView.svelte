@@ -118,7 +118,7 @@
 		</div>
 	{/if}
 
-	<dl>
+	<dl class="fields">
 		<dt>Original</dt>
 		<dd>{describe(symbology)}</dd>
 		<dt>Re-encoded</dt>
@@ -208,19 +208,6 @@
 	.actions button:disabled {
 		opacity: 0.45;
 		cursor: default;
-	}
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
 	}
 	.note {
 		margin: 0;

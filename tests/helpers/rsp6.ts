@@ -6,7 +6,7 @@
  * signature with message recovery, so a throwaway key signs it and the test
  * hands the matching public key to the parser.
  */
-import { BitWriter, sha256, testKey, type TestKey } from './build.ts';
+import { BitWriter, modPow, sha256, testKey, type TestKey } from './build.ts';
 import type { RspKeyStore } from '../../src/lib/tickets/rsp/rsp6.ts';
 
 const toBigInt = (b: Uint8Array) => {
@@ -20,17 +20,6 @@ const toBytes = (n: bigint) => {
 	if (h.length % 2) h = '0' + h;
 	return new Uint8Array(Buffer.from(h, 'hex'));
 };
-
-function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
-	let result = 1n;
-	base %= mod;
-	while (exp > 0n) {
-		if (exp & 1n) result = (result * base) % mod;
-		base = (base * base) % mod;
-		exp >>= 1n;
-	}
-	return result;
-}
 
 /** PKCS#1 v1.5 style block: 00 01 FF.. 00 || body || SHA-256(body)[0..8]. */
 function sign(body: Uint8Array, key: TestKey): bigint {

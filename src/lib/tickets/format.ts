@@ -24,6 +24,35 @@ export function fmtClass(classCode: string | undefined): string | null {
 	return map[classCode] ?? classCode;
 }
 
+/**
+ * A timestamp as the local wall clock somewhere, in the day.month.year hh:mm
+ * shape the rest of the UI uses.
+ *
+ * The records that need this are read where the train runs rather than where
+ * the reader is, so the zone is named per format: a MÁV departure is Budapest
+ * time whoever is looking at it.
+ */
+export function fmtZoned(
+	when: string | number | Date | null | undefined,
+	timeZone: string
+): string | null {
+	if (when === null || when === undefined || when === '') return null;
+	const date = new Date(when);
+	if (Number.isNaN(date.getTime())) return null;
+	const formatted = new Intl.DateTimeFormat('de-DE', {
+		timeZone,
+		day: '2-digit',
+		month: '2-digit',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit'
+	}).format(date);
+	return formatted.replace(',', '');
+}
+
+/** Blank and all-zero blocks carry nothing, so they are not worth showing. */
+export const meaningful = (value: string) => (/^[0\s]*$/.test(value) ? null : value.trim());
+
 export function hexDump(bytes: Uint8Array): string {
 	const lines: string[] = [];
 	for (let off = 0; off < bytes.length; off += 16) {

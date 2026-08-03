@@ -6,6 +6,7 @@
 	import type { Rsp6Ticket, Rsp6TicketData, Rsp6RailcardData } from '../tickets/rsp/rsp6.ts';
 	import { fmtDate } from '../tickets/format.ts';
 	import { loadNlcNames, nlcEntry, nlcLabel, type NlcEntry } from '../tickets/rsp/nlc.ts';
+	import RouteLine from './RouteLine.svelte';
 
 	let { ticket }: { ticket: Rsp6Ticket } = $props();
 
@@ -45,16 +46,21 @@
 	{/if}
 
 	{#if t}
-		<div class="route">
-			<span class="station" title={t.originNlc ? `NLC ${t.originNlc}` : undefined}>
-				{station(t.originNlc)}{#if crs(t.originNlc)}<span class="crs">{crs(t.originNlc)}</span>{/if}
-			</span>
-			<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
-			<span class="station" title={t.destinationNlc ? `NLC ${t.destinationNlc}` : undefined}>
-				{station(t.destinationNlc)}{#if crs(t.destinationNlc)}<span class="crs">{crs(t.destinationNlc)}</span>{/if}
-			</span>
-		</div>
-		<dl>
+		<!-- The three letter station code, kept beside the name the way a ticket
+		     office screen shows it. -->
+		{#snippet originCrs()}{#if crs(t.originNlc)}<span class="crs">{crs(t.originNlc)}</span>{/if}{/snippet}
+		{#snippet destinationCrs()}{#if crs(t.destinationNlc)}<span class="crs">{crs(t.destinationNlc)}</span
+			>{/if}{/snippet}
+		<RouteLine
+			from={station(t.originNlc)}
+			to={station(t.destinationNlc)}
+			fromTitle={t.originNlc ? `NLC ${t.originNlc}` : null}
+			toTitle={t.destinationNlc ? `NLC ${t.destinationNlc}` : null}
+			fromBadge={originCrs}
+			toBadge={destinationCrs}
+			size="sm"
+		/>
+		<dl class="fields">
 			<dt>Fare</dt>
 			<dd>{t.fareLabel} <span class="soft">(Lennon {t.lennonTicketType})</span></dd>
 			<dt>Class</dt>
@@ -92,7 +98,7 @@
 				<dd class="small">{t.freeUse}</dd>{/if}
 		</dl>
 		{#if t.reservations.length}
-			<dl>
+			<dl class="fields">
 				{#each t.reservations as r, i (i)}
 					<dt>Reservation</dt>
 					<dd>{r.serviceId}{r.coach ? ` · coach ${r.coach}` : ''}{r.seat ? ` · seat ${r.seat}` : ''}</dd>
@@ -101,7 +107,7 @@
 		{/if}
 	{:else if rc}
 		<p class="caveat">Data may be incomplete, railcards use a separate standard.</p>
-		<dl>
+		<dl class="fields">
 			<dt>Railcard</dt>
 			<dd>{rc.railcardTypeName} <code>{rc.railcardNumber}</code></dd>
 			<dt>Holder</dt>
@@ -115,7 +121,7 @@
 		</dl>
 	{/if}
 
-	<dl class="envelope-info">
+	<dl class="fields divider">
 		<dt>Ticket ref</dt>
 		<dd><code>{ticket.ticketRef}</code></dd>
 		<dt>Issuer</dt>
@@ -134,18 +140,6 @@
 		font-size: 0.85rem;
 		color: var(--signal-red);
 	}
-	.route {
-		display: flex;
-		align-items: center;
-		gap: 0.7rem;
-		flex-wrap: wrap;
-	}
-	.station {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 1.3rem;
-		text-transform: uppercase;
-	}
 	.crs {
 		font-family: var(--font-mono);
 		font-size: 0.7rem;
@@ -154,38 +148,6 @@
 		margin-left: 0.35rem;
 		vertical-align: 0.15em;
 	}
-	.line {
-		flex: 1;
-		min-width: 3.5rem;
-		display: flex;
-		align-items: center;
-	}
-	.dot {
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
-		background: var(--ink);
-	}
-	.rail {
-		flex: 1;
-		border-top: 2px solid var(--ink);
-	}
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
-	}
-	.soft {
-		color: var(--ink-soft);
-	}
 	.caveat {
 		margin: 0;
 		font-size: 0.8rem;
@@ -193,9 +155,5 @@
 	}
 	.small {
 		font-size: 0.8rem;
-	}
-	.envelope-info {
-		border-top: 1px dashed var(--paper-edge);
-		padding-top: 0.6rem;
 	}
 </style>

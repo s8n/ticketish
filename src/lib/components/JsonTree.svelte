@@ -3,13 +3,12 @@
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
 	import JsonTree from './JsonTree.svelte';
+	import { hex } from '../tickets/bytes.ts';
 
 	let { value, label = null }: { value: unknown; label?: string | null } = $props();
 
 	const isChoice = (v: unknown): v is { __choice__: string; value: unknown } =>
 		!!v && typeof v === 'object' && '__choice__' in v;
-
-	const hex = (b: Uint8Array) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
 </script>
 
 {#if value instanceof Uint8Array}

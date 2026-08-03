@@ -3,6 +3,7 @@
 
 /** Entry point: classify and parse a scanned barcode payload. */
 import type { BarcodeSymbology, ParsedTicket, TicketContainer, TicketSource } from './types.ts';
+import { isPrintableAsciiByte } from './bytes.ts';
 import { isUic9183, parseUic9183 } from './uic/envelope9183.ts';
 import { parseDosipas } from './uic/dosipas.ts';
 import { isRsp6, parseRsp6 } from './rsp/rsp6.ts';
@@ -31,127 +32,59 @@ import './records/dbbl.ts';
 import './records/dbvu.ts';
 import './records/oebb.ts';
 
+interface Detector {
+	/**
+	 * Cheap test for whether the payload is this format at all. Omitted by the
+	 * two formats that have no magic to look for and can only be identified by
+	 * parsing them, which is why they come last.
+	 */
+	matches?: (data: Uint8Array) => boolean;
+	parse: (data: Uint8Array) => TicketContainer;
+	/**
+	 * Set where a match settles it, so a parse failure is an error worth
+	 * raising rather than a reason to go on looking. Everything else falls
+	 * through to the next detector, since these tests are heuristics and a
+	 * payload that trips one can still belong to another format.
+	 */
+	certain?: boolean;
+}
+
+/**
+ * The formats, in the order they are tried, which is the order they resolve
+ * each other's ambiguities in. Adding one means adding a line here and a kind
+ * to TicketContainer; nothing else dispatches on the format.
+ */
+const DETECTORS: Detector[] = [
+	{ matches: isUic9183, parse: (d) => ({ kind: 'uic9183', envelope: parseUic9183(d) }), certain: true },
+	{ matches: isRsp6, parse: (d) => ({ kind: 'rsp6', ticket: parseRsp6(d) }), certain: true },
+	{ matches: isVdv, parse: (d) => ({ kind: 'vdv', barcode: parseVdv(d) }) },
+	{ matches: isSsb, parse: (d) => ({ kind: 'ssb', envelope: parseSsb(d) }) },
+	{ matches: isSsb1, parse: (d) => ({ kind: 'ssb1', ticket: parseSsb1(d) }) },
+	{ matches: isTrenitalia, parse: (d) => ({ kind: 'trenitalia', ticket: parseTrenitalia(d) }) },
+	{ matches: isUz, parse: (d) => ({ kind: 'uz', ticket: parseUz(d) }) },
+	{ matches: isEav, parse: (d) => ({ kind: 'eav', ticket: parseEav(d) }) },
+	{ matches: isTcdd, parse: (d) => ({ kind: 'tcdd', ticket: parseTcdd(d) }) },
+	{ matches: isRenfe, parse: (d) => ({ kind: 'renfe', ticket: parseRenfe(d) }) },
+	{ matches: isMav, parse: (d) => ({ kind: 'mav', ticket: parseMav(d) }) },
+	{ matches: isNsb, parse: (d) => ({ kind: 'nsb', ticket: parseNsb(d) }) },
+	{ matches: isCdLegacy, parse: (d) => ({ kind: 'cd-legacy', ticket: parseCdLegacy(d) }) },
+	{ matches: isHzpp, parse: (d) => ({ kind: 'hzpp', ticket: parseHzpp(d) }) },
+	{ matches: isViaRail, parse: (d) => ({ kind: 'viarail', ticket: parseViaRail(d) }) },
+	{ matches: isElb, parse: (d) => ({ kind: 'elb', ticket: parseElb(d) }) },
+	{ matches: isSncfETicket, parse: (d) => ({ kind: 'sncf-eticket', ticket: parseSncfETicket(d) }) },
+	{ parse: (d) => ({ kind: 'dosipas', envelope: parseDosipas(d) }) },
+	{ parse: (d) => ({ kind: 'swisspass', ticket: parseSwissPass(d) }) }
+];
+
 export function parsePayload(data: Uint8Array): TicketContainer {
-	if (isUic9183(data)) {
-		return { kind: 'uic9183', envelope: parseUic9183(data) };
-	}
-	if (isRsp6(data)) {
-		return { kind: 'rsp6', ticket: parseRsp6(data) };
-	}
-	if (isVdv(data)) {
+	for (const { matches, parse, certain } of DETECTORS) {
+		if (matches && !matches(data)) continue;
+		if (certain) return parse(data);
 		try {
-			return { kind: 'vdv', barcode: parseVdv(data) };
+			return parse(data);
 		} catch {
-			// fall through to the other formats
+			// not this format after all, so try the next
 		}
-	}
-	if (isSsb(data)) {
-		try {
-			return { kind: 'ssb', envelope: parseSsb(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isSsb1(data)) {
-		try {
-			return { kind: 'ssb1', ticket: parseSsb1(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isTrenitalia(data)) {
-		try {
-			return { kind: 'trenitalia', ticket: parseTrenitalia(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isUz(data)) {
-		try {
-			return { kind: 'uz', ticket: parseUz(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isEav(data)) {
-		try {
-			return { kind: 'eav', ticket: parseEav(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isTcdd(data)) {
-		try {
-			return { kind: 'tcdd', ticket: parseTcdd(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isRenfe(data)) {
-		try {
-			return { kind: 'renfe', ticket: parseRenfe(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isMav(data)) {
-		try {
-			return { kind: 'mav', ticket: parseMav(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isNsb(data)) {
-		try {
-			return { kind: 'nsb', ticket: parseNsb(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isCdLegacy(data)) {
-		try {
-			return { kind: 'cd-legacy', ticket: parseCdLegacy(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isHzpp(data)) {
-		try {
-			return { kind: 'hzpp', ticket: parseHzpp(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isViaRail(data)) {
-		try {
-			return { kind: 'viarail', ticket: parseViaRail(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isElb(data)) {
-		try {
-			return { kind: 'elb', ticket: parseElb(data) };
-		} catch {
-			// fall through
-		}
-	}
-	if (isSncfETicket(data)) {
-		try {
-			return { kind: 'sncf-eticket', ticket: parseSncfETicket(data) };
-		} catch {
-			// fall through
-		}
-	}
-	try {
-		return { kind: 'dosipas', envelope: parseDosipas(data) };
-	} catch {
-		// not DOSIPAS
-	}
-	try {
-		return { kind: 'swisspass', ticket: parseSwissPass(data) };
-	} catch {
-		// not SwissPass
 	}
 	const text = tryText(data);
 	if (text !== null) return { kind: 'text', text };
@@ -175,7 +108,7 @@ export function parsePayload(data: Uint8Array): TicketContainer {
  */
 function isTextByte(b: number): boolean {
 	if (b === 0x09 || b === 0x0a || b === 0x0d) return true; // tab, newline
-	if (b >= 0x20 && b <= 0x7e) return true; // ASCII printable
+	if (isPrintableAsciiByte(b)) return true;
 	return b >= 0xa0; // Latin-1's upper half, skipping the C1 controls
 }
 

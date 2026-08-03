@@ -9,6 +9,9 @@
  *
  * Layouts ported from zuegli's main/ssb (EUPL-1.2).
  */
+import { Bits } from '../bits.ts';
+import { hex } from '../bytes.ts';
+import { dayOfYearUtc, isoDate, lastDigitYear, plusDays, timeOfDay } from '../dates.ts';
 
 export interface SsbEnvelope {
 	version: number;
@@ -135,39 +138,6 @@ export interface SsbKeycard {
 	productName: string;
 }
 
-class Bits {
-	constructor(private d: Uint8Array) {}
-	bit(i: number): number {
-		return (this.d[i >> 3] >> (7 - (i & 7))) & 1;
-	}
-	bool(i: number): boolean {
-		return this.bit(i) === 1;
-	}
-	int(start: number, end: number): number {
-		let v = 0;
-		for (let i = start; i < end; i++) v = v * 2 + this.bit(i);
-		return v;
-	}
-	/** 6-bit characters offset by 0x20 */
-	str(start: number, end: number): string {
-		let s = '';
-		for (let i = start; i < end; i += 6) s += String.fromCharCode(this.int(i, i + 6) + 0x20);
-		return s.trim();
-	}
-	slice(start: number): Bits {
-		// re-pack from a bit offset
-		const bitLen = this.d.length * 8 - start;
-		const out = new Uint8Array(Math.ceil(bitLen / 8));
-		for (let i = 0; i < bitLen; i++) {
-			if (this.bit(start + i)) out[i >> 3] |= 0x80 >> (i & 7);
-		}
-		return new Bits(out);
-	}
-	get bytes(): Uint8Array {
-		return this.d;
-	}
-}
-
 const NS_PRODUCTS: Record<number, string> = {
 	1: 'Keycard',
 	2: 'Jaarpas passage',
@@ -214,28 +184,20 @@ const UIC_IN_NAME_FIELD = new Set([
 	1088 // SNCB/NMBS
 ]);
 
-const isoDate = (d: Date) => d.toISOString().slice(0, 10);
-
 /**
  * SSB stores only the last digit of the year; resolve it to the most recent
- * matching year that is not in the future.
+ * matching year that is not in the future. The field is four bits wide, so a
+ * corrupt record can hold something that is not a digit at all; there is
+ * nothing to resolve then, and this year is the least misleading answer.
  */
 function resolveYear(digit: number, now: Date): number {
-	let year = Math.floor(now.getUTCFullYear() / 10) * 10 + digit;
-	if (Date.UTC(year, 0, 1) > now.getTime()) year -= 10;
-	return year;
+	return lastDigitYear(digit, now) ?? now.getUTCFullYear();
 }
 
 function parseKeycard(d: Bits, now: Date): SsbKeycard {
-	const year = resolveYear(d.int(105, 109), now);
-	const issuingDay = d.int(109, 118);
-	const issuing = new Date(Date.UTC(year, 0, 1));
-	issuing.setUTCDate(issuing.getUTCDate() + issuingDay - 1);
-
-	const validityStart = new Date(issuing);
-	validityStart.setUTCDate(validityStart.getUTCDate() + d.int(129, 138));
-	const validityEnd = new Date(issuing);
-	validityEnd.setUTCDate(validityEnd.getUTCDate() + d.int(138, 150));
+	const issuing = dayOfYearUtc(resolveYear(d.int(105, 109), now), d.int(109, 118));
+	const validityStart = plusDays(issuing, d.int(129, 138));
+	const validityEnd = plusDays(issuing, d.int(138, 150));
 
 	const stationId = d.int(367, 384);
 	const productCode = d.int(118, 125);
@@ -324,16 +286,7 @@ function common(d: Bits, issuingDate: Date, extraText: string, informationMessag
 }
 
 function issuingDateOf(d: Bits, now: Date): Date {
-	const year = resolveYear(d.int(105, 109), now);
-	const date = new Date(Date.UTC(year, 0, 1));
-	date.setUTCDate(date.getUTCDate() + d.int(109, 118) - 1);
-	return date;
-}
-
-function plusDays(base: Date, days: number): Date {
-	const out = new Date(base);
-	out.setUTCDate(out.getUTCDate() + days);
-	return out;
+	return dayOfYearUtc(resolveYear(d.int(105, 109), now), d.int(109, 118));
 }
 
 function parseNonReservation(d: Bits, issuerRics: number, now: Date): SsbNonReservationTicket {
@@ -354,13 +307,11 @@ function parseReservation(d: Bits, issuerRics: number, now: Date): SsbReservatio
 	const issuing = issuingDateOf(d, now);
 	const st = stations(d, issuerRics, 120, 121);
 	const departureDate = plusDays(issuing, d.int(181, 190));
-	const minutes = d.int(190, 201);
-	const p = (n: number) => String(n).padStart(2, '0');
 	return {
 		kind: 'reservation',
 		...common(d, issuing, d.str(274, 436), d.int(260, 274)),
 		subType: d.int(118, 120),
-		departure: `${isoDate(departureDate)}T${p(Math.floor(minutes / 60) % 24)}:${p(minutes % 60)}`,
+		departure: `${isoDate(departureDate)}T${timeOfDay(d.int(190, 201))}`,
 		departureStation: st.from,
 		arrivalStation: st.to,
 		trainNumber: d.str(201, 231),
@@ -456,8 +407,6 @@ export function isSsb(data: Uint8Array): boolean {
 	// with a byte whose top nibble looks like a version.
 	return data.some((b) => b < 0x20 || b > 0x7e);
 }
-
-const hex = (b: Uint8Array) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
 
 export function parseSsb(data: Uint8Array, now: Date = new Date()): SsbEnvelope {
 	if (!isSsb(data)) throw new Error('not an SSB barcode');

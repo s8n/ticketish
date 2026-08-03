@@ -11,6 +11,7 @@
  */
 import { registerRecordParser } from '../registry.ts';
 import type { RawRecord } from '../types.ts';
+import { fmtZoned } from '../format.ts';
 
 export interface OebbRecord {
 	/** ISO UTC timestamps */
@@ -55,18 +56,7 @@ function parseOebb(record: RawRecord): OebbRecord {
 }
 
 /** Format an ISO UTC timestamp in Austrian local time, as printed on the ticket. */
-export function fmtVienna(iso: string | null): string | null {
-	if (!iso) return null;
-	const formatted = new Intl.DateTimeFormat('de-AT', {
-		timeZone: 'Europe/Vienna',
-		day: '2-digit',
-		month: '2-digit',
-		year: 'numeric',
-		hour: '2-digit',
-		minute: '2-digit'
-	}).format(new Date(iso));
-	return formatted.replace(',', '');
-}
+export const fmtVienna = (iso: string | null) => fmtZoned(iso, 'Europe/Vienna');
 
 registerRecordParser({
 	kind: 'oebb',

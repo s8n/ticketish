@@ -169,9 +169,9 @@
 			<header>
 				<span class="doctype">{docTypeLabel(doc.type)}</span>
 				{#if productName(doc.type, doc.data)}
-					<span class="product">{productName(doc.type, doc.data)}</span>
+					<span class="product-sm">{productName(doc.type, doc.data)}</span>
 				{:else if doc.data.trainIA5 || doc.data.trainNum}
-					<span class="product">Train {doc.data.trainIA5 ?? doc.data.trainNum}</span>{/if}
+					<span class="product-sm">Train {doc.data.trainIA5 ?? doc.data.trainNum}</span>{/if}
 				{#if fmtClass(doc.data.classCode as string)}<span class="chip">{fmtClass(doc.data.classCode as string)}</span>{/if}
 			</header>
 
@@ -193,7 +193,7 @@
 				</div>
 			{/if}
 
-			<dl>
+			<dl class="fields">
 				{#if doc.validFrom}<dt>Valid from</dt>
 					<dd>{fmtDate(doc.validFrom)}</dd>{/if}
 				{#if doc.validUntil}<dt>Valid until</dt>
@@ -247,9 +247,9 @@
 
 	{#if travelers.length}
 		<section class="travelers">
-			<h4>Traveler{travelers.length > 1 ? 's' : ''}</h4>
+			<h4 class="block-title">Traveler{travelers.length > 1 ? 's' : ''}</h4>
 			{#each travelers as t, i (i)}
-				<dl>
+				<dl class="fields">
 					<dt>Name</dt>
 					<dd>
 						{travelerName(t)}
@@ -276,7 +276,7 @@
 		{@const flags = Object.entries(CONTROL_LABELS).filter(([k]) => control[k] === true)}
 		{#if flags.length || control.infoText}
 			<section class="control">
-				<h4>Inspection</h4>
+				<h4 class="block-title">Inspection</h4>
 				{#if flags.length}
 					<ul>
 						{#each flags as [k, label] (k)}
@@ -289,7 +289,7 @@
 		{/if}
 	{/if}
 
-	<dl class="issuing">
+	<dl class="fields divider">
 		<dt>Issuer</dt>
 		<dd>
 			{issuing.issuerName ??
@@ -339,7 +339,7 @@
 		font-size: 0.8rem;
 		color: var(--ink-soft);
 	}
-	.product {
+	.product-sm {
 		font-weight: 600;
 	}
 	.chip {
@@ -363,19 +363,6 @@
 		font-size: 0.78rem;
 		color: var(--ink-soft);
 		padding-top: 0.2rem;
-	}
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.15rem 1rem;
-		margin: 0;
-		font-size: 0.88rem;
-	}
-	dt {
-		color: var(--ink-soft);
-	}
-	dd {
-		margin: 0;
 	}
 	dd.small,
 	p.small {
@@ -406,15 +393,6 @@
 		flex-direction: column;
 		gap: 0.4rem;
 	}
-	h4 {
-		margin: 0;
-		font-family: var(--font-display);
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		font-size: 0.78rem;
-		color: var(--ink-soft);
-		font-weight: 600;
-	}
 	.holder {
 		font-size: 0.68rem;
 		margin-left: 0.4rem;
@@ -426,10 +404,6 @@
 	}
 	.control p {
 		margin: 0;
-	}
-	.issuing {
-		border-top: 1px dashed var(--paper-edge);
-		padding-top: 0.6rem;
 	}
 	.alldata summary {
 		cursor: pointer;
