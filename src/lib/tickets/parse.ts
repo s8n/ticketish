@@ -17,6 +17,7 @@ import { isEav, parseEav } from './eav/eav.ts';
 import { isElb, parseElb } from './elb/elb.ts';
 import { isMav, parseMav } from './mav/mav.ts';
 import { isViaRail, parseViaRail } from './viarail/viarail.ts';
+import { isHzpp, parseHzpp } from './hzpp/hzpp.ts';
 import { isSncfETicket, parseSncfETicket } from './sncf/eticket.ts';
 
 // Record parsers register themselves on import.
@@ -86,6 +87,13 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 	if (isMav(data)) {
 		try {
 			return { kind: 'mav', ticket: parseMav(data) };
+		} catch {
+			// fall through
+		}
+	}
+	if (isHzpp(data)) {
+		try {
+			return { kind: 'hzpp', ticket: parseHzpp(data) };
 		} catch {
 			// fall through
 		}

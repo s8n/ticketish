@@ -24,6 +24,7 @@ the EUPL's compatibility list, so the files ported from it are EUPL-1.2 only:
 - `src/lib/tickets/ssb/ssb.ts` (layouts, from `main/ssb`)
 - `src/lib/tickets/ssb/ssb1.ts` (layout, from `main/ssb1`)
 - `src/lib/tickets/vdv/vdv.ts` (structures, from `main/vdv`)
+- `src/lib/tickets/hzpp/hzpp.ts` (from `main/hzpp/data.py`)
 - `src/lib/tickets/swisspass/swisspass.ts` (protobuf schema reverse engineered
   by zuegli in `main/swisspass/swisspass.proto`; the wire reader here is ours)
 

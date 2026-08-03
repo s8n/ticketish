@@ -57,6 +57,7 @@ export type TicketContainer =
 	| { kind: 'elb'; ticket: import('./elb/elb.ts').ElbTicket }
 	| { kind: 'mav'; ticket: import('./mav/mav.ts').MavTicket }
 	| { kind: 'viarail'; ticket: import('./viarail/viarail.ts').ViaRailTicket }
+	| { kind: 'hzpp'; ticket: import('./hzpp/hzpp.ts').HzppTicket }
 	| { kind: 'sncf-eticket'; ticket: import('./sncf/eticket.ts').SncfETicket }
 	| { kind: 'text'; text: string }
 	| { kind: 'unknown' };

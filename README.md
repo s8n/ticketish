@@ -50,6 +50,12 @@ installed.
   Aztec carrying everything the pass prints and nothing more: no compression,
   no signature. Stations are VIA's own four letter codes and the timestamps
   are bare local time, both shown as issued
+- **HŽPP** - Croatian tickets. The plaintext form (`B1`, 33 pipe separated
+  fields) is read in full: ticket type, both legs with their trains and
+  seats, passenger categories, validity and price, in kuna or euro depending
+  on which side of the 2023 switchover it was sold. The encrypted form (`A1`)
+  is recognised but cannot be opened, since HŽPP does not publish the key, so
+  the card says so instead of showing a hex string
 - **TCDD** - Turkish e-tickets, a "$"-delimited ASCII record
 - **Trenitalia** - departure date, train, coach, seat, PNR and entitlement
   number, reverse engineered from four tickets; the payload appears to carry

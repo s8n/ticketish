@@ -18,6 +18,7 @@
 	import ElbView from './ElbView.svelte';
 	import MavView from './MavView.svelte';
 	import ViaRailView from './ViaRailView.svelte';
+	import HzppView from './HzppView.svelte';
 	import SncfETicketView from './SncfETicketView.svelte';
 	import Ssb1View from './Ssb1View.svelte';
 	import TrenitaliaView from './TrenitaliaView.svelte';
@@ -74,6 +75,7 @@
 		}
 		if (container.kind === 'renfe') return 'Renfe';
 		if (container.kind === 'viarail') return 'VIA Rail Canada';
+		if (container.kind === 'hzpp') return 'HŽPP';
 		if (container.kind === 'mav') {
 			return ricsName(container.ticket.issuerRics) ?? 'MÁV';
 		}
@@ -164,6 +166,8 @@
 				return `MÁV v${container.ticket.version}`;
 			case 'viarail':
 				return 'VIA Rail';
+			case 'hzpp':
+				return container.ticket.encrypted ? 'HŽPP (encrypted)' : 'HŽPP';
 			case 'elb':
 				return 'ELB (Element List Barcode)';
 			case 'sncf-eticket':
@@ -295,6 +299,8 @@
 		<MavView ticket={container.ticket} />
 	{:else if container.kind === 'viarail'}
 		<ViaRailView ticket={container.ticket} />
+	{:else if container.kind === 'hzpp'}
+		<HzppView ticket={container.ticket} />
 	{:else if container.kind === 'sncf-eticket'}
 		<SncfETicketView ticket={container.ticket} />
 	{:else if container.kind === 'text'}
