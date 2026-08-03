@@ -166,6 +166,13 @@ If neither works out, the Wallet app's own "add from a photo" flow reads the
 PNG the Barcode tab exports. Google's scanner reads the symbol itself, so the
 bytes survive; what you get is the bare code with none of the fields.
 
+**Add to calendar** writes an `.ics` and needs nothing at all: no certificate,
+no issuer account, no phone in particular. A journey becomes a timed event
+from its departure to its arrival, a period ticket an all-day event across its
+validity, and the rest of the mapping goes in the description. Times are
+written as RFC 5545 floating date-times, with no zone, because that is what
+these formats carry: the same wall clock wherever it is read.
+
 Credentials live in memory unless you tick "keep on this device", which puts
 them in IndexedDB; "forget" deletes that database. Nothing else this app
 touches is ever written to disk.

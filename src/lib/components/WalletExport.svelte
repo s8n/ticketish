@@ -24,6 +24,8 @@
 		GOOGLE_EXPORT_ENABLED as SHOW_GOOGLE
 	} from '../wallet/google.ts';
 	import { identityProblem, loadIdentity } from '../wallet/identity.ts';
+	import { buildIcs, calendarProblem, icsFileName, ICS_MIME } from '../wallet/calendar.ts';
+	import { serialForPayload } from '../wallet/pkpass.ts';
 	import { credentials } from '../wallet/credentials.svelte.ts';
 	import { passAssets } from '../wallet/assets.ts';
 
@@ -66,8 +68,20 @@
 	 */
 	const caveats = $derived(linkWarnings.length ? linkWarnings : googleCaveats(ticket.raw));
 	const googleHeld = $derived(SHOW_GOOGLE && !!credentials.google);
+	const calendarBlocked = $derived(trip ? calendarProblem(trip) : 'no trip');
 
 	const say = (e: unknown) => (e instanceof Error ? e.message : String(e));
+
+	/** Hand a generated file to the browser as a download. */
+	function download(bytes: BlobPart, name: string, type: string) {
+		const url = URL.createObjectURL(new Blob([bytes], { type }));
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = name;
+		a.click();
+		// revoking in the same tick can cancel the download before it starts
+		setTimeout(() => URL.revokeObjectURL(url), 10_000);
+	}
 
 	async function exportApple() {
 		error = null;
@@ -90,14 +104,7 @@
 				identity: credentials.apple,
 				assets: await passAssets()
 			});
-			const url = URL.createObjectURL(
-				new Blob([bytes as unknown as BlobPart], { type: PKPASS_MIME })
-			);
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = pkpassFileName(trip);
-			a.click();
-			setTimeout(() => URL.revokeObjectURL(url), 10_000);
+			download(bytes as unknown as BlobPart, pkpassFileName(trip), PKPASS_MIME);
 		} catch (e) {
 			error = say(e);
 		} finally {
@@ -140,6 +147,17 @@
 			error = say(e);
 		} finally {
 			busy = false;
+		}
+	}
+
+	function exportCalendar() {
+		error = null;
+		if (!trip) return;
+		try {
+			const ics = buildIcs({ trip, uid: `${serialForPayload(ticket.raw)}@ticketish` });
+			download(ics, icsFileName(trip), ICS_MIME);
+		} catch (e) {
+			error = say(e);
 		}
 	}
 
@@ -205,10 +223,18 @@
 						{credentials.google ? 'Add to Google Wallet' : 'Add to Google Wallet…'}
 					</button>
 				{/if}
+				<!-- no certificate, no issuer, no account: the one export that
+				     works for everybody -->
+				<button onclick={exportCalendar} disabled={busy || !!calendarBlocked}>
+					Add to calendar
+				</button>
 			</div>
 
 			{#if appleBlocked}
 				<p class="note">Apple Wallet: {appleBlocked}.</p>
+			{/if}
+			{#if calendarBlocked && trip}
+				<p class="note">Calendar: {calendarBlocked}.</p>
 			{/if}
 			{#if SHOW_GOOGLE && googleBlocked}
 				<p class="note">Google Wallet: {googleBlocked}.</p>
