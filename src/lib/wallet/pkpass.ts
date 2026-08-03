@@ -159,12 +159,6 @@ export function buildPassJson(input: PassJsonInput): Record<string, unknown> {
 	for (const [i, detail] of trip.details.entries()) {
 		push(back, `detail${i}`, detail.label, detail.value);
 	}
-	back.push({
-		key: 'source',
-		label: 'About this pass',
-		value:
-			'Built by ticketish from the barcode on the original ticket. The barcode is the issuer’s, byte for byte; every other field was read out of it and is only as good as that reading. The original ticket remains the valid one.'
-	});
 
 	const style = journey
 		? {
