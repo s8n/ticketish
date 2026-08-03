@@ -212,8 +212,8 @@ describe('the transit pass', () => {
 	it('declares a class per operator, past draft so an object can exist', () => {
 		const payload = buildPassPayload(seated, ascii('TICKET'), AZTEC, '333', ORIGIN);
 		const [cls] = payload.transitClasses as Record<string, unknown>[];
-		expect(cls.id).toBe('333.ticketish_rail_test_railways');
-		expect(cls.issuerName).toBe('Test Railways');
+		expect(cls.id).toBe('333.ticketish_rail_v2_test_railways');
+		expect(cls.issuerName).toBe('ticketish | Test Railways');
 		// a draft class cannot have objects created against it
 		expect(cls.reviewStatus).toBe('UNDER_REVIEW');
 		expect(cls.transitType).toBe('RAIL');
@@ -253,6 +253,36 @@ describe('the pass itself', () => {
 		expect(value.length).toBe(256);
 		// what Google has to do to give the symbol back its bytes
 		expect([...value].map((c) => c.charCodeAt(0))).toEqual([...payload]);
+	});
+
+	it('marks the pass as not the operator own, at the top and in a row', () => {
+		const object = buildGenericObject(trip, ascii('X'), AZTEC, '333') as {
+			cardTitle: { defaultValue: { value: string } };
+			textModulesData: { id: string; body: string }[];
+		};
+		expect(object.cardTitle.defaultValue.value).toBe('ticketish | Test Railways');
+		const note = object.textModulesData.find((r) => r.id === 'unofficial')!;
+		expect(note.body).toMatch(/Not issued by the operator/);
+	});
+
+	it('keeps the note its own slot rather than losing it to the row cap', () => {
+		const wordy: TripSummary = {
+			...trip,
+			passenger: 'A Traveller',
+			coach: '7',
+			seat: '41',
+			validFrom: '2026-09-01T08:00',
+			validUntil: '2026-09-01T23:59',
+			reference: 'ABC123',
+			price: '99.00 EUR',
+			details: Array.from({ length: 6 }, (_, i) => ({ label: `Extra ${i}`, value: `${i}` }))
+		};
+		const rows = (
+			buildGenericObject(wordy, ascii('X'), AZTEC, '333') as { textModulesData: { id: string }[] }
+		).textModulesData;
+		// ten is all Google shows, and the last of them is the note
+		expect(rows).toHaveLength(10);
+		expect(rows[rows.length - 1].id).toBe('unofficial');
 	});
 
 	it('carries the mapped fields as text rows', () => {

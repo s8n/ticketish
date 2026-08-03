@@ -158,7 +158,7 @@ describe('what the reader is shown before exporting', () => {
 		const ticket = muster('muster-918-9-fv-supersparpreis.bin');
 		if (!ticket) return;
 		const rows = previewFields((await tripFor(ticket))!);
-		expect(rows[0]).toEqual({ label: 'Title', value: 'DB AG' });
+		expect(rows[0]).toEqual({ label: 'Title', value: 'ticketish | DB AG' });
 	});
 
 	it('leaves nothing on the pass unshown', async () => {
@@ -197,6 +197,7 @@ describe('what the reader is shown before exporting', () => {
 			details: []
 		});
 		expect(rows.map((r) => r.label)).toEqual(['Title', 'Valid from']);
+		expect(rows[0].value).toBe('ticketish | Test Verbund');
 	});
 });
 

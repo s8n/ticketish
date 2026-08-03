@@ -208,6 +208,27 @@ describe('pass structure', () => {
 		expect((await passOf(trip)).backgroundColor).toBe('rgb(38, 50, 75)');
 	});
 
+	it('says on the front and on the back that it is not the issuer own pass', async () => {
+		const { identity: id } = await identity();
+		const pass = JSON.parse(
+			strFromU8(
+				files(
+					await buildPkpass({
+						trip,
+						payload: binaryPayload(),
+						symbology: AZTEC,
+						identity: id,
+						assets
+					})
+				)['pass.json']
+			)
+		);
+		expect(pass.organizationName).toBe('ticketish | Test Railways');
+		const back = pass.boardingPass.backFields as { key: string; value: string }[];
+		const note = back.find((f) => f.key === 'unofficial')!;
+		expect(note.value).toMatch(/Not issued by the operator/);
+	});
+
 	it('gives the same ticket the same serial, so a re-export replaces it', async () => {
 		const payload = binaryPayload();
 		expect(serialForPayload(payload)).toBe(serialForPayload(binaryPayload()));

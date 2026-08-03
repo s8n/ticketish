@@ -444,7 +444,7 @@ export async function tripFor(ticket: ParsedTicket): Promise<TripSummary | null>
 export function previewFields(trip: TripSummary): TripField[] {
 	const at = (value: string | undefined) => value?.replace('T', ' ');
 	const rows: [string, string | undefined][] = [
-		['Title', trip.issuer],
+		['Title', passIssuerName(trip)],
 		['Ticket', trip.product],
 		['From', trip.from],
 		['To', trip.to],
@@ -465,6 +465,23 @@ export function previewFields(trip: TripSummary): TripField[] {
 	];
 	return rows.filter(([, value]) => !!value).map(([label, value]) => ({ label, value: value! }));
 }
+
+/**
+ * The name at the top of a pass: the operator, said to be coming from here.
+ *
+ * A pass carrying DB's name, DB's red and DB's barcode is one an inspector,
+ * or the reader six months from now, could easily take for something DB
+ * issued. It is not, and the top line is the only place that is read every
+ * time, so it is where that goes.
+ */
+export function passIssuerName(trip: TripSummary): string {
+	return `ticketish | ${trip.issuer}`;
+}
+
+/** The same point at length, for the one field on the back that can hold it. */
+export const UNOFFICIAL_LABEL = 'Unofficial pass';
+export const UNOFFICIAL_NOTE =
+	'Made by ticketish from the barcode on the original ticket. Not issued by the operator.';
 
 /** "Hamburg Hbf to Köln Hbf", or the product, or the issuer: a pass title. */
 export function tripTitle(trip: TripSummary): string {

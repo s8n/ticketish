@@ -29,7 +29,15 @@ import type { BarcodeSymbology } from '../tickets/types.ts';
 import { signDetached } from './cms.ts';
 import { passColors } from './colors.ts';
 import type { SigningIdentity } from './identity.ts';
-import { asUtcInstant, localParts, tripTitle, type TripSummary } from './trip.ts';
+import {
+	asUtcInstant,
+	localParts,
+	passIssuerName,
+	tripTitle,
+	UNOFFICIAL_LABEL,
+	UNOFFICIAL_NOTE,
+	type TripSummary
+} from './trip.ts';
 
 /** zxing format name to the constant Apple uses for the same symbology. */
 const BARCODE_FORMATS: Record<string, string> = {
@@ -147,6 +155,7 @@ export function buildPassJson(input: PassJsonInput): Record<string, unknown> {
 	for (const [i, detail] of trip.details.entries()) {
 		push(back, `detail${i}`, detail.label, detail.value);
 	}
+	back.push({ key: 'unofficial', label: UNOFFICIAL_LABEL, value: UNOFFICIAL_NOTE });
 
 	const style = journey
 		? {
@@ -171,7 +180,7 @@ export function buildPassJson(input: PassJsonInput): Record<string, unknown> {
 		passTypeIdentifier: input.passTypeIdentifier,
 		teamIdentifier: input.teamIdentifier,
 		serialNumber: input.serialNumber,
-		organizationName: trip.issuer,
+		organizationName: passIssuerName(trip),
 		description: tripTitle(trip),
 		backgroundColor: colors.background,
 		foregroundColor: colors.foreground,

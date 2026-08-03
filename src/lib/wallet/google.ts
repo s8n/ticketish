@@ -45,7 +45,15 @@
 import { isPrintableAscii } from '../tickets/bytes.ts';
 import type { BarcodeSymbology } from '../tickets/types.ts';
 import { importPrivateKey } from './identity.ts';
-import { localParts, asUtcInstant, tripTitle, type TripSummary } from './trip.ts';
+import {
+	localParts,
+	asUtcInstant,
+	passIssuerName,
+	tripTitle,
+	UNOFFICIAL_LABEL,
+	UNOFFICIAL_NOTE,
+	type TripSummary
+} from './trip.ts';
 import { latin1Message, serialForPayload } from './pkpass.ts';
 import { passColors } from './colors.ts';
 
@@ -149,6 +157,17 @@ const GENERIC_CLASS = 'ticketish_generic';
  */
 const MAX_TEXT_MODULES = 10;
 
+/**
+ * Bumped whenever what the class says changes.
+ *
+ * A save link creates a class the issuer does not have; it is not a way to
+ * edit one it does. So an issuer that already holds a class from an earlier
+ * version of this app would keep whatever that version put in it, and the only
+ * way to change what a pass says is to point it at a class that does not exist
+ * yet. Old ones stay behind in the issuer account, unused.
+ */
+const TRANSIT_CLASS_VERSION = 2;
+
 /** A transit class carries the operator's name, so there is one per operator. */
 function transitClassId(issuerId: string, issuer: string): string {
 	const slug = issuer
@@ -156,7 +175,7 @@ function transitClassId(issuerId: string, issuer: string): string {
 		.replace(/[^a-z0-9]+/g, '_')
 		.replace(/^_|_$/g, '')
 		.slice(0, 40);
-	return `${issuerId}.ticketish_rail_${slug || 'operator'}`;
+	return `${issuerId}.ticketish_rail_v${TRANSIT_CLASS_VERSION}_${slug || 'operator'}`;
 }
 
 /**
@@ -217,7 +236,12 @@ function textModules(trip: TripSummary, exclude: Set<string>): TextModule[] {
 	add('Price', trip.price, 'price');
 	for (const [i, detail] of trip.details.entries()) add(detail.label, detail.value, `detail${i}`);
 
-	return rows.slice(0, MAX_TEXT_MODULES);
+	// the note keeps a slot of its own rather than taking its chances with the
+	// cap, since it is the one row that has to be there
+	return [
+		...rows.slice(0, MAX_TEXT_MODULES - 1),
+		{ header: UNOFFICIAL_LABEL, body: UNOFFICIAL_NOTE, id: 'unofficial' }
+	];
 }
 
 /** The barcode object, which is the same either way. */
@@ -263,7 +287,7 @@ export function buildGenericObject(
 		id: `${issuerId}.${serialForPayload(payload)}`,
 		classId: `${issuerId}.${GENERIC_CLASS}`,
 		state: 'ACTIVE',
-		cardTitle: text(trip.issuer),
+		cardTitle: text(passIssuerName(trip)),
 		header: text(tripTitle(trip)),
 		hexBackgroundColor: passColors(trip.operator).hex,
 		barcode: barcodeOf(trip, payload, symbology),
@@ -358,7 +382,7 @@ export function buildPassPayload(
 			transitClasses: [
 				{
 					id: transitClassId(issuerId, trip.issuer),
-					issuerName: trip.issuer,
+					issuerName: passIssuerName(trip),
 					reviewStatus: 'UNDER_REVIEW',
 					transitType: 'RAIL',
 					logo: { sourceUri: { uri: logo } }
