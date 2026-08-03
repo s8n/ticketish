@@ -61,6 +61,10 @@
 		}
 		if (container.kind === 'renfe') return 'Renfe';
 		if (container.kind === 'tcdd') return 'TCDD Taşımacılık';
+		// Both are SNCF stock. Eurostar tickets carry the SNCF logo and a CIV
+		// number of its own, with Eurostar named as the carrier inside the
+		// record rather than as the issuer.
+		if (container.kind === 'sncf-reservation' || container.kind === 'sncf-eticket') return 'SNCF';
 		if (container.kind === 'trenitalia') return 'Trenitalia';
 		if (container.kind === 'eav') return 'EAV / UNICO Campania';
 		if (container.kind === 'ssb1') {
@@ -129,11 +133,20 @@
 				return 'Trenitalia';
 			case 'eav':
 				return 'EAV';
+			case 'sncf-reservation':
+				return 'SNCF reservation';
+			case 'sncf-eticket':
+				return 'SNCF e-billet';
 			case 'text':
 				return 'Plain text';
-			default:
+			case 'unknown':
 				return 'Unknown format';
 		}
+		// Every container kind has to be named above. Without this a new format
+		// falls through to "Unknown format" while rendering perfectly well, and
+		// now that the tab is labelled from here it would be named that too.
+		const unhandled: never = container;
+		throw new Error(`unlabelled container ${(unhandled as { kind: string }).kind}`);
 	});
 
 	// The barcode tab needs to know how the payload was encoded, so it is only
