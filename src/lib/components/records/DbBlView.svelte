@@ -5,6 +5,7 @@
 	import type { DbBlData } from '../../tickets/records/dbbl.ts';
 	import { fmtDate } from '../../tickets/format.ts';
 	import { loadUicStations, uicStationLabel, type StationTable } from '../../tickets/stations.ts';
+	import RouteLine from '../RouteLine.svelte';
 
 	let { data }: { data: DbBlData } = $props();
 
@@ -31,11 +32,7 @@
 
 <div class="bl">
 	{#if from || to}
-		<div class="route">
-			<span class="station">{from ?? '–'}</span>
-			<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
-			<span class="station">{to ?? '–'}</span>
-		</div>
+		<RouteLine {from} {to} />
 	{/if}
 	<dl>
 		{#if data.product}<dt>Product</dt>
@@ -79,35 +76,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.6rem;
-	}
-	.route {
-		display: flex;
-		align-items: center;
-		gap: 0.7rem;
-		flex-wrap: wrap;
-	}
-	.station {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 1.45rem;
-		line-height: 1.1;
-		text-transform: uppercase;
-	}
-	.line {
-		flex: 1;
-		min-width: 3.5rem;
-		display: flex;
-		align-items: center;
-	}
-	.dot {
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
-		background: var(--ink);
-	}
-	.rail {
-		flex: 1;
-		border-top: 2px solid var(--ink);
 	}
 	dl {
 		display: grid;

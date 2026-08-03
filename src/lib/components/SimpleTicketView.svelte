@@ -6,6 +6,8 @@
 	 * Shared presentation for the smaller national formats: an optional route
 	 * line, a label/value list, and an optional note about undecoded fields.
 	 */
+	import RouteLine from './RouteLine.svelte';
+
 	let {
 		title,
 		from = null,
@@ -27,11 +29,7 @@
 	<header><span class="product">{title}</span></header>
 
 	{#if from || to}
-		<div class="route">
-			<span class="station">{from ?? '–'}</span>
-			<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
-			<span class="station">{to ?? '–'}</span>
-		</div>
+		<RouteLine {from} {to} size="sm" />
 	{/if}
 
 	<dl>
@@ -63,36 +61,6 @@
 		font-weight: 700;
 		font-size: 1.2rem;
 		text-transform: uppercase;
-	}
-	.route {
-		display: flex;
-		align-items: center;
-		gap: 0.7rem;
-		flex-wrap: nowrap;
-		overflow-x: auto;
-	}
-	.station {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 1.3rem;
-		text-transform: uppercase;
-		white-space: nowrap;
-	}
-	.line {
-		flex: 1;
-		min-width: 3rem;
-		display: flex;
-		align-items: center;
-	}
-	.dot {
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
-		background: var(--ink);
-	}
-	.rail {
-		flex: 1;
-		border-top: 2px solid var(--ink);
 	}
 	dl {
 		display: grid;

@@ -151,11 +151,11 @@
 			case 'text':
 				return 'Plain text';
 			case 'unknown':
-				return 'Unknown format';
+				return 'Unknown';
 		}
 		// Every container kind has to be named above. Without this a new format
-		// falls through to "Unknown format" while rendering perfectly well, and
-		// now that the tab is labelled from here it would be named that too.
+		// falls through to "Unknown" while rendering perfectly well, and now
+		// that the tab is labelled from here it would be named that too.
 		const unhandled: never = container;
 		throw new Error(`unlabelled container ${(unhandled as { kind: string }).kind}`);
 	});

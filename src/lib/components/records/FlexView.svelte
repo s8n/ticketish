@@ -15,6 +15,7 @@
 		type StationTable
 	} from '../../tickets/stations.ts';
 	import ZugbindungStrip from '../ZugbindungStrip.svelte';
+	import RouteLine from '../RouteLine.svelte';
 	import ViaRoute from '../ViaRoute.svelte';
 	import JsonTree from '../JsonTree.svelte';
 
@@ -175,11 +176,7 @@
 			</header>
 
 			{#if st.from || st.to}
-				<div class="route">
-					<span class="station">{st.from ?? '–'}</span>
-					<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
-					<span class="station">{st.to ?? '–'}</span>
-				</div>
+				<RouteLine from={st.from} to={st.to} />
 			{/if}
 
 			{#if doc.trainBindings.length}
@@ -347,37 +344,6 @@
 	}
 	.chip {
 		color: var(--rail-blue);
-	}
-	.route {
-		display: flex;
-		align-items: center;
-		gap: 0.7rem;
-		flex-wrap: wrap;
-	}
-	.station {
-		font-family: var(--font-display);
-		font-weight: 700;
-		font-size: 1.45rem;
-		line-height: 1.1;
-		text-transform: uppercase;
-		letter-spacing: 0.02em;
-	}
-	.line {
-		flex: 1;
-		min-width: 3.5rem;
-		display: flex;
-		align-items: center;
-	}
-	.dot {
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
-		background: var(--ink);
-	}
-	.rail {
-		flex: 1;
-		height: 0;
-		border-top: 2px solid var(--ink);
 	}
 	.via-block {
 		display: flex;
