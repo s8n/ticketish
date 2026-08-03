@@ -50,6 +50,7 @@ export type TicketContainer =
 	| { kind: 'ssb1'; ticket: import('./ssb/ssb1.ts').Ssb1Ticket }
 	| { kind: 'tcdd'; ticket: import('./tcdd/tcdd.ts').TcddTicket }
 	| { kind: 'trenitalia'; ticket: import('./trenitalia/trenitalia.ts').TrenitaliaTicket }
+	| { kind: 'eav'; ticket: import('./eav/eav.ts').EavTicket }
 	| { kind: 'text'; text: string }
 	| { kind: 'unknown' };
 

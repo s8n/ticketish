@@ -10,6 +10,7 @@ import { isRenfe, parseRenfe } from './renfe/renfe.ts';
 import { isSsb1, parseSsb1 } from './ssb/ssb1.ts';
 import { isTcdd, parseTcdd } from './tcdd/tcdd.ts';
 import { isTrenitalia, parseTrenitalia } from './trenitalia/trenitalia.ts';
+import { isEav, parseEav } from './eav/eav.ts';
 
 // Record parsers register themselves on import.
 import './records/uhead.ts';
@@ -50,6 +51,13 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 	if (isTrenitalia(data)) {
 		try {
 			return { kind: 'trenitalia', ticket: parseTrenitalia(data) };
+		} catch {
+			// fall through
+		}
+	}
+	if (isEav(data)) {
+		try {
+			return { kind: 'eav', ticket: parseEav(data) };
 		} catch {
 			// fall through
 		}

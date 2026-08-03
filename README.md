@@ -32,6 +32,7 @@ installed.
 - **Trenitalia** - departure date, train, coach, seat, PNR and entitlement
   number, reverse engineered from four tickets; the payload appears to carry
   no departure time or station codes
+- **EAV / UNICO Campania** - a plain text QR, one field per line
 
 - Anything else falls back to a plain-text / hex view
 

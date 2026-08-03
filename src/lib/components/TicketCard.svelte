@@ -14,6 +14,7 @@
 	import TcddView from './TcddView.svelte';
 	import Ssb1View from './Ssb1View.svelte';
 	import TrenitaliaView from './TrenitaliaView.svelte';
+	import EavView from './EavView.svelte';
 	import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
 	import { vdvOrgName } from '../tickets/vdv/orgs.ts';
 	import { store } from '../state/tickets.svelte.ts';
@@ -56,6 +57,7 @@
 		if (container.kind === 'renfe') return 'Renfe';
 		if (container.kind === 'tcdd') return 'TCDD Taşımacılık';
 		if (container.kind === 'trenitalia') return 'Trenitalia';
+		if (container.kind === 'eav') return 'EAV / UNICO Campania';
 		if (container.kind === 'ssb1') {
 			const rics = container.ticket.issuerRics;
 			return ricsName(rics) ?? `RICS ${rics}`;
@@ -120,6 +122,8 @@
 				return `SSB1 v${container.ticket.version}`;
 			case 'trenitalia':
 				return 'Trenitalia';
+			case 'eav':
+				return 'EAV';
 			case 'text':
 				return 'Plain text';
 			default:
@@ -200,6 +204,8 @@
 		<Ssb1View ticket={container.ticket} />
 	{:else if container.kind === 'trenitalia'}
 		<TrenitaliaView ticket={container.ticket} />
+	{:else if container.kind === 'eav'}
+		<EavView ticket={container.ticket} />
 	{:else if container.kind === 'text'}
 		<pre class="text-payload">{container.text}</pre>
 		<p class="note">This barcode carries plain text, not UIC ticket data.</p>
