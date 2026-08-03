@@ -5,6 +5,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
+import { loadTcddStations, tcddStationName } from '../src/lib/tickets/tcdd/stations.ts';
 import { parseSsb1 } from '../src/lib/tickets/ssb/ssb1.ts';
 import { parseTrenitalia } from '../src/lib/tickets/trenitalia/trenitalia.ts';
 import { BitWriter } from './helpers/build.ts';
@@ -27,9 +28,10 @@ describe('TCDD tickets', () => {
 	const modern = [
 		'', 'TCDD_B', 'tcddprod',
 		'T24TESTPNR000000000001', '24TESTPN', '20240519000000',
-		'31832', 'AH', '2', '54321-19052024',
-		'98', '1323', '2', '6', '21', '999.0', '20240501153142',
-		'178579', '50', 'b'.repeat(40)
+		'40000', 'AH', '2', '54321-19052024',
+		// station ids in the current backend's numbering
+		'5', '345', '2', '6', '21', '999.0', '20240501153142',
+		'190000', '60', 'b'.repeat(40)
 	];
 
 	it('parses the older layout', () => {
@@ -62,6 +64,8 @@ describe('TCDD tickets', () => {
 		expect(c.ticket.ticketNumber).toBe('T24TESTPNR000000000001');
 		expect(c.ticket.pnr).toBe('24TESTPN');
 		expect(c.ticket.trainNumber).toBe('54321');
+		expect(c.ticket.originCode).toBe('5');
+		expect(c.ticket.destinationCode).toBe('345');
 		expect(c.ticket.seat).toBe('21');
 		expect(c.ticket.price).toBe('999.0');
 		expect(c.ticket.purchased).toBe('2024-05-01T15:31');
@@ -77,12 +81,29 @@ describe('TCDD tickets', () => {
 	it('leaves fields it cannot place in the newer layout unclaimed', () => {
 		const c = parsePayload(ascii(modern.join('$')));
 		if (c.kind !== 'tcdd') return;
-		// no station codes or coach could be identified there
-		expect(c.ticket.originCode).toBe('');
-		expect(c.ticket.destinationCode).toBe('');
+		// no field in this layout matches the printed car
 		expect(c.ticket.coach).toBe('');
 		expect(c.ticket.extraFields).toContain('tcddprod');
 		expect(c.ticket.extraFields).toContain('AH');
+		// claimed fields are not repeated among the unplaced ones
+		expect(c.ticket.extraFields).not.toContain('5');
+		expect(c.ticket.extraFields).not.toContain('345');
+	});
+
+	it('names the stations of the newer layout from the built-in table', async () => {
+		const names = await loadTcddStations();
+		const c = parsePayload(ascii(modern.join('$')));
+		if (c.kind !== 'tcdd') return;
+		expect(tcddStationName(names, c.ticket.originCode)).toBe('ARİFİYE');
+		expect(tcddStationName(names, c.ticket.destinationCode)).toBe('KIRKAĞAÇ');
+	});
+
+	it('falls back to the raw id for stations it does not know', async () => {
+		const names = await loadTcddStations();
+		// the older layout numbers stations in a retired 9 digit space
+		expect(tcddStationName(names, '999999999')).toBe('Station 999999999');
+		expect(tcddStationName(names, '')).toBe('');
+		expect(tcddStationName(null, '5')).toBe('Station 5');
 	});
 
 	it('rejects a truncated record', () => {

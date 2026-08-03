@@ -11,6 +11,10 @@
  * layout. Meanings were established by comparing barcodes against their
  * printed tickets; positions that could not be confirmed are kept in
  * `extraFields` rather than guessed at.
+ *
+ * The two layouts also number stations differently: the older one uses the
+ * 9 digit ids of the retired api-yebsp backend, the newer one the small ids
+ * of the current one. See stations.ts.
  */
 
 export type TcddVariant = 'classic' | 'tcddprod';
@@ -33,16 +37,6 @@ export interface TcddTicket {
 	/** SHA-1 style integrity hash at the end of the record */
 	checksum: string | null;
 	extraFields: string[];
-}
-
-const STATIONS: Record<string, string> = {
-	'234516259': 'Ankara Gar',
-	'234516104': 'İstanbul (Pendik)'
-};
-
-export function tcddStationName(code: string): string {
-	if (!code) return '';
-	return STATIONS[code] ?? `Station ${code}`;
 }
 
 /** yyyymmddHHMMSS or yyyymmddHHMM to an ISO local string. */
@@ -107,16 +101,17 @@ export function parseTcdd(data: Uint8Array): TcddTicket {
 		purchased: toIso(f(15)),
 		// the train and its date share a field, as on the printed ticket
 		trainNumber: trainOf(f(8)),
-		// this layout carries no station codes that could be identified
-		originCode: '',
-		destinationCode: '',
-		// nor a coach: the only plausible field disagreed with the printed car
+		// station ids in the current backend's numbering, not the 9 digit ids
+		// the older layout uses
+		originCode: f(9),
+		destinationCode: f(10),
+		// no field here matches the printed car, so none is claimed as one
 		coach: '',
 		seat: f(13),
 		price: money(f(14)),
 		fullPrice: null,
 		checksum,
-		extraFields: [f(1), f(5), f(6), f(7), f(9), f(10), f(11), f(12), f(16), f(17)].filter(
+		extraFields: [f(1), f(5), f(6), f(7), f(11), f(12), f(16), f(17)].filter(
 			(v) => v && v !== 'null'
 		)
 	};

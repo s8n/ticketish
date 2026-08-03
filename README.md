@@ -121,5 +121,10 @@ No functions, bindings or environment variables needed.
   `scripts/build-nlc-names.py`, also refreshed monthly. That feed needs a free
   National Rail Open Data account; the workflow reads the `NR_USERNAME` and
   `NR_PASSWORD` repository secrets and skips cleanly when they are absent.
+- Turkish station names come from the list TCDD's own e-ticket site reads,
+  via `scripts/build-tcdd-stations.py`, refreshed monthly and needing no
+  credentials. It covers the ids used by the newer barcode layout; the older
+  layout's 9 digit ids belong to a retired backend that no longer serves a
+  list.
 - DB Leitpunktkürzel and Swiss NOVA organisation names derive from the
   respective operators' open data.
