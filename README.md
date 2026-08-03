@@ -52,7 +52,8 @@ unknown, the UI says so rather than guessing.
 
 Inputs: images, PDFs (rendered with pdf.js and scanned), Apple Wallet
 `.pkpass` files, live camera, raw payload files. Signatures are deliberately
-**not** verified - this reads tickets, it doesn't judge them.
+**not** verified, that requires quite some additional data and logic, and is
+best left to [zügli](https://zügli.app).
 
 ## The barcode tab
 
@@ -147,8 +148,7 @@ No functions, bindings or environment variables needed.
 - VDV **organisation** names in `src/lib/tickets/vdv/orgs.json` are the table
   compiled by the **KCD+eTicketinfo** Android app, used here with attribution
   and rebuilt by `scripts/build-vdv-orgs.py`. No public register of these IDs
-  exists; the complete list sits behind an authenticated API, which is why
-  this repo previously had a dozen entries rather than two thousand. **That
+  exists; the complete list sits behind an authenticated API. **That
   app's licence applies to this table.** It is not public-domain reference
   data and is not cleared for commercial reuse: ticketish is a free tool for
   rail enthusiasts, and anyone repackaging it commercially should strip
