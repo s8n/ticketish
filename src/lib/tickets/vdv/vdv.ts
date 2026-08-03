@@ -45,6 +45,8 @@ export interface VdvProductDataElement {
 	tag: number;
 	name: string;
 	data: Record<string, unknown> | null;
+	/** Set for the passenger element, which gets its own presentation. */
+	passenger?: VdvPassenger;
 	hex: string;
 }
 
@@ -216,6 +218,74 @@ const PRODUCT_ELEMENT_NAMES: Record<number, string> = {
 	0xd7: 'Identification medium'
 };
 
+const GENDERS: Record<number, string> = { 1: 'male', 2: 'female', 3: 'diverse' };
+
+export interface VdvPassenger {
+	gender: string | null;
+	dateOfBirth: string | null;
+	forename: string;
+	surname: string;
+	/**
+	 * True when the name is stored abbreviated. The format deliberately keeps
+	 * only the first and last letter of each part plus a count of the hidden
+	 * ones, so the barcode does not carry the full name.
+	 */
+	abbreviated: boolean;
+}
+
+const unBcd = (byte: number) => (byte >> 4) * 10 + (byte & 0x0f);
+
+/** Expand "E3a" into "E___a": first letter, hidden count, last letter. */
+function expandAbbreviated(part: string): string {
+	const pattern = /(\p{L}?)(\d+)(\p{L}?)/gu;
+	const pieces: string[] = [];
+	let match: RegExpExecArray | null;
+	while ((match = pattern.exec(part)) !== null) {
+		const [, start, count, end] = match;
+		// zero means "any number of letters"
+		const hidden = Number(count) === 0 ? '…' : '_'.repeat(Number(count));
+		pieces.push(`${start}${hidden}${end}`);
+	}
+	return pieces.length ? pieces.join(' ') : part;
+}
+
+function parsePassengerData(d: Uint8Array): VdvPassenger | null {
+	if (d.length < 5) return null;
+	// A year like 2000 is BCD "20 00", so a zero byte is legitimate; only an
+	// entirely empty field means the date is absent.
+	const dob = d.subarray(1, 5);
+	const year = unBcd(dob[0]) * 100 + unBcd(dob[1]);
+	const month = unBcd(dob[2]);
+	const day = unBcd(dob[3]);
+	const dateOfBirth =
+		dob.some((b) => b !== 0) && month >= 1 && month <= 12 && day >= 1 && day <= 31
+			? `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+			: null;
+
+	const text = new TextDecoder('iso-8859-15').decode(d.subarray(5)).replace(/\0+$/, '');
+	let forename = '';
+	let surname = text;
+	let abbreviated = false;
+
+	if (text.includes('#')) {
+		// plain, simply truncated
+		[forename, surname] = text.split('#', 2);
+	} else if (text.includes('@')) {
+		abbreviated = true;
+		const [rawForename, rawSurname] = text.split('@', 2);
+		forename = expandAbbreviated(rawForename.replace(/\*$/, ''));
+		surname = expandAbbreviated(rawSurname.replace(/^\*/, ''));
+	}
+
+	return {
+		gender: GENDERS[d[0]] ?? null,
+		dateOfBirth,
+		forename: forename.trim(),
+		surname: surname.trim(),
+		abbreviated
+	};
+}
+
 const PAYMENT_TYPES: Record<number, string> = {
 	1: 'Bar',
 	2: 'Kreditkarte',
@@ -255,6 +325,7 @@ function parseProductData(data: Uint8Array): VdvProductDataElement[] {
 			tag: i.tag,
 			name: PRODUCT_ELEMENT_NAMES[i.tag] ?? `Element 0x${i.tag.toString(16)}`,
 			data: i.tag === 0xda && i.value.length >= 17 ? parseBasicData(i.value) : null,
+			passenger: i.tag === 0xdb ? (parsePassengerData(i.value) ?? undefined) : undefined,
 			hex: hex(i.value)
 		}));
 }

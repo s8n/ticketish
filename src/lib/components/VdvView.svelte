@@ -54,7 +54,29 @@
 			</dl>
 
 			{#each t.productData as el, ei (ei)}
-				{#if el.data}
+				{#if el.passenger}
+					{@const p = el.passenger}
+					<div class="element">
+						<span class="element-name">Passenger</span>
+						<dl>
+							{#if p.forename || p.surname}
+								<dt>Name</dt>
+								<dd>
+									{[p.forename, p.surname].filter(Boolean).join(' ')}
+									{#if p.abbreviated}<span class="soft">abbreviated on the ticket</span>{/if}
+								</dd>
+							{/if}
+							{#if p.dateOfBirth}
+								<dt>Born</dt>
+								<dd>{fmtDate(p.dateOfBirth)}</dd>
+							{/if}
+							{#if p.gender}
+								<dt>Gender</dt>
+								<dd>{p.gender}</dd>
+							{/if}
+						</dl>
+					</div>
+				{:else if el.data}
 					<div class="element">
 						<span class="element-name">{el.name}</span>
 						<dl>
