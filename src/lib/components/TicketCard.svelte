@@ -21,6 +21,7 @@
 	import { vdvOrgName } from '../tickets/vdv/orgs.ts';
 	import { store } from '../state/tickets.svelte.ts';
 	import { canRender } from '../input/render.ts';
+	import { tabModel } from './tabs.ts';
 	import BarcodeView from './BarcodeView.svelte';
 
 	let { ticket }: { ticket: ParsedTicket } = $props();
@@ -135,27 +136,22 @@
 		}
 	});
 
-	// Prefer the richest record as the initially open tab.
-	const defaultOpen = $derived.by(() => {
-		const order = ['flex', 'db-bl', 'layout', 'db-vu', 'head'];
-		for (const kind of order) {
-			const i = records.findIndex((r) => r.kind === kind);
-			if (i >= 0) return i;
-		}
-		if (records.length) return 0;
-		// formats without records have only the barcode to show, at index 0
-		return canRender(ticket.symbology) ? 0 : -1;
-	});
-	let openIdx = $state(-1);
-	const activeIdx = $derived(openIdx >= 0 ? openIdx : defaultOpen);
-	const active = $derived(records[activeIdx]);
-	const ActiveView = $derived(active && !active.error ? recordViews[active.kind] : undefined);
-
-	// The barcode sits after the records as one more tab. It needs to know how
-	// the payload was encoded, so it is only offered for tickets that came from
-	// a symbol this app can also write.
+	// The barcode tab needs to know how the payload was encoded, so it is only
+	// offered for tickets that came from a symbol this app can also write.
 	const showBarcode = $derived(canRender(ticket.symbology));
-	const barcodeIdx = $derived(records.length);
+	const tabs = $derived(
+		tabModel({
+			kind: container.kind,
+			recordKinds: records.map((r) => r.kind),
+			hasBarcode: showBarcode
+		})
+	);
+	const { isEnvelope, barcodeIdx, showTabs } = $derived(tabs);
+
+	let openIdx = $state(-1);
+	const activeIdx = $derived(openIdx >= 0 ? openIdx : tabs.defaultOpen);
+	const active = $derived(isEnvelope ? records[activeIdx] : undefined);
+	const ActiveView = $derived(active && !active.error ? recordViews[active.kind] : undefined);
 	const barcodeOpen = $derived(showBarcode && activeIdx === barcodeIdx);
 
 	const sourceLabel = $derived(
@@ -201,7 +197,35 @@
 		</section>
 	{/if}
 
-	{#if container.kind === 'rsp6'}
+	{#if showTabs}
+		<nav class="tabs" aria-label="Ticket records">
+			{#if isEnvelope}
+				{#each records as r, i (i)}
+					<button
+						class="tab"
+						class:active={i === activeIdx}
+						class:failed={!!r.error}
+						onclick={() => (openIdx = i)}
+					>
+						{recordLabel(r.id, r.kind)}
+					</button>
+				{/each}
+			{:else}
+				<button class="tab" class:active={activeIdx === 0} onclick={() => (openIdx = 0)}>
+					{envelopeLabel}
+				</button>
+			{/if}
+			{#if showBarcode}
+				<button class="tab" class:active={barcodeOpen} onclick={() => (openIdx = barcodeIdx)}>
+					Barcode
+				</button>
+			{/if}
+		</nav>
+	{/if}
+
+	{#if barcodeOpen && ticket.symbology}
+		<BarcodeView raw={ticket.raw} symbology={ticket.symbology} />
+	{:else if container.kind === 'rsp6'}
 		<Rsp6View ticket={container.ticket} />
 	{:else if container.kind === 'swisspass'}
 		<SwissPassView ticket={container.ticket} />
@@ -231,43 +255,20 @@
 		<pre class="text-payload">{hexDump(ticket.raw.subarray(0, 512))}</pre>
 	{/if}
 
-	{#if records.length || showBarcode}
-		<nav class="tabs" aria-label="Ticket records">
-			{#each records as r, i (i)}
-				<button
-					class="tab"
-					class:active={i === activeIdx}
-					class:failed={!!r.error}
-					onclick={() => (openIdx = i)}
-				>
-					{recordLabel(r.id, r.kind)}
-				</button>
-			{/each}
-			{#if showBarcode}
-				<button class="tab" class:active={barcodeOpen} onclick={() => (openIdx = barcodeIdx)}>
-					Barcode
-				</button>
+	{#if active && !barcodeOpen}
+		<div class="record-body">
+			{#if ActiveView}
+				<ActiveView data={active.data} />
+			{:else}
+				<RawView raw={active.raw} error={active.error} />
 			{/if}
-		</nav>
-		{#if barcodeOpen && ticket.symbology}
-			<div class="record-body">
-				<BarcodeView raw={ticket.raw} symbology={ticket.symbology} />
-			</div>
-		{:else if active}
-			<div class="record-body">
-				{#if ActiveView}
-					<ActiveView data={active.data} />
-				{:else}
-					<RawView raw={active.raw} error={active.error} />
-				{/if}
-				{#if ActiveView}
-					<details class="rawtoggle">
-						<summary>Raw record ({active.id.trim()} v{active.version}, {active.raw.length} bytes)</summary>
-						<RawView raw={active.raw} />
-					</details>
-				{/if}
-			</div>
-		{/if}
+			{#if ActiveView}
+				<details class="rawtoggle">
+					<summary>Raw record ({active.id.trim()} v{active.version}, {active.raw.length} bytes)</summary>
+					<RawView raw={active.raw} />
+				</details>
+			{/if}
+		</div>
 	{/if}
 </article>
 
