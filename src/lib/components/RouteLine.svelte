@@ -9,11 +9,19 @@
 	 * Every format's view draws this the same way, so it lives here rather than
 	 * being copied into each of them.
 	 *
-	 * The rail is two halves rather than one piece, because on a narrow card it
-	 * has to break across two rows: the first half leaves the origin and runs
-	 * to the edge, the second comes back in and arrows into the destination.
-	 * Side by side with nothing between them they read as one line, which is
-	 * what they are on a wide card.
+	 * It breaks across two rows when the names do not fit beside each other,
+	 * leaving the origin at the end of one row and arriving at the destination
+	 * on the next. The rail is in two halves for that reason, one grouped with
+	 * each station: side by side with nothing between them they read as the one
+	 * line they are, and when the second group wraps the line carries on where
+	 * it left off.
+	 *
+	 * Nothing here measures the card. Grouping each half of the rail with its
+	 * own station is what makes ordinary flex wrapping break in the right
+	 * place, so the decision is made on whether the content actually fits
+	 * rather than on a width someone guessed at. A short route stays on one
+	 * line on a phone, which a container query could not manage: the card is
+	 * narrower than any sensible threshold whatever the names are.
 	 */
 	let {
 		from = null,
@@ -27,32 +35,46 @@
 	} = $props();
 </script>
 
-<div class="route-box">
-	<div class="route" class:sm={size === 'sm'}>
+<div class="route" class:sm={size === 'sm'}>
+	<span class="leg depart">
 		<span class="station from">{from ?? '–'}</span>
 		<span class="half out" aria-hidden="true">
 			<span class="dot"></span><span class="rail"></span>
 		</span>
-		<!-- Reads as "X to Y" rather than two names run together. -->
-		<span class="sr-only">to</span>
-		<span class="brk" aria-hidden="true"></span>
+	</span>
+	<!-- Reads as "X to Y" rather than two names run together. -->
+	<span class="sr-only">to</span>
+	<span class="leg arrive">
 		<span class="half in" aria-hidden="true">
 			<span class="rail"></span><span class="head"></span>
 		</span>
 		<span class="station to">{to ?? '–'}</span>
-	</div>
+	</span>
 </div>
 
 <style>
-	.route-box {
-		container-type: inline-size;
-	}
 	.route {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
-		/* Wide enough for one row, so a long name wraps inside its own half of
-		   the line rather than pushing the row into a second one. */
-		flex-wrap: nowrap;
+		/* No column gap: the two halves of the rail have to meet when they sit
+		   on the same row, or the line reads as two. */
+		column-gap: 0;
+		row-gap: 0.3rem;
+	}
+	.leg {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+	}
+	/* The leaving half takes whatever slack is going, so the rail fills the
+	   row it is on. The arriving half stays at its content width, which is
+	   what lets it wrap as one piece instead of stranding the arrowhead. */
+	.depart {
+		flex: 1 1 auto;
+	}
+	.arrive {
+		flex: 0 1 auto;
 	}
 	.station {
 		font-family: var(--font-display);
@@ -80,22 +102,23 @@
 		display: flex;
 		align-items: center;
 	}
-	/* The half that leaves the origin takes whatever width is going, but never
-	   shrinks past a stub: a lone dot beside a name that has wrapped to fill
-	   the row does not read as a line at all. */
+	/* Never shrinks past a stub: a lone dot beside a name that has wrapped to
+	   fill the row does not read as a line at all. */
 	.out {
-		flex: 1 1 3.5rem;
-		min-width: 2.5rem;
+		flex: 1 1 2rem;
+		min-width: 1.75rem;
 	}
 	.out .rail {
 		flex: 1;
 	}
-	/* The half that arrives is just the arrowhead until the line breaks. */
+	/* A fixed run-in, so a broken line starts the second row as a line rather
+	   than as an arrowhead on its own. On one row it simply makes the rail a
+	   little longer, since the two halves meet. */
 	.in {
 		flex: none;
 	}
 	.in .rail {
-		width: 0;
+		width: 1.75rem;
 	}
 	.dot {
 		width: 7px;
@@ -116,9 +139,6 @@
 		border-top: 5px solid transparent;
 		border-bottom: 5px solid transparent;
 	}
-	.brk {
-		display: none;
-	}
 	.sr-only {
 		position: absolute;
 		width: 1px;
@@ -126,45 +146,5 @@
 		overflow: hidden;
 		clip-path: inset(50%);
 		white-space: nowrap;
-	}
-
-	/* Two station names either side of a rail stop fitting long before a phone
-	   runs out of width, and a route that has to be swiped sideways is a route
-	   nobody reads. Break the line instead, so it leaves the origin at the end
-	   of one row and arrives at the destination on the next.
-
-	   The threshold is generous on purpose. Well above the point where a name
-	   actually overflows there is a band where it technically fits but the
-	   rail is squeezed to a stub and a name like "London St Pancras
-	   International" wraps to three lines. Breaking beats that, so the switch
-	   happens before it. */
-	@container (max-width: 34rem) {
-		.route {
-			flex-wrap: wrap;
-			row-gap: 0.3rem;
-		}
-		/* A zero height item on a full row, which is what forces the break to
-		   fall between the two halves instead of wherever the names run out. */
-		.brk {
-			display: block;
-			flex-basis: 100%;
-			height: 0;
-		}
-		/* Zero basis on both, so neither can be wide enough to want a row of its
-		   own: wrapping beats shrinking in flex layout, and the break belongs
-		   where .brk puts it rather than wherever a long name runs out. */
-		.out {
-			flex: 1 1 0;
-		}
-		.to {
-			flex: 1 1 0;
-			min-width: 0;
-			margin-left: 0.5rem;
-		}
-		/* Now a visible run-in, so the second row starts as a line rather than
-		   as an arrowhead sitting on its own. */
-		.in .rail {
-			width: 2.5rem;
-		}
 	}
 </style>
