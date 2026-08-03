@@ -60,7 +60,7 @@
 	<span class="label">
 		{#if busy}Reading…{:else}Drop a ticket here - image, PDF or .pkpass{/if}
 	</span>
-	<span class="hint">or click to choose a file · paste works too</span>
+	<span class="hint">or click to choose a file<span class="paste"> · paste works too</span></span>
 </button>
 
 <input
@@ -107,5 +107,12 @@
 	.hint {
 		font-size: 0.82rem;
 		color: var(--bg-text-soft);
+	}
+	/* touch devices have no practical way to paste into the page, so the hint
+	   would only be taking up room */
+	@media (hover: none) and (pointer: coarse) {
+		.paste {
+			display: none;
+		}
 	}
 </style>

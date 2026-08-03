@@ -84,7 +84,7 @@
 			<ul class="formats">
 				<li>
 					<span class="format">UIC 918.3 &amp; 918.9</span>
-					European train tickets: DB online tickets, Interrail passes, seat reservations
+					Many European train tickets, Interrail passes, seat reservations
 				</li>
 				<li>
 					<span class="format">VDV-KA</span>

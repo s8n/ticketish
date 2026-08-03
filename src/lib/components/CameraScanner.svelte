@@ -101,10 +101,14 @@
 		{#if error}
 			<p class="error">Camera unavailable: {error}</p>
 		{:else}
-			<!-- svelte-ignore a11y_media_has_caption -->
-			<video bind:this={video} playsinline muted></video>
-			<div class="reticle" aria-hidden="true"></div>
-			<p class="hint">Point at the Aztec / QR code</p>
+			<!-- The viewport keeps its size before the stream arrives, so the
+			     reticle has something to sit in and the hint is not pushed under it. -->
+			<div class="viewport">
+				<!-- svelte-ignore a11y_media_has_caption -->
+				<video bind:this={video} playsinline muted></video>
+				<div class="reticle" aria-hidden="true"></div>
+			</div>
+			<p class="hint">Point at the barcode: Aztec, QR, PDF417 or Data Matrix</p>
 		{/if}
 		<button class="close" onclick={close}>Close</button>
 	</div>
@@ -127,10 +131,25 @@
 		gap: 0.75rem;
 		align-items: center;
 	}
-	video {
+	.viewport {
+		position: relative;
 		width: 100%;
+		/* reserved up front: the reticle is min(52vw, 300px) plus its padding,
+		   and the hint sits below the viewport rather than over the video */
+		aspect-ratio: 4 / 3;
+		min-height: min(58vh, 360px);
+		max-height: 72vh;
 		border-radius: var(--radius);
 		background: #000;
+		overflow: hidden;
+	}
+	video {
+		width: 100%;
+		height: 100%;
+		/* the decoder reads the full frame off a canvas, not this element, so
+		   cropping the preview to fill the box costs nothing */
+		object-fit: cover;
+		display: block;
 	}
 	.reticle {
 		position: absolute;
@@ -138,7 +157,7 @@
 		left: 50%;
 		width: min(52vw, 300px);
 		aspect-ratio: 1;
-		transform: translate(-50%, -60%);
+		transform: translate(-50%, -50%);
 		border: 2px solid rgba(255, 255, 255, 0.75);
 		border-radius: 8px;
 		pointer-events: none;
