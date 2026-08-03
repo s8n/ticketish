@@ -208,7 +208,7 @@ describe('pass structure', () => {
 		expect((await passOf(trip)).backgroundColor).toBe('rgb(38, 50, 75)');
 	});
 
-	it('says on the front and on the back that it is not the issuer own pass', async () => {
+	it('names this app beside the logo and the operator as the organization', async () => {
 		const { identity: id } = await identity();
 		const pass = JSON.parse(
 			strFromU8(
@@ -223,7 +223,8 @@ describe('pass structure', () => {
 				)['pass.json']
 			)
 		);
-		expect(pass.organizationName).toBe('ticketish | Test Railways');
+		expect(pass.organizationName).toBe('Test Railways');
+		expect(pass.logoText).toBe('ticketish');
 		const back = pass.boardingPass.backFields as { key: string; value: string }[];
 		const note = back.find((f) => f.key === 'unofficial')!;
 		expect(note.value).toMatch(/Not issued by the operator/);

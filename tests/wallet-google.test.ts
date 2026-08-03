@@ -209,11 +209,13 @@ describe('the transit pass', () => {
 		expect(googlePassKind({ ...timeless, validFrom: '2026-09-01' }, ORIGIN)).toBe('transit');
 	});
 
-	it('declares a class per operator, past draft so an object can exist', () => {
+	it('declares one class for every operator, past draft so an object can exist', () => {
 		const payload = buildPassPayload(seated, ascii('TICKET'), AZTEC, '333', ORIGIN);
 		const [cls] = payload.transitClasses as Record<string, unknown>[];
-		expect(cls.id).toBe('333.ticketish_rail_v2_test_railways');
-		expect(cls.issuerName).toBe('ticketish | Test Railways');
+		expect(cls.id).toBe('333.ticketish_rail');
+		// the class is this app; the operator is named on the leg, which is the
+		// only place an object can say it
+		expect(cls.issuerName).toBe('ticketish');
 		// a draft class cannot have objects created against it
 		expect(cls.reviewStatus).toBe('UNDER_REVIEW');
 		expect(cls.transitType).toBe('RAIL');
@@ -255,12 +257,14 @@ describe('the pass itself', () => {
 		expect([...value].map((c) => c.charCodeAt(0))).toEqual([...payload]);
 	});
 
-	it('marks the pass as not the operator own, at the top and in a row', () => {
+	it('says this app at the top and the operator under it', () => {
 		const object = buildGenericObject(trip, ascii('X'), AZTEC, '333') as {
 			cardTitle: { defaultValue: { value: string } };
+			subheader: { defaultValue: { value: string } };
 			textModulesData: { id: string; body: string }[];
 		};
-		expect(object.cardTitle.defaultValue.value).toBe('ticketish | Test Railways');
+		expect(object.cardTitle.defaultValue.value).toBe('ticketish');
+		expect(object.subheader.defaultValue.value).toBe('Test Railways');
 		const note = object.textModulesData.find((r) => r.id === 'unofficial')!;
 		expect(note.body).toMatch(/Not issued by the operator/);
 	});

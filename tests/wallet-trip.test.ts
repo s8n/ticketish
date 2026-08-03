@@ -154,11 +154,11 @@ describe('a VDV ticket', () => {
 });
 
 describe('what the reader is shown before exporting', () => {
-	it('names the title the wallets put at the top of the card', async () => {
+	it('names the operator, which is what comes off the ticket', async () => {
 		const ticket = muster('muster-918-9-fv-supersparpreis.bin');
 		if (!ticket) return;
 		const rows = previewFields((await tripFor(ticket))!);
-		expect(rows[0]).toEqual({ label: 'Title', value: 'ticketish | DB AG' });
+		expect(rows[0]).toEqual({ label: 'Operator', value: 'DB AG' });
 	});
 
 	it('leaves nothing on the pass unshown', async () => {
@@ -196,8 +196,8 @@ describe('what the reader is shown before exporting', () => {
 			validFrom: '2026-01-01T00:00',
 			details: []
 		});
-		expect(rows.map((r) => r.label)).toEqual(['Title', 'Valid from']);
-		expect(rows[0].value).toBe('ticketish | Test Verbund');
+		expect(rows.map((r) => r.label)).toEqual(['Operator', 'Valid from']);
+		expect(rows[0].value).toBe('Test Verbund');
 	});
 });
 

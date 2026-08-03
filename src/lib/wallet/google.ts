@@ -46,9 +46,9 @@ import { isPrintableAscii } from '../tickets/bytes.ts';
 import type { BarcodeSymbology } from '../tickets/types.ts';
 import { importPrivateKey } from './identity.ts';
 import {
+	APP_NAME,
 	localParts,
 	asUtcInstant,
-	passIssuerName,
 	tripTitle,
 	UNOFFICIAL_LABEL,
 	UNOFFICIAL_NOTE,
@@ -158,25 +158,15 @@ const GENERIC_CLASS = 'ticketish_generic';
 const MAX_TEXT_MODULES = 10;
 
 /**
- * Bumped whenever what the class says changes.
+ * One transit class for every operator.
  *
- * A save link creates a class the issuer does not have; it is not a way to
- * edit one it does. So an issuer that already holds a class from an earlier
- * version of this app would keep whatever that version put in it, and the only
- * way to change what a pass says is to point it at a class that does not exist
- * yet. Old ones stay behind in the issuer account, unused.
+ * A class holds the issuer name and the logo and an object cannot override
+ * either, so naming the operator up there would mean a class apiece. It does
+ * not have to be up there: the class is this app, which is the truthful thing
+ * to put in a field called issuer name, and the operator is named where it
+ * belongs, on the leg it is running.
  */
-const TRANSIT_CLASS_VERSION = 2;
-
-/** A transit class carries the operator's name, so there is one per operator. */
-function transitClassId(issuerId: string, issuer: string): string {
-	const slug = issuer
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '_')
-		.replace(/^_|_$/g, '')
-		.slice(0, 40);
-	return `${issuerId}.ticketish_rail_v${TRANSIT_CLASS_VERSION}_${slug || 'operator'}`;
-}
+const TRANSIT_CLASS = 'ticketish_rail';
 
 /**
  * A transit class needs a logo, and a logo is a URI Google's servers fetch,
@@ -219,6 +209,9 @@ function textModules(trip: TripSummary, exclude: Set<string>): TextModule[] {
 	};
 	const departure = localParts(trip.departure);
 
+	// the product names the pass when there is no route to name it, so it only
+	// needs a row of its own when the title is saying something else
+	add('Ticket', trip.product === tripTitle(trip) ? undefined : trip.product, 'product');
 	add('Train', trip.train, 'train');
 	add(
 		'Departs',
@@ -287,13 +280,13 @@ export function buildGenericObject(
 		id: `${issuerId}.${serialForPayload(payload)}`,
 		classId: `${issuerId}.${GENERIC_CLASS}`,
 		state: 'ACTIVE',
-		cardTitle: text(passIssuerName(trip)),
+		cardTitle: text(APP_NAME),
 		header: text(tripTitle(trip)),
+		subheader: text(trip.issuer),
 		hexBackgroundColor: passColors(trip.operator).hex,
 		barcode: barcodeOf(trip, payload, symbology),
 		textModulesData: textModules(trip, new Set())
 	};
-	if (trip.product) object.subheader = text(trip.product);
 	const interval = validTimeInterval(trip);
 	if (interval) object.validTimeInterval = interval;
 	return object;
@@ -338,7 +331,7 @@ export function buildTransitObject(
 	const covered = new Set(['train', 'departs', 'class', 'coach', 'seat']);
 	const object: Record<string, unknown> = {
 		id: `${issuerId}.${serialForPayload(payload)}`,
-		classId: transitClassId(issuerId, trip.issuer),
+		classId: `${issuerId}.${TRANSIT_CLASS}`,
 		state: 'ACTIVE',
 		tripType: 'ONE_WAY',
 		hexBackgroundColor: passColors(trip.operator).hex,
@@ -381,8 +374,8 @@ export function buildPassPayload(
 		return {
 			transitClasses: [
 				{
-					id: transitClassId(issuerId, trip.issuer),
-					issuerName: passIssuerName(trip),
+					id: `${issuerId}.${TRANSIT_CLASS}`,
+					issuerName: APP_NAME,
 					reviewStatus: 'UNDER_REVIEW',
 					transitType: 'RAIL',
 					logo: { sourceUri: { uri: logo } }

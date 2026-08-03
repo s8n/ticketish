@@ -30,9 +30,9 @@ import { signDetached } from './cms.ts';
 import { passColors } from './colors.ts';
 import type { SigningIdentity } from './identity.ts';
 import {
+	APP_NAME,
 	asUtcInstant,
 	localParts,
-	passIssuerName,
 	tripTitle,
 	UNOFFICIAL_LABEL,
 	UNOFFICIAL_NOTE,
@@ -180,7 +180,10 @@ export function buildPassJson(input: PassJsonInput): Record<string, unknown> {
 		passTypeIdentifier: input.passTypeIdentifier,
 		teamIdentifier: input.teamIdentifier,
 		serialNumber: input.serialNumber,
-		organizationName: passIssuerName(trip),
+		organizationName: trip.issuer,
+		// beside the logo on the front of the pass: who made it, as against
+		// who ran the train, which is what organizationName holds
+		logoText: APP_NAME,
 		description: tripTitle(trip),
 		backgroundColor: colors.background,
 		foregroundColor: colors.foreground,

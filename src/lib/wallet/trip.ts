@@ -444,7 +444,9 @@ export async function tripFor(ticket: ParsedTicket): Promise<TripSummary | null>
 export function previewFields(trip: TripSummary): TripField[] {
 	const at = (value: string | undefined) => value?.replace('T', ' ');
 	const rows: [string, string | undefined][] = [
-		['Title', passIssuerName(trip)],
+		// the pass says ticketish for itself; this is what it says about the
+		// operator, which is the part that comes off the ticket
+		['Operator', trip.issuer],
 		['Ticket', trip.product],
 		['From', trip.from],
 		['To', trip.to],
@@ -467,16 +469,15 @@ export function previewFields(trip: TripSummary): TripField[] {
 }
 
 /**
- * The name at the top of a pass: the operator, said to be coming from here.
+ * Whose pass this is, as against whose ticket it came from.
  *
- * A pass carrying DB's name, DB's red and DB's barcode is one an inspector,
- * or the reader six months from now, could easily take for something DB
- * issued. It is not, and the top line is the only place that is read every
- * time, so it is where that goes.
+ * Both wallets have a slot for the party that issued the pass, separate from
+ * anything the pass is about: the transit class's issuer name on Google, the
+ * logo text on Apple. This app goes there, and the operator goes in the
+ * fields meant for the operator. A pass carrying DB's name, DB's red and DB's
+ * barcode could otherwise be taken for something DB issued, which it is not.
  */
-export function passIssuerName(trip: TripSummary): string {
-	return `ticketish | ${trip.issuer}`;
-}
+export const APP_NAME = 'ticketish';
 
 /** The same point at length, for the one field on the back that can hold it. */
 export const UNOFFICIAL_LABEL = 'Unofficial pass';
