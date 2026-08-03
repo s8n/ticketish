@@ -1,0 +1,129 @@
+/**
+ * Station names for the two identifier spaces that turn up on tickets:
+ * seven digit UIC location codes, and the five letter mnemonics SNCF prints
+ * on its own barcodes.
+ *
+ * Both tables are built by scripts/build-station-names.py from
+ * https://github.com/trainline-eu/stations, which is ODbL 1.0. What comes out
+ * is a derived database, so the attribution and the licence travel with it:
+ * the note is inside each JSON as `_note`, and repeated in the README credits.
+ *
+ * They are large, so they load on demand and separately: an SNCF barcode has
+ * no use for 23k UIC codes and a DB ticket has none for the mnemonics. Until a
+ * table arrives the raw code is shown, which is what happened for every
+ * station before the tables existed.
+ *
+ * OVERRIDES take precedence and are the entries where this repo has a better
+ * source. Anything added by hand goes there rather than into the JSON, so
+ * regenerating stays a clean copy.
+ */
+
+interface StationEntry {
+	name: string;
+	/** Where the identification comes from. */
+	source: string;
+}
+
+/**
+ * Both of these are main stations that the source leaves without a UIC code,
+ * even though it has their smaller neighbours (8019013 Koblenz-Lützel,
+ * 8029307 Reutlingen-Sondelfingen). DB's published Muster tickets print the
+ * name against the code, which settles it.
+ */
+const UIC_OVERRIDES: Record<string, StationEntry> = {
+	'8019023': { name: 'Koblenz Hbf', source: 'DB Muster ticket (Normalpreis)' },
+	'8029309': { name: 'Reutlingen Hbf', source: 'DB Muster ticket (FV-Supersparpreis)' }
+};
+
+const SNCF_OVERRIDES: Record<string, StationEntry> = {};
+
+export type StationTable = Record<string, string>;
+
+interface StationFile {
+	default: { stations: StationTable };
+}
+
+let uicCache: StationTable | null = null;
+let uicPending: Promise<StationTable> | null = null;
+
+export async function loadUicStations(): Promise<StationTable> {
+	if (uicCache) return uicCache;
+	uicPending ??= import('./data/uic-stations.json').then((m) => {
+		uicCache = (m as unknown as StationFile).default.stations;
+		return uicCache;
+	});
+	return uicPending;
+}
+
+let sncfCache: StationTable | null = null;
+let sncfPending: Promise<StationTable> | null = null;
+
+export async function loadSncfStations(): Promise<StationTable> {
+	if (sncfCache) return sncfCache;
+	sncfPending ??= import('./data/sncf-stations.json').then((m) => {
+		sncfCache = (m as unknown as StationFile).default.stations;
+		return sncfCache;
+	});
+	return sncfPending;
+}
+
+/**
+ * The table is keyed by the seven digit code. Tickets also carry the eight
+ * digit form, which is the same code plus a check digit, so drop it.
+ */
+function uicKey(code: number | string): string | null {
+	const digits = String(code).trim();
+	if (!/^\d+$/.test(digits)) return null;
+	if (digits.length === 7) return digits;
+	if (digits.length === 8) return digits.slice(0, 7);
+	return null;
+}
+
+/** Station name for a UIC code, or null when it is unknown. */
+export function uicStationName(
+	names: StationTable | null,
+	code: number | string | null | undefined
+): string | null {
+	if (code === null || code === undefined || code === '') return null;
+	const key = uicKey(code);
+	if (!key) return null;
+	return UIC_OVERRIDES[key]?.name ?? names?.[key] ?? null;
+}
+
+/** Station name for an SNCF mnemonic, or null when it is unknown. */
+export function sncfStationName(
+	names: StationTable | null,
+	code: string | null | undefined
+): string | null {
+	if (!code) return null;
+	const key = code.trim().toUpperCase();
+	return SNCF_OVERRIDES[key]?.name ?? names?.[key] ?? null;
+}
+
+/** The name if it is known, otherwise the code as printed on the ticket. */
+export function uicStationLabel(
+	names: StationTable | null,
+	code: number | string | null | undefined
+): string | null {
+	if (code === null || code === undefined || code === '') return null;
+	return uicStationName(names, code) ?? String(code);
+}
+
+/** The name if it is known, otherwise the mnemonic as printed on the ticket. */
+export function sncfStationLabel(
+	names: StationTable | null,
+	code: string | null | undefined
+): string | null {
+	if (!code) return null;
+	return sncfStationName(names, code) ?? code;
+}
+
+/**
+ * FCB records say which numbering a station code belongs to. Only the UIC
+ * tables can be looked up here; a carrier's or issuer's own numbering happens
+ * to use the same shape of number and would resolve to the wrong station.
+ * The field defaults to stationUIC when absent.
+ */
+export function isUicCodeTable(table: string | undefined | null): boolean {
+	return !table || table === 'stationUIC' || table === 'stationUICReservation';
+}

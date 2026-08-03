@@ -1,8 +1,19 @@
 <script lang="ts">
 	import type { DbBlData } from '../../tickets/records/dbbl.ts';
 	import { fmtDate } from '../../tickets/format.ts';
+	import { loadUicStations, uicStationLabel, type StationTable } from '../../tickets/stations.ts';
 
 	let { data }: { data: DbBlData } = $props();
+
+	// The S-blocks usually print the station names themselves. The UIC codes in
+	// S035/S036 are the fallback for the tickets that leave them out.
+	let uicStations = $state<StationTable | null>(null);
+	$effect(() => {
+		loadUicStations().then((s) => (uicStations = s));
+	});
+
+	const from = $derived(data.fromStationName ?? uicStationLabel(uicStations, data.fromStationUic));
+	const to = $derived(data.toStationName ?? uicStationLabel(uicStations, data.toStationUic));
 
 	const passengers = $derived(
 		[
@@ -16,11 +27,11 @@
 </script>
 
 <div class="bl">
-	{#if data.fromStationName || data.toStationName}
+	{#if from || to}
 		<div class="route">
-			<span class="station">{data.fromStationName ?? '–'}</span>
+			<span class="station">{from ?? '–'}</span>
 			<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
-			<span class="station">{data.toStationName ?? '–'}</span>
+			<span class="station">{to ?? '–'}</span>
 		</div>
 	{/if}
 	<dl>

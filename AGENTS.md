@@ -39,8 +39,23 @@ place.
 
 Do not edit `orgs.json` by hand. Corrections go in the `OVERRIDES` map in
 `orgs.ts`, with a source, so that regenerating from the app stays a clean
-copy. Everything else in the repo is either our own work or vendored from a
-project named in the credits, so this is the one file to think twice about.
+copy.
+
+`src/lib/tickets/data/uic-stations.json` and `sncf-stations.json` are built
+from [trainline-eu/stations](https://github.com/trainline-eu/stations), which
+is ODbL 1.0. What comes out is a derived database, so both files must keep
+their `_note` and stay under ODbL wherever they go. That is a lighter
+obligation than the VDV table's, attribution and share-alike rather than a
+commercial-use question, but it is still an obligation. Same rule about
+editing: corrections go in the `OVERRIDES` maps in `stations.ts`, with a
+source.
+
+Note that the `uic` numbering is not the domestic one. Köln Hbf is UIC
+8015458 and IBNR 8000207, and it is the UIC number that DB puts in the
+barcode; the CSV's `db_id` column holds the IBNR and is deliberately unused.
+
+Everything else in the repo is either our own work or vendored from a project
+named in the credits, so these are the files to think twice about.
 
 ## Sample tickets and what may ship
 

@@ -96,6 +96,9 @@ The parsing pipeline is modular by design:
   component in `src/lib/components/records/` to support a new record type.
 - `src/lib/tickets/model.ts` - FCB display model; resolves the day-offset
   date encoding and extracts `trainLink` entries - the Zugbindung.
+- `src/lib/tickets/stations.ts` - station names for the two identifier spaces
+  tickets use, seven digit UIC codes and SNCF's five letter mnemonics. Both
+  tables load on demand, and the raw code shows until they do.
 - `src/lib/input/` - barcode extraction from images (zxing-wasm), PDFs
   (pdf.js), pkpass (fflate) and camera. All WASM/workers are bundled and
   served same-origin so the PWA works offline.
@@ -164,5 +167,15 @@ No functions, bindings or environment variables needed.
   credentials. It covers the ids used by the newer barcode layout; the older
   layout's 9 digit ids belong to a retired backend that no longer serves a
   list.
+- UIC station names and SNCF five letter mnemonics both come from
+  [trainline-eu/stations](https://github.com/trainline-eu/stations), a single
+  CSV published under the **Open Data Commons Open Database License (ODbL)
+  1.0**, built by `scripts/build-station-names.py` and refreshed monthly with
+  no credentials. The two tables it produces are a derived database, so the
+  attribution and the licence go with them: keep the `_note` in
+  `src/lib/tickets/data/uic-stations.json` and `sncf-stations.json`, and keep
+  them under ODbL if you redistribute them. SNCF's own open data publishes UIC
+  codes and the three letter TVS code but not the mnemonic, so this is the
+  only open source for `FRPST` and friends.
 - DB Leitpunktkürzel and Swiss NOVA organisation names derive from the
   respective operators' open data.

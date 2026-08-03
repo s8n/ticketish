@@ -1,0 +1,38 @@
+name: Update station names
+
+# UIC location codes and SNCF mnemonics both come from trainline-eu/stations,
+# a single ODbL 1.0 CSV that needs no credentials. See
+# scripts/build-station-names.py for the attribution the tables carry.
+on:
+  schedule:
+    - cron: '31 4 4 * *' # 04:31 UTC on the 4th of each month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Rebuild station name tables
+        run: python scripts/build-station-names.py
+
+      - name: Commit and push if changed
+        run: |
+          paths="src/lib/tickets/data/uic-stations.json src/lib/tickets/data/sncf-stations.json"
+          if git diff --quiet -- $paths; then
+            echo "No changes to the station name tables."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add $paths
+          git commit -m "Update station names"
+          git push

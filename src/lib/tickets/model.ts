@@ -5,6 +5,7 @@
  * date - which is how the DB Zugbindung (train binding) is deciphered.
  */
 import type { Choice } from './asn1/index.ts';
+import { isUicCodeTable, uicStationName, type StationTable } from './stations.ts';
 
 export interface FcbIssuingDetail {
 	issuingYear: number;
@@ -111,13 +112,21 @@ interface TrainLink {
 	toStationIA5?: string;
 	fromStationNameUTF8?: string;
 	toStationNameUTF8?: string;
+	stationCodeTable?: string;
 }
 
 function trainLinkBinding(
 	link: TrainLink,
 	issued: Date,
-	doc: Record<string, unknown>
+	doc: Record<string, unknown>,
+	stations: StationTable | null
 ): TrainBinding {
+	const named = (num: number | undefined, table: string | undefined) =>
+		isUicCodeTable(table) ? (uicStationName(stations, num) ?? numStr(num)) : numStr(num);
+	// A trainLink numbers its own stations in its own code table; falling back
+	// to the document's stations means falling back to the document's too.
+	const linkTable = link.stationCodeTable;
+	const docTable = doc.stationCodeTable as string | undefined;
 	return {
 		train: link.trainIA5 ?? (link.trainNum !== undefined ? String(link.trainNum) : '?'),
 		departureDate: offsetDate(issued, link.travelDate),
@@ -126,13 +135,14 @@ function trainLinkBinding(
 		fromStation:
 			link.fromStationNameUTF8 ??
 			link.fromStationIA5 ??
-			numStr(link.fromStationNum) ??
-			((doc.fromStationNameUTF8 as string) ?? numStr(doc.fromStationNum as number)),
+			named(link.fromStationNum, linkTable) ??
+			((doc.fromStationNameUTF8 as string) ??
+				named(doc.fromStationNum as number, docTable)),
 		toStation:
 			link.toStationNameUTF8 ??
 			link.toStationIA5 ??
-			numStr(link.toStationNum) ??
-			((doc.toStationNameUTF8 as string) ?? numStr(doc.toStationNum as number))
+			named(link.toStationNum, linkTable) ??
+			((doc.toStationNameUTF8 as string) ?? named(doc.toStationNum as number, docTable))
 	};
 }
 
@@ -140,8 +150,17 @@ function numStr(n: number | undefined): string | undefined {
 	return n === undefined ? undefined : String(n);
 }
 
-/** Extract per-document summaries (incl. Zugbindung) from a decoded FCB ticket. */
-export function summarizeFcb(ticket: FcbTicket): DocumentSummary[] {
+/**
+ * Extract per-document summaries (incl. Zugbindung) from a decoded FCB ticket.
+ *
+ * `stations` is the UIC name table, which loads on demand: pass null and the
+ * numeric codes are shown instead, which is what the caller renders until it
+ * arrives.
+ */
+export function summarizeFcb(
+	ticket: FcbTicket,
+	stations: StationTable | null = null
+): DocumentSummary[] {
 	const issued = issuingDate(ticket.issuingDetail);
 	const docs = ticket.transportDocument ?? [];
 	return docs.map((doc) => {
@@ -166,7 +185,7 @@ export function summarizeFcb(ticket: FcbTicket): DocumentSummary[] {
 			const region = (data.validRegion ?? []) as Choice[];
 			for (const r of region) {
 				if (r.__choice__ === 'trainLink')
-					bindings.push(trainLinkBinding(r.value as TrainLink, issued, data));
+					bindings.push(trainLinkBinding(r.value as TrainLink, issued, data, stations));
 			}
 		} else if (type === 'reservation') {
 			const dep = dateTime(issued, (data.departureDate as number) ?? 0, data.departureTime as number);
@@ -180,6 +199,9 @@ export function summarizeFcb(ticket: FcbTicket): DocumentSummary[] {
 			}
 			const train = (data.trainIA5 as string) ?? numStr(data.trainNum as number);
 			if (train && dep) {
+				const uic = isUicCodeTable(data.stationCodeTable as string | undefined);
+				const named = (num: number | undefined) =>
+					uic ? (uicStationName(stations, num) ?? numStr(num)) : numStr(num);
 				bindings.push({
 					train,
 					departureDate: dep.slice(0, 10),
@@ -187,11 +209,11 @@ export function summarizeFcb(ticket: FcbTicket): DocumentSummary[] {
 					fromStation:
 						(data.fromStationNameUTF8 as string) ??
 						(data.fromStationIA5 as string) ??
-						numStr(data.fromStationNum as number),
+						named(data.fromStationNum as number),
 					toStation:
 						(data.toStationNameUTF8 as string) ??
 						(data.toStationIA5 as string) ??
-						numStr(data.toStationNum as number)
+						named(data.toStationNum as number)
 				});
 			}
 		} else if (type === 'customerCard') {
@@ -210,6 +232,9 @@ export function summarizeFcb(ticket: FcbTicket): DocumentSummary[] {
 }
 
 /** All train bindings (Zugbindung) across a ticket's documents. */
-export function zugbindung(ticket: FcbTicket): TrainBinding[] {
-	return summarizeFcb(ticket).flatMap((d) => d.trainBindings);
+export function zugbindung(
+	ticket: FcbTicket,
+	stations: StationTable | null = null
+): TrainBinding[] {
+	return summarizeFcb(ticket, stations).flatMap((d) => d.trainBindings);
 }

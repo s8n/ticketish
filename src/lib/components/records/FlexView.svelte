@@ -5,6 +5,12 @@
 	import { ricsName } from '../../tickets/uic/rics.ts';
 	import { parseDbVia } from '../../tickets/via.ts';
 	import { uicCountryName, isoNumericCountryName } from '../../tickets/countries.ts';
+	import {
+		isUicCodeTable,
+		loadUicStations,
+		uicStationLabel,
+		type StationTable
+	} from '../../tickets/stations.ts';
 	import ZugbindungStrip from '../ZugbindungStrip.svelte';
 	import ViaRoute from '../ViaRoute.svelte';
 	import JsonTree from '../JsonTree.svelte';
@@ -13,7 +19,15 @@
 
 	const ticket = $derived(data.ticket as FcbTicket);
 	const issuing = $derived(ticket.issuingDetail);
-	const docs = $derived(summarizeFcb(ticket));
+
+	// Loads on demand: until it lands the numeric codes show, the way they did
+	// before the table existed.
+	let uicStations = $state<StationTable | null>(null);
+	$effect(() => {
+		loadUicStations().then((s) => (uicStations = s));
+	});
+
+	const docs = $derived(summarizeFcb(ticket, uicStations));
 	const travelers = $derived((ticket.travelerDetail?.traveler ?? []) as Traveler[]);
 	const control = $derived(ticket.controlDetail as Record<string, unknown> | undefined);
 	const currency = $derived((issuing.currency as string) ?? 'EUR');
@@ -53,9 +67,17 @@
 	}
 
 	function stations(d: Record<string, unknown>): { from?: string; to?: string } {
+		// Only the UIC code tables can be named; a carrier's or issuer's own
+		// numbering would resolve to the wrong station.
+		const uic = isUicCodeTable(d.stationCodeTable as string | undefined);
+		const named = (num: unknown) =>
+			uic ? (uicStationLabel(uicStations, num as number) ?? undefined) : undefined;
 		return {
-			from: (d.fromStationNameUTF8 as string) ?? (d.fromStationIA5 as string),
-			to: (d.toStationNameUTF8 as string) ?? (d.toStationIA5 as string)
+			from:
+				(d.fromStationNameUTF8 as string) ??
+				(d.fromStationIA5 as string) ??
+				named(d.fromStationNum),
+			to: (d.toStationNameUTF8 as string) ?? (d.toStationIA5 as string) ?? named(d.toStationNum)
 		};
 	}
 
