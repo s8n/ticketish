@@ -132,9 +132,18 @@ with it and cannot hand the bytes back. Apple's WWDR G4 intermediate is
 bundled, so signing works with no network. Safari is the only iOS browser
 that hands a `.pkpass` to Wallet.
 
-**Google Wallet** needs an issuer ID and a service account key from the Google
-Wallet Business Console, and comes with two warnings it shows you before you
-press anything.
+**Google Wallet** needs two things from two consoles, and comes with two
+warnings it shows you before you press anything.
+
+The issuer ID is in the [Google Pay and Wallet
+console](https://pay.google.com/business/console/) under Google Wallet API.
+The key is a service account JSON key from the Google Cloud console: IAM and
+Admin, Service Accounts, pick the account, Keys, Add key, Create new key,
+JSON. The service account then has to be invited into the issuer, under Users,
+Invite a user, with access level Developer. That last step is the one that is
+easy to skip here, because this app never calls the REST API: it still matters,
+since Google checks that whoever signed the pass is authorized for the issuer
+ID inside it.
 
 Google carries a barcode as a JSON string and documents no Latin-1 or binary
 encoding for it, so on paper a UIC or VDV payload cannot go in. In practice

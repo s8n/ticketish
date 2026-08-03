@@ -285,9 +285,17 @@ openssl pkcs12 -legacy -in Certificates.p12 -nocerts -nodes -out key.pem</code
 		<section class="setup">
 			<h4>Google Wallet issuer</h4>
 			<p class="note">
-				From the Google Wallet Business Console: your issuer ID, and a service account JSON key
-				with the Wallet Object Issuer role. An issuer that has not been published only saves
-				passes for accounts registered on it as testers.
+				Two things, from two consoles. The issuer ID is in the
+				<a href="https://pay.google.com/business/console/" target="_blank" rel="noreferrer noopener"
+					>Google Pay and Wallet console</a
+				>, under Google Wallet API. The key is a service account JSON key from the Google Cloud
+				console, IAM and Admin, Service Accounts, Keys, Add key, JSON.
+			</p>
+			<p class="note">
+				The service account also has to be invited into the issuer: Users, Invite a user, its
+				email address, access level Developer. Without that, Google refuses a pass it signed.
+				An issuer that has not been published only saves passes for accounts registered on it
+				as testers.
 			</p>
 			<label>
 				Issuer ID
