@@ -6,8 +6,10 @@
  *
  * UIC 918.3 and DOSIPAS carry records, and each gets a tab named after the
  * record it opens. Every other format has a single view of its own, which
- * takes one tab named after the format. The barcode is always last, so it is
- * something to switch to rather than the first thing shown.
+ * takes one tab named after the format plus "data", so it reads as the
+ * counterpart to the barcode tab rather than as the header chip again. The
+ * barcode is always last, so it is something to switch to rather than the
+ * first thing shown.
  */
 
 /** Richest first: the record a reader most likely wants open. */

@@ -235,8 +235,10 @@
 					</button>
 				{/each}
 			{:else}
+				<!-- The format tab would otherwise be the card header chip a second
+				     time; "data" says what it holds, opposite the barcode tab. -->
 				<button class="tab" class:active={activeIdx === 0} onclick={() => (openIdx = 0)}>
-					{envelopeLabel}
+					{envelopeLabel} data
 				</button>
 			{/if}
 			{#if showBarcode}
