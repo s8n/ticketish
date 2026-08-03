@@ -49,7 +49,6 @@ import {
 	APP_NAME,
 	localParts,
 	asUtcInstant,
-	passIssuerName,
 	tripTitle,
 	utcOffsetLabel,
 	UNOFFICIAL_LABEL,
@@ -160,29 +159,25 @@ const GENERIC_CLASS = 'ticketish_generic';
 const MAX_TEXT_MODULES = 10;
 
 /**
- * One transit class, whatever the operator.
+ * One transit class, named for this app rather than for any operator.
  *
- * The card takes its top line from the class's issuer name and an object
- * cannot override it, so that field carries both names: the leg's
- * transitOperatorName does not come through on the card, and without this the
- * operator goes unnamed. Writing a per-ticket name into a shared class is a
- * known compromise. A class id is a key, so whichever operator wins the race
- * to create the class decides the name every pass shows, or, if a save link
- * does update an existing class, the last one saved renames the passes
- * already in the wallet.
+ * A class holds the issuer name and an object cannot override it, so a name
+ * that varies by ticket needs a class that varies by ticket, and each class
+ * is a resource of its own to be reviewed. Something that reads whatever
+ * ticket it is handed would grow them without limit, which is presumably why
+ * the wallet apps doing this in the wild put their own name there and leave
+ * it: zügli's passes say zügli.
  *
- * The alternative, a class per operator, is the one that fits the API and it
- * is not free: each class is a resource of its own to be reviewed and
- * approved, and an app that scans whatever ticket it is handed would grow
- * them without limit. The wallet apps that do this in the wild share one
- * class, so this does too.
+ * So the operator is not on the top line. It is on the leg, in the colour of
+ * the card, and in the rows underneath, and the top line says who made the
+ * pass, which is the honest reading of a field called issuer name anyway.
  *
  * The version is part of the id because a save link creates a class the
  * issuer does not have and is not a way to edit one it does: changing what a
  * class says means pointing at one that does not exist yet. Old ones stay
  * behind in the issuer account, unused.
  */
-const TRANSIT_CLASS_VERSION = 3;
+const TRANSIT_CLASS_VERSION = 4;
 
 const transitClassId = (issuerId: string) =>
 	`${issuerId}.ticketish_rail_v${TRANSIT_CLASS_VERSION}`;
@@ -396,7 +391,7 @@ export function buildPassPayload(
 			transitClasses: [
 				{
 					id: transitClassId(issuerId),
-					issuerName: passIssuerName(trip),
+					issuerName: APP_NAME,
 					reviewStatus: 'UNDER_REVIEW',
 					transitType: 'RAIL',
 					logo: { sourceUri: { uri: logo } }

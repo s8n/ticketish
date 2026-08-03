@@ -212,10 +212,10 @@ describe('the transit pass', () => {
 	it('declares one class for every operator, past draft so an object can exist', () => {
 		const payload = buildPassPayload(seated, ascii('TICKET'), AZTEC, '333', ORIGIN);
 		const [cls] = payload.transitClasses as Record<string, unknown>[];
-		expect(cls.id).toBe('333.ticketish_rail_v3');
-		// the card takes its top line from here and an object cannot override
-		// it, so this field carries both names or the operator has none
-		expect(cls.issuerName).toBe('ticketish | Test Railways');
+		expect(cls.id).toBe('333.ticketish_rail_v4');
+		// one class for every operator means this cannot name one, so it names
+		// the app; the operator is on the leg, in the colour and in the rows
+		expect(cls.issuerName).toBe('ticketish');
 		// a draft class cannot have objects created against it
 		expect(cls.reviewStatus).toBe('UNDER_REVIEW');
 		expect(cls.transitType).toBe('RAIL');
