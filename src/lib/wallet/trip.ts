@@ -479,6 +479,18 @@ export function previewFields(trip: TripSummary): TripField[] {
  */
 export const APP_NAME = 'ticketish';
 
+/**
+ * Both names at once, for the one field that has to carry both.
+ *
+ * Google's transit card takes its top line from the class and an object
+ * cannot override it, so where that line is the only place the operator can
+ * appear, it says both. Apple and the generic pass have two slots and use
+ * them separately instead.
+ */
+export function passIssuerName(trip: TripSummary): string {
+	return `${APP_NAME} | ${trip.issuer}`;
+}
+
 /** The same point at length, for the one field on the back that can hold it. */
 export const UNOFFICIAL_LABEL = 'Unofficial pass';
 export const UNOFFICIAL_NOTE =

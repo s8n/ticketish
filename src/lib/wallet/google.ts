@@ -49,6 +49,7 @@ import {
 	APP_NAME,
 	localParts,
 	asUtcInstant,
+	passIssuerName,
 	tripTitle,
 	UNOFFICIAL_LABEL,
 	UNOFFICIAL_NOTE,
@@ -158,15 +159,28 @@ const GENERIC_CLASS = 'ticketish_generic';
 const MAX_TEXT_MODULES = 10;
 
 /**
- * One transit class for every operator.
+ * A transit class per operator, because its issuer name is per operator.
  *
- * A class holds the issuer name and the logo and an object cannot override
- * either, so naming the operator up there would mean a class apiece. It does
- * not have to be up there: the class is this app, which is the truthful thing
- * to put in a field called issuer name, and the operator is named where it
- * belongs, on the leg it is running.
+ * The leg carries a transitOperatorName and it does not come through on the
+ * card, so the class's issuer name is in practice the only place a transit
+ * pass names who is running the train. That field lives on the class, and an
+ * object cannot override it, so an operator apiece is what naming them costs.
+ *
+ * The version is part of the id because a save link creates a class the
+ * issuer does not have and is not a way to edit one it does: changing what a
+ * class says means pointing at one that does not exist yet. Old ones stay
+ * behind in the issuer account, unused.
  */
-const TRANSIT_CLASS = 'ticketish_rail';
+const TRANSIT_CLASS_VERSION = 2;
+
+function transitClassId(issuerId: string, issuer: string): string {
+	const slug = issuer
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '_')
+		.replace(/^_|_$/g, '')
+		.slice(0, 40);
+	return `${issuerId}.ticketish_rail_v${TRANSIT_CLASS_VERSION}_${slug || 'operator'}`;
+}
 
 /**
  * A transit class needs a logo, and a logo is a URI Google's servers fetch,
@@ -331,7 +345,7 @@ export function buildTransitObject(
 	const covered = new Set(['train', 'departs', 'class', 'coach', 'seat']);
 	const object: Record<string, unknown> = {
 		id: `${issuerId}.${serialForPayload(payload)}`,
-		classId: `${issuerId}.${TRANSIT_CLASS}`,
+		classId: transitClassId(issuerId, trip.issuer),
 		state: 'ACTIVE',
 		tripType: 'ONE_WAY',
 		hexBackgroundColor: passColors(trip.operator).hex,
@@ -374,8 +388,8 @@ export function buildPassPayload(
 		return {
 			transitClasses: [
 				{
-					id: `${issuerId}.${TRANSIT_CLASS}`,
-					issuerName: APP_NAME,
+					id: transitClassId(issuerId, trip.issuer),
+					issuerName: passIssuerName(trip),
 					reviewStatus: 'UNDER_REVIEW',
 					transitType: 'RAIL',
 					logo: { sourceUri: { uri: logo } }

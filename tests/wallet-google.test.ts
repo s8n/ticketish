@@ -209,13 +209,13 @@ describe('the transit pass', () => {
 		expect(googlePassKind({ ...timeless, validFrom: '2026-09-01' }, ORIGIN)).toBe('transit');
 	});
 
-	it('declares one class for every operator, past draft so an object can exist', () => {
+	it('declares a class per operator, past draft so an object can exist', () => {
 		const payload = buildPassPayload(seated, ascii('TICKET'), AZTEC, '333', ORIGIN);
 		const [cls] = payload.transitClasses as Record<string, unknown>[];
-		expect(cls.id).toBe('333.ticketish_rail');
-		// the class is this app; the operator is named on the leg, which is the
-		// only place an object can say it
-		expect(cls.issuerName).toBe('ticketish');
+		expect(cls.id).toBe('333.ticketish_rail_v2_test_railways');
+		// the card takes its top line from here and an object cannot override
+		// it, so this field carries both names or the operator has none
+		expect(cls.issuerName).toBe('ticketish | Test Railways');
 		// a draft class cannot have objects created against it
 		expect(cls.reviewStatus).toBe('UNDER_REVIEW');
 		expect(cls.transitType).toBe('RAIL');
