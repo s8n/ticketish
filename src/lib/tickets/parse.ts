@@ -14,7 +14,7 @@ import { isSsb1, parseSsb1 } from './ssb/ssb1.ts';
 import { isTcdd, parseTcdd } from './tcdd/tcdd.ts';
 import { isTrenitalia, parseTrenitalia } from './trenitalia/trenitalia.ts';
 import { isEav, parseEav } from './eav/eav.ts';
-import { isSncfReservation, parseSncfReservation } from './sncf/reservation.ts';
+import { isElb, parseElb } from './elb/elb.ts';
 import { isSncfETicket, parseSncfETicket } from './sncf/eticket.ts';
 
 // Record parsers register themselves on import.
@@ -81,9 +81,9 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 			// fall through
 		}
 	}
-	if (isSncfReservation(data)) {
+	if (isElb(data)) {
 		try {
-			return { kind: 'sncf-reservation', ticket: parseSncfReservation(data) };
+			return { kind: 'elb', ticket: parseElb(data) };
 		} catch {
 			// fall through
 		}

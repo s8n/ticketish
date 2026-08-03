@@ -3,26 +3,36 @@
 // Ported from zuegli (EUPL-1.2), so it cannot also be offered under MIT.
 
 /**
- * SNCF e-billet barcodes: a 131 character fixed-width ASCII record with the
- * magic `i0CV`, carried in an Aztec code on TGV INOUI / sncf-connect tickets.
+ * SNCF e-billet barcodes: a 131 character fixed-width record with the magic
+ * `i0CV`, carried in an Aztec code on TGV INOUI / sncf-connect tickets.
  *
- * Unrelated to the `eRIV`/`eEDV` reservation record in reservation.ts despite
- * both being SNCF: different magic, different length, different field order.
- * This one names the passenger and carries a date of birth, and notably has
- * no coach or seat, which the reservation record does have. All three sample
- * tickets print a coach and place on their face while encoding neither.
+ * Unrelated to the ELB record in elb/elb.ts despite both being SNCF stock:
+ * different magic, different length, different field order. This one names
+ * the passenger and carries a date of birth, and notably has no coach or
+ * seat, which ELB does have. All three sample tickets print a coach and place
+ * on their face while encoding neither.
  *
- * The layout is a port of zuegli's `main/sncf/data.py` (EUPL-1.2). Its offsets
- * were re-checked against the printed face of the tickets they came from: the
- * dossier, e-billet number, customer reference, both station mnemonics, train,
- * travel date, passenger name, class and tariff code all match what is
- * printed. One of the specimens prints the tariff code in the page margin
- * ("PN00 - KM0512"), which is what tied that field down.
+ * No specification is published. The layout is a port of zuegli's
+ * `main/sncf/data.py` (EUPL-1.2), whose offsets were re-checked against the
+ * printed face of the tickets they came from: the dossier, e-billet number,
+ * customer reference, both station mnemonics, train, travel date, passenger
+ * name, class and tariff code all match what is printed. One of the specimens
+ * prints the tariff code in the page margin ("PN00 - KM0512"), which is what
+ * tied that field down.
  *
- * Two things stay unverified. The four characters at offset 19 match nothing
- * printed and are exposed as `extraFields`. The return-leg block at the end is
- * blank or zero on every sample seen, so it is read as zuegli reads it but has
- * never been observed populated.
+ * Two independent reverse engineerings agree with it field for field, and
+ * settled the last two unknowns:
+ *
+ *   https://trainticket.wiki/ticket-standards/domestic-standards/france/
+ *   https://github.com/NeoRail/train-barcode-kaitai-spec (sncf/sncf.ksy, MIT)
+ *
+ * From those: the record is ISO-8859-1 rather than ASCII, so an accented
+ * passenger name decodes rather than failing the record; the four characters
+ * at offset 19 are the constant "1211" and are only surfaced when a ticket
+ * disagrees; and the stations are Benerail ids, the same five character space
+ * ELB uses. The return leg block is still blank or zero on every sample seen
+ * here, so it is read as zuegli reads it but has never been observed
+ * populated.
  */
 
 export interface SncfReturnLeg {
@@ -43,7 +53,7 @@ export interface SncfETicket {
 	customerReference: string | null;
 	surname: string;
 	forename: string;
-	/** SNCF five character station mnemonic, e.g. FRPLY for Paris Gare de Lyon. */
+	/** Five character Benerail station id, e.g. FRPLY for Paris Gare de Lyon. */
 	originCode: string;
 	destinationCode: string;
 	/** Leading zeros stripped: the field is five digits, "06601" for train 6601. */
@@ -63,12 +73,23 @@ export interface SncfETicket {
 /** The record is a fixed 131 characters; zuegli rejects any other length. */
 const LENGTH = 131;
 
-const isPrintableAscii = (data: Uint8Array) => data.every((b) => b >= 0x20 && b <= 0x7e);
+/** The constant that sits between the ticket number and the date of birth. */
+const MARKER = '1211';
+
+/**
+ * ISO-8859-1, so a name with an accent in it is text rather than a reason to
+ * reject the record. C1 stays out: nothing in the layout can produce it, and
+ * letting it through would make other formats' payloads look like e-billets.
+ */
+const isLatin1Text = (data: Uint8Array) =>
+	data.every((b) => (b >= 0x20 && b <= 0x7e) || b >= 0xa0);
+
+const decode = (data: Uint8Array) => new TextDecoder('iso-8859-1').decode(data);
 
 export function isSncfETicket(data: Uint8Array): boolean {
 	if (data.length !== LENGTH) return false;
-	if (!isPrintableAscii(data)) return false;
-	return new TextDecoder().decode(data).startsWith('i0CV');
+	if (!isLatin1Text(data)) return false;
+	return decode(data).startsWith('i0CV');
 }
 
 /** Drop leading zeros but keep a single one, so "000" reads as "0". */
@@ -98,7 +119,7 @@ function parseTravelDate(value: string): { day: number; month: number } | null {
 
 export function parseSncfETicket(data: Uint8Array): SncfETicket {
 	if (!isSncfETicket(data)) throw new Error('not an SNCF e-billet record');
-	const s = new TextDecoder().decode(data);
+	const s = decode(data);
 
 	const returnBlock = s.slice(115, 131);
 	const returnLeg: SncfReturnLeg | null = meaningful(returnBlock)
@@ -124,6 +145,10 @@ export function parseSncfETicket(data: Uint8Array): SncfETicket {
 		travelClass: s.slice(110, 111),
 		tariffCode: s.slice(111, 115).trim() || null,
 		returnLeg,
-		extraFields: [s.slice(19, 23)].map(meaningful).filter((v): v is string => v !== null)
+		// Only worth showing when a ticket disagrees with the constant.
+		extraFields: [s.slice(19, 23)]
+			.filter((v) => v !== MARKER)
+			.map(meaningful)
+			.filter((v): v is string => v !== null)
 	};
 }

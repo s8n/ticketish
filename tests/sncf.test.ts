@@ -2,188 +2,20 @@
 // SPDX-License-Identifier: MIT OR EUPL-1.2
 
 /**
- * The two SNCF formats: the reservation record (eRIV, eRIZ, eEDV) and the
- * e-billet (i0CV).
+ * The SNCF e-billet record (i0CV).
  *
- * Every payload here is assembled from invented values by the `build` helpers
- * below. The field offsets they use were established from real tickets, but no
- * value from a real ticket appears in this file.
+ * Every payload here is assembled from invented values by the `buildE` helper
+ * below. The field offsets it uses were established from real tickets and
+ * corroborated by two published reverse engineerings, but no value from a
+ * real ticket appears in this file.
  */
 import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
-import { isSncfReservation, parseSncfReservation } from '../src/lib/tickets/sncf/reservation.ts';
+import { isElb } from '../src/lib/tickets/elb/elb.ts';
 import { isSncfETicket, parseSncfETicket } from '../src/lib/tickets/sncf/eticket.ts';
+import { buildElb } from './helpers/elb.ts';
 
 const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
-
-interface Parts {
-	magic?: string;
-	pnr?: string;
-	ticketNumber?: string;
-	blockA?: string;
-	blockB?: string;
-	blockC?: string;
-	origin?: string;
-	destination?: string;
-	train?: string;
-	blockD?: string;
-	coach?: string;
-	seat?: string;
-	travelClass?: string;
-	tariff?: string;
-	service?: string;
-	authenticator?: string;
-	/** Total length; the real records are 120, 121 or 165 characters. */
-	length?: number;
-}
-
-/** Lay the fixed-width record out field by field, then pad to length. */
-function build(parts: Parts = {}): Uint8Array {
-	const p = {
-		magic: 'eRIV',
-		pnr: 'TESTPN',
-		ticketNumber: '123456789',
-		blockA: '0011',
-		blockB: '000000000000',
-		blockC: '00000000000000',
-		origin: 'FRAAA',
-		destination: 'GBZZZ',
-		train: '09999',
-		blockD: '00000000',
-		coach: '03',
-		seat: '007',
-		travelClass: '2',
-		tariff: 'XX99',
-		service: 'QQ',
-		authenticator: '',
-		length: 121,
-		...parts
-	};
-
-	const s =
-		p.magic + // 0
-		p.pnr + // 4
-		p.ticketNumber + // 10
-		p.blockA + // 19
-		p.blockB + // 23
-		p.blockC + // 35
-		p.origin + // 49
-		p.destination + // 54
-		p.train + // 59
-		' ' + // 64, always blank on the samples
-		p.blockD + // 65
-		p.coach + // 73
-		p.seat + // 75
-		p.travelClass + // 78
-		p.tariff + // 79
-		p.service + // 83
-		p.authenticator; // 85
-
-	expect(s.length).toBeLessThanOrEqual(p.length);
-	return ascii(s.padEnd(p.length, ' '));
-}
-
-describe('SNCF / Eurostar reservation records', () => {
-	it('reads the fields that the printed ticket also shows', () => {
-		const c = parsePayload(build());
-		expect(c.kind).toBe('sncf-reservation');
-		if (c.kind !== 'sncf-reservation') return;
-
-		expect(c.ticket.documentType).toBe('RIV');
-		expect(c.ticket.pnr).toBe('TESTPN');
-		expect(c.ticket.ticketNumber).toBe('123456789');
-		expect(c.ticket.originCode).toBe('FRAAA');
-		expect(c.ticket.destinationCode).toBe('GBZZZ');
-		expect(c.ticket.trainNumber).toBe('9999');
-		expect(c.ticket.coach).toBe('3');
-		expect(c.ticket.seat).toBe('7');
-		expect(c.ticket.travelClass).toBe('2');
-		expect(c.ticket.tariffCode).toBe('XX99');
-		expect(c.ticket.serviceCode).toBe('QQ');
-	});
-
-	it('exposes the last two magic letters as the printed number prefix', () => {
-		// tickets print the number as "IV<number>", "IZ<number>", "DV<number>"
-		for (const [magic, prefix] of [
-			['eRIV', 'IV'],
-			['eRIZ', 'IZ'],
-			['eEDV', 'DV']
-		]) {
-			const t = parseSncfReservation(build({ magic }));
-			expect(t.documentType).toBe(magic.slice(1));
-			expect(t.numberPrefix).toBe(prefix);
-		}
-	});
-
-	it('keeps a fare letter in the class field rather than mapping it', () => {
-		expect(parseSncfReservation(build({ travelClass: 'H' })).travelClass).toBe('H');
-		expect(parseSncfReservation(build({ travelClass: '1' })).travelClass).toBe('1');
-	});
-
-	it('reads the SNCF card stock layout at the same offsets', () => {
-		const t = parseSncfReservation(
-			build({
-				magic: 'eEDV',
-				origin: 'FRBBB',
-				destination: 'FRCCC',
-				train: '06666',
-				coach: '16',
-				seat: '047',
-				tariff: 'PR11',
-				length: 121
-			})
-		);
-		expect(t.originCode).toBe('FRBBB');
-		expect(t.destinationCode).toBe('FRCCC');
-		expect(t.trainNumber).toBe('6666');
-		expect(t.coach).toBe('16');
-		expect(t.seat).toBe('47');
-		expect(t.tariffCode).toBe('PR11');
-	});
-
-	it('picks up the trailing block only on the long form', () => {
-		const blob = 'ABCDEFGHIJ'.repeat(4) + 'ABCDE';
-		expect(blob.length).toBe(45);
-
-		const long = parseSncfReservation(build({ authenticator: blob, length: 165 }));
-		expect(long.authenticator).toBe(blob);
-
-		// the 120 and 121 character forms pad with spaces instead
-		expect(parseSncfReservation(build({ length: 121 })).authenticator).toBeNull();
-		expect(parseSncfReservation(build({ length: 120 })).authenticator).toBeNull();
-	});
-
-	it('drops blank and all-zero blocks from extraFields', () => {
-		expect(parseSncfReservation(build()).extraFields).toEqual(['0011']);
-
-		const filled = parseSncfReservation(
-			build({ blockA: '0000', blockB: '1234ABCDEFGH', blockD: '99887766' })
-		);
-		expect(filled.extraFields).toEqual(['1234ABCDEFGH', '99887766']);
-	});
-
-	it('rejects payloads that do not match the layout', () => {
-		expect(isSncfReservation(build())).toBe(true);
-
-		// wrong magic
-		expect(isSncfReservation(build({ magic: 'xRIV' }))).toBe(false);
-		// letters where the ticket number belongs
-		expect(isSncfReservation(build({ ticketNumber: 'ABCDEFGHI' }))).toBe(false);
-		// digits where the station mnemonics belong
-		expect(isSncfReservation(build({ origin: '12345' }))).toBe(false);
-		// letters where the train number belongs
-		expect(isSncfReservation(build({ train: 'ABCDE' }))).toBe(false);
-		// truncated before the service code
-		expect(isSncfReservation(ascii(new TextDecoder().decode(build()).slice(0, 84)))).toBe(false);
-		// not printable ASCII
-		expect(isSncfReservation(new Uint8Array(120))).toBe(false);
-	});
-
-	it('does not swallow other printable-ASCII formats', () => {
-		const tcdd = ascii(['TCDD_B', '6', '3', '0'].join('$').padEnd(120, '$'));
-		expect(isSncfReservation(tcdd)).toBe(false);
-	});
-});
 
 interface EParts {
 	magic?: string;
@@ -303,9 +135,23 @@ describe('SNCF e-billet records', () => {
 		});
 	});
 
-	it('drops an all-zero block from extraFields', () => {
-		expect(parseSncfETicket(buildE({ blockA: '0011' })).extraFields).toEqual(['0011']);
+	it('keeps the block at offset 19 out of the way unless it is unexpected', () => {
+		// both published reverse engineerings have it as a constant "1211"
+		expect(parseSncfETicket(buildE({ blockA: '1211' })).extraFields).toEqual([]);
 		expect(parseSncfETicket(buildE({ blockA: '0000' })).extraFields).toEqual([]);
+		// anything else is worth showing, since nothing explains it
+		expect(parseSncfETicket(buildE({ blockA: '0011' })).extraFields).toEqual(['0011']);
+	});
+
+	it('decodes names as ISO-8859-1 rather than rejecting the accents', () => {
+		// ascii() writes one byte per code point, so these land as Latin-1 bytes
+		const payload = buildE({ surname: 'ÉLODIE', forename: 'FRANÇOIS' });
+		expect(payload.some((b) => b > 0x7e)).toBe(true);
+		expect(isSncfETicket(payload)).toBe(true);
+
+		const t = parseSncfETicket(payload);
+		expect(t.surname).toBe('ÉLODIE');
+		expect(t.forename).toBe('FRANÇOIS');
 	});
 
 	it('rejects payloads that do not match the layout', () => {
@@ -316,15 +162,15 @@ describe('SNCF e-billet records', () => {
 		// the record is a fixed 131 characters
 		expect(isSncfETicket(ascii('i0CV'.padEnd(130, '0')))).toBe(false);
 		expect(isSncfETicket(ascii('i0CV'.padEnd(132, '0')))).toBe(false);
-		// not printable ASCII
+		// control bytes are not text in any encoding
 		expect(isSncfETicket(new Uint8Array(131))).toBe(false);
 	});
 
-	it('is kept apart from the reservation record', () => {
-		// the two SNCF formats share neither magic nor length
-		expect(isSncfReservation(buildE())).toBe(false);
-		expect(isSncfETicket(build())).toBe(false);
-		expect(parsePayload(build()).kind).toBe('sncf-reservation');
+	it('is kept apart from the ELB record on the same SNCF stock', () => {
+		// the two share neither magic nor length
+		expect(isElb(buildE())).toBe(false);
+		expect(isSncfETicket(buildElb())).toBe(false);
+		expect(parsePayload(buildElb()).kind).toBe('elb');
 		expect(parsePayload(buildE()).kind).toBe('sncf-eticket');
 	});
 });

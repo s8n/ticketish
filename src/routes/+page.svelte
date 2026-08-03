@@ -106,8 +106,12 @@
 					Older barcodes operators like VR still issue, plus NS and DB Keycards
 				</li>
 				<li>
+					<span class="format">ELB</span>
+					The Element List Barcode of TAP TSI B.12, on Eurostar and SNCF stock
+				</li>
+				<li>
 					<span class="format">Custom formats</span>
-					Renfe, SNCF, Eurostar, TCDD, Trenitalia and EAV, which each go their own way
+					Renfe, SNCF e-billets, TCDD, Trenitalia and EAV, which each go their own way
 				</li>
 			</ul>
 			<p class="fine">

@@ -28,16 +28,19 @@ installed.
   Keycards, plus the 107-byte SSB1 variant used by VR (Finland)
 - **Renfe** - Spanish tickets, which use their own fixed-width ASCII format
   rather than a UIC one
-- **SNCF / Eurostar** - two unrelated fixed-width ASCII formats:
-  - the reservation record, magic `e` plus a three letter document type
-    (`eRIV`, `eRIZ`, `eEDV`), issued as both PDF417 and Aztec on Eurostar home
-    print and SNCF card stock alike. PNR, ticket number, both station
-    mnemonics, train, coach, seat, class and tariff are read; the record
-    appears to carry no travel date
-  - the e-billet, magic `i0CV`, a 131 character Aztec on TGV INOUI and
-    sncf-connect tickets. Adds passenger name, date of birth and customer
-    reference, and carries a travel date with no year, but has no coach or
-    seat even when the ticket prints them. Ported from zuegli
+- **ELB (Element List Barcode)** - the fixed-width record specified in ERA TAP
+  TSI technical document B.12 section 8, defined by SNCF for ATB printers and
+  issued on Eurostar home print (`eRIV`, `eRIZ`) and SNCF card stock (`eEDV`)
+  as both PDF417 and Aztec. 85 characters for a one-leg trip and 121 for an
+  out and back: PNR, ticket number, both station mnemonics, per leg train,
+  coach, seat, class and tariff, plus the specimen flag, ticket sequence,
+  passenger counts, and the issue, validity and departure dates. Some issuers
+  append a seal the specification does not describe
+- **SNCF e-billet** - magic `i0CV`, a 131 character Aztec on TGV INOUI and
+  sncf-connect tickets, unrelated to ELB despite the shared stock. Adds
+  passenger name, date of birth and customer reference, and carries a travel
+  date with no year, but has no coach or seat even when the ticket prints
+  them. Ported from zuegli
 - **TCDD** - Turkish e-tickets, a "$"-delimited ASCII record
 - **Trenitalia** - departure date, train, coach, seat, PNR and entitlement
   number, reverse engineered from four tickets; the payload appears to carry
@@ -177,5 +180,14 @@ No functions, bindings or environment variables needed.
   them under ODbL if you redistribute them. SNCF's own open data publishes UIC
   codes and the three letter TVS code but not the mnemonic, so this is the
   only open source for `FRPST` and friends.
+- ELB is specified in **ERA TAP TSI technical document B.12** section 8
+  (ERA-REC-122/TD/02), published by the European Union Agency for Railways.
+  The parser here predates the discovery of that document; B.12 confirmed its
+  offsets and named the fields it had not placed.
+- The SNCF e-billet layout is a port of zuegli's, corroborated field for field
+  by [trainticket.wiki](https://trainticket.wiki/ticket-standards/domestic-standards/france/)
+  and [train-barcode-kaitai-spec](https://github.com/NeoRail/train-barcode-kaitai-spec)
+  (MIT), which between them settled the Latin-1 encoding and the constant at
+  offset 19.
 - DB Leitpunktkürzel and Swiss NOVA organisation names derive from the
   respective operators' open data.

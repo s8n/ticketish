@@ -15,7 +15,7 @@
 	import SsbView from './SsbView.svelte';
 	import RenfeView from './RenfeView.svelte';
 	import TcddView from './TcddView.svelte';
-	import SncfReservationView from './SncfReservationView.svelte';
+	import ElbView from './ElbView.svelte';
 	import SncfETicketView from './SncfETicketView.svelte';
 	import Ssb1View from './Ssb1View.svelte';
 	import TrenitaliaView from './TrenitaliaView.svelte';
@@ -72,10 +72,16 @@
 		}
 		if (container.kind === 'renfe') return 'Renfe';
 		if (container.kind === 'tcdd') return 'TCDD Taşımacılık';
-		// Both are SNCF stock. Eurostar tickets carry the SNCF logo and a CIV
-		// number of its own, with Eurostar named as the carrier inside the
-		// record rather than as the issuer.
-		if (container.kind === 'sncf-reservation' || container.kind === 'sncf-eticket') return 'SNCF';
+		if (container.kind === 'sncf-eticket') return 'SNCF';
+		// ELB is not one operator's format. The ticket code is the prefix printed
+		// beside the ticket number, and is the only thing in the record that says
+		// who issued it. Eurostar tickets are SNCF stock and carry its logo, with
+		// Eurostar named as the carrier inside the record rather than as issuer.
+		if (container.kind === 'elb') {
+			return (
+				{ IV: 'Eurostar', IZ: 'Eurostar', DV: 'SNCF' }[container.ticket.ticketCode] ?? 'ELB ticket'
+			);
+		}
 		if (container.kind === 'trenitalia') return 'Trenitalia';
 		if (container.kind === 'eav') return 'EAV / UNICO Campania';
 		if (container.kind === 'ssb1') {
@@ -89,6 +95,8 @@
 	});
 
 	const specimen = $derived.by(() => {
+		// ELB says so outright: B.12 reads 1 as a real ticket and 0 as a specimen.
+		if (container.kind === 'elb') return container.ticket.specimen;
 		if (container.kind === 'swisspass') {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			return (container.ticket.ticketData as any)?.extra?.specimen === true;
@@ -144,8 +152,8 @@
 				return 'Trenitalia';
 			case 'eav':
 				return 'EAV';
-			case 'sncf-reservation':
-				return 'SNCF reservation';
+			case 'elb':
+				return 'ELB (Element List Barcode)';
 			case 'sncf-eticket':
 				return 'SNCF e-billet';
 			case 'text':
@@ -269,8 +277,8 @@
 		<TrenitaliaView ticket={container.ticket} />
 	{:else if container.kind === 'eav'}
 		<EavView ticket={container.ticket} />
-	{:else if container.kind === 'sncf-reservation'}
-		<SncfReservationView ticket={container.ticket} />
+	{:else if container.kind === 'elb'}
+		<ElbView ticket={container.ticket} />
 	{:else if container.kind === 'sncf-eticket'}
 		<SncfETicketView ticket={container.ticket} />
 	{:else if container.kind === 'text'}

@@ -54,7 +54,7 @@ export type TicketContainer =
 	| { kind: 'tcdd'; ticket: import('./tcdd/tcdd.ts').TcddTicket }
 	| { kind: 'trenitalia'; ticket: import('./trenitalia/trenitalia.ts').TrenitaliaTicket }
 	| { kind: 'eav'; ticket: import('./eav/eav.ts').EavTicket }
-	| { kind: 'sncf-reservation'; ticket: import('./sncf/reservation.ts').SncfReservation }
+	| { kind: 'elb'; ticket: import('./elb/elb.ts').ElbTicket }
 	| { kind: 'sncf-eticket'; ticket: import('./sncf/eticket.ts').SncfETicket }
 	| { kind: 'text'; text: string }
 	| { kind: 'unknown' };

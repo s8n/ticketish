@@ -154,3 +154,15 @@ fine to use and are committed.
   vendored UK RSP6 public keys (`src/lib/tickets/rsp/keys.json`) and the
   reference for the base26 decode quirk (digits read back to front, then
   bytes reversed).
+- **ERA TAP TSI technical document B.12** (ERA-REC-122/TD/02): section 8
+  specifies ELB, the Element List Barcode, which `src/lib/tickets/elb/` reads.
+  It is the only format here with a published specification that was found
+  *after* the parser was written, and it agreed with it. Keep a copy in
+  `standards/` (gitignored, so fetch it from era.europa.eu) when working on
+  ELB. B.12 also covers the other TAP TSI barcodes, so it is worth a look
+  before reverse engineering anything new.
+- [trainticket.wiki](https://trainticket.wiki/ticket-standards/domestic-standards/france/)
+  and [train-barcode-kaitai-spec](https://github.com/NeoRail/train-barcode-kaitai-spec)
+  (MIT, `sncf/sncf.ksy`): two independent reverse engineerings of the SNCF
+  e-billet. They agree with each other and with zuegli field for field, and
+  settled the last unknowns in `src/lib/tickets/sncf/eticket.ts`.
