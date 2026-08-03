@@ -140,11 +140,6 @@
 				Same bytes, but the symbol came out a different size than the one that was scanned, so it
 				will not look like the original.
 			</p>
-		{:else if result.fidelity === 'unknown'}
-			<p class="note">
-				Same bytes, re-encoded rather than photographed. This format does not report the original
-				symbol's size, so how closely the layout matches cannot be checked.
-			</p>
 		{/if}
 		{#if result.actual?.ecLevel && result.actual.ecLevel !== symbology.ecLevel}
 			<p class="note">

@@ -54,5 +54,4 @@
 	from={origin}
 	to={destination}
 	{rows}
-	note={'Reverse engineered, no specification available. The record carries no travel date, and stations are SNCF mnemonics rather than UIC codes.'}
 />

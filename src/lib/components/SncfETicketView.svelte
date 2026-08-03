@@ -69,5 +69,4 @@
 	from={origin}
 	to={destination}
 	{rows}
-	note={'Reverse engineered, no specification available. The record carries no year with the travel date and no coach or seat, even when the ticket prints them. Stations are SNCF mnemonics rather than UIC codes.'}
 />
