@@ -152,6 +152,41 @@ describe('HŽPP plaintext tickets', () => {
 		]);
 	});
 
+	it('reads a return fare the way a real one is put together', () => {
+		// the shape a plaintext ticket turned out to have: a return ticket type,
+		// two segments running opposite ways over one route number, and a
+		// passenger category that agrees with the ticket type
+		const t = parseHzpp(
+			build({
+				ticketType: 10003,
+				out: [75002, 75460, 1520, 2, 37],
+				ret: [75460, 75002, 1520, 2, 37],
+				pax1: [1, 12],
+				price: 1318,
+				validFrom: '2024-01-06T10:00:00Z',
+				validUntil: '2024-01-08T22:59:00Z'
+			})
+		);
+		if (t.encrypted) return;
+
+		expect(t.ticketTypeName).toBe('Return trip 2nd class');
+		expect(t.passengers).toEqual([
+			{ passengerType: 12, passengerTypeName: 'Adult return', count: 1 }
+		]);
+		expect(t.currency).toBe('EUR');
+		expect(t.price).toBe(1318);
+		expect(t.validFrom).toBe('2024-01-06T10:00:00Z');
+		expect(t.validUntil).toBe('2024-01-08T22:59:00Z');
+
+		expect(t.segments).toHaveLength(2);
+		// the return leg is the outward one backwards, over the same route
+		expect(t.segments[0].originStation).toBe(t.segments[1].destinationStation);
+		expect(t.segments[0].destinationStation).toBe(t.segments[1].originStation);
+		expect(t.segments[0].routeNumber).toBe(1520);
+		expect(t.segments[1].routeNumber).toBe(1520);
+		expect(t.segments[0].trainTypeName).toBe('Regular train');
+	});
+
 	it('shows an unlisted code as the number rather than dropping it', () => {
 		const t = parseHzpp(build({ ticketType: 19999, pax1: [1, 99], out: [72480, 76660, 0, 9, 77] }));
 		if (t.encrypted) return;

@@ -20,9 +20,13 @@
  * fixed layout holding the same fields as B1 plus the customer's name and
  * address, which is presumably why it is the encrypted one.
  *
- * Ported from zuegli's `main/hzpp/data.py` (EUPL-1.2). Both sample tickets
- * here are A1, so the B1 field order below is zuegli's reading rather than
- * anything this repo has checked against a real ticket.
+ * Ported from zuegli's `main/hzpp/data.py` (EUPL-1.2), and since checked
+ * against a plaintext ticket, which agreed on every field: a return fare
+ * reads as ticket type 10003, "return trip 2nd class", with the two segments
+ * that implies running opposite ways over the same route number, one
+ * passenger of type 12, "adult return", and a validity window opening on the
+ * day the ticket was sold. Its price is in euro, the record having been
+ * issued after Croatia changed currency, which is the only way to know.
  *
  * Stations are Croatia's UIC codes with the country prefix left off, so
  * 7800000 goes back on and the bundled station table can name the larger
