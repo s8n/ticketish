@@ -127,6 +127,14 @@ stations is worse than no pass at all.
 
 ## Wallet passes
 
+Operator colours live in `src/lib/wallet/colors.ts`, keyed by UIC company code
+or VDV organisation ID rather than by issuer name: one operator issues under
+several names and several codes, and the codes are the part that does not
+drift. Each entry carries a source, and an operator with no entry gets the
+app's own palette. A nearly-right brand colour is worse than none, since the
+default honestly says the pass came from here while a wrong red says it came
+from DB.
+
 Two things in there have dates on them.
 
 `src/lib/wallet/wwdr.ts` is Apple's WWDR G4 intermediate, bundled because a

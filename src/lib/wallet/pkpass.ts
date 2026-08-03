@@ -27,6 +27,7 @@ import { sha1 } from '../tickets/vdv/sha1.ts';
 import { hex } from '../tickets/bytes.ts';
 import type { BarcodeSymbology } from '../tickets/types.ts';
 import { signDetached } from './cms.ts';
+import { passColors } from './colors.ts';
 import type { SigningIdentity } from './identity.ts';
 import { asUtcInstant, localParts, tripTitle, type TripSummary } from './trip.ts';
 
@@ -81,19 +82,6 @@ function range(from: string | undefined, until: string | undefined): string | un
 	if (!start && !end) return undefined;
 	return `${start ? start.date : DASH} to ${end ? end.date : DASH}`;
 }
-
-export interface PassColors {
-	background: string;
-	foreground: string;
-	label: string;
-}
-
-/** The app's own palette, so an exported pass still looks like it came here. */
-const COLORS: PassColors = {
-	background: 'rgb(38, 50, 75)',
-	foreground: 'rgb(247, 226, 198)',
-	label: 'rgb(198, 174, 140)'
-};
 
 export interface PassJsonInput {
 	trip: TripSummary;
@@ -177,6 +165,7 @@ export function buildPassJson(input: PassJsonInput): Record<string, unknown> {
 				backFields: back
 			};
 
+	const colors = passColors(trip.operator);
 	const pass: Record<string, unknown> = {
 		formatVersion: 1,
 		passTypeIdentifier: input.passTypeIdentifier,
@@ -184,9 +173,9 @@ export function buildPassJson(input: PassJsonInput): Record<string, unknown> {
 		serialNumber: input.serialNumber,
 		organizationName: trip.issuer,
 		description: tripTitle(trip),
-		backgroundColor: COLORS.background,
-		foregroundColor: COLORS.foreground,
-		labelColor: COLORS.label,
+		backgroundColor: colors.background,
+		foregroundColor: colors.foreground,
+		labelColor: colors.label,
 		barcodes: [
 			{
 				format: BARCODE_FORMATS[symbology.format],

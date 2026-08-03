@@ -35,6 +35,7 @@ import { loadVdvProducts, vdvProductName } from '../tickets/vdv/products.ts';
 import { loadUicStations, uicStationName, isUicCodeTable } from '../tickets/stations.ts';
 import type { StationTable } from '../tickets/stations.ts';
 import { pad } from '../tickets/dates.ts';
+import type { OperatorCode } from './colors.ts';
 
 /** A labelled row for the back of the pass, where anything unmapped goes. */
 export interface TripField {
@@ -57,6 +58,12 @@ export interface TripSummary {
 	 */
 	shape: 'journey' | 'period';
 	issuer: string;
+	/**
+	 * The issuer as a code rather than a name, where the format carries one.
+	 * Names vary by year and by subsidiary; the code is what a colour or any
+	 * other per-operator decision should key on.
+	 */
+	operator?: OperatorCode;
 	product?: string;
 	travelClass?: string;
 	passenger?: string;
@@ -295,8 +302,17 @@ function uicTrip(records: ParsedRecord[], issuerRics: number | string | null, ta
 		shape: journey ? 'journey' : ('period' as const),
 		...parts,
 		issuer,
+		operator: ricsOperator(issuerRics),
 		details
 	} as TripSummary;
+}
+
+/** The envelope's issuer as a code, where it is one. DOSIPAS writes it as text. */
+function ricsOperator(issuerRics: number | string | null): OperatorCode | undefined {
+	const code = typeof issuerRics === 'string' ? Number(issuerRics) : issuerRics;
+	return typeof code === 'number' && Number.isInteger(code) && code > 0
+		? { scheme: 'rics', code }
+		: undefined;
 }
 
 // ------------------------------------------------------------- VDV ------
@@ -336,6 +352,7 @@ function vdvTrip(barcode: VdvBarcode, tables: Tables): TripSummary | null {
 	return {
 		shape: 'period',
 		issuer,
+		operator: { scheme: 'vdv', code: ticket.productOrgId },
 		product,
 		passenger,
 		validFrom: ticket.validityStart,

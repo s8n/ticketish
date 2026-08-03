@@ -186,6 +186,28 @@ describe('pass structure', () => {
 		expect(period.expirationDate).toBe('2026-09-30T23:59:00Z');
 	});
 
+	it('takes the operator colour, and the app palette without one', async () => {
+		const { identity: id } = await identity();
+		const colored = { ...trip, operator: { scheme: 'rics' as const, code: 1080 } };
+		const passOf = async (t: TripSummary) =>
+			JSON.parse(
+				strFromU8(
+					files(
+						await buildPkpass({
+							trip: t,
+							payload: binaryPayload(),
+							symbology: AZTEC,
+							identity: id,
+							assets
+						})
+					)['pass.json']
+				)
+			);
+		expect((await passOf(colored)).backgroundColor).toBe('rgb(238, 0, 32)');
+		expect((await passOf(colored)).foregroundColor).toBe('rgb(255, 255, 255)');
+		expect((await passOf(trip)).backgroundColor).toBe('rgb(38, 50, 75)');
+	});
+
 	it('gives the same ticket the same serial, so a re-export replaces it', async () => {
 		const payload = binaryPayload();
 		expect(serialForPayload(payload)).toBe(serialForPayload(binaryPayload()));

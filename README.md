@@ -118,6 +118,12 @@ A pass carries the original barcode byte for byte. Everything else on it was
 read out of that barcode and is only as good as this app's reading of it, so
 the original ticket is still the one that counts.
 
+Passes take the operator's colour where one is known, on both platforms, so a
+DB ticket is red on a lock screen wherever it ends up. Operators are keyed by
+UIC company code or VDV organisation ID in `src/lib/wallet/colors.ts`, since
+one operator issues under several names; anything not in that list gets the
+app's own palette rather than a guess.
+
 **Apple Wallet** needs a Pass Type ID certificate from an Apple Developer
 account, as two PEM files. If you have the `.p12` that Keychain exports:
 

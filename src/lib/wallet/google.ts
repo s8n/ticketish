@@ -47,6 +47,7 @@ import type { BarcodeSymbology } from '../tickets/types.ts';
 import { importPrivateKey } from './identity.ts';
 import { localParts, asUtcInstant, tripTitle, type TripSummary } from './trip.ts';
 import { latin1Message, serialForPayload } from './pkpass.ts';
+import { passColors } from './colors.ts';
 
 /** Whether the UI offers this at all. */
 export const GOOGLE_EXPORT_ENABLED = true;
@@ -259,7 +260,7 @@ export function buildGenericObject(
 		state: 'ACTIVE',
 		cardTitle: text(trip.issuer),
 		header: text(tripTitle(trip)),
-		hexBackgroundColor: BACKGROUND,
+		hexBackgroundColor: passColors(trip.operator).hex,
 		barcode: barcodeOf(trip, payload, symbology),
 		textModulesData: textModules(trip, new Set())
 	};
@@ -311,7 +312,7 @@ export function buildTransitObject(
 		classId: transitClassId(issuerId, trip.issuer),
 		state: 'ACTIVE',
 		tripType: 'ONE_WAY',
-		hexBackgroundColor: BACKGROUND,
+		hexBackgroundColor: passColors(trip.operator).hex,
 		barcode: barcodeOf(trip, payload, symbology),
 		ticketLeg: leg,
 		textModulesData: textModules(trip, covered)
@@ -323,8 +324,6 @@ export function buildTransitObject(
 	if (interval) object.validTimeInterval = interval;
 	return object;
 }
-
-const BACKGROUND = '#26324b';
 
 /**
  * The class and object for this trip, as the JWT carries them.
