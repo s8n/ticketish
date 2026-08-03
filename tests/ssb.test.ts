@@ -92,6 +92,47 @@ function oneTicket({
 	};
 }
 
+/**
+ * Non-reservation body, ticket type 2. The station block is written as two
+ * raw 30 bit values so a test can put either text or a UIC code there, which
+ * is the thing that distinguishes the issuers.
+ */
+function nonReservation({
+	adults = 1,
+	children = 0,
+	specimen = false,
+	travelClass = 2,
+	pnr = '000000000000',
+	yearDigit = 4,
+	issuingDay = 100,
+	returnIncluded = false,
+	startOffset = 0,
+	endOffset = 0,
+	stationFlag = true,
+	from = 0,
+	to = 0,
+	informationMessage = 0,
+	extra = ''
+} = {}) {
+	return (w: BitWriter) => {
+		w.int(adults, 7);
+		w.int(children, 7);
+		w.bool(specimen);
+		w.int(travelClass, 6);
+		w.str6(pnr, 14); // bits 21..105
+		w.int(yearDigit, 4);
+		w.int(issuingDay, 9);
+		w.bool(returnIncluded); // bit 118
+		w.int(startOffset, 9); // bits 119..128
+		w.int(endOffset, 9); // bits 128..137
+		w.bool(stationFlag); // bit 137
+		w.int(from, 30); // bits 138..168
+		w.int(to, 30); // bits 168..198
+		w.int(informationMessage, 14); // bits 198..212
+		w.str6(extra, 37); // bits 212..434
+	};
+}
+
 const CD_RICS = 1154;
 /** Arriva vlaky, which issues the same OneTicket record as ČD does. */
 const ARRIVA_RICS = 3189;
@@ -229,5 +270,47 @@ describe('ČD OneTicket record (SSB type 24)', () => {
 		const e = parseSsb(ssb(CD_RICS, 24, oneTicket({ extra: 'V=2896C=190' })), REFERENCE);
 		if (e.data?.kind !== 'cd-oneticket') return;
 		expect(e.data.extraText).toBe('V=2896C=190');
+	});
+});
+
+describe('issuers that put a UIC code in the station name field', () => {
+	/** CFL, whose tickets are what turned this up. */
+	const CFL_RICS = 82;
+
+	it('reads the code rather than decoding it as text', () => {
+		// with the flag set the field nominally holds a printed name, and read
+		// that way this comes out as mojibake instead of a station
+		const e = parseSsb(
+			ssb(CFL_RICS, 2, nonReservation({ from: 8200100, to: 8872009 })),
+			REFERENCE
+		);
+		const r = e.data;
+		expect(r?.kind).toBe('non-reservation');
+		if (r?.kind !== 'non-reservation') return;
+
+		expect(r.departureStation).toEqual({ value: '8200100', type: 'uic' });
+		expect(r.arrivalStation).toEqual({ value: '8872009', type: 'uic' });
+	});
+
+	it('drops the high bits, which carry something else', () => {
+		// 108872009 is what the field holds for an 8872009 station
+		const e = parseSsb(
+			ssb(CFL_RICS, 2, nonReservation({ from: 8200100, to: 108872009 })),
+			REFERENCE
+		);
+		if (e.data?.kind !== 'non-reservation') return;
+		expect(e.data.arrivalStation.value).toBe('8872009');
+	});
+
+	it('covers the other issuers known to do it, and nobody else', () => {
+		for (const rics of [80, 82, 88, 1080, 1088]) {
+			const e = parseSsb(ssb(rics, 2, nonReservation({ from: 8200100 })), REFERENCE);
+			if (e.data?.kind !== 'non-reservation') continue;
+			expect(e.data.departureStation.type, `rics ${rics}`).toBe('uic');
+		}
+		// an issuer that really does print names still gets them as text
+		const other = parseSsb(ssb(1154, 2, nonReservation({ from: 8200100 })), REFERENCE);
+		if (other.data?.kind !== 'non-reservation') return;
+		expect(other.data.departureStation.type).toBe('name');
 	});
 });

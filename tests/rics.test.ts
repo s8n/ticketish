@@ -31,6 +31,7 @@ describe('ricsName', () => {
 		expect(ricsName(43)).toBe('MÁV-START Zrt');
 		expect(ricsName(60)).toBe('Iarnród Éireann');
 		expect(ricsName(3189)).toBe('Arriva vlaky s.r.o.');
+		expect(ricsName(82)).toBe('Chemins de Fer Luxembourgeois');
 		expect(ricsName(9901)).toBe('Eurail B.V. (Interrail)');
 	});
 

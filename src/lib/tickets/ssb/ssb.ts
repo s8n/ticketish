@@ -205,6 +205,15 @@ const TICKET_TYPE_NAMES: Record<number, string> = {
 	24: 'ČD OneTicket'
 };
 
+/** Issuers whose station "name" fields are really UIC codes. */
+const UIC_IN_NAME_FIELD = new Set([
+	80, // DB
+	82, // CFL
+	88, // SNCB/NMBS
+	1080, // DB Fernverkehr
+	1088 // SNCB/NMBS
+]);
+
 const isoDate = (d: Date) => d.toISOString().slice(0, 10);
 
 /**
@@ -281,7 +290,12 @@ function stations(
 			codeTable
 		};
 	}
-	if (issuerRics === 1080 || issuerRics === 1088) {
+	// The flag says the fields hold printed names, but these issuers put a UIC
+	// code in the same 30 bits instead. Read as text it comes out as mojibake,
+	// which is how a ticket lands here: CFL's Luxembourg to Charleroi decodes
+	// to "?1^D" and "&?4%)" as characters, and to 8200100 and 8872009 as
+	// numbers. The top bits can carry something else, hence the modulo.
+	if (UIC_IN_NAME_FIELD.has(issuerRics)) {
 		return {
 			from: { value: String(d.int(start, mid) % 10000000), type: 'uic' },
 			to: { value: String(d.int(mid, end) % 10000000), type: 'uic' },

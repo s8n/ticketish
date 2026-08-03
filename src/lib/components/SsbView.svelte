@@ -6,8 +6,16 @@
 	import { fmtDate } from '../tickets/format.ts';
 	import { ricsName } from '../tickets/uic/rics.ts';
 	import { uicCountryName } from '../tickets/countries.ts';
+	import { loadUicStations, uicStationName, type StationTable } from '../tickets/stations.ts';
 
 	let { envelope }: { envelope: SsbEnvelope } = $props();
+
+	// Only some records number their stations by UIC; the table loads on demand
+	// and the raw code shows until it lands.
+	let stations = $state<StationTable | null>(null);
+	$effect(() => {
+		loadUicStations().then((s) => (stations = s));
+	});
 
 	const r = $derived(envelope.data);
 	const travelClass = $derived(
@@ -21,7 +29,7 @@
 	);
 
 	function stationLabel(s: SsbStation): string {
-		if (s.type === 'uic') return `UIC ${s.value}`;
+		if (s.type === 'uic') return uicStationName(stations, s.value) ?? `UIC ${s.value}`;
 		if (s.type === 'benerail') return `${s.value} (Benerail)`;
 		if (s.type === 'other') return `code ${s.value}`;
 		return s.value;
@@ -88,7 +96,7 @@
 				{#if r.numTravelDays}<dt>Travel days</dt>
 					<dd>{r.numTravelDays}</dd>{/if}
 				{#if r.stationUic}<dt>Station</dt>
-					<dd>UIC {r.stationUic}</dd>{/if}
+					<dd>{uicStationName(stations, r.stationUic) ?? `UIC ${r.stationUic}`}</dd>{/if}
 			{:else}
 				{#if r.kind === 'reservation'}
 					<dt>Departure</dt>
