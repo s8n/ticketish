@@ -68,6 +68,11 @@ installed.
 - **Trenitalia** - departure date, train, coach, seat, PNR and entitlement
   number, reverse engineered from four tickets; the payload appears to carry
   no departure time or station codes
+- **UZ (Укрзалізниця)** - Ukrainian boarding documents, a plain text QR with
+  one field per line: train, both stations with their codes, departure and
+  arrival, coach, class, seat, fare type, passenger, price and the document
+  number. Lines are matched by shape rather than counted, since one sample is
+  not enough to trust a fixed order
 - **EAV / UNICO Campania** - a plain text QR, one field per line
 
 - Anything else falls back to a plain-text / hex view

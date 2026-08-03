@@ -14,6 +14,7 @@ import { isSsb1, parseSsb1 } from './ssb/ssb1.ts';
 import { isTcdd, parseTcdd } from './tcdd/tcdd.ts';
 import { isTrenitalia, parseTrenitalia } from './trenitalia/trenitalia.ts';
 import { isEav, parseEav } from './eav/eav.ts';
+import { isUz, parseUz } from './uz/uz.ts';
 import { isElb, parseElb } from './elb/elb.ts';
 import { isMav, parseMav } from './mav/mav.ts';
 import { isViaRail, parseViaRail } from './viarail/viarail.ts';
@@ -61,6 +62,13 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 	if (isTrenitalia(data)) {
 		try {
 			return { kind: 'trenitalia', ticket: parseTrenitalia(data) };
+		} catch {
+			// fall through
+		}
+	}
+	if (isUz(data)) {
+		try {
+			return { kind: 'uz', ticket: parseUz(data) };
 		} catch {
 			// fall through
 		}

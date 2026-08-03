@@ -112,7 +112,7 @@
 				<li>
 					<span class="format">Custom formats</span>
 					Renfe (🇪🇸), MÁV (🇭🇺), HŽPP (🇭🇷), ČD (🇨🇿), VIA Rail (🇨🇦), SNCF e-billets (🇫🇷),
-					TCDD (🇹🇷) and Trenitalia (🇮🇹)
+					TCDD (🇹🇷), Trenitalia (🇮🇹) and UZ (🇺🇦)
 				</li>
 				<li>
 					<span class="format">Partly supported</span>

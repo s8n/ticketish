@@ -21,6 +21,7 @@
 	import HzppView from './HzppView.svelte';
 	import CdLegacyView from './CdLegacyView.svelte';
 	import NsbView from './NsbView.svelte';
+	import UzView from './UzView.svelte';
 	import SncfETicketView from './SncfETicketView.svelte';
 	import Ssb1View from './Ssb1View.svelte';
 	import TrenitaliaView from './TrenitaliaView.svelte';
@@ -80,6 +81,7 @@
 		if (container.kind === 'hzpp') return 'HŽPP';
 		if (container.kind === 'cd-legacy') return 'České dráhy';
 		if (container.kind === 'nsb') return 'NSB / Vy';
+		if (container.kind === 'uz') return 'Укрзалізниця (UZ)';
 		if (container.kind === 'mav') {
 			return ricsName(container.ticket.issuerRics) ?? 'MÁV';
 		}
@@ -176,6 +178,8 @@
 				return 'ČD #CD01';
 			case 'nsb':
 				return 'NSB';
+			case 'uz':
+				return 'UZ boarding document';
 			case 'elb':
 				return 'ELB (Element List Barcode)';
 			case 'sncf-eticket':
@@ -313,6 +317,8 @@
 		<CdLegacyView ticket={container.ticket} />
 	{:else if container.kind === 'nsb'}
 		<NsbView ticket={container.ticket} />
+	{:else if container.kind === 'uz'}
+		<UzView ticket={container.ticket} />
 	{:else if container.kind === 'sncf-eticket'}
 		<SncfETicketView ticket={container.ticket} />
 	{:else if container.kind === 'text'}
