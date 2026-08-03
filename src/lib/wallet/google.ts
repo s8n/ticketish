@@ -177,12 +177,17 @@ export function transitLogoUri(origin: string | undefined): string | null {
  * departure and the seat itself, rather than leaving them as rows of text.
  * Anything without a route, and anything this app cannot give a logo, is a
  * generic pass.
+ *
+ * A transit object also has to say when: the departure time is required
+ * unless the object carries a validity interval, so a journey that says
+ * neither cannot be one and falls back rather than being rejected on save.
  */
 export function googlePassKind(
 	trip: TripSummary,
 	origin: string | undefined
 ): 'transit' | 'generic' {
-	return trip.shape === 'journey' && trip.from && trip.to && transitLogoUri(origin)
+	const when = trip.departure ?? trip.validFrom ?? trip.validUntil ?? trip.arrival;
+	return trip.shape === 'journey' && trip.from && trip.to && when && transitLogoUri(origin)
 		? 'transit'
 		: 'generic';
 }
@@ -318,7 +323,13 @@ export function buildTransitObject(
 		textModulesData: textModules(trip, covered)
 	};
 	if (trip.ticketId) object.ticketNumber = trip.ticketId;
-	if (trip.passenger) object.passengerNames = trip.passenger;
+	if (trip.passenger) {
+		// the API rejects names without this, whatever the reference implies by
+		// calling it context. One name is what the mapping carries, so it is
+		// one passenger as far as anything here can say.
+		object.passengerNames = trip.passenger;
+		object.passengerType = 'SINGLE_PASSENGER';
+	}
 	if (trip.via) object.ticketRestrictions = { routeRestrictions: text(trip.via) };
 	const interval = validTimeInterval(trip);
 	if (interval) object.validTimeInterval = interval;

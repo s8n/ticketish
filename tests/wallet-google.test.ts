@@ -184,7 +184,29 @@ describe('the transit pass', () => {
 		const o = object();
 		expect(o.ticketNumber).toBe('TKT1');
 		expect(o.passengerNames).toBe('A Traveller');
+		// the API refuses names without a count beside them
+		expect(o.passengerType).toBe('SINGLE_PASSENGER');
 		expect(o.tripType).toBe('ONE_WAY');
+	});
+
+	it('leaves out the passenger count when there is no name to count', () => {
+		const anonymous = buildTransitObject(trip, ascii('TICKET'), AZTEC, '333');
+		expect(anonymous.passengerNames).toBeUndefined();
+		expect(anonymous.passengerType).toBeUndefined();
+	});
+
+	it('will not be a transit pass without a time, which the leg requires', () => {
+		// departureDateTime is required unless the object has a validity
+		// interval, so a journey with neither has to be generic
+		const timeless: TripSummary = {
+			shape: 'journey',
+			issuer: 'Test Railways',
+			from: 'Alpha',
+			to: 'Beta',
+			details: []
+		};
+		expect(googlePassKind(timeless, ORIGIN)).toBe('generic');
+		expect(googlePassKind({ ...timeless, validFrom: '2026-09-01' }, ORIGIN)).toBe('transit');
 	});
 
 	it('declares a class per operator, past draft so an object can exist', () => {
