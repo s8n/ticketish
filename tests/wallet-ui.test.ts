@@ -3,15 +3,17 @@
 
 /**
  * The export section appears for the formats that have a mapping and for no
- * others. Rendered server side, which is enough to check the gate: the point
- * is that an unmapped ticket offers nothing at all rather than offering a
- * button that would build a pass out of guesses.
+ * others, and only under the barcode tab. Rendered server side, which is
+ * enough to check the gates: the point is that an unmapped ticket offers
+ * nothing at all rather than offering a button that would build a pass out of
+ * guesses.
  */
 import { describe, expect, it } from 'vitest';
 import { render } from 'svelte/server';
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
+import TicketCard from '../src/lib/components/TicketCard.svelte';
 import WalletExport from '../src/lib/components/WalletExport.svelte';
 import { makeTicket } from '../src/lib/tickets/parse.ts';
 
@@ -33,5 +35,20 @@ describe('the wallet section', () => {
 		expect(body).not.toContain('Add to a phone wallet');
 		// nothing but Svelte's own anchor comments
 		expect(body.replace(/<!--.*?-->/g, '').trim()).toBe('');
+	});
+
+	it('lives under the barcode tab, not at the foot of the card', () => {
+		const path = join(dir, 'muster-918-9-fv-supersparpreis.bin');
+		if (!existsSync(path)) return;
+		const ticket = makeTicket(
+			new Uint8Array(readFileSync(path)),
+			{ kind: 'raw', fileName: 'muster.bin' },
+			{ format: 'Aztec', size: { width: 47, height: 47 } }
+		);
+		const { body } = render(TicketCard, { props: { ticket } });
+		// the card opens on its richest record, so the barcode is a tab away
+		// and so is the pass
+		expect(body).toContain('Barcode');
+		expect(body).not.toContain('Add to a phone wallet');
 	});
 });

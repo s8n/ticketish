@@ -4,7 +4,8 @@
 
 	/**
 	 * Putting a ticket into a phone wallet, for the formats this app has an
-	 * intentional mapping for.
+	 * intentional mapping for. Shown under the barcode tab, since a pass is the
+	 * same payload in a different container rather than a reading of it.
 	 *
 	 * The section only exists at all when `hasMapping` says so, and each button
 	 * either works or says why it does not. What it must never do is produce a
@@ -15,7 +16,12 @@
 	import type { ParsedTicket } from '../tickets/types.ts';
 	import { hasMapping, tripFor, type TripSummary } from '../wallet/trip.ts';
 	import { barcodeProblem, buildPkpass, pkpassFileName, PKPASS_MIME } from '../wallet/pkpass.ts';
-	import { googleProblem, buildSaveLink, loadGoogleIssuer } from '../wallet/google.ts';
+	import {
+		googleProblem,
+		buildSaveLink,
+		loadGoogleIssuer,
+		GOOGLE_EXPORT_ENABLED as SHOW_GOOGLE
+	} from '../wallet/google.ts';
 	import { identityProblem, loadIdentity } from '../wallet/identity.ts';
 	import { credentials } from '../wallet/credentials.svelte.ts';
 	import { passAssets } from '../wallet/assets.ts';
@@ -45,6 +51,8 @@
 
 	const appleBlocked = $derived(barcodeProblem(ticket.symbology));
 	const googleBlocked = $derived(googleProblem(ticket.raw, ticket.symbology));
+	/** An issuer left over from a session before the button was switched off. */
+	const googleHeld = $derived(SHOW_GOOGLE && !!credentials.google);
 
 	let busy = $state(false);
 	let error = $state<string | null>(null);
@@ -188,15 +196,17 @@
 				<button onclick={exportApple} disabled={busy || !!appleBlocked}>
 					{credentials.apple ? 'Add to Apple Wallet' : 'Add to Apple Wallet…'}
 				</button>
-				<button onclick={exportGoogle} disabled={busy || !!googleBlocked}>
-					{credentials.google ? 'Add to Google Wallet' : 'Add to Google Wallet…'}
-				</button>
+				{#if SHOW_GOOGLE}
+					<button onclick={exportGoogle} disabled={busy || !!googleBlocked}>
+						{credentials.google ? 'Add to Google Wallet' : 'Add to Google Wallet…'}
+					</button>
+				{/if}
 			</div>
 
 			{#if appleBlocked}
 				<p class="note">Apple Wallet: {appleBlocked}.</p>
 			{/if}
-			{#if googleBlocked}
+			{#if SHOW_GOOGLE && googleBlocked}
 				<p class="note">Google Wallet: {googleBlocked}.</p>
 			{/if}
 			{#if error}
@@ -229,12 +239,12 @@
 			{/if}
 		{/if}
 
-		{#if credentials.apple || credentials.google}
+		{#if credentials.apple || googleHeld}
 			<p class="note held">
 				Signing with
 				{#if credentials.apple}<code>{credentials.apple.label}</code>{/if}
-				{#if credentials.apple && credentials.google}and{/if}
-				{#if credentials.google}<code>Google issuer {credentials.google.issuerId}</code>{/if}.
+				{#if credentials.apple && googleHeld}and{/if}
+				{#if googleHeld}<code>Google issuer {credentials.google?.issuerId}</code>{/if}.
 				<label>
 					<input
 						type="checkbox"

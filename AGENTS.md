@@ -141,7 +141,14 @@ only, so a binary payload cannot go into a Google pass and come back out
 unchanged. Every UIC and VDV ticket is binary. `googleProblem` refuses those
 with that reason, and that refusal is a feature: do not "fix" it by base64ing
 the payload or letting the string be read as UTF-8, both of which produce a
-barcode that does not scan.
+barcode that does not scan. Images are not a way round it either: every image
+field takes a URI that Google's servers fetch, and the one upload API that
+avoids public hosting needs an OAuth token, so it cannot work offline.
+
+Because of that, `GOOGLE_EXPORT_ENABLED` in `google.ts` is false and the UI
+shows nothing for Google. Turn it on when the first format whose payload is
+printable ASCII gets a mapping, and not before: until then the button can
+only explain itself.
 
 ## Never put real tickets in tests
 

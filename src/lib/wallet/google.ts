@@ -38,6 +38,18 @@ import { importPrivateKey } from './identity.ts';
 import { localParts, asUtcInstant, tripTitle, type TripSummary } from './trip.ts';
 import { serialForPayload } from './pkpass.ts';
 
+/**
+ * Whether the UI offers this at all.
+ *
+ * Everything below works and is tested. What it cannot do is carry a binary
+ * payload, and the only formats with a mapping in `trip.ts` are UIC and VDV,
+ * which are both binary. So on every ticket that reaches the button today the
+ * button exists only to explain why it cannot be pressed, which is worse than
+ * not being there. Turn this on together with the first text-payload format
+ * that gets a mapping: RSP6 and the SNCF e-billet are the candidates.
+ */
+export const GOOGLE_EXPORT_ENABLED = false;
+
 /** zxing format name to the Google barcode type that renders the same symbol. */
 const BARCODE_TYPES: Record<string, string> = {
 	Aztec: 'AZTEC',

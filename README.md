@@ -107,11 +107,12 @@ from spare capacity instead of reading a setting.
 
 ## Adding a ticket to a phone wallet
 
-Tickets in the formats that have an intentional mapping (UIC 918.3 / 918.9 and
-VDV-KA so far) can be written out as an Apple Wallet pass or a Google Wallet
-pass. Both are built and signed in the browser, with credentials you supply.
-There is no service behind this: nothing is uploaded, and the app has no
-signing key of its own.
+Under the **Barcode** tab, tickets in the formats that have an intentional
+mapping (UIC 918.3 / 918.9 and VDV-KA so far) can be written out as a wallet
+pass. It sits with the barcode because a pass is the same payload in another
+container rather than a reading of it. Passes are built and signed in the
+browser, with credentials you supply. There is no service behind this: nothing
+is uploaded, and the app has no signing key of its own.
 
 A pass carries the original barcode byte for byte. Everything else on it was
 read out of that barcode and is only as good as this app's reading of it, so
@@ -131,14 +132,18 @@ with it and cannot hand the bytes back. Apple's WWDR G4 intermediate is
 bundled, so signing works with no network. Safari is the only iOS browser
 that hands a `.pkpass` to Wallet.
 
-**Google Wallet** needs an issuer ID and a service account key from the Google
-Wallet Business Console, and it only works for tickets whose payload is text.
-Google carries a barcode as a JSON string and defines no Latin-1 or binary
-encoding for it, so a UIC or VDV payload, which is a compressed stream and a
-signature, cannot survive the round trip. Those are refused with that reason
-rather than turned into a pass whose barcode does not scan. An issuer account
-that has not been published also only saves passes for accounts registered on
-it as testers, which is a Google-side setting this app cannot see.
+**Google Wallet** is written and switched off. Google carries a barcode as a
+JSON string and defines no Latin-1 or binary encoding for it, so a UIC or VDV
+payload, which is a compressed stream and a signature, cannot survive the
+round trip. Since those are the only two formats mapped so far, the button
+would exist only to say why it cannot be pressed. `GOOGLE_EXPORT_ENABLED` in
+`src/lib/wallet/google.ts` turns it back on, and belongs with the first
+text-payload format that gets a mapping.
+
+To get a binary ticket into Google Wallet today, use the Wallet app's own
+"add from a photo" flow on the PNG the Barcode tab exports. Google's scanner
+reads the symbol itself, so the bytes survive; what you get is the bare code
+with none of the fields, which is what that path gives everybody.
 
 Credentials live in memory unless you tick "keep on this device", which puts
 them in IndexedDB; "forget" deletes that database. Nothing else this app

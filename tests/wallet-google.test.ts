@@ -15,6 +15,7 @@ import { createVerify, generateKeyPairSync } from 'node:crypto';
 import {
 	buildGenericObject,
 	buildSaveLink,
+	GOOGLE_EXPORT_ENABLED,
 	googleProblem,
 	loadGoogleIssuer,
 	MAX_JWT_LENGTH
@@ -50,6 +51,15 @@ function serviceAccount() {
 		publicKeyPem: publicKey.export({ format: 'pem', type: 'spki' }) as string
 	};
 }
+
+describe('whether the button is offered at all', () => {
+	it('stays off while every mapped format is one Google would refuse', () => {
+		// UIC and VDV are the only formats with a mapping and both are binary,
+		// so the button would exist only to say it cannot be pressed. Turning
+		// this on belongs with the first text-payload mapping, not before it.
+		expect(GOOGLE_EXPORT_ENABLED).toBe(false);
+	});
+});
 
 describe('what Google Wallet cannot carry', () => {
 	it('refuses a binary payload, which is every UIC and VDV ticket', () => {

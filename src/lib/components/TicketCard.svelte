@@ -163,6 +163,10 @@
 
 	{#if barcodeOpen && ticket.symbology}
 		<BarcodeView raw={ticket.raw} symbology={ticket.symbology} />
+		<!-- A wallet pass is the same payload in another container, so it
+		     belongs with the barcode rather than under the card: both are ways
+		     of carrying the symbol away, and neither is a reading of it. -->
+		<WalletExport {ticket} />
 	{:else if info.view}
 		{@const FormatView = info.view}
 		<FormatView {...info.props?.(container)} />
@@ -189,8 +193,6 @@
 			{/if}
 		</div>
 	{/if}
-
-	<WalletExport {ticket} />
 </article>
 
 <style>
