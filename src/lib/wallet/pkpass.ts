@@ -201,9 +201,9 @@ export function buildPassJson(input: PassJsonInput): Record<string, unknown> {
 
 	// A relevant date is what puts the pass on the lock screen at the right
 	// moment. Only set it where the ticket actually says when that is.
-	const relevant = asUtcInstant(trip.departure ?? trip.validFrom);
+	const relevant = asUtcInstant(trip.departure ?? trip.validFrom, trip.utcOffset);
 	if (relevant) pass.relevantDate = relevant;
-	const expires = asUtcInstant(trip.validUntil ?? trip.arrival);
+	const expires = asUtcInstant(trip.validUntil ?? trip.arrival, trip.utcOffset);
 	if (expires) pass.expirationDate = expires;
 
 	const semantics: Record<string, unknown> = {};
@@ -212,7 +212,7 @@ export function buildPassJson(input: PassJsonInput): Record<string, unknown> {
 		if (trip.from) semantics.departureStationName = trip.from;
 		if (trip.to) semantics.destinationStationName = trip.to;
 		if (trip.train) semantics.vehicleNumber = trip.train;
-		const departureInstant = asUtcInstant(trip.departure);
+		const departureInstant = asUtcInstant(trip.departure, trip.utcOffset);
 		if (departureInstant) semantics.originalDepartureDate = departureInstant;
 	}
 	if (Object.keys(semantics).length > 1) pass.semantics = semantics;

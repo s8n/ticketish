@@ -64,6 +64,12 @@ export interface TripSummary {
 	 * other per-operator decision should key on.
 	 */
 	operator?: OperatorCode;
+	/**
+	 * Minutes east of UTC for the times below, where the format says. FCB
+	 * carries it and nothing else here does, so it is usually absent and the
+	 * times are then a wall clock with no zone attached to it.
+	 */
+	utcOffset?: number;
 	product?: string;
 	travelClass?: string;
 	passenger?: string;
@@ -173,6 +179,9 @@ function fromFcb(flex: FlexData, tables: Tables): Partial<TripSummary> {
 	const doc = leadDocument(docs);
 	const out: Partial<TripSummary> = {};
 
+	out.utcOffset = fcbUtcOffset(
+		(doc?.data.departureUTCOffset ?? doc?.data.validFromUTCOffset) as number | undefined
+	);
 	out.passenger = travellerName(ticket.travelerDetail?.traveler?.[0]);
 	if (issuing.issuerPNR) out.reference = issuing.issuerPNR;
 	if (issuing.issuerName) out.issuer = issuing.issuerName;
@@ -503,6 +512,27 @@ export function tripTitle(trip: TripSummary): string {
 }
 
 /**
+ * FCB's UTC offset as minutes east of UTC.
+ *
+ * The field counts quarter hours and runs the other way: the spec defines it
+ * as `UTC = local + offset * 15 minutes`, so a German summer departure is
+ * written -8 and means UTC+2. It is the only zone information any of these
+ * formats carries, which is why every time in this model is otherwise a bare
+ * wall clock.
+ */
+export function fcbUtcOffset(value: number | undefined): number | undefined {
+	// subtracted rather than negated, so UTC itself comes out as 0 and not -0
+	return typeof value === 'number' ? 0 - value * 15 : undefined;
+}
+
+/** Minutes east of UTC as "+02:00", the way every standard here writes it. */
+export function utcOffsetLabel(minutes: number): string {
+	const sign = minutes < 0 ? '-' : '+';
+	const abs = Math.abs(minutes);
+	return `${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`;
+}
+
+/**
  * An ISO local date-time as the parts a pass writer needs. Returns null for
  * anything that is not a date, so a half-filled field cannot become a wrong
  * timestamp.
@@ -516,19 +546,23 @@ export function localParts(
 }
 
 /**
- * The same value as an ISO 8601 instant, read as UTC.
+ * The same value as an ISO 8601 instant.
  *
- * None of these formats records a zone, so any instant we produce is a guess.
- * Reading the issuer's wall clock as UTC is the guess that never moves a
- * displayed time: both wallets show the time as written when the offset is
- * zero, which is the point. It does mean a relevance notification could fire
- * at the wrong local hour, which is why the pass writers keep the wall clock
- * in the visible fields rather than letting the platform format the instant.
+ * With an offset this is exact: the ticket said when, in a zone, and the
+ * moment follows. Without one it is a guess, and reading the wall clock as
+ * UTC is the guess that never moves a displayed time, since a wallet showing
+ * an instant with a zero offset prints the hour the ticket printed. The cost
+ * of the guess is that a relevance notification can fire at the wrong local
+ * hour, which is why the visible fields carry the wall clock rather than
+ * letting the platform format the instant.
  */
-export function asUtcInstant(value: string | undefined): string | null {
+export function asUtcInstant(value: string | undefined, offsetMinutes?: number): string | null {
 	const parts = localParts(value);
 	if (!parts) return null;
-	return `${parts.date}T${parts.time ?? '00:00'}:00Z`;
+	const local = `${parts.date}T${parts.time ?? '00:00'}:00`;
+	if (offsetMinutes === undefined) return `${local}Z`;
+	const instant = Date.parse(`${local}Z`) - offsetMinutes * 60_000;
+	return new Date(instant).toISOString().replace(/\.\d+Z$/, 'Z');
 }
 
 /** Today, as the pass writers date things they have no date for. */

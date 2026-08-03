@@ -51,6 +51,7 @@ import {
 	asUtcInstant,
 	passIssuerName,
 	tripTitle,
+	utcOffsetLabel,
 	UNOFFICIAL_LABEL,
 	UNOFFICIAL_NOTE,
 	type TripSummary
@@ -267,8 +268,8 @@ function barcodeOf(trip: TripSummary, payload: Uint8Array, symbology: BarcodeSym
 }
 
 function validTimeInterval(trip: TripSummary): Record<string, unknown> | undefined {
-	const start = asUtcInstant(trip.validFrom ?? trip.departure);
-	const end = asUtcInstant(trip.validUntil ?? trip.arrival);
+	const start = asUtcInstant(trip.validFrom ?? trip.departure, trip.utcOffset);
+	const end = asUtcInstant(trip.validUntil ?? trip.arrival, trip.utcOffset);
 	if (!start && !end) return undefined;
 	return {
 		...(start ? { start: { date: start } } : {}),
@@ -277,14 +278,16 @@ function validTimeInterval(trip: TripSummary): Record<string, unknown> | undefin
 }
 
 /**
- * A local date-time in the extended ISO 8601 form Google takes, with no
- * offset. Leaving the offset out is deliberate and matches what these formats
- * carry: none of them says which zone its wall clock is in, and an offset we
- * invented would move the time Google displays.
+ * A date-time in the extended ISO 8601 form Google takes, which is documented
+ * as accepting one with or without an offset. It gets the offset where the
+ * ticket carried one and a bare wall clock where it did not, since an offset
+ * we invented would move the time Google displays.
  */
-function isoLocal(value: string | undefined): string | undefined {
+function isoLocal(value: string | undefined, offsetMinutes?: number): string | undefined {
 	const parts = localParts(value);
-	return parts ? `${parts.date}T${parts.time ?? '00:00'}:00` : undefined;
+	if (!parts) return undefined;
+	const local = `${parts.date}T${parts.time ?? '00:00'}:00`;
+	return offsetMinutes === undefined ? local : local + utcOffsetLabel(offsetMinutes);
 }
 
 /** The generic object Google renders, built from the trip. */
@@ -337,8 +340,8 @@ export function buildTransitObject(
 		destinationName: text(trip.to!),
 		transitOperatorName: text(trip.issuer)
 	};
-	const departure = isoLocal(trip.departure);
-	const arrival = isoLocal(trip.arrival);
+	const departure = isoLocal(trip.departure, trip.utcOffset);
+	const arrival = isoLocal(trip.arrival, trip.utcOffset);
 	if (departure) leg.departureDateTime = departure;
 	if (arrival) leg.arrivalDateTime = arrival;
 	if (trip.train) leg.carriage = trip.train;

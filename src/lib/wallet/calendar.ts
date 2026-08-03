@@ -20,7 +20,45 @@
  * adding the same ticket twice updates one entry rather than making two.
  */
 import { isoDate, plusDays } from '../tickets/dates.ts';
-import { localParts, tripTitle, APP_NAME, UNOFFICIAL_NOTE, type TripSummary } from './trip.ts';
+import {
+	localParts,
+	tripTitle,
+	utcOffsetLabel,
+	APP_NAME,
+	UNOFFICIAL_NOTE,
+	type TripSummary
+} from './trip.ts';
+
+/**
+ * A fixed-offset time zone for the calendar to hang the times on.
+ *
+ * Whole hours get an Etc/GMT name, which every client's zone database
+ * already has, and which inverts its sign: Etc/GMT-2 is UTC+2. Anything else
+ * gets a name of its own. Either way the file carries a VTIMEZONE defining
+ * it, because a TZID pointing at nothing is a time nobody has to honour.
+ */
+function timeZone(offsetMinutes: number): { id: string; lines: string[] } {
+	const label = utcOffsetLabel(offsetMinutes);
+	const hours = offsetMinutes / 60;
+	const id = Number.isInteger(hours)
+		? `Etc/GMT${hours === 0 ? '' : hours > 0 ? `-${hours}` : `+${-hours}`}`
+		: `UTC${label}`;
+	const compact = label.replace(':', '');
+	return {
+		id,
+		lines: [
+			'BEGIN:VTIMEZONE',
+			`TZID:${id}`,
+			'BEGIN:STANDARD',
+			'DTSTART:19700101T000000',
+			`TZOFFSETFROM:${compact}`,
+			`TZOFFSETTO:${compact}`,
+			`TZNAME:UTC${label}`,
+			'END:STANDARD',
+			'END:VTIMEZONE'
+		]
+	};
+}
 
 /** Why this trip cannot become an event, or null when it can. */
 export function calendarProblem(trip: TripSummary): string | null {
@@ -113,23 +151,30 @@ export function buildIcs({ trip, uid, now = new Date() }: IcsInput): string {
 	const start = stamp(from)!;
 	const end = stamp(to);
 
+	// FCB is the one format that says which zone its clock is in, so a ticket
+	// that says it gets a real time zone and one that does not stays floating,
+	// which is defined as the same wall clock wherever it is read.
+	const zone = trip.utcOffset === undefined ? null : timeZone(trip.utcOffset);
+	const at = zone ? `;TZID=${zone.id}` : '';
+
 	const lines: string[] = [
 		'BEGIN:VCALENDAR',
 		'VERSION:2.0',
 		`PRODID:-//${APP_NAME}//rail ticket//EN`,
 		'CALSCALE:GREGORIAN',
 		'METHOD:PUBLISH',
+		...(zone?.lines ?? []),
 		'BEGIN:VEVENT',
 		`UID:${escape(uid)}`,
 		`DTSTAMP:${utcStamp(now)}`
 	];
 
 	if (start.floating) {
-		lines.push(`DTSTART:${start.floating}`);
+		lines.push(`DTSTART${at}:${start.floating}`);
 		// an end before the start is not an event, so it is left out rather
 		// than written backwards
 		if (end?.floating && end.floating >= start.floating) {
-			lines.push(`DTEND:${end.floating}`);
+			lines.push(`DTEND${at}:${end.floating}`);
 		}
 	} else {
 		lines.push(`DTSTART;VALUE=DATE:${start.date}`);
@@ -140,16 +185,23 @@ export function buildIcs({ trip, uid, now = new Date() }: IcsInput): string {
 
 	lines.push(`SUMMARY:${escape(summary(trip))}`);
 	if (trip.from) lines.push(`LOCATION:${escape(trip.from)}`);
-	lines.push(`DESCRIPTION:${escape(description(trip))}`);
+	lines.push(`DESCRIPTION:${escape(description(trip))}`, 'STATUS:CONFIRMED');
 	lines.push('END:VEVENT', 'END:VCALENDAR');
 
 	return lines.flatMap(fold).join('\r\n') + '\r\n';
 }
 
-/** "Mannheim to Reutlingen (ICE573)", or the product for a period ticket. */
+/**
+ * "ICE573: Mannheim ➡ Reutlingen", or the product for a period ticket.
+ *
+ * The train leads because it is what a calendar shows when the entry is
+ * squeezed into an hour of a week view, and it is the part you need on a
+ * platform. The arrow is what the rest of this app draws between two
+ * stations, and a calendar is one of the few places it can be written.
+ */
 function summary(trip: TripSummary): string {
-	const title = tripTitle(trip);
-	return trip.train ? `${title} (${trip.train})` : title;
+	const route = trip.from && trip.to ? `${trip.from} ➡ ${trip.to}` : tripTitle(trip);
+	return trip.train ? `${trip.train}: ${route}` : route;
 }
 
 /** Everything else the mapping found, one labelled line each. */

@@ -5,8 +5,7 @@
  * The .ics export. RFC 5545 is picky in ways that are invisible until a
  * calendar refuses the file, so the checks here are on the shape of the text
  * as much as on what it says: CRLF line endings, escaped separators, folded
- * long lines, and times written as floating rather than pinned to a zone
- * these formats never named.
+ * long lines, and a time zone only where the ticket named one.
  */
 import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
@@ -53,18 +52,19 @@ describe('a journey', () => {
 		expect(lines(text)).toContain('DTEND:20260901T114200');
 	});
 
-	it('writes the wall clock the ticket carries, with no zone attached', () => {
-		// floating means the same clock time wherever it is read, which is the
-		// only claim these formats actually make
+	it('writes a bare wall clock when the ticket named no zone', () => {
+		// floating means the same clock time wherever it is read, which is all
+		// a ticket without an offset actually claims
 		expect(text).not.toMatch(/DTSTART[^\r\n]*Z/);
 		expect(text).not.toContain('TZID');
 		// the stamp is a real instant, so that one is in UTC
 		expect(lines(text)).toContain('DTSTAMP:20260803T100000Z');
 	});
 
-	it('names the trip and the train, and puts the origin in the location', () => {
-		expect(lines(text)).toContain('SUMMARY:Alpha Hbf to Beta Hbf (ICE 1234)');
+	it('leads with the train, which is what a squeezed week view shows', () => {
+		expect(lines(text)).toContain('SUMMARY:ICE 1234: Alpha Hbf ➡ Beta Hbf');
 		expect(lines(text)).toContain('LOCATION:Alpha Hbf');
+		expect(lines(text)).toContain('STATUS:CONFIRMED');
 	});
 
 	it('leaves out an end the barcode did not give, rather than inventing one', () => {
@@ -155,6 +155,41 @@ describe('the file itself', () => {
 	});
 });
 
+describe('the time zone, where the ticket carries one', () => {
+	const zoned = (offset: number) => ics({ ...journey, utcOffset: offset });
+
+	it('hangs the times on a zone and defines it in the file', () => {
+		const text = zoned(120);
+		expect(lines(text)).toContain('DTSTART;TZID=Etc/GMT-2:20260901T081500');
+		expect(lines(text)).toContain('DTEND;TZID=Etc/GMT-2:20260901T114200');
+		// a TZID pointing at nothing is a time nobody has to honour
+		expect(lines(text)).toContain('BEGIN:VTIMEZONE');
+		expect(lines(text)).toContain('TZID:Etc/GMT-2');
+		expect(lines(text)).toContain('TZOFFSETFROM:+0200');
+		expect(lines(text)).toContain('TZOFFSETTO:+0200');
+	});
+
+	it('inverts the sign the way the Etc zones do', () => {
+		// Etc/GMT-2 is UTC+2, which reads backwards and is correct
+		expect(zoned(120)).toContain('TZID:Etc/GMT-2');
+		expect(zoned(-300)).toContain('TZID:Etc/GMT+5');
+		expect(zoned(0)).toContain('TZID:Etc/GMT');
+	});
+
+	it('names a zone of its own where no Etc zone fits', () => {
+		const text = zoned(330);
+		expect(text).toContain('TZID:UTC+05:30');
+		expect(text).toContain('TZOFFSETTO:+0530');
+	});
+
+	it('leaves the wall clock alone, whichever zone it is in', () => {
+		// the point of a zone here is to say what the printed time means, not
+		// to move it
+		expect(zoned(120)).toContain(':20260901T081500');
+		expect(zoned(-300)).toContain(':20260901T081500');
+	});
+});
+
 describe('what cannot become an event', () => {
 	it('refuses a ticket that never says when', () => {
 		const undated: TripSummary = { shape: 'period', issuer: 'Test', details: [] };
@@ -174,8 +209,11 @@ describe('against a real ticket', () => {
 		if (!existsSync(path)) return;
 		const trip = (await tripFor(makeTicket(new Uint8Array(readFileSync(path)), { kind: 'raw' })))!;
 		const text = buildIcs({ trip, uid: 'test@ticketish', now: NOW });
-		expect(text).toContain('DTSTART:20220422T115900');
-		expect(text).toContain('SUMMARY:Mannheim to Reutlingen (ICE573)');
+		// the ticket carried departureUTCOffset -8, which is UTC+2
+		expect(text).toContain('DTSTART;TZID=Etc/GMT-2:20220422T115900');
+		expect(text).toContain('TZID:Etc/GMT-2');
+		expect(text).toContain('TZOFFSETTO:+0200');
+		expect(text).toContain('SUMMARY:ICE573: Mannheim ➡ Reutlingen');
 		expect(text).toContain('Operator: DB AG');
 	});
 });

@@ -22,7 +22,9 @@ import {
 	tripFor,
 	tripTitle,
 	asUtcInstant,
-	localParts
+	fcbUtcOffset,
+	localParts,
+	utcOffsetLabel
 } from '../src/lib/wallet/trip.ts';
 import type { ParsedTicket } from '../src/lib/tickets/types.ts';
 import { tlv } from './helpers/build.ts';
@@ -209,8 +211,32 @@ describe('reading the local times these formats carry', () => {
 		expect(localParts(undefined)).toBeNull();
 	});
 
-	it('reads the wall clock as UTC, so a wallet shows the time as written', () => {
+	it('reads the wall clock as UTC when nothing said otherwise', () => {
 		expect(asUtcInstant('2026-09-01T08:15')).toBe('2026-09-01T08:15:00Z');
 		expect(asUtcInstant('2026-09-01')).toBe('2026-09-01T00:00:00Z');
+	});
+
+	it('uses the offset where the ticket carried one', () => {
+		expect(asUtcInstant('2026-09-01T08:15', 120)).toBe('2026-09-01T06:15:00Z');
+		expect(asUtcInstant('2026-09-01T08:15', -300)).toBe('2026-09-01T13:15:00Z');
+		// across midnight, which is where an offset stops being cosmetic
+		expect(asUtcInstant('2026-09-01T00:30', 120)).toBe('2026-08-31T22:30:00Z');
+	});
+
+	it('turns FCB quarter hours into minutes east of UTC', () => {
+		// the spec has UTC = local + offset * 15, so the sign runs backwards
+		expect(fcbUtcOffset(-8)).toBe(120);
+		expect(fcbUtcOffset(20)).toBe(-300);
+		expect(fcbUtcOffset(0)).toBe(0);
+		expect(fcbUtcOffset(undefined)).toBeUndefined();
+		expect(utcOffsetLabel(120)).toBe('+02:00');
+		expect(utcOffsetLabel(-330)).toBe('-05:30');
+	});
+
+	it('takes the offset off a real ticket', async () => {
+		const ticket = muster('muster-918-9-fv-supersparpreis.bin');
+		if (!ticket) return;
+		// a German departure in April: summer time, UTC+2
+		expect((await tripFor(ticket))!.utcOffset).toBe(120);
 	});
 });
