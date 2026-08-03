@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { scanImageData } from '../input/barcode.ts';
+	import { scanImageData, BINARIZERS } from '../input/barcode.ts';
 	import { makeTicket } from '../tickets/parse.ts';
 	import { store } from '../state/tickets.svelte.ts';
 
@@ -8,48 +8,91 @@
 
 	let video = $state<HTMLVideoElement>();
 	let error = $state<string | null>(null);
-	let found = $state(false);
+	let found = false;
+	let running = false;
 	let stream: MediaStream | null = null;
-	let timer: ReturnType<typeof setInterval> | undefined;
 
-	async function scanFrame() {
-		if (!video || video.readyState < 2 || found) return;
-		const canvas = document.createElement('canvas');
-		canvas.width = video.videoWidth;
-		canvas.height = video.videoHeight;
-		const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+	// Reused between frames; allocating a canvas per frame is wasteful.
+	let canvas: HTMLCanvasElement | undefined;
+	let ctx: CanvasRenderingContext2D | null = null;
+
+	async function scanFrame(binarizerIndex: number): Promise<boolean> {
+		if (!video || video.readyState < 2 || !video.videoWidth) return false;
+		canvas ??= document.createElement('canvas');
+		if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+			canvas.width = video.videoWidth;
+			canvas.height = video.videoHeight;
+			ctx = canvas.getContext('2d', { willReadFrequently: true });
+		}
+		if (!ctx) return false;
 		ctx.drawImage(video, 0, 0);
-		const hits = await scanImageData(ctx.getImageData(0, 0, canvas.width, canvas.height));
-		if (hits.length) {
-			found = true;
-			for (const hit of hits) store.add(makeTicket(hit.bytes, { kind: 'camera' }, hit.format));
-			close();
+		const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+		const hits = await scanImageData(image, BINARIZERS[binarizerIndex % BINARIZERS.length]);
+		if (!hits.length) return false;
+		for (const hit of hits) store.add(makeTicket(hit.bytes, { kind: 'camera' }, hit.format));
+		return true;
+	}
+
+	/**
+	 * Scan as fast as decoding allows rather than on a fixed timer, and vary
+	 * the binarizer per frame so both lighting cases get a chance.
+	 */
+	async function loop() {
+		let frame = 0;
+		while (running && !found) {
+			try {
+				if (await scanFrame(frame++)) {
+					found = true;
+					close();
+					return;
+				}
+			} catch {
+				// a dropped frame is not worth stopping for
+			}
+			await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
 		}
 	}
 
-	function close() {
-		clearInterval(timer);
+	function stop() {
+		running = false;
 		stream?.getTracks().forEach((t) => t.stop());
+		stream = null;
+	}
+
+	function close() {
+		stop();
 		onclose();
+	}
+
+	async function openCamera(): Promise<MediaStream> {
+		const base: MediaTrackConstraints = {
+			facingMode: 'environment',
+			width: { ideal: 2560 },
+			height: { ideal: 1440 }
+		};
+		try {
+			// continuous autofocus matters a lot for dense Aztec codes
+			return await navigator.mediaDevices.getUserMedia({
+				video: { ...base, advanced: [{ focusMode: 'continuous' } as MediaTrackConstraintSet] }
+			});
+		} catch {
+			return navigator.mediaDevices.getUserMedia({ video: base });
+		}
 	}
 
 	onMount(() => {
 		(async () => {
 			try {
-				stream = await navigator.mediaDevices.getUserMedia({
-					video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }
-				});
+				stream = await openCamera();
 				video!.srcObject = stream;
 				await video!.play();
-				timer = setInterval(scanFrame, 350);
+				running = true;
+				loop();
 			} catch (e) {
 				error = e instanceof Error ? e.message : String(e);
 			}
 		})();
-		return () => {
-			clearInterval(timer);
-			stream?.getTracks().forEach((t) => t.stop());
-		};
+		return stop;
 	});
 </script>
 
