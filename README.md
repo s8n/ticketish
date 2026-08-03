@@ -15,9 +15,10 @@ installed.
   with a from-scratch unaligned-PER (ASN.1 UPER) decoder
 - **DOSIPAS** - the `U1`/`U2` dynamic barcode header carrying FCB payloads
   (e.g. Interrail passes)
-- **UK RSP6** - National Rail tickets ("06") and railcards ("08"): base26
-  RSA message recovery with the published RSP keys, then the bit-packed
-  ticket record
+- **UK RSP6** - National Rail tickets ("06"): base26 RSA message recovery
+  with the published RSP keys, then the bit-packed ticket record. Railcards
+  ("08") are a separate standard; the parser has a layout for them but no
+  sample to verify it against, so the card says so when one turns up
 - **SwissPass / NOVA** - Swiss mobile tickets (protobuf QR)
 - **VDV-KA** - German Verbund tickets and the Deutschlandticket: BER-TLV
   envelope with ISO 9796-2 message recovery against the VDV CA certificates,

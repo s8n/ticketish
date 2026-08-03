@@ -92,7 +92,7 @@
 				</li>
 				<li>
 					<span class="format">RSP6</span>
-					UK National Rail tickets and railcards
+					UK National Rail tickets
 				</li>
 				<li>
 					<span class="format">SwissPass / NOVA</span>

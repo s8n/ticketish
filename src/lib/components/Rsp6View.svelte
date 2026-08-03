@@ -97,6 +97,7 @@
 			</dl>
 		{/if}
 	{:else if rc}
+		<p class="caveat">Data may be incomplete, railcards use a separate standard.</p>
 		<dl>
 			<dt>Railcard</dt>
 			<dd>{rc.railcardTypeName} <code>{rc.railcardNumber}</code></dd>
@@ -180,6 +181,11 @@
 		margin: 0;
 	}
 	.soft {
+		color: var(--ink-soft);
+	}
+	.caveat {
+		margin: 0;
+		font-size: 0.8rem;
 		color: var(--ink-soft);
 	}
 	.small {
