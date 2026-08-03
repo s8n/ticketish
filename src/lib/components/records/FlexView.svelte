@@ -61,7 +61,41 @@
 
 	function productName(type: string, d: Record<string, unknown>): string | null {
 		if (type === 'pass') return (d.passDescription as string) ?? (d.productIdIA5 as string) ?? null;
+		if (type === 'customerCard')
+			return (d.cardTypeDescr as string) ?? (d.productIdIA5 as string) ?? null;
 		return (d.productIdIA5 as string) ?? null;
+	}
+
+	/** Card numbers are printed in groups of four, so show them that way. */
+	function cardNumber(d: Record<string, unknown>): string | null {
+		const id = (d.cardIdIA5 as string) ?? (d.cardIdNum !== undefined ? String(d.cardIdNum) : null);
+		if (!id) return null;
+		return /^\d{8,}$/.test(id) ? (id.match(/.{1,4}/g)?.join(' ') ?? id) : id;
+	}
+
+	/** Named card status if the issuer gave one, otherwise its code. */
+	function cardStatus(d: Record<string, unknown>): string | null {
+		const named = d.customerStatusDescr as string | undefined;
+		if (named) return named;
+		const code = d.customerStatus as number | undefined;
+		const map: Record<number, string> = {
+			1: 'basic',
+			2: 'premium',
+			3: 'silver',
+			4: 'gold',
+			5: 'platinum',
+			6: 'senator'
+		};
+		if (code === undefined) return null;
+		return map[code] ?? `status ${code}`;
+	}
+
+	/** The card holder, when they are not already listed among the travelers. */
+	function cardHolder(d: Record<string, unknown>): string | null {
+		const customer = d.customer as Traveler | undefined;
+		if (!customer) return null;
+		const name = travelerName(customer);
+		return travelers.some((t) => travelerName(t) === name) ? null : name;
 	}
 
 	function activatedDays(d: Record<string, unknown>, validFrom?: string): string[] {
@@ -142,6 +176,12 @@
 					<dd>{fmtDate(doc.validFrom)}</dd>{/if}
 				{#if doc.validUntil}<dt>Valid until</dt>
 					<dd>{fmtDate(doc.validUntil)}</dd>{/if}
+				{#if cardHolder(doc.data)}<dt>Card holder</dt>
+					<dd>{cardHolder(doc.data)}</dd>{/if}
+				{#if cardNumber(doc.data)}<dt>Card number</dt>
+					<dd><code>{cardNumber(doc.data)}</code></dd>{/if}
+				{#if cardStatus(doc.data)}<dt>Status</dt>
+					<dd>{cardStatus(doc.data)}</dd>{/if}
 				{#if activated.length}
 					<dt>Activated day{activated.length > 1 ? 's' : ''}</dt>
 					<dd>{activated.join(', ')}</dd>

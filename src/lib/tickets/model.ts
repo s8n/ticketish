@@ -77,6 +77,19 @@ function offsetDate(base: Date, days: number): string {
 	return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
 }
 
+/**
+ * Absolute FCB date: a year plus a day of that year (1.1. = 1). Customer
+ * cards use this rather than the offsets the other documents carry. The day
+ * is optional, in which case only the year is known.
+ */
+function yearDay(year: number | undefined, day: number | undefined): string | undefined {
+	if (year === undefined) return undefined;
+	if (!day) return String(year);
+	const d = new Date(Date.UTC(year, 0, 1));
+	d.setUTCDate(d.getUTCDate() + day - 1);
+	return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+}
+
 function minutes(m: number): string {
 	return `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
 }
@@ -181,6 +194,15 @@ export function summarizeFcb(ticket: FcbTicket): DocumentSummary[] {
 						numStr(data.toStationNum as number)
 				});
 			}
+		} else if (type === 'customerCard') {
+			// Cards date themselves absolutely instead of counting from the
+			// issuing date, and validUntilYear counts from the valid-from year.
+			const fromYear = data.validFromYear as number;
+			validFrom = yearDay(fromYear, data.validFromDay as number);
+			validUntil = yearDay(
+				fromYear === undefined ? undefined : fromYear + ((data.validUntilYear as number) ?? 0),
+				data.validUntilDay as number
+			);
 		}
 
 		return { type, data, trainBindings: bindings, validFrom, validUntil };
