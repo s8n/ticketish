@@ -2,9 +2,9 @@
  * ÖBB issuer record "118199".
  *
  * A small JSON object carrying the validity window, with German initials for
- * keys: V for "von" and B for "bis", each YYMMDDHHMM. The timestamps are UTC:
- * on a Salzburg ticket valid from 09:09 UTC the printed local time is 10:09,
- * which is Austria in January.
+ * keys: V for "von" and B for "bis", each YYMMDDHHMM. The timestamps are UTC,
+ * which was established by comparing one against the local time printed on
+ * the same ticket: an hour apart, Austria in winter.
  */
 import { registerRecordParser } from '../registry.ts';
 import type { RawRecord } from '../types.ts';

@@ -62,8 +62,8 @@ describe('OeBB validity record', () => {
 	});
 
 	it('shows Austrian local time, an hour ahead of stored UTC in winter', () => {
-		expect(fmtVienna('2023-01-27T09:09:00Z')).toContain('10:09');
-		expect(fmtVienna('2023-01-27T09:09:00Z')).toContain('27.01.2023');
+		expect(fmtVienna('2024-01-15T09:30:00Z')).toContain('10:30');
+		expect(fmtVienna('2024-01-15T09:30:00Z')).toContain('15.01.2024');
 		expect(fmtVienna(null)).toBeNull();
 	});
 });

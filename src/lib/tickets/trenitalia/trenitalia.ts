@@ -4,9 +4,9 @@
  * A 67-byte bit-packed payload that opens with an SSB-style header (version,
  * RICS 83, key id, ticket type 16) but whose body follows no published
  * specification. The offsets below were established by diffing four real
- * barcodes against their printed tickets (Frecciarossa, Intercity and a
- * regional fare with no reservation), so every field is confirmed by
- * tickets that disagree on its value.
+ * barcodes against their printed tickets, covering both reserved and
+ * unreserved fares, so every field is confirmed by tickets that disagree on
+ * its value.
  *
  * Note the seat: the number is a 6-bit integer and the coach letter a 6-bit
  * character from the same alphabet, so seat 21D stores 21 rather than the

@@ -4,17 +4,17 @@
     {
       "key": "6292_9999",
       "text": "Deutschlandticket",
-      "source": "MVG ticket, 49.00 EUR, valid 01.05.2023 to 01.06.2023"
+      "source": "monthly MVG product priced at 49.00 EUR"
     },
     {
       "key": "6292_115",
       "text": "Airport-Plus",
-      "source": "MVG Airport-Plus ticket sample"
+      "source": "identified from an MVG ticket"
     },
     {
       "key": "6292_103",
       "text": "Streifenkarte",
-      "source": "reported by a MVG user"
+      "source": "reported by an MVG user"
     }
   ]
 }

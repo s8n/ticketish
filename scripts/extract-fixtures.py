@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Regenerate test fixtures: extract barcode payloads from sample-tickets/
-into .bin files plus asn1tools-decoded ground truth JSON (the reference the
-TS UPER decoder is tested against).
+"""Regenerate the committed test fixtures from DB's published Muster tickets.
+
+Extracts each specimen barcode into a .bin file alongside asn1tools-decoded
+ground truth JSON, which is what the TypeScript UPER decoder is compared
+against. Only DB's specimens are processed: tests never use real tickets, so
+nothing else belongs here (see AGENTS.md).
 
 Usage:
     python -m venv venv && venv/bin/pip install zxing-cpp pymupdf asn1tools pillow
     venv/bin/python scripts/extract-fixtures.py
 
-Muster fixtures land in tests/fixtures/public (committed); personal tickets in
-tests/fixtures/private (gitignored). Expects the Muster zips extracted next to
-them (see MUSTER_DIRS below).
+Expects the two Muster zips in sample-tickets/.
 """
 import io
 import json
@@ -27,8 +28,7 @@ import asn1tools
 REPO = pathlib.Path(__file__).parent.parent
 SAMPLES = REPO / "sample-tickets"
 ASN_DIR = REPO / "scripts" / "asn-specs"
-OUT_PUBLIC = REPO / "tests" / "fixtures" / "public"
-OUT_PRIVATE = REPO / "tests" / "fixtures" / "private"
+OUT = REPO / "tests" / "fixtures" / "public"
 LOCAL = pathlib.Path(tempfile.mkdtemp(prefix="ticketish-muster-"))
 for zip_name, sub in [
     ("mdb_320951_muster-tickets_nach_uic_918-3_2.2023-01-04-09-38-20.zip", "9183"),
@@ -174,26 +174,19 @@ def slug(s):
 
 
 def main():
-    sources = []  # (name, private?, barcode list)
-    if (SAMPLES / "h2x4vfen2O.pkpass").exists():
-        sources.append(("pkpass-hh-cph", True, barcode_from_pkpass(SAMPLES / "h2x4vfen2O.pkpass")))
-    if (SAMPLES / "interrail.png").exists():
-        sources.append(("interrail", True, decode_image(Image.open(SAMPLES / "interrail.png"))))
-    sncb = SAMPLES / "2026-07-02 Tickets Milano Centrale (Italy) - Zuerich Hb (Switzerland).pdf"
-    if sncb.exists():
-        sources.append(("sncb-milano-zuerich", True, barcodes_from_pdf(sncb)))
+    sources = []  # (name, barcode list)
     for p in sorted((LOCAL / "9183").rglob("*")) + sorted((LOCAL / "9189").rglob("*")):
         if p.suffix.lower() == ".pdf":
-            sources.append((slug(p.stem), False, barcodes_from_pdf(p)))
+            sources.append((slug(p.stem), barcodes_from_pdf(p)))
         elif p.suffix.lower() in (".png", ".jpeg", ".jpg"):
-            sources.append((slug(p.stem), False, decode_image(Image.open(p))))
+            sources.append((slug(p.stem), decode_image(Image.open(p))))
 
     seen = set()
-    for name, private, codes in sources:
+    for name, codes in sources:
         if not codes:
             print(f"!! no barcode found: {name}")
             continue
-        out = OUT_PRIVATE if private else OUT_PUBLIC
+        out = OUT
         out.mkdir(parents=True, exist_ok=True)
         for i, (fmt, payload) in enumerate(codes):
             if payload in seen:

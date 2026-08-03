@@ -63,10 +63,10 @@ describe('VR tickets (SSB1)', () => {
 		children = 0,
 		validFromDay = 106,
 		validUntilDay = 106,
-		departureStation = 'HKI',
-		arrivalStation = 'TPE',
+		departureStation = 'AAA',
+		arrivalStation = 'BBB',
 		departureSlot = 29,
-		train = 87,
+		train = 42,
 		reservation = 100000000001,
 		travelClass = '2',
 		coach = 2,
@@ -107,10 +107,10 @@ describe('VR tickets (SSB1)', () => {
 		const t = parseSsb1(ssb1(), REFERENCE);
 		expect(t.version).toBe(2);
 		expect(t.issuerRics).toBe(10);
-		expect(t.departureStation).toBe('HKI');
-		expect(t.arrivalStation).toBe('TPE');
+		expect(t.departureStation).toBe('AAA');
+		expect(t.arrivalStation).toBe('BBB');
 		expect(t.departureTime).toBe('14:00');
-		expect(t.trainNumber).toBe(87);
+		expect(t.trainNumber).toBe(42);
 		expect(t.coachNumber).toBe(2);
 		expect(t.seat).toBe('24');
 		expect(t.numAdults).toBe(1);
@@ -134,7 +134,7 @@ describe('Trenitalia tickets', () => {
 	/** 67 bytes: an SSB style header over a body of its own design. */
 	function trenitalia({
 		dayOfYear = 198,
-		train = 8418,
+		train = 1234,
 		coach = 8,
 		seatNumber = 4,
 		seatLetter = 'D',
@@ -163,7 +163,7 @@ describe('Trenitalia tickets', () => {
 		expect(t.ticketType).toBe(16);
 		expect(t.dayOfYear).toBe(198);
 		expect(t.departureDate).toBe('2026-07-17');
-		expect(t.trainNumber).toBe(8418);
+		expect(t.trainNumber).toBe(1234);
 		expect(t.coach).toBe(8);
 		expect(t.seat).toBe('4D');
 		expect(t.pnr).toBe('ABCDEF');
@@ -179,13 +179,13 @@ describe('Trenitalia tickets', () => {
 
 	it('leaves reservation fields empty on a regional ticket', () => {
 		const t = parseTrenitalia(
-			trenitalia({ coach: 0, seatNumber: 0, seatLetter: '0', pnr: '000000', train: 91595 }),
+			trenitalia({ coach: 0, seatNumber: 0, seatLetter: '0', pnr: '000000', train: 55555 }),
 			REFERENCE
 		);
 		expect(t.coach).toBe(0);
 		expect(t.seat).toBe('');
 		expect(t.pnr).toBe('');
-		expect(t.trainNumber).toBe(91595);
+		expect(t.trainNumber).toBe(55555);
 	});
 
 	it('is reached through the format dispatcher', () => {
