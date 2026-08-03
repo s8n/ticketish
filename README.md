@@ -132,41 +132,33 @@ with it and cannot hand the bytes back. Apple's WWDR G4 intermediate is
 bundled, so signing works with no network. Safari is the only iOS browser
 that hands a `.pkpass` to Wallet.
 
-**Google Wallet** needs two things from two consoles, and comes with two
-warnings it shows you before you press anything.
+**Google Wallet** needs two things from two consoles. The issuer ID is in the
+[Google Pay and Wallet console](https://pay.google.com/business/console/)
+under Google Wallet API. The key is a service account JSON key from the Google
+Cloud console: IAM and Admin, Service Accounts, pick the account, Keys, Add
+key, Create new key, JSON. The service account then has to be invited into the
+issuer, under Users, Invite a user, with access level Developer. That last step
+is easy to skip here, because this app never calls the REST API, and it still
+matters: Google checks that whoever signed the pass is authorized for the
+issuer ID inside it. An issuer that has not been published only saves passes
+for accounts registered on it as testers.
 
-The issuer ID is in the [Google Pay and Wallet
-console](https://pay.google.com/business/console/) under Google Wallet API.
-The key is a service account JSON key from the Google Cloud console: IAM and
-Admin, Service Accounts, pick the account, Keys, Add key, Create new key,
-JSON. The service account then has to be invited into the issuer, under Users,
-Invite a user, with access level Developer. That last step is the one that is
-easy to skip here, because this app never calls the REST API: it still matters,
-since Google checks that whoever signed the pass is authorized for the issuer
-ID inside it.
+A journey becomes a transit pass, which is the one Google lays out as a route;
+anything without one becomes a generic pass. Two things about it are not
+guaranteed, and the app says so beside the button:
 
-Google carries a barcode as a JSON string and documents no Latin-1 or binary
-encoding for it, so on paper a UIC or VDV payload cannot go in. In practice
-the bytes are written one character per byte, other issuers do the same, and
-Google appears to read them back that way. It is undocumented and could stop
-working without notice, so scan the finished pass back into this app before
-you travel on it: if the payload comes back identical, it worked.
-
-The second warning is length. A save link carries the whole signed pass in
-its URL, and Google documents 1800 characters as safe. A DB ticket signs to
-around three thousand, because a few hundred bytes of binary become a JSON
-string, then UTF-8, then base64. Passes over the safe length are still
-offered, with the number shown. Getting under it means creating the object
-through the REST API and putting only its id in the link, which needs an
-OAuth token exchange, a network round trip, and a different design.
+- Google carries a barcode as a JSON string and documents no binary encoding.
+  The bytes go in one per character, which is what other issuers do and what
+  works today. Scan the finished pass back in here before you travel on it.
+- A save link carries the whole signed pass in its URL and Google calls 1800
+  characters safe. A DB ticket signs to around three thousand, since binary
+  becomes a JSON string, then UTF-8, then base64. It is offered anyway, with
+  the real number shown. Getting under the limit means the REST API, an OAuth
+  token exchange and a network round trip: a different design.
 
 If neither works out, the Wallet app's own "add from a photo" flow reads the
 PNG the Barcode tab exports. Google's scanner reads the symbol itself, so the
 bytes survive; what you get is the bare code with none of the fields.
-
-An issuer account that has not been published only saves passes for accounts
-registered on it as testers, which is a Google-side setting this app cannot
-see.
 
 Credentials live in memory unless you tick "keep on this device", which puts
 them in IndexedDB; "forget" deletes that database. Nothing else this app

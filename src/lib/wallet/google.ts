@@ -82,8 +82,8 @@ export function googleProblem(
 export function googleCaveats(payload: Uint8Array): string[] {
 	if (isPrintableAscii(payload)) return [];
 	return [
-		'this ticket is binary, and Google documents no encoding for that. The bytes go in one character per byte, which is what other issuers do and what Apple names outright, but Google is under no obligation to keep reading them that way.',
-		'scan the finished pass back into this app before you travel on it. If the payload comes back identical, it worked.'
+		'This ticket is binary and Google documents no encoding for that. The bytes go in one per character, which works today but is not promised.',
+		'Scan the finished pass back in here before you travel on it.'
 	];
 }
 
@@ -422,7 +422,7 @@ export async function buildSaveLink(
 	const warnings = googleCaveats(payload);
 	if (jwt.length > SAFE_JWT_LENGTH) {
 		warnings.push(
-			`the link is ${jwt.length} characters and Google documents ${SAFE_JWT_LENGTH} as the safe length, so it may be turned away or cut short on the way.`
+			`The link is ${jwt.length} characters, past the ${SAFE_JWT_LENGTH} Google calls safe, so it may be cut short.`
 		);
 	}
 	return { jwt, warnings, url: `https://pay.google.com/gp/v/save/${jwt}` };

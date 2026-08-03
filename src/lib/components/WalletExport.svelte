@@ -50,18 +50,22 @@
 		};
 	});
 
-	const appleBlocked = $derived(barcodeProblem(ticket.symbology));
-	const googleBlocked = $derived(googleProblem(ticket.raw, ticket.symbology));
-	/** What could go wrong with a Google pass even though it can be built. */
-	const googleWarnings = $derived(googleCaveats(ticket.raw));
-	const googleHeld = $derived(SHOW_GOOGLE && !!credentials.google);
-
 	let busy = $state(false);
 	let error = $state<string | null>(null);
 	let saveLink = $state<string | null>(null);
 	let linkWarnings = $state<string[]>([]);
 	/** Which credential form is open, if any. */
 	let setup = $state<'apple' | 'google' | null>(null);
+
+	const appleBlocked = $derived(barcodeProblem(ticket.symbology));
+	const googleBlocked = $derived(googleProblem(ticket.raw, ticket.symbology));
+	/**
+	 * What could go wrong with a Google pass even though it can be built. The
+	 * signed link knows more than the ticket does, since only then is the
+	 * length of it settled, so it takes over once there is one.
+	 */
+	const caveats = $derived(linkWarnings.length ? linkWarnings : googleCaveats(ticket.raw));
+	const googleHeld = $derived(SHOW_GOOGLE && !!credentials.google);
 
 	const say = (e: unknown) => (e instanceof Error ? e.message : String(e));
 
@@ -208,8 +212,6 @@
 			{/if}
 			{#if SHOW_GOOGLE && googleBlocked}
 				<p class="note">Google Wallet: {googleBlocked}.</p>
-			{:else if SHOW_GOOGLE && googleWarnings.length}
-				<p class="note">Google Wallet may not work for this ticket: {googleWarnings[0]}</p>
 			{/if}
 			{#if error}
 				<p class="note warn">{error}</p>
@@ -219,13 +221,22 @@
 				<p class="note">
 					The tab could not be opened, so here is the pass:
 					<a href={saveLink} target="_blank" rel="noreferrer noopener">open it in Google Wallet</a>
-					. That link goes to Google and carries the ticket inside it, which is the only way this
-					wallet accepts a pass.
+					.
 				</p>
 			{/if}
-			{#each linkWarnings as warning, i (i)}
-				<p class="note">{warning}</p>
-			{/each}
+
+			<!-- One line closed, the detail a click away: the caveats are worth
+			     reading once and not worth a paragraph over every ticket. -->
+			{#if SHOW_GOOGLE && !googleBlocked && caveats.length}
+				<details class="caveats">
+					<summary>Google Wallet may not work for this ticket</summary>
+					<ul>
+						{#each caveats as caveat, i (i)}
+							<li>{caveat}</li>
+						{/each}
+					</ul>
+				</details>
+			{/if}
 
 			{#if previewRows.length}
 				<details class="preview">
@@ -416,10 +427,20 @@ openssl pkcs12 -legacy -in Certificates.p12 -nocerts -nodes -out key.pem</code
 		background: transparent;
 		color: var(--ink);
 	}
-	.preview summary {
+	.preview summary,
+	.caveats summary {
 		font-size: 0.8rem;
 		color: var(--ink-soft);
 		cursor: pointer;
+	}
+	.caveats ul {
+		margin: 0.4rem 0 0;
+		padding-left: 1.1rem;
+		font-size: 0.8rem;
+		color: var(--ink-soft);
+	}
+	.caveats li + li {
+		margin-top: 0.25rem;
 	}
 	.preview dl {
 		display: grid;

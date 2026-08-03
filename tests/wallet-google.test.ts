@@ -75,6 +75,17 @@ describe('what Google Wallet will and will not take', () => {
 		expect(caveats.join(' ')).toMatch(/scan the finished pass back/i);
 	});
 
+	it('writes them as sentences, since they are shown as a list', async () => {
+		const { json } = serviceAccount();
+		const issuer = await loadGoogleIssuer(json, '333');
+		const payload = Uint8Array.from({ length: 414 }, (_, i) => (i * 37 + 11) % 256);
+		const { warnings } = await buildSaveLink(trip, payload, AZTEC, issuer);
+		for (const warning of warnings) {
+			expect(warning[0]).toBe(warning[0].toUpperCase());
+			expect(warning.endsWith('.')).toBe(true);
+		}
+	});
+
 	it('says nothing about a payload that is text all the way through', () => {
 		expect(googleProblem(ascii('#UT01ABCDEF'), AZTEC)).toBeNull();
 		expect(googleProblem(ascii('SOMETICKET123'), QR)).toBeNull();
@@ -260,7 +271,7 @@ describe('the pass itself', () => {
 		const wordy = { ...trip, details: [{ label: 'Note', value: 'x'.repeat(SAFE_JWT_LENGTH) }] };
 		const link = await buildSaveLink(wordy, ascii('TICKET'), AZTEC, issuer);
 		expect(link.jwt.length).toBeGreaterThan(SAFE_JWT_LENGTH);
-		expect(link.warnings.join(' ')).toMatch(/safe length/);
+		expect(link.warnings.join(' ')).toMatch(/Google calls safe/);
 		expect(link.url).toContain(link.jwt);
 	});
 
