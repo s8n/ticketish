@@ -87,31 +87,31 @@
 			<ul class="formats">
 				<li>
 					<span class="format">UIC 918.3 &amp; 918.9</span>
-					Many European train tickets, Interrail passes, seat reservations
+					🇪🇺 Many European train tickets, Interrail passes, seat reservations, discount cards
 				</li>
 				<li>
 					<span class="format">VDV-KA</span>
-					German public transport: the Deutschlandticket and Verbund tickets
+					🇩🇪 German public transport: the Deutschlandticket and Verbund tickets
 				</li>
 				<li>
 					<span class="format">RSP6</span>
-					UK National Rail tickets
+					🇬🇧 UK National Rail tickets
 				</li>
 				<li>
 					<span class="format">SwissPass / NOVA</span>
-					Swiss mobile tickets
+					🇨🇭 Swiss mobile tickets
 				</li>
 				<li>
 					<span class="format">SSB &amp; SSB1</span>
-					Older barcodes operators like VR still issue, plus NS and DB Keycards
+					Older barcodes operators like VR (🇫🇮) still issue, plus NS (🇳🇱) and DB (🇩🇪) Keycards
 				</li>
 				<li>
 					<span class="format">ELB</span>
-					The Element List Barcode of TAP TSI B.12, on Eurostar and SNCF stock
+					The Element List Barcode of TAP TSI B.12, on Eurostar and SNCF (🇫🇷) stock
 				</li>
 				<li>
 					<span class="format">Custom formats</span>
-					Renfe, MÁV, VIA Rail, SNCF e-billets, TCDD, Trenitalia and EAV, each going their own way
+					Renfe (🇪🇸), MÁV (🇭🇺), VIA Rail (🇨🇦), SNCF e-billets (🇫🇷), TCDD (🇹🇷), Trenitalia (🇮🇹) and EAV (🇮🇹)
 				</li>
 			</ul>
 			<p class="fine">
