@@ -5,10 +5,12 @@
  * zxing only binarizes the image one way per call, and which way works
  * depends on the source: LocalAverage handles uneven lighting on paper,
  * GlobalHistogram does better on evenly lit screenshots and phone screens.
- * One of our own sample tickets decodes with GlobalHistogram but not with
- * LocalAverage, so a single pass is not enough. Still images retry across
- * binarizers; the camera alternates between them frame by frame, which is
- * what BinaryEye does.
+ * Still images retry across binarizers; the camera alternates between them
+ * frame by frame, which is what BinaryEye does.
+ *
+ * Keep zxing-wasm current. Version 3 reads photographs of tickets on
+ * patterned security paper that version 2 could not decode in any
+ * configuration, so a stale pin costs real scans.
  */
 import { prepareZXingModule, readBarcodes, type ReaderOptions, type ReadResult } from 'zxing-wasm/reader';
 import wasmUrl from 'zxing-wasm/reader/zxing_reader.wasm?url';

@@ -11,9 +11,13 @@ import { parsePayload } from '../src/lib/tickets/parse.ts';
 const sample = (name: string) => fileURLToPath(new URL(`../sample-tickets/${name}`, import.meta.url));
 
 const INTERRAIL = sample('interrail.png');
-// This one decodes with GlobalHistogram but not with LocalAverage, which is
-// why scanning retries across binarizers instead of taking a single pass.
-const AIRPORT_PLUS = sample('germany-mvg/mvg-airportplus.png');
+const DIFFICULT = 'difficult-images';
+// Photographed on patterned security paper, slightly blurred and angled.
+// zxing-cpp 2.x could not decode these in any configuration; 3.x reads them
+// straight from the original JPEG, which is why the library version matters.
+const PHOTOS = [`${DIFFICULT}/IMG_20230203_175657.jpg`, `${DIFFICULT}/IMG_20230203_175702.jpg`];
+// Cropped flush to the symbol, so it has no quiet zone at all.
+const CROPPED = sample(`${DIFFICULT}/Screenshot_20220518-131809_MVG Fahrinfo~2.png`);
 
 const OPTIONS: ReaderOptions = {
 	formats: ['Aztec', 'QRCode', 'DataMatrix', 'PDF417'],
@@ -21,6 +25,16 @@ const OPTIONS: ReaderOptions = {
 	tryRotate: true,
 	tryInvert: true,
 	tryDownscale: true
+};
+
+const readAll = async (file: string) => {
+	const data = new Uint8Array(readFileSync(file));
+	for (const binarizer of ['LocalAverage', 'GlobalHistogram', 'FixedThreshold'] as const) {
+		const results = await readBarcodes(data, { ...OPTIONS, binarizer });
+		const valid = results.filter((r) => r.isValid && r.bytes.length);
+		if (valid.length) return new Uint8Array(valid[0].bytes);
+	}
+	return null;
 };
 
 describe.skipIf(!existsSync(INTERRAIL))('zxing-wasm image scan', () => {
@@ -37,27 +51,18 @@ describe.skipIf(!existsSync(INTERRAIL))('zxing-wasm image scan', () => {
 	}, 30000);
 });
 
-describe.skipIf(!existsSync(AIRPORT_PLUS))('binarizer fallback', () => {
-	it('needs a binarizer other than LocalAverage for the airport-plus ticket', async () => {
-		const data = new Uint8Array(readFileSync(AIRPORT_PLUS));
-		const local = await readBarcodes(data, { ...OPTIONS, binarizer: 'LocalAverage' });
-		const global = await readBarcodes(data, { ...OPTIONS, binarizer: 'GlobalHistogram' });
-		expect(local.filter((r) => r.isValid)).toHaveLength(0);
-		expect(global.filter((r) => r.isValid).length).toBeGreaterThan(0);
-	}, 30000);
+describe.skipIf(!PHOTOS.every((p) => existsSync(sample(p))))('hard photographs', () => {
+	it.each(PHOTOS)('decodes %s', async (name) => {
+		const bytes = await readAll(sample(name));
+		expect(bytes, 'no barcode found').not.toBeNull();
+		expect(parsePayload(bytes!).kind).not.toBe('unknown');
+	}, 60000);
+});
 
-	it('decodes it when trying binarizers in turn, as the app does', async () => {
-		const data = new Uint8Array(readFileSync(AIRPORT_PLUS));
-		let hit: Uint8Array | null = null;
-		for (const binarizer of ['LocalAverage', 'GlobalHistogram', 'FixedThreshold'] as const) {
-			const results = await readBarcodes(data, { ...OPTIONS, binarizer });
-			const valid = results.filter((r) => r.isValid && r.bytes.length);
-			if (valid.length) {
-				hit = new Uint8Array(valid[0].bytes);
-				break;
-			}
-		}
-		expect(hit).not.toBeNull();
-		expect(parsePayload(hit!).kind).toBe('vdv');
-	}, 30000);
+describe.skipIf(!existsSync(CROPPED))('missing quiet zone', () => {
+	it('cannot read a barcode cropped flush to its edges', async () => {
+		// Documents why scanning pads and retries; the padding itself is
+		// covered by tests/quiet-zone.test.ts.
+		expect(await readAll(CROPPED)).toBeNull();
+	}, 60000);
 });
