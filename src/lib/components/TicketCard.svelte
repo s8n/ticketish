@@ -15,6 +15,7 @@
 	import Ssb1View from './Ssb1View.svelte';
 	import TrenitaliaView from './TrenitaliaView.svelte';
 	import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
+	import { vdvOrgName } from '../tickets/vdv/orgs.ts';
 	import { store } from '../state/tickets.svelte.ts';
 
 	let { ticket }: { ticket: ParsedTicket } = $props();
@@ -45,7 +46,8 @@
 		}
 		if (container.kind === 'vdv') {
 			const t = container.barcode.tickets[0];
-			return t ? `VDV org ${t.productOrgId}` : 'VDV ticket';
+			if (!t) return 'VDV ticket';
+			return vdvOrgName(t.productOrgId) ?? `VDV org ${t.productOrgId}`;
 		}
 		if (container.kind === 'ssb') {
 			const rics = container.envelope.issuerRics;

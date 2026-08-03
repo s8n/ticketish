@@ -1,0 +1,15 @@
+{
+  "comment": "Products identified from sample tickets, absent from the vendored data. See scripts/vdv-products/README.md.",
+  "textmap": [
+    {
+      "key": "6292_9999",
+      "text": "Deutschlandticket",
+      "source": "MVG ticket, 49.00 EUR, valid 01.05.2023 to 01.06.2023"
+    },
+    {
+      "key": "6292_115",
+      "text": "Airport-Plus",
+      "source": "MVG Airport-Plus ticket sample"
+    }
+  ]
+}

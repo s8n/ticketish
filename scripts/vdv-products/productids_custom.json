@@ -1,0 +1,48 @@
+{
+  "textmap": [{
+    "key": "6100_2186",
+    "text": "9-Euro-Ticket"
+  }, {
+    "key": "6100_2128",
+    "text": "Fahrrad Monatskarte"
+  }, {
+    "key": "6100_4000",
+    "text": "4-Fahrten-Karte"
+  }, {
+    "key": "6100_4004",
+    "text": "Einzelfahrausweis"
+  }, {
+    "key": "6100_4016",
+    "text": "Einzelfahrausweis mit Fahrrad"
+  }, {
+    "key": "6100_4020",
+    "text": "Anschlussfahrausweis"
+  }, {
+    "key": "6100_4036",
+    "text": "Kurzstrecke Ermäßigungstarif"
+  }, {
+    "key": "6100_4048",
+    "text": "24-Stunden-Karte"
+  }, {
+    "key": "6100_2136",
+    "text": "7-Tage-Karte"
+  }, {
+    "key": "6292_110",
+    "text": "Tageskarte"
+  }, {
+    "key": "6292_113",
+    "text": "Fahrrad-Tageskarte"
+  }, {
+    "key": "6310_25001",
+    "text": "Einzelfahrkarte Erwachsene"
+  }, {
+    "key": "6310_25166",
+    "text": "Einzelfahrkarte BahnCard"
+  }, {
+    "key": "6538_20002",
+    "text": "Ermäßigter Einzelfahrschein"
+  }, {
+    "key": "9001_9",
+    "text": "Tagesfahrkarte 1.Klasse"
+  }]
+}

@@ -112,6 +112,10 @@ No functions, bindings or environment variables needed.
   [eta's rsp6-decoder](https://git.eta.st/eta/rsp6-decoder) (MIT).
 - VDV CA public keys are built from VDV KA's public LDAP directory by
   `scripts/build-vdv-keys.py`; a monthly GitHub Action refreshes them.
+- VDV product names are vendored from zuegli's tariff data (see
+  `scripts/vdv-products/`) and merged by `scripts/build-vdv-products.py`.
+  Organisation names are a small curated list with per-entry provenance in
+  `src/lib/tickets/vdv/orgs.ts`; no public register exists.
 - UK station names come from the RDG/National Rail fares feed via
   `scripts/build-nlc-names.py`, also refreshed monthly. That feed needs a free
   National Rail Open Data account; the workflow reads the `NR_USERNAME` and
