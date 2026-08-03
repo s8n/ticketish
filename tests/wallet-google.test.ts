@@ -2,23 +2,25 @@
 // SPDX-License-Identifier: MIT OR EUPL-1.2
 
 /**
- * Google Wallet, which is mostly a test of what it refuses.
+ * Google Wallet, where the interesting part is what is promised rather than
+ * what is produced.
  *
- * A Google pass carries its barcode as a JSON string with no binary or
- * Latin-1 encoding available, so a UIC or VDV payload cannot go into one and
- * come back out unchanged. The important assertion in this file is that such
- * a ticket is turned away with a reason rather than turned into a pass whose
- * barcode does not scan.
+ * A binary payload goes into the barcode string one character per byte, which
+ * is undocumented on Google's side: it works because other issuers do it and
+ * Google reads it back the same way. So the tests check that the bytes are
+ * written the way that convention requires, and that the pass comes with the
+ * caveats saying it might stop being true.
  */
 import { describe, expect, it } from 'vitest';
 import { createVerify, generateKeyPairSync } from 'node:crypto';
 import {
 	buildGenericObject,
 	buildSaveLink,
-	GOOGLE_EXPORT_ENABLED,
+	googleCaveats,
 	googleProblem,
 	loadGoogleIssuer,
-	MAX_JWT_LENGTH
+	MAX_JWT_LENGTH,
+	SAFE_JWT_LENGTH
 } from '../src/lib/wallet/google.ts';
 import type { TripSummary } from '../src/lib/wallet/trip.ts';
 import type { BarcodeSymbology } from '../src/lib/tickets/types.ts';
@@ -52,38 +54,35 @@ function serviceAccount() {
 	};
 }
 
-describe('whether the button is offered at all', () => {
-	it('stays off while every mapped format is one Google would refuse', () => {
-		// UIC and VDV are the only formats with a mapping and both are binary,
-		// so the button would exist only to say it cannot be pressed. Turning
-		// this on belongs with the first text-payload mapping, not before it.
-		expect(GOOGLE_EXPORT_ENABLED).toBe(false);
-	});
-});
-
-describe('what Google Wallet cannot carry', () => {
-	it('refuses a binary payload, which is every UIC and VDV ticket', () => {
-		// a zlib stream starts 0x78 0x9c: not text, and there is no encoding
-		// in the Google barcode object that would carry it
-		const payload = new Uint8Array([0x23, 0x55, 0x54, 0x78, 0x9c, 0xff, 0x00]);
-		expect(googleProblem(payload, AZTEC)).toMatch(/binary/);
-	});
-
-	it('refuses a symbology it cannot draw', () => {
+describe('what Google Wallet will and will not take', () => {
+	it('refuses a symbology it cannot draw, which is the only hard stop', () => {
 		expect(googleProblem(ascii('HELLO'), { format: 'DataMatrix' })).toMatch(/cannot show/);
+		expect(googleProblem(ascii('HELLO'), undefined)).toMatch(/did not come from a barcode/);
 	});
 
-	it('accepts a payload that is text all the way through', () => {
+	it('accepts a binary payload, with what could go wrong attached', () => {
+		// a zlib stream starts 0x78 0x9c: not text, and nothing in Google's
+		// documentation says what happens to it
+		const payload = new Uint8Array([0x23, 0x55, 0x54, 0x78, 0x9c, 0xff, 0x00]);
+		expect(googleProblem(payload, AZTEC)).toBeNull();
+		const caveats = googleCaveats(payload);
+		expect(caveats.length).toBeGreaterThan(0);
+		expect(caveats[0]).toMatch(/undocumented|documents no encoding/);
+		expect(caveats.join(' ')).toMatch(/scan the finished pass back/i);
+	});
+
+	it('says nothing about a payload that is text all the way through', () => {
 		expect(googleProblem(ascii('#UT01ABCDEF'), AZTEC)).toBeNull();
 		expect(googleProblem(ascii('SOMETICKET123'), QR)).toBeNull();
+		expect(googleCaveats(ascii('SOMETICKET123'))).toEqual([]);
 	});
 
-	it('will not build a link for a payload it refused', async () => {
+	it('will not build a link for a symbology it refused', async () => {
 		const { json } = serviceAccount();
 		const issuer = await loadGoogleIssuer(json, '3388000000022000000');
 		await expect(
-			buildSaveLink(trip, new Uint8Array([0x00, 0xff]), AZTEC, issuer)
-		).rejects.toThrow(/binary/);
+			buildSaveLink(trip, ascii('TICKET'), { format: 'DataMatrix' }, issuer)
+		).rejects.toThrow(/cannot show/);
 	});
 });
 
@@ -120,6 +119,18 @@ describe('the pass itself', () => {
 		expect(object.classId).toBe('333.ticketish_generic');
 	});
 
+	it('writes a binary payload one character per byte', () => {
+		// every byte value, including the ones a text encoding would mangle
+		const payload = Uint8Array.from({ length: 256 }, (_, i) => i);
+		const object = buildGenericObject(trip, payload, AZTEC, '333') as {
+			barcode: { value: string };
+		};
+		const value = object.barcode.value;
+		expect(value.length).toBe(256);
+		// what Google has to do to give the symbol back its bytes
+		expect([...value].map((c) => c.charCodeAt(0))).toEqual([...payload]);
+	});
+
 	it('carries the mapped fields as text rows', () => {
 		const object = buildGenericObject(trip, ascii('X'), AZTEC, '333') as {
 			textModulesData: { header: string; body: string }[];
@@ -152,12 +163,34 @@ describe('the pass itself', () => {
 		expect(verifier.verify(publicKeyPem, Buffer.from(signature, 'base64url'))).toBe(true);
 	});
 
-	it('refuses a pass too long for the save link to survive a browser', async () => {
+	it('warns past the documented safe length instead of refusing', async () => {
 		const { json } = serviceAccount();
 		const issuer = await loadGoogleIssuer(json, '333');
-		const long = { ...trip, details: [{ label: 'Note', value: 'x'.repeat(MAX_JWT_LENGTH) }] };
-		await expect(buildSaveLink(long, ascii('TICKET'), AZTEC, issuer)).rejects.toThrow(
-			/save link holds/
+		const wordy = { ...trip, details: [{ label: 'Note', value: 'x'.repeat(SAFE_JWT_LENGTH) }] };
+		const link = await buildSaveLink(wordy, ascii('TICKET'), AZTEC, issuer);
+		expect(link.jwt.length).toBeGreaterThan(SAFE_JWT_LENGTH);
+		expect(link.warnings.join(' ')).toMatch(/safe length/);
+		expect(link.url).toContain(link.jwt);
+	});
+
+	it('refuses only what no link would carry at all', async () => {
+		const { json } = serviceAccount();
+		const issuer = await loadGoogleIssuer(json, '333');
+		const huge = { ...trip, details: [{ label: 'Note', value: 'x'.repeat(MAX_JWT_LENGTH) }] };
+		await expect(buildSaveLink(huge, ascii('TICKET'), AZTEC, issuer)).rejects.toThrow(
+			/past anything a link will carry/
 		);
+	});
+
+	it('signs a real-sized binary ticket, over the safe length and under the cap', async () => {
+		const { json } = serviceAccount();
+		const issuer = await loadGoogleIssuer(json, '333');
+		// a UIC payload is a few hundred bytes of compressed data and signature
+		const payload = Uint8Array.from({ length: 414 }, (_, i) => (i * 37 + 11) % 256);
+		const link = await buildSaveLink(trip, payload, AZTEC, issuer);
+		expect(link.jwt.length).toBeGreaterThan(SAFE_JWT_LENGTH);
+		expect(link.jwt.length).toBeLessThan(MAX_JWT_LENGTH);
+		// both caveats: the encoding, and the length
+		expect(link.warnings.length).toBe(3);
 	});
 });

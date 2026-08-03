@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT OR EUPL-1.2
 
 /**
- * Google Wallet export, and the honest limits of it.
+ * Google Wallet export, and the two places it is running on faith.
  *
  * Google takes a pass as a JWT signed with the issuer's service account key,
  * which the browser can do: RS256 is the same RSA signature the pass
@@ -10,21 +10,31 @@
  * creates it on save, so nothing here calls the Wallet REST API and nothing
  * needs an OAuth token.
  *
- * The limit is the barcode, and it is not one we can engineer around.
- * `Barcode.value` is a JSON string, and the only render encoding Google
- * defines is UTF_8, documented as supported for QR codes alone. There is no
- * Latin-1 mode and no binary field, so a payload holding bytes that are not
- * printable ASCII cannot be put into a Google pass and read back out
- * unchanged. That rules out UIC 918.3 and VDV-KA, whose payloads are a
- * compressed stream and a signature: the pass would show a barcode that does
- * not scan.
+ * **The barcode.** `Barcode.value` is a JSON string, and the only render
+ * encoding Google documents is UTF_8, for QR codes alone. There is no Latin-1
+ * mode and no binary field, so on paper a UIC or VDV payload cannot go in: it
+ * is a compressed stream and a signature, not text. In practice other issuers
+ * write the bytes into that string one character per byte and Google appears
+ * to read them back the same way, producing a symbol that decodes to the
+ * original payload. That is the same convention Apple names outright with
+ * `messageEncoding`, which is why `latin1Message` is shared between the two.
  *
- * So this refuses those rather than producing them, and says why. The formats
- * whose payload is text - RSP6, the SNCF e-billet, ELB - go through fine. The
- * test for that is the same `isPrintableAscii` the parsers use to tell the
- * plaintext formats from the bit-packed ones.
+ * It is undocumented and Google could stop doing it without telling anyone,
+ * so a binary pass is offered with that said plainly rather than either
+ * refused or presented as reliable. `googleCaveats` is what says it, and the
+ * way to settle it for a given ticket is to scan the pass back into this app.
  *
- * The other reason to keep expectations low: an issuer account starts
+ * **The length.** A save link is a URL carrying the whole token, and Google
+ * documents 1800 characters as the safe length. A DB ticket signs to roughly
+ * three thousand, because a few hundred bytes of binary become a JSON string,
+ * then UTF-8, then base64. Every binary pass is therefore over the documented
+ * limit and under what browsers actually carry. It is offered, with that said
+ * too. The way out, if it turns out not to work, is creating the object
+ * through the REST API and putting only its id in the link, which needs an
+ * OAuth token exchange and so a network round trip: a different design, not a
+ * tweak to this one.
+ *
+ * The third thing to keep expectations low: an issuer account starts
  * unpublished, so passes it creates are only saved by accounts registered as
  * testers on it. That is a Google-side setting this app cannot see.
  *
@@ -36,19 +46,10 @@ import { isPrintableAscii } from '../tickets/bytes.ts';
 import type { BarcodeSymbology } from '../tickets/types.ts';
 import { importPrivateKey } from './identity.ts';
 import { localParts, asUtcInstant, tripTitle, type TripSummary } from './trip.ts';
-import { serialForPayload } from './pkpass.ts';
+import { latin1Message, serialForPayload } from './pkpass.ts';
 
-/**
- * Whether the UI offers this at all.
- *
- * Everything below works and is tested. What it cannot do is carry a binary
- * payload, and the only formats with a mapping in `trip.ts` are UIC and VDV,
- * which are both binary. So on every ticket that reaches the button today the
- * button exists only to explain why it cannot be pressed, which is worse than
- * not being there. Turn this on together with the first text-payload format
- * that gets a mapping: RSP6 and the SNCF e-billet are the candidates.
- */
-export const GOOGLE_EXPORT_ENABLED = false;
+/** Whether the UI offers this at all. */
+export const GOOGLE_EXPORT_ENABLED = true;
 
 /** zxing format name to the Google barcode type that renders the same symbol. */
 const BARCODE_TYPES: Record<string, string> = {
@@ -58,21 +59,32 @@ const BARCODE_TYPES: Record<string, string> = {
 };
 
 /**
- * Why this ticket cannot become a Google pass, or null when it can. The
- * encoding case is the one worth reading: see the note at the top of the file.
+ * Why this ticket cannot become a Google pass at all, or null when it can.
+ * Only the symbology is a hard stop: a symbol Google will not draw is a pass
+ * with no barcode on it.
  */
 export function googleProblem(
-	payload: Uint8Array,
+	_payload: Uint8Array,
 	symbology: BarcodeSymbology | undefined
 ): string | null {
 	if (!symbology) return 'the payload did not come from a barcode this app can identify';
 	if (!BARCODE_TYPES[symbology.format]) {
 		return `Google Wallet cannot show a ${symbology.format} barcode`;
 	}
-	if (!isPrintableAscii(payload)) {
-		return 'Google Wallet carries a barcode as a text string, so it cannot hold this ticket: the payload is binary and would not survive the round trip';
-	}
 	return null;
+}
+
+/**
+ * What might go wrong anyway, as sentences to put in front of the reader
+ * before they press the button. Empty when the ticket is one Google's own
+ * documentation covers.
+ */
+export function googleCaveats(payload: Uint8Array): string[] {
+	if (isPrintableAscii(payload)) return [];
+	return [
+		'this ticket is binary, and Google documents no encoding for that. The bytes go in one character per byte, which is what other issuers do and what Apple names outright, but Google is under no obligation to keep reading them that way.',
+		'scan the finished pass back into this app before you travel on it. If the payload comes back identical, it worked.'
+	];
 }
 
 /** The credentials a Google Wallet issuer signs with. */
@@ -165,7 +177,9 @@ export function buildGenericObject(
 		hexBackgroundColor: '#26324b',
 		barcode: {
 			type: BARCODE_TYPES[symbology.format],
-			value: new TextDecoder('ascii').decode(payload),
+			// one character per byte: ASCII passes through as itself, and a
+			// binary payload rides on Google reading the rest back as Latin-1
+			value: latin1Message(payload),
 			...(trip.ticketId ? { alternateText: trip.ticketId } : {})
 		},
 		textModulesData: rows
@@ -184,14 +198,25 @@ export function buildGenericObject(
 }
 
 /**
- * Google truncates a save link the browser will not carry. The documented
- * safe length is 1800 characters for the whole encoded token.
+ * The length Google documents as safe for a save link, past which it warns
+ * that browsers may truncate the URL. Every binary ticket is over it, so this
+ * is a threshold for saying so rather than for refusing.
  */
-export const MAX_JWT_LENGTH = 1800;
+export const SAFE_JWT_LENGTH = 1800;
+
+/**
+ * Where offering it stops being daring and starts being pointless. Browsers
+ * carry far longer URLs than this, but nothing about a token this size would
+ * be a rail ticket, and a link nobody's infrastructure will pass on is not
+ * worth building.
+ */
+export const MAX_JWT_LENGTH = 8000;
 
 export interface GoogleSaveLink {
 	url: string;
 	jwt: string;
+	/** Things that could still go wrong, to show beside the link. */
+	warnings: string[];
 }
 
 /**
@@ -233,8 +258,15 @@ export async function buildSaveLink(
 	const jwt = `${signingInput}.${base64url(signature)}`;
 	if (jwt.length > MAX_JWT_LENGTH) {
 		throw new Error(
-			`the signed pass is ${jwt.length} characters and Google's save link holds ${MAX_JWT_LENGTH}, so this ticket carries too much to save this way`
+			`the signed pass is ${jwt.length} characters, past anything a link will carry, so this ticket cannot be saved this way`
 		);
 	}
-	return { jwt, url: `https://pay.google.com/gp/v/save/${jwt}` };
+
+	const warnings = googleCaveats(payload);
+	if (jwt.length > SAFE_JWT_LENGTH) {
+		warnings.push(
+			`the link is ${jwt.length} characters and Google documents ${SAFE_JWT_LENGTH} as the safe length, so it may be turned away or cut short on the way.`
+		);
+	}
+	return { jwt, warnings, url: `https://pay.google.com/gp/v/save/${jwt}` };
 }

@@ -132,18 +132,32 @@ with it and cannot hand the bytes back. Apple's WWDR G4 intermediate is
 bundled, so signing works with no network. Safari is the only iOS browser
 that hands a `.pkpass` to Wallet.
 
-**Google Wallet** is written and switched off. Google carries a barcode as a
-JSON string and defines no Latin-1 or binary encoding for it, so a UIC or VDV
-payload, which is a compressed stream and a signature, cannot survive the
-round trip. Since those are the only two formats mapped so far, the button
-would exist only to say why it cannot be pressed. `GOOGLE_EXPORT_ENABLED` in
-`src/lib/wallet/google.ts` turns it back on, and belongs with the first
-text-payload format that gets a mapping.
+**Google Wallet** needs an issuer ID and a service account key from the Google
+Wallet Business Console, and comes with two warnings it shows you before you
+press anything.
 
-To get a binary ticket into Google Wallet today, use the Wallet app's own
-"add from a photo" flow on the PNG the Barcode tab exports. Google's scanner
-reads the symbol itself, so the bytes survive; what you get is the bare code
-with none of the fields, which is what that path gives everybody.
+Google carries a barcode as a JSON string and documents no Latin-1 or binary
+encoding for it, so on paper a UIC or VDV payload cannot go in. In practice
+the bytes are written one character per byte, other issuers do the same, and
+Google appears to read them back that way. It is undocumented and could stop
+working without notice, so scan the finished pass back into this app before
+you travel on it: if the payload comes back identical, it worked.
+
+The second warning is length. A save link carries the whole signed pass in
+its URL, and Google documents 1800 characters as safe. A DB ticket signs to
+around three thousand, because a few hundred bytes of binary become a JSON
+string, then UTF-8, then base64. Passes over the safe length are still
+offered, with the number shown. Getting under it means creating the object
+through the REST API and putting only its id in the link, which needs an
+OAuth token exchange, a network round trip, and a different design.
+
+If neither works out, the Wallet app's own "add from a photo" flow reads the
+PNG the Barcode tab exports. Google's scanner reads the symbol itself, so the
+bytes survive; what you get is the bare code with none of the fields.
+
+An issuer account that has not been published only saves passes for accounts
+registered on it as testers, which is a Google-side setting this app cannot
+see.
 
 Credentials live in memory unless you tick "keep on this device", which puts
 them in IndexedDB; "forget" deletes that database. Nothing else this app

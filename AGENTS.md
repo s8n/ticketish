@@ -135,20 +135,28 @@ signed after that are refused. `identityProblem` in `identity.ts` says so
 rather than letting the failure happen inside Wallet; replacing the file with
 whatever Apple has moved to is the fix.
 
-The Google Wallet export is limited on purpose. `Barcode.value` is a JSON
-string and the only render encoding Google defines is UTF-8, for QR codes
-only, so a binary payload cannot go into a Google pass and come back out
-unchanged. Every UIC and VDV ticket is binary. `googleProblem` refuses those
-with that reason, and that refusal is a feature: do not "fix" it by base64ing
-the payload or letting the string be read as UTF-8, both of which produce a
-barcode that does not scan. Images are not a way round it either: every image
-field takes a URI that Google's servers fetch, and the one upload API that
-avoids public hosting needs an OAuth token, so it cannot work offline.
+The Google Wallet export rests on something undocumented, and the comments
+say so in both directions. `Barcode.value` is a JSON string and the only
+render encoding Google defines is UTF-8, for QR codes only. There is no
+binary field. The bytes go in one character per byte anyway, because other
+issuers do that and Google reads them back the same way, which is the same
+convention Apple names outright with `messageEncoding`. Both wallets share
+`latin1Message` for it.
 
-Because of that, `GOOGLE_EXPORT_ENABLED` in `google.ts` is false and the UI
-shows nothing for Google. Turn it on when the first format whose payload is
-printable ASCII gets a mapping, and not before: until then the button can
-only explain itself.
+Do not present that as reliable and do not "fix" it by base64ing the payload
+or letting the string be read as UTF-8, both of which produce a barcode that
+does not scan. `googleCaveats` is where the uncertainty is written down, and
+it belongs in front of the reader before they press the button.
+
+Images are not a way round any of it: every image field takes a URI that
+Google's servers fetch, and the one upload API that avoids public hosting
+needs an OAuth token, so it cannot work offline.
+
+Length is the other open question. A binary ticket signs to roughly three
+thousand characters against the 1800 Google documents as safe, so
+`SAFE_JWT_LENGTH` warns and only `MAX_JWT_LENGTH` refuses. Getting genuinely
+under the limit means the REST API and an OAuth token exchange, which is a
+network round trip and a different design; do not half-build it.
 
 ## Never put real tickets in tests
 

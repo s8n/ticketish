@@ -17,6 +17,7 @@
 	import { hasMapping, tripFor, type TripSummary } from '../wallet/trip.ts';
 	import { barcodeProblem, buildPkpass, pkpassFileName, PKPASS_MIME } from '../wallet/pkpass.ts';
 	import {
+		googleCaveats,
 		googleProblem,
 		buildSaveLink,
 		loadGoogleIssuer,
@@ -51,12 +52,14 @@
 
 	const appleBlocked = $derived(barcodeProblem(ticket.symbology));
 	const googleBlocked = $derived(googleProblem(ticket.raw, ticket.symbology));
-	/** An issuer left over from a session before the button was switched off. */
+	/** What could go wrong with a Google pass even though it can be built. */
+	const googleWarnings = $derived(googleCaveats(ticket.raw));
 	const googleHeld = $derived(SHOW_GOOGLE && !!credentials.google);
 
 	let busy = $state(false);
 	let error = $state<string | null>(null);
 	let saveLink = $state<string | null>(null);
+	let linkWarnings = $state<string[]>([]);
 	/** Which credential form is open, if any. */
 	let setup = $state<'apple' | 'google' | null>(null);
 
@@ -101,6 +104,7 @@
 	async function exportGoogle() {
 		error = null;
 		saveLink = null;
+		linkWarnings = [];
 		if (!credentials.google) {
 			setup = 'google';
 			return;
@@ -116,6 +120,7 @@
 				location.origin
 			);
 			saveLink = link.url;
+			linkWarnings = link.warnings;
 		} catch (e) {
 			error = say(e);
 		} finally {
@@ -208,6 +213,8 @@
 			{/if}
 			{#if SHOW_GOOGLE && googleBlocked}
 				<p class="note">Google Wallet: {googleBlocked}.</p>
+			{:else if SHOW_GOOGLE && googleWarnings.length}
+				<p class="note">Google Wallet may not work for this ticket: {googleWarnings[0]}</p>
 			{/if}
 			{#if error}
 				<p class="note warn">{error}</p>
@@ -220,6 +227,9 @@
 					. That link goes to Google and carries the ticket inside it, which is the only way this
 					wallet accepts a pass.
 				</p>
+				{#each linkWarnings as warning, i (i)}
+					<p class="note">{warning}</p>
+				{/each}
 			{/if}
 
 			{#if previewRows.length}
