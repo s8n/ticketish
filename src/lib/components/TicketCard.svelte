@@ -18,7 +18,7 @@
 	import TrenitaliaView from './TrenitaliaView.svelte';
 	import EavView from './EavView.svelte';
 	import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
-	import { vdvOrgName } from '../tickets/vdv/orgs.ts';
+	import { loadVdvOrgs, vdvOrgName } from '../tickets/vdv/orgs.ts';
 	import { store } from '../state/tickets.svelte.ts';
 	import { canRender } from '../input/render.ts';
 	import { tabModel } from './tabs.ts';
@@ -30,6 +30,12 @@
 	const records = $derived<ParsedRecord[]>(
 		container.kind === 'uic9183' || container.kind === 'dosipas' ? container.envelope.records : []
 	);
+
+	// Only fetched for VDV tickets, and only to name the issuer in the header.
+	let vdvOrgs = $state<Record<string, string> | null>(null);
+	$effect(() => {
+		if (container.kind === 'vdv') loadVdvOrgs().then((o) => (vdvOrgs = o));
+	});
 
 	const issuer = $derived.by(() => {
 		if (container.kind === 'uic9183') {
@@ -53,7 +59,9 @@
 		if (container.kind === 'vdv') {
 			const t = container.barcode.tickets[0];
 			if (!t) return 'VDV ticket';
-			return vdvOrgName(t.productOrgId) ?? `VDV org ${t.productOrgId}`;
+			// vdvOrgs is null until the table loads, so this shows the numeric id
+			// first and fills the name in, the way it did before any table existed
+			return vdvOrgName(vdvOrgs, t.productOrgId) ?? `VDV org ${t.productOrgId}`;
 		}
 		if (container.kind === 'ssb') {
 			const rics = container.envelope.issuerRics;

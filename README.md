@@ -144,8 +144,17 @@ No functions, bindings or environment variables needed.
   `scripts/build-vdv-keys.py`; a monthly GitHub Action refreshes them.
 - VDV product names are vendored from zuegli's tariff data (see
   `scripts/vdv-products/`) and merged by `scripts/build-vdv-products.py`.
-  Organisation names are a small curated list with per-entry provenance in
-  `src/lib/tickets/vdv/orgs.ts`; no public register exists.
+- VDV **organisation** names in `src/lib/tickets/vdv/orgs.json` are the table
+  compiled by the **KCD+eTicketinfo** Android app, used here with attribution
+  and rebuilt by `scripts/build-vdv-orgs.py`. No public register of these IDs
+  exists; the complete list sits behind an authenticated API, which is why
+  this repo previously had a dozen entries rather than two thousand. **That
+  app's licence applies to this table.** It is not public-domain reference
+  data and is not cleared for commercial reuse: ticketish is a free tool for
+  rail enthusiasts, and anyone repackaging it commercially should strip
+  `orgs.json` or clear it with the app's authors first. A handful of entries
+  where this repo has a better source, or a correction to a typo, override it
+  from `orgs.ts`.
 - UK station names come from the RDG/National Rail fares feed via
   `scripts/build-nlc-names.py`, also refreshed monthly. That feed needs a free
   National Rail Open Data account; the workflow reads the `NR_USERNAME` and

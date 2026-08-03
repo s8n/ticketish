@@ -1,10 +1,19 @@
 /**
  * VDV organisation names.
  *
- * There is no public register: the complete list lives behind an
- * authenticated third-party API. Every entry below is instead derived from a
- * source we can point at, noted per entry. Numeric IDs are shown as-is when
- * unknown, which is the common case.
+ * The bulk of the table is orgs.json, about two thousand organisation IDs
+ * compiled by the KCD+eTicketinfo Android app and used here with attribution.
+ * That app's licence applies to it: this is a free tool for rail enthusiasts,
+ * and the table is not public-domain reference data and is not cleared for
+ * commercial reuse. See scripts/build-vdv-orgs.py for the full note.
+ *
+ * OVERRIDES below take precedence, and are the entries where this repo has
+ * either a better source or a correction. Anything added by hand goes there
+ * rather than into orgs.json, so regenerating stays a clean copy.
+ *
+ * The table is large, so it loads on demand: only VDV tickets pay for it, and
+ * until it arrives the numeric ID is shown, which is what happened for every
+ * organisation before the table existed.
  */
 
 interface OrgEntry {
@@ -13,42 +22,47 @@ interface OrgEntry {
 	source: string;
 }
 
-const ORGS: Record<number, OrgEntry> = {
-	// Named in the NRW tariff specification published by KC Digitalisierung:
-	// "die OrgID des VRS (102 dezimal)" and "KCM (6212 dezimal)".
-	102: { name: 'Verkehrsverbund Rhein-Sieg (VRS)', source: 'KCD NRW tariff specification' },
+const OVERRIDES: Record<number, OrgEntry> = {
+	// The NRW tariff specification published by KC Digitalisierung names this
+	// one outright: "KCM (6212 dezimal)". The eTicketInfo table disagrees and
+	// calls it Verkehrsverbund Rhein-Sieg GmbH, the same name it gives 102.
+	// Going with the citable source.
 	6212: { name: 'Kompetenzcenter Marketing NRW (KCM)', source: 'KCD NRW tariff specification' },
 
-	// Derived from the vendored product tables, where each file covers one
-	// association's tariff and contains exactly these organisation IDs.
-	70: { name: 'Verkehrsverbund Rhein-Ruhr (VRR)', source: 'VRR product table' },
-	77: { name: 'Westfalentarif', source: 'Westfalentarif product table' },
-	6072: { name: 'Aachener Verkehrsverbund (AVV)', source: 'AVV product table' },
-	6262: { name: 'Deutsche Bahn', source: 'DB product table' },
-	6263: { name: 'Deutsche Bahn', source: 'DB product table' },
-	39052: { name: 'IVU Traffic Technologies', source: 'IVU product table' },
-	// The VVO tariff file covers these three; which operator each one is has
-	// not been established, so they share the association's name.
-	6013: { name: 'Verkehrsverbund Oberelbe (VVO)', source: 'VVO product table' },
-	6060: { name: 'Verkehrsverbund Oberelbe (VVO)', source: 'VVO product table' },
-	6068: { name: 'Verkehrsverbund Oberelbe (VVO)', source: 'VVO product table' },
-
-	// Identified from sample tickets.
+	// eTicketInfo has "Münchner Verkehrgesellschaft mbH", missing the s.
 	6292: { name: 'Münchner Verkehrsgesellschaft (MVG)', source: 'MVG ticket samples' }
 };
 
-export function vdvOrgName(code: number | undefined | null): string | null {
+let cache: Record<string, string> | null = null;
+let pending: Promise<Record<string, string>> | null = null;
+
+export async function loadVdvOrgs(): Promise<Record<string, string>> {
+	if (cache) return cache;
+	pending ??= import('./orgs.json').then((m) => {
+		cache = (m.default as { orgs: Record<string, string> }).orgs;
+		return cache;
+	});
+	return pending;
+}
+
+export function vdvOrgName(
+	orgs: Record<string, string> | null,
+	code: number | undefined | null
+): string | null {
 	if (code === undefined || code === null) return null;
-	return ORGS[code]?.name ?? null;
+	return OVERRIDES[code]?.name ?? orgs?.[String(code)] ?? null;
 }
 
 /** Name plus the numeric ID, or just the ID when the name is unknown. */
-export function vdvOrgLabel(code: number | undefined | null): string {
+export function vdvOrgLabel(
+	orgs: Record<string, string> | null,
+	code: number | undefined | null
+): string {
 	if (code === undefined || code === null) return 'unknown';
-	const name = vdvOrgName(code);
+	const name = vdvOrgName(orgs, code);
 	return name ? `${name} (${code})` : `org ${code}`;
 }
 
-export function vdvOrgSource(code: number): string | undefined {
-	return ORGS[code]?.source;
+export function vdvOrgSource(code: number): string {
+	return OVERRIDES[code]?.source ?? 'eTicketInfo organisation table';
 }

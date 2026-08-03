@@ -3,18 +3,20 @@
 	import type { VdvBarcode } from '../tickets/vdv/vdv.ts';
 	import { fmtDate } from '../tickets/format.ts';
 	import { loadVdvProducts, vdvProductName } from '../tickets/vdv/products.ts';
-	import { vdvOrgLabel, vdvOrgName } from '../tickets/vdv/orgs.ts';
+	import { loadVdvOrgs, vdvOrgLabel, vdvOrgName } from '../tickets/vdv/orgs.ts';
 
 	let { barcode }: { barcode: VdvBarcode } = $props();
 
-	// The product table is a few dozen KiB, so it loads only for VDV tickets.
+	// Both tables are a few dozen KiB, so they load only for VDV tickets.
 	let products = $state<Record<string, string> | null>(null);
+	let orgs = $state<Record<string, string> | null>(null);
 	onMount(async () => {
-		products = await loadVdvProducts();
+		[products, orgs] = await Promise.all([loadVdvProducts(), loadVdvOrgs()]);
 	});
 
 	const productName = (orgId: number, number: number) =>
 		vdvProductName(products, orgId, number);
+	const orgLabel = (code: number | undefined | null) => vdvOrgLabel(orgs, code);
 </script>
 
 <div class="vdv">
@@ -29,7 +31,7 @@
 					{productName(t.productOrgId, t.productNumber) ?? `Product ${t.productNumber}`}
 				</span>
 				<span class="soft">
-					{vdvOrgLabel(t.productOrgId)}{#if productName(t.productOrgId, t.productNumber)} · product {t.productNumber}{/if}
+					{orgLabel(t.productOrgId)}{#if productName(t.productOrgId, t.productNumber)} · product {t.productNumber}{/if}
 				</span>
 			</header>
 			<dl>
@@ -38,14 +40,14 @@
 				<dt>Valid until</dt>
 				<dd>{fmtDate(t.validityEnd)}</dd>
 				<dt>Ticket ID</dt>
-				<dd><code>{t.ticketId}</code> <span class="soft">{vdvOrgLabel(t.ticketOrgId)}</span></dd>
+				<dd><code>{t.ticketId}</code> <span class="soft">{orgLabel(t.ticketOrgId)}</span></dd>
 				{#if t.transactionTime}
 					<dt>Sold</dt>
-					<dd>{fmtDate(t.transactionTime)} <span class="soft">via {vdvOrgLabel(t.kvpOrgId)}</span></dd>
+					<dd>{fmtDate(t.transactionTime)} <span class="soft">via {orgLabel(t.kvpOrgId)}</span></dd>
 				{/if}
 				{#if t.locationNumber}
 					<dt>Sale location</dt>
-					<dd>{t.locationNumber} <span class="soft">{vdvOrgLabel(t.locationOrgId)}</span></dd>
+					<dd>{t.locationNumber} <span class="soft">{orgLabel(t.locationOrgId)}</span></dd>
 				{/if}
 				<dt>SAM</dt>
 				<dd><code>{t.samId}</code> <span class="soft">v{t.samVersion}</span></dd>
@@ -117,7 +119,7 @@
 			<dd>MOTICS copy protection{barcode.containerIdentifier ? ` (${barcode.containerIdentifier})` : ''}</dd>
 		{/if}
 	</dl>
-	{#if !vdvOrgName(barcode.tickets[0]?.productOrgId)}
+	{#if orgs && !vdvOrgName(orgs, barcode.tickets[0]?.productOrgId)}
 		<p class="note">This organisation is not in our list; numeric IDs are shown as-is.</p>
 	{/if}
 </div>
