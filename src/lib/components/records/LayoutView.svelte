@@ -48,11 +48,10 @@
 		background: color-mix(in srgb, var(--paper-hi) 60%, white 40%);
 		padding: 0.6rem;
 		/* hug the printed area rather than stretching past its last column,
-		   and centre what is left; a layout too wide to fit fills the row and
-		   scrolls instead */
+		   staying left aligned with the rest of the card; a layout too wide to
+		   fit fills the row and scrolls instead */
 		width: max-content;
 		max-width: 100%;
-		margin-inline: auto;
 	}
 	.grid {
 		display: grid;
