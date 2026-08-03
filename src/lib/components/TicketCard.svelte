@@ -17,6 +17,7 @@
 	import TcddView from './TcddView.svelte';
 	import ElbView from './ElbView.svelte';
 	import MavView from './MavView.svelte';
+	import ViaRailView from './ViaRailView.svelte';
 	import SncfETicketView from './SncfETicketView.svelte';
 	import Ssb1View from './Ssb1View.svelte';
 	import TrenitaliaView from './TrenitaliaView.svelte';
@@ -72,6 +73,7 @@
 			return ricsName(rics) ?? `RICS ${rics}`;
 		}
 		if (container.kind === 'renfe') return 'Renfe';
+		if (container.kind === 'viarail') return 'VIA Rail Canada';
 		if (container.kind === 'mav') {
 			return ricsName(container.ticket.issuerRics) ?? 'MÁV';
 		}
@@ -160,6 +162,8 @@
 				return 'EAV';
 			case 'mav':
 				return `MÁV v${container.ticket.version}`;
+			case 'viarail':
+				return 'VIA Rail';
 			case 'elb':
 				return 'ELB (Element List Barcode)';
 			case 'sncf-eticket':
@@ -289,6 +293,8 @@
 		<ElbView ticket={container.ticket} />
 	{:else if container.kind === 'mav'}
 		<MavView ticket={container.ticket} />
+	{:else if container.kind === 'viarail'}
+		<ViaRailView ticket={container.ticket} />
 	{:else if container.kind === 'sncf-eticket'}
 		<SncfETicketView ticket={container.ticket} />
 	{:else if container.kind === 'text'}

@@ -111,7 +111,7 @@
 				</li>
 				<li>
 					<span class="format">Custom formats</span>
-					Renfe, MÁV, SNCF e-billets, TCDD, Trenitalia and EAV, which each go their own way
+					Renfe, MÁV, VIA Rail, SNCF e-billets, TCDD, Trenitalia and EAV, each going their own way
 				</li>
 			</ul>
 			<p class="fine">

@@ -169,4 +169,5 @@ fine to use and are committed.
   `mav/mav.ksy` is what `src/lib/tickets/mav/` implements. Check the open
   branches too: Volker Krause's `work/vkrause/mav-ticket-medium` carries the
   MÁV ticket medium enum and the version dependent validity width, neither of
-  which is on main.
+  which is on main. `viarail/viarail.ksy` is what `src/lib/tickets/viarail/`
+  implements.

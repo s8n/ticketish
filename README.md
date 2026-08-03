@@ -46,6 +46,10 @@ installed.
   reservations, passes) and an appended signature. Aztec and PDF417 alike.
   Station ids are UIC codes up to version 4, which the bundled table names,
   and MÁV's own numbering from version 5, which it cannot
+- **VIA Rail** - Canadian boarding passes, a 124 character fixed-width ASCII
+  Aztec carrying everything the pass prints and nothing more: no compression,
+  no signature. Stations are VIA's own four letter codes and the timestamps
+  are bare local time, both shown as issued
 - **TCDD** - Turkish e-tickets, a "$"-delimited ASCII record
 - **Trenitalia** - departure date, train, coach, seat, PNR and entitlement
   number, reverse engineered from four tickets; the payload appears to carry
@@ -196,6 +200,6 @@ No functions, bindings or environment variables needed.
   offset 19.
 - The MÁV layout follows the same project's `mav/mav.ksy` (CC0), plus the
   ticket medium enum and version dependent validity width from Volker
-  Krause's branch of it.
+  Krause's branch of it. The VIA Rail layout follows its `viarail/viarail.ksy`.
 - DB Leitpunktkürzel and Swiss NOVA organisation names derive from the
   respective operators' open data.
