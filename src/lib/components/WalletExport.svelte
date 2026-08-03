@@ -14,7 +14,7 @@
 	 * shown in place of the button rather than discovered at a barrier.
 	 */
 	import type { ParsedTicket } from '../tickets/types.ts';
-	import { hasMapping, tripFor, type TripSummary } from '../wallet/trip.ts';
+	import { hasMapping, previewFields, tripFor, type TripSummary } from '../wallet/trip.ts';
 	import { barcodeProblem, buildPkpass, pkpassFileName, PKPASS_MIME } from '../wallet/pkpass.ts';
 	import {
 		googleCaveats,
@@ -166,23 +166,7 @@
 		}
 	}
 
-	const previewRows = $derived(
-		trip
-			? ([
-					['Ticket', trip.product],
-					['From', trip.from],
-					['To', trip.to],
-					['Train', trip.train],
-					['Departs', trip.departure?.replace('T', ' ')],
-					['Valid from', trip.validFrom?.replace('T', ' ')],
-					['Valid until', trip.validUntil?.replace('T', ' ')],
-					['Passenger', trip.passenger],
-					['Class', trip.travelClass],
-					['Coach', trip.coach],
-					['Seat', trip.seat]
-				].filter(([, value]) => !!value) as [string, string][])
-			: []
-	);
+	const previewRows = $derived(trip ? previewFields(trip) : []);
 </script>
 
 {#if mapped}
@@ -236,9 +220,9 @@
 				<details class="preview">
 					<summary>What the pass will say</summary>
 					<dl>
-						{#each previewRows as [label, value] (label)}
-							<dt>{label}</dt>
-							<dd>{value}</dd>
+						{#each previewRows as row, i (i)}
+							<dt>{row.label}</dt>
+							<dd>{row.value}</dd>
 						{/each}
 					</dl>
 					<p class="note">

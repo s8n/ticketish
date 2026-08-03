@@ -16,7 +16,14 @@ import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { makeTicket } from '../src/lib/tickets/parse.ts';
 import { parseVdv } from '../src/lib/tickets/vdv/vdv.ts';
-import { hasMapping, tripFor, tripTitle, asUtcInstant, localParts } from '../src/lib/wallet/trip.ts';
+import {
+	hasMapping,
+	previewFields,
+	tripFor,
+	tripTitle,
+	asUtcInstant,
+	localParts
+} from '../src/lib/wallet/trip.ts';
 import type { ParsedTicket } from '../src/lib/tickets/types.ts';
 import { tlv } from './helpers/build.ts';
 import { buildVdv, vdvDateTime, vdvHeader } from './helpers/vdv.ts';
@@ -143,6 +150,53 @@ describe('a VDV ticket', () => {
 		expect(trip.from).toBeUndefined();
 		expect(trip.to).toBeUndefined();
 		expect(trip.train).toBeUndefined();
+	});
+});
+
+describe('what the reader is shown before exporting', () => {
+	it('names the title the wallets put at the top of the card', async () => {
+		const ticket = muster('muster-918-9-fv-supersparpreis.bin');
+		if (!ticket) return;
+		const rows = previewFields((await tripFor(ticket))!);
+		expect(rows[0]).toEqual({ label: 'Title', value: 'DB AG' });
+	});
+
+	it('leaves nothing on the pass unshown', async () => {
+		for (const name of [
+			'muster-918-9-fv-supersparpreis.bin',
+			'muster-918-3-quer-durchs-land-ticket.bin',
+			'muster-918-9-deutschland-ticket.bin'
+		]) {
+			const ticket = muster(name);
+			if (!ticket) continue;
+			const trip = (await tripFor(ticket))!;
+			const shown = previewFields(trip)
+				.map((r) => r.value)
+				.join(' | ');
+
+			// the preview writes a date-time with a space, so compare on that
+			// form; anything else is shown as the mapping produced it
+			const asShown = (value: string) =>
+				/^\d{4}-\d{2}-\d{2}T/.test(value) ? value.replace('T', ' ') : value;
+
+			// every field the mapping filled has to turn up in the preview, or
+			// it reads as one the mapping dropped
+			for (const [key, value] of Object.entries(trip)) {
+				if (key === 'shape' || typeof value !== 'string') continue;
+				expect(shown, `${name} does not show ${key}`).toContain(asShown(value));
+			}
+			for (const detail of trip.details) expect(shown).toContain(detail.value);
+		}
+	});
+
+	it('skips the fields the format did not fill', () => {
+		const rows = previewFields({
+			shape: 'period',
+			issuer: 'Test Verbund',
+			validFrom: '2026-01-01T00:00',
+			details: []
+		});
+		expect(rows.map((r) => r.label)).toEqual(['Title', 'Valid from']);
 	});
 });
 

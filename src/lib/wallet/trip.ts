@@ -414,6 +414,41 @@ export async function tripFor(ticket: ParsedTicket): Promise<TripSummary | null>
 	return entry.map(container, { stations, vdvOrgs, vdvProducts });
 }
 
+/**
+ * Every field the pass will carry, in the order it shows them.
+ *
+ * This is what the reader is shown before they export, and its job is to be
+ * complete: a field missing from it reads as a field the mapping dropped, and
+ * checking for that is the whole reason to look before handing a pass to an
+ * inspector. The title is in here because both wallets put it at the top of
+ * the card, where it is the most visible thing on the pass and so the last
+ * thing that should be a surprise.
+ */
+export function previewFields(trip: TripSummary): TripField[] {
+	const at = (value: string | undefined) => value?.replace('T', ' ');
+	const rows: [string, string | undefined][] = [
+		['Title', trip.issuer],
+		['Ticket', trip.product],
+		['From', trip.from],
+		['To', trip.to],
+		['Route', trip.via],
+		['Train', trip.train],
+		['Departs', at(trip.departure)],
+		['Arrives', at(trip.arrival)],
+		['Class', trip.travelClass],
+		['Coach', trip.coach],
+		['Seat', trip.seat],
+		['Passenger', trip.passenger],
+		['Valid from', at(trip.validFrom)],
+		['Valid until', at(trip.validUntil)],
+		['Ticket number', trip.ticketId],
+		['Booking reference', trip.reference],
+		['Price', trip.price],
+		...trip.details.map((d) => [d.label, d.value] as [string, string])
+	];
+	return rows.filter(([, value]) => !!value).map(([label, value]) => ({ label, value: value! }));
+}
+
 /** "Hamburg Hbf to Köln Hbf", or the product, or the issuer: a pass title. */
 export function tripTitle(trip: TripSummary): string {
 	if (trip.from && trip.to) return `${trip.from} to ${trip.to}`;
