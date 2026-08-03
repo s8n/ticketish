@@ -19,6 +19,7 @@
 	import MavView from './MavView.svelte';
 	import ViaRailView from './ViaRailView.svelte';
 	import HzppView from './HzppView.svelte';
+	import CdLegacyView from './CdLegacyView.svelte';
 	import SncfETicketView from './SncfETicketView.svelte';
 	import Ssb1View from './Ssb1View.svelte';
 	import TrenitaliaView from './TrenitaliaView.svelte';
@@ -76,6 +77,7 @@
 		if (container.kind === 'renfe') return 'Renfe';
 		if (container.kind === 'viarail') return 'VIA Rail Canada';
 		if (container.kind === 'hzpp') return 'HŽPP';
+		if (container.kind === 'cd-legacy') return 'České dráhy';
 		if (container.kind === 'mav') {
 			return ricsName(container.ticket.issuerRics) ?? 'MÁV';
 		}
@@ -168,6 +170,8 @@
 				return 'VIA Rail';
 			case 'hzpp':
 				return container.ticket.encrypted ? 'HŽPP (encrypted)' : 'HŽPP';
+			case 'cd-legacy':
+				return 'ČD #CD01';
 			case 'elb':
 				return 'ELB (Element List Barcode)';
 			case 'sncf-eticket':
@@ -301,6 +305,8 @@
 		<ViaRailView ticket={container.ticket} />
 	{:else if container.kind === 'hzpp'}
 		<HzppView ticket={container.ticket} />
+	{:else if container.kind === 'cd-legacy'}
+		<CdLegacyView ticket={container.ticket} />
 	{:else if container.kind === 'sncf-eticket'}
 		<SncfETicketView ticket={container.ticket} />
 	{:else if container.kind === 'text'}

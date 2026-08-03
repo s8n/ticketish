@@ -24,8 +24,10 @@ installed.
   envelope with ISO 9796-2 message recovery against the VDV CA certificates,
   including MOTICS copy-protection containers
 - **SSB and SSB1** - older bit-packed UIC barcodes still issued by some
-  operators: reservations, travel tickets, group tickets, passes, and NS/DB
-  Keycards, plus the 107-byte SSB1 variant used by VR (Finland)
+  operators: reservations, travel tickets, group tickets, passes, NS/DB
+  Keycards and ČD's OneTicket (type 24, the Czech integrated tariff, issued
+  by every carrier in the scheme), plus the 107-byte SSB1 variant used by VR
+  (Finland)
 - **Renfe** - Spanish tickets, which use their own fixed-width ASCII format
   rather than a UIC one
 - **ELB (Element List Barcode)** - the fixed-width record specified in ERA TAP
@@ -56,6 +58,9 @@ installed.
   on which side of the 2023 switchover it was sold. The encrypted form (`A1`)
   is recognised but cannot be opened, since HŽPP does not publish the key, so
   the card says so instead of showing a hex string
+- **ČD `#CD01`** - the older Czech layout, 63 bytes with no published
+  specification. The issuing stamp and both validity dates are read, as OLE
+  automation dates; the rest is shown as bytes rather than guessed at
 - **TCDD** - Turkish e-tickets, a "$"-delimited ASCII record
 - **Trenitalia** - departure date, train, coach, seat, PNR and entitlement
   number, reverse engineered from four tickets; the payload appears to carry

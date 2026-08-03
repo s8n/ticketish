@@ -27,7 +27,8 @@ export type SsbRecord =
 	| SsbNonReservationTicket
 	| SsbReservationTicket
 	| SsbGroupTicket
-	| SsbPass;
+	| SsbPass
+	| SsbCdOneTicket;
 
 /** A station reference, which may be a code or a printed name. */
 export interface SsbStation {
@@ -87,6 +88,33 @@ export interface SsbPass extends SsbCommon {
 	travelDays: number;
 	countries: number[];
 	twoPages: boolean;
+}
+
+/**
+ * Flags on a ČD OneTicket, saying what an inspector has to check. The one
+ * seen set on the samples is the fare discount bit, on tickets whose face
+ * prints a discount.
+ */
+export interface SsbOneTicketFlags {
+	checkPassengerId: boolean;
+	checkPassengerRailPass: boolean;
+	checkFareDiscounts: boolean;
+	securePaper: boolean;
+	checkInCard: boolean;
+	zoneTravelDocument: boolean;
+	containsZoneComponent: boolean;
+	additionalPaymentTicket: boolean;
+	reservationOnlyTicket: boolean;
+}
+
+export interface SsbCdOneTicket extends SsbCommon {
+	kind: 'cd-oneticket';
+	returnIncluded: boolean;
+	validityStart: string;
+	validityEnd: string;
+	flags: SsbOneTicketFlags;
+	/** Twelve bits after the free text, zero on every sample seen. */
+	sjtTimestamp: number;
 }
 
 export interface SsbKeycard {
@@ -173,7 +201,8 @@ const TICKET_TYPE_NAMES: Record<number, string> = {
 	2: 'Non-reservation ticket',
 	3: 'Group ticket',
 	4: 'Pass',
-	21: 'NS Keycard'
+	21: 'NS Keycard',
+	24: 'ČD OneTicket'
 };
 
 const isoDate = (d: Date) => d.toISOString().slice(0, 10);
@@ -362,6 +391,48 @@ function parsePass(d: Bits, now: Date): SsbPass {
 	};
 }
 
+function oneTicketFlags(value: number): SsbOneTicketFlags {
+	return {
+		checkPassengerId: !!(value & 0x0001),
+		checkPassengerRailPass: !!(value & 0x0002),
+		checkFareDiscounts: !!(value & 0x0080),
+		securePaper: !!(value & 0x0100),
+		checkInCard: !!(value & 0x0200),
+		zoneTravelDocument: !!(value & 0x0400),
+		containsZoneComponent: !!(value & 0x0800),
+		additionalPaymentTicket: !!(value & 0x1000),
+		reservationOnlyTicket: !!(value & 0x2000)
+	};
+}
+
+/**
+ * ČD's OneTicket (jedna jízdenka), the Czech integrated tariff, ticket type
+ * 24. Issued by České dráhy and by the other carriers in the scheme, which
+ * is why the issuer is not part of the test.
+ *
+ * The PNR field carries the SJT number printed on the face. Everything here
+ * was checked against a pair of printed tickets: their SJT numbers, issuing
+ * dates, validity, passenger count and class all match, and the one flag set
+ * is the fare discount bit on tickets that print a discount.
+ *
+ * Stations are deliberately not read. zuegli takes them from bits 121 to 181,
+ * which overlaps the validity fields the same tickets confirm, so that cannot
+ * be right for this record. Both samples here are the same journey, so there
+ * is nothing to pin an alternative layout against.
+ */
+function parseCdOneTicket(d: Bits, now: Date): SsbCdOneTicket {
+	const issuing = issuingDateOf(d, now);
+	return {
+		kind: 'cd-oneticket',
+		...common(d, issuing, d.str(212, 422), d.int(198, 212)),
+		returnIncluded: d.bool(118),
+		validityStart: isoDate(plusDays(issuing, d.int(119, 128))),
+		validityEnd: isoDate(plusDays(issuing, d.int(128, 137))),
+		flags: oneTicketFlags(d.int(198, 212)),
+		sjtTimestamp: d.int(422, 434)
+	};
+}
+
 export function isSsb(data: Uint8Array): boolean {
 	if (data.length < 114) return false;
 	const version = (data[0] >> 4) & 0x0f;
@@ -406,6 +477,8 @@ export function parseSsb(data: Uint8Array, now: Date = new Date()): SsbEnvelope 
 		envelope.data = parseGroup(body, issuerRics, now);
 	} else if (ticketType === 4) {
 		envelope.data = parsePass(body, now);
+	} else if (ticketType === 24) {
+		envelope.data = parseCdOneTicket(body, now);
 	} else {
 		envelope.unsupported = `SSB ticket type ${ticketType} is not decoded yet`;
 	}

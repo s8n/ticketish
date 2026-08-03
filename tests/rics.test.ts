@@ -28,6 +28,9 @@ describe('ricsName', () => {
 		expect(ricsName(80)).toBe('DB Fernverkehr AG');
 		expect(ricsName(1181)).toBe('ÖBB Personenverkehr AG');
 		expect(ricsName(1187)).toBe('SNCF Voyageurs');
+		expect(ricsName(43)).toBe('MÁV-START Zrt');
+		expect(ricsName(60)).toBe('Iarnród Éireann');
+		expect(ricsName(3189)).toBe('Arriva vlaky s.r.o.');
 		expect(ricsName(9901)).toBe('Eurail B.V. (Interrail)');
 	});
 

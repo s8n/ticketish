@@ -54,6 +54,48 @@ function keycard({
 	};
 }
 
+/**
+ * ČD OneTicket body, ticket type 24. Bits run adults, children, specimen,
+ * class, SJT number, year, issuing day, return flag, validity, then a gap
+ * this parser does not place, the inspection flags and the free text.
+ */
+function oneTicket({
+	adults = 1,
+	children = 0,
+	specimen = false,
+	travelClass = 2,
+	sjt = 'CD00000A0AA0A0',
+	yearDigit = 4,
+	issuingDay = 100,
+	returnIncluded = false,
+	startOffset = 0,
+	endOffset = 1,
+	flags = 0x0080,
+	extra = 'V=1C=100',
+	sjtTimestamp = 0
+} = {}) {
+	return (w: BitWriter) => {
+		w.int(adults, 7);
+		w.int(children, 7);
+		w.bool(specimen);
+		w.int(travelClass, 6);
+		w.str6(sjt, 14); // bits 21..105
+		w.int(yearDigit, 4);
+		w.int(issuingDay, 9);
+		w.bool(returnIncluded); // bit 118
+		w.int(startOffset, 9); // bits 119..128
+		w.int(endOffset, 9); // bits 128..137
+		w.int(0, 61); // bits 137..198, not placed by this parser
+		w.int(flags, 14); // bits 198..212
+		w.str6(extra, 35); // bits 212..422
+		w.int(sjtTimestamp, 12); // bits 422..434
+	};
+}
+
+const CD_RICS = 1154;
+/** Arriva vlaky, which issues the same OneTicket record as ČD does. */
+const ARRIVA_RICS = 3189;
+
 const NS_RICS = 1184;
 const REFERENCE = new Date('2024-06-01T00:00:00Z');
 
@@ -125,5 +167,67 @@ describe('NS Keycard record', () => {
 	it('is reached through the format dispatcher', () => {
 		const container = parsePayload(ssb(NS_RICS, 21, keycard()));
 		expect(container.kind).toBe('ssb');
+	});
+});
+
+describe('ČD OneTicket record (SSB type 24)', () => {
+	it('reads the fields the ticket face also prints', () => {
+		const c = parsePayload(
+			ssb(CD_RICS, 24, oneTicket({ sjt: 'CD00123A4BC5D6', yearDigit: 4, issuingDay: 153 }))
+		);
+		expect(c.kind).toBe('ssb');
+		if (c.kind !== 'ssb') return;
+
+		expect(c.envelope.ticketType).toBe(24);
+		expect(c.envelope.ticketTypeName).toBe('ČD OneTicket');
+		const r = c.envelope.data;
+		expect(r?.kind).toBe('cd-oneticket');
+		if (r?.kind !== 'cd-oneticket') return;
+
+		// the PNR field carries the SJT number printed on the face
+		expect(r.pnr).toBe('CD00123A4BC5D6');
+		expect(r.numAdults).toBe(1);
+		expect(r.travelClass).toBe(2);
+		expect(r.issuingDate).toBe('2024-06-01');
+	});
+
+	it('dates validity from the issuing day, as the other SSB records do', () => {
+		const e = parseSsb(
+			ssb(CD_RICS, 24, oneTicket({ yearDigit: 4, issuingDay: 153, startOffset: 0, endOffset: 1 })),
+			REFERENCE
+		);
+		const r = e.data;
+		if (r?.kind !== 'cd-oneticket') return;
+		expect(r.validityStart).toBe('2024-06-01');
+		expect(r.validityEnd).toBe('2024-06-02');
+	});
+
+	it('reads the inspection flags, which say what has to be checked', () => {
+		const discount = parseSsb(ssb(CD_RICS, 24, oneTicket({ flags: 0x0080 })), REFERENCE);
+		if (discount.data?.kind !== 'cd-oneticket') return;
+		expect(discount.data.flags.checkFareDiscounts).toBe(true);
+		expect(discount.data.flags.checkPassengerId).toBe(false);
+
+		const id = parseSsb(ssb(CD_RICS, 24, oneTicket({ flags: 0x0001 | 0x2000 })), REFERENCE);
+		if (id.data?.kind !== 'cd-oneticket') return;
+		expect(id.data.flags.checkPassengerId).toBe(true);
+		expect(id.data.flags.reservationOnlyTicket).toBe(true);
+		expect(id.data.flags.checkFareDiscounts).toBe(false);
+	});
+
+	it('reads the record whoever issued it, not just for ČD', () => {
+		// the OneTicket tariff is shared, and other carriers issue the same record
+		for (const rics of [CD_RICS, ARRIVA_RICS]) {
+			const e = parseSsb(ssb(rics, 24, oneTicket({ sjt: 'AV00231A0AA0A0' })), REFERENCE);
+			expect(e.issuerRics, `rics ${rics}`).toBe(rics);
+			expect(e.data?.kind, `rics ${rics}`).toBe('cd-oneticket');
+			expect(e.unsupported, `rics ${rics}`).toBeUndefined();
+		}
+	});
+
+	it('keeps the free text, which is where the fare blocks live', () => {
+		const e = parseSsb(ssb(CD_RICS, 24, oneTicket({ extra: 'V=2896C=190' })), REFERENCE);
+		if (e.data?.kind !== 'cd-oneticket') return;
+		expect(e.data.extraText).toBe('V=2896C=190');
 	});
 });

@@ -2,7 +2,7 @@
 	// SPDX-FileCopyrightText: 2026 ave
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
-	import type { SsbEnvelope, SsbStation } from '../tickets/ssb/ssb.ts';
+	import type { SsbEnvelope, SsbOneTicketFlags, SsbStation } from '../tickets/ssb/ssb.ts';
 	import { fmtDate } from '../tickets/format.ts';
 	import { ricsName } from '../tickets/uic/rics.ts';
 	import { uicCountryName } from '../tickets/countries.ts';
@@ -27,6 +27,21 @@
 		return s.value;
 	}
 
+	/** The checks a OneTicket asks an inspector to make. */
+	function oneTicketChecks(f: SsbOneTicketFlags): string[] {
+		return [
+			f.checkPassengerId ? 'passenger ID' : null,
+			f.checkPassengerRailPass ? 'rail pass' : null,
+			f.checkFareDiscounts ? 'fare discount' : null,
+			f.checkInCard ? 'check-in card' : null,
+			f.securePaper ? 'secure paper' : null,
+			f.zoneTravelDocument ? 'zone travel document' : null,
+			f.containsZoneComponent ? 'zone component' : null,
+			f.additionalPaymentTicket ? 'additional payment' : null,
+			f.reservationOnlyTicket ? 'reservation only' : null
+		].filter((x): x is string => x !== null);
+	}
+
 	function travelers(adults: number, children: number): string {
 		return [
 			`${adults} adult${adults === 1 ? '' : 's'}`,
@@ -45,13 +60,14 @@
 				{:else if r.kind === 'reservation'}Reservation
 				{:else if r.kind === 'non-reservation'}Travel ticket
 				{:else if r.kind === 'group'}Group ticket
+				{:else if r.kind === 'cd-oneticket'}OneTicket
 				{:else}Pass{/if}
 			</span>
 			{#if travelClass}<span class="chip">{travelClass}</span>{/if}
 			{#if r.specimen}<span class="chip specimen">Specimen</span>{/if}
 		</header>
 
-		{#if r.kind !== 'ns-keycard' && r.kind !== 'pass'}
+		{#if r.kind !== 'ns-keycard' && r.kind !== 'pass' && r.kind !== 'cd-oneticket'}
 			<div class="route">
 				<span class="station">{stationLabel(r.departureStation)}</span>
 				<span class="line" aria-hidden="true"><span class="dot"></span><span class="rail"></span><span class="dot"></span></span>
@@ -102,13 +118,20 @@
 					{#if r.countermark}<dt>Countermark</dt>
 						<dd>{r.countermark}</dd>{/if}
 				{/if}
-				{#if (r.kind === 'non-reservation' || r.kind === 'group') && r.returnIncluded}
+				{#if r.kind === 'cd-oneticket'}
+					{@const checks = oneTicketChecks(r.flags)}
+					{#if checks.length}
+						<dt>Inspection</dt>
+						<dd>{checks.join(', ')}</dd>
+					{/if}
+				{/if}
+				{#if (r.kind === 'non-reservation' || r.kind === 'group' || r.kind === 'cd-oneticket') && r.returnIncluded}
 					<dt>Return</dt>
 					<dd>Included</dd>
 				{/if}
 				<dt>Travelers</dt>
 				<dd>{travelers(r.numAdults, r.numChildren)}</dd>
-				{#if r.pnr}<dt>Reference</dt>
+				{#if r.pnr}<dt>{r.kind === 'cd-oneticket' ? 'SJT number' : 'Reference'}</dt>
 					<dd><code>{r.pnr}</code></dd>{/if}
 				<dt>Issued</dt>
 				<dd>{fmtDate(r.issuingDate)}</dd>
@@ -118,6 +141,13 @@
 				<dd class="small">{r.extraText}</dd>
 			{/if}
 		</dl>
+
+		{#if r.kind === 'cd-oneticket'}
+			<p class="note">
+				The OneTicket record carries no station codes this parser can place, so the route is on
+				the ticket face only.
+			</p>
+		{/if}
 	{:else}
 		<p class="note">{envelope.unsupported ?? 'This SSB ticket type is not decoded yet.'}</p>
 		<details>
