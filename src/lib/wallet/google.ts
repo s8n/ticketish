@@ -139,25 +139,67 @@ interface TextModule {
 /** Google labels every visible string with a language, even a station name. */
 const text = (value: string) => ({ defaultValue: { language: 'en', value } });
 
-/** One class per issuer is enough: every pass this app writes is the same shape. */
-const CLASS_SUFFIX = 'ticketish_generic';
+/** One class covers every generic pass: they are all the same shape. */
+const GENERIC_CLASS = 'ticketish_generic';
 
-/** The generic object Google renders, built from the trip. */
-export function buildGenericObject(
+/**
+ * Google shows at most ten text modules from an object, so a ticket with more
+ * detail than that loses the tail rather than the fields anyone would miss.
+ */
+const MAX_TEXT_MODULES = 10;
+
+/** A transit class carries the operator's name, so there is one per operator. */
+function transitClassId(issuerId: string, issuer: string): string {
+	const slug = issuer
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '_')
+		.replace(/^_|_$/g, '')
+		.slice(0, 40);
+	return `${issuerId}.ticketish_rail_${slug || 'operator'}`;
+}
+
+/**
+ * A transit class needs a logo, and a logo is a URI Google's servers fetch,
+ * so a pass can only be a transit pass when this app is being served from
+ * somewhere Google can reach. Off a laptop or a private network it falls back
+ * to the generic pass, which needs no images.
+ */
+export function transitLogoUri(origin: string | undefined): string | null {
+	if (!origin || !origin.startsWith('https://')) return null;
+	return `${origin}/icons/icon-192.png`;
+}
+
+/**
+ * Which shape of pass this trip should be.
+ *
+ * A journey is a transit pass: Google lays out an origin, a destination, the
+ * departure and the seat itself, rather than leaving them as rows of text.
+ * Anything without a route, and anything this app cannot give a logo, is a
+ * generic pass.
+ */
+export function googlePassKind(
 	trip: TripSummary,
-	payload: Uint8Array,
-	symbology: BarcodeSymbology,
-	issuerId: string
-): Record<string, unknown> {
-	const suffix = serialForPayload(payload);
+	origin: string | undefined
+): 'transit' | 'generic' {
+	return trip.shape === 'journey' && trip.from && trip.to && transitLogoUri(origin)
+		? 'transit'
+		: 'generic';
+}
+
+/** The rows that go under the pass, whatever shape it is. */
+function textModules(trip: TripSummary, exclude: Set<string>): TextModule[] {
 	const rows: TextModule[] = [];
 	const add = (header: string, body: string | undefined, id: string) => {
-		if (body) rows.push({ header, body, id });
+		if (body && !exclude.has(id)) rows.push({ header, body, id });
 	};
-
 	const departure = localParts(trip.departure);
+
 	add('Train', trip.train, 'train');
-	add('Departs', departure ? `${departure.date} ${departure.time ?? ''}`.trim() : undefined, 'departs');
+	add(
+		'Departs',
+		departure ? `${departure.date} ${departure.time ?? ''}`.trim() : undefined,
+		'departs'
+	);
 	add('Class', trip.travelClass, 'class');
 	add('Coach', trip.coach, 'coach');
 	add('Seat', trip.seat, 'seat');
@@ -166,35 +208,159 @@ export function buildGenericObject(
 	add('Valid until', trip.validUntil?.replace('T', ' '), 'validUntil');
 	add('Ticket number', trip.ticketId, 'ticketId');
 	add('Booking reference', trip.reference, 'reference');
+	add('Price', trip.price, 'price');
 	for (const [i, detail] of trip.details.entries()) add(detail.label, detail.value, `detail${i}`);
 
+	return rows.slice(0, MAX_TEXT_MODULES);
+}
+
+/** The barcode object, which is the same either way. */
+function barcodeOf(trip: TripSummary, payload: Uint8Array, symbology: BarcodeSymbology) {
+	return {
+		type: BARCODE_TYPES[symbology.format],
+		// one character per byte: ASCII passes through as itself, and a
+		// binary payload rides on Google reading the rest back as Latin-1
+		value: latin1Message(payload),
+		...(trip.ticketId ? { alternateText: trip.ticketId } : {})
+	};
+}
+
+function validTimeInterval(trip: TripSummary): Record<string, unknown> | undefined {
+	const start = asUtcInstant(trip.validFrom ?? trip.departure);
+	const end = asUtcInstant(trip.validUntil ?? trip.arrival);
+	if (!start && !end) return undefined;
+	return {
+		...(start ? { start: { date: start } } : {}),
+		...(end ? { end: { date: end } } : {})
+	};
+}
+
+/**
+ * A local date-time in the extended ISO 8601 form Google takes, with no
+ * offset. Leaving the offset out is deliberate and matches what these formats
+ * carry: none of them says which zone its wall clock is in, and an offset we
+ * invented would move the time Google displays.
+ */
+function isoLocal(value: string | undefined): string | undefined {
+	const parts = localParts(value);
+	return parts ? `${parts.date}T${parts.time ?? '00:00'}:00` : undefined;
+}
+
+/** The generic object Google renders, built from the trip. */
+export function buildGenericObject(
+	trip: TripSummary,
+	payload: Uint8Array,
+	symbology: BarcodeSymbology,
+	issuerId: string
+): Record<string, unknown> {
 	const object: Record<string, unknown> = {
-		id: `${issuerId}.${suffix}`,
-		classId: `${issuerId}.${CLASS_SUFFIX}`,
+		id: `${issuerId}.${serialForPayload(payload)}`,
+		classId: `${issuerId}.${GENERIC_CLASS}`,
 		state: 'ACTIVE',
 		cardTitle: text(trip.issuer),
 		header: text(tripTitle(trip)),
-		hexBackgroundColor: '#26324b',
-		barcode: {
-			type: BARCODE_TYPES[symbology.format],
-			// one character per byte: ASCII passes through as itself, and a
-			// binary payload rides on Google reading the rest back as Latin-1
-			value: latin1Message(payload),
-			...(trip.ticketId ? { alternateText: trip.ticketId } : {})
-		},
-		textModulesData: rows
+		hexBackgroundColor: BACKGROUND,
+		barcode: barcodeOf(trip, payload, symbology),
+		textModulesData: textModules(trip, new Set())
 	};
 	if (trip.product) object.subheader = text(trip.product);
+	const interval = validTimeInterval(trip);
+	if (interval) object.validTimeInterval = interval;
+	return object;
+}
 
-	const start = asUtcInstant(trip.validFrom ?? trip.departure);
-	const end = asUtcInstant(trip.validUntil ?? trip.arrival);
-	if (start || end) {
-		object.validTimeInterval = {
-			...(start ? { start: { date: start } } : {}),
-			...(end ? { end: { date: end } } : {})
+/**
+ * The transit object, which is the one worth having for a journey.
+ *
+ * Everything in the leg is a field Google lays out itself: the two stations
+ * either side of an arrow, the departure and arrival, the coach and the seat.
+ * Those fields are then left out of the text rows below, so the pass does not
+ * say the same thing twice.
+ *
+ * `carriage` is the vehicle rather than the coach, which is where the train
+ * number goes; the coach number belongs to the seat.
+ */
+export function buildTransitObject(
+	trip: TripSummary,
+	payload: Uint8Array,
+	symbology: BarcodeSymbology,
+	issuerId: string
+): Record<string, unknown> {
+	const seat: Record<string, unknown> = {};
+	if (trip.coach) seat.coach = trip.coach;
+	if (trip.seat) seat.seat = trip.seat;
+	if (trip.travelClass) seat.customFareClass = text(trip.travelClass);
+
+	const leg: Record<string, unknown> = {
+		originName: text(trip.from!),
+		destinationName: text(trip.to!),
+		transitOperatorName: text(trip.issuer)
+	};
+	const departure = isoLocal(trip.departure);
+	const arrival = isoLocal(trip.arrival);
+	if (departure) leg.departureDateTime = departure;
+	if (arrival) leg.arrivalDateTime = arrival;
+	if (trip.train) leg.carriage = trip.train;
+	if (trip.product) leg.fareName = text(trip.product);
+	if (Object.keys(seat).length) leg.ticketSeat = seat;
+
+	// what the leg already shows does not need a row of its own as well
+	const covered = new Set(['train', 'departs', 'class', 'coach', 'seat']);
+	const object: Record<string, unknown> = {
+		id: `${issuerId}.${serialForPayload(payload)}`,
+		classId: transitClassId(issuerId, trip.issuer),
+		state: 'ACTIVE',
+		tripType: 'ONE_WAY',
+		hexBackgroundColor: BACKGROUND,
+		barcode: barcodeOf(trip, payload, symbology),
+		ticketLeg: leg,
+		textModulesData: textModules(trip, covered)
+	};
+	if (trip.ticketId) object.ticketNumber = trip.ticketId;
+	if (trip.passenger) object.passengerNames = trip.passenger;
+	if (trip.via) object.ticketRestrictions = { routeRestrictions: text(trip.via) };
+	const interval = validTimeInterval(trip);
+	if (interval) object.validTimeInterval = interval;
+	return object;
+}
+
+const BACKGROUND = '#26324b';
+
+/**
+ * The class and object for this trip, as the JWT carries them.
+ *
+ * Both are declared inline, so an issuer that has never used this app gets
+ * the class created on the first save rather than needing a setup step
+ * somewhere else. A class has to be past `draft` before an object can exist
+ * against it, and `UNDER_REVIEW` is what the documentation says to send: the
+ * platform approves it and the object can be created straight away.
+ */
+export function buildPassPayload(
+	trip: TripSummary,
+	payload: Uint8Array,
+	symbology: BarcodeSymbology,
+	issuerId: string,
+	origin: string | undefined
+): Record<string, unknown> {
+	const logo = transitLogoUri(origin);
+	if (googlePassKind(trip, origin) === 'transit') {
+		return {
+			transitClasses: [
+				{
+					id: transitClassId(issuerId, trip.issuer),
+					issuerName: trip.issuer,
+					reviewStatus: 'UNDER_REVIEW',
+					transitType: 'RAIL',
+					logo: { sourceUri: { uri: logo } }
+				}
+			],
+			transitObjects: [buildTransitObject(trip, payload, symbology, issuerId)]
 		};
 	}
-	return object;
+	return {
+		genericClasses: [{ id: `${issuerId}.${GENERIC_CLASS}` }],
+		genericObjects: [buildGenericObject(trip, payload, symbology, issuerId)]
+	};
 }
 
 /**
@@ -219,13 +385,7 @@ export interface GoogleSaveLink {
 	warnings: string[];
 }
 
-/**
- * Sign a save link for this ticket.
- *
- * The class is declared inline alongside the object, so an issuer that has
- * never used this app gets one created on the first save rather than needing
- * a setup step somewhere else.
- */
+/** Sign a save link for this ticket. */
 export async function buildSaveLink(
 	trip: TripSummary,
 	payload: Uint8Array,
@@ -241,10 +401,7 @@ export async function buildSaveLink(
 		aud: 'google',
 		typ: 'savetowallet',
 		origins: origin ? [origin] : [],
-		payload: {
-			genericClasses: [{ id: `${issuer.issuerId}.${CLASS_SUFFIX}` }],
-			genericObjects: [buildGenericObject(trip, payload, symbology, issuer.issuerId)]
-		}
+		payload: buildPassPayload(trip, payload, symbology, issuer.issuerId, origin)
 	};
 
 	const signingInput = `${jsonPart({ alg: 'RS256', typ: 'JWT' })}.${jsonPart(claims)}`;

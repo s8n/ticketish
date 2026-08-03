@@ -110,6 +110,15 @@
 			return;
 		}
 		if (!trip || !ticket.symbology) return;
+
+		// The tab has to be opened here, in the click itself: signing takes a
+		// moment, and a window opened after an await is a popup as far as the
+		// browser is concerned and gets blocked. So it opens empty and is sent
+		// somewhere once there is somewhere to send it. When the browser
+		// refuses even this, the link is shown instead of being lost.
+		const tab = window.open('', '_blank');
+		if (tab) tab.opener = null;
+
 		busy = true;
 		try {
 			const link = await buildSaveLink(
@@ -119,9 +128,11 @@
 				credentials.google,
 				location.origin
 			);
-			saveLink = link.url;
 			linkWarnings = link.warnings;
+			if (tab) tab.location.href = link.url;
+			else saveLink = link.url;
 		} catch (e) {
+			tab?.close();
 			error = say(e);
 		} finally {
 			busy = false;
@@ -206,15 +217,15 @@
 
 			{#if saveLink}
 				<p class="note">
-					The pass is signed and waiting.
-					<a href={saveLink} target="_blank" rel="noreferrer noopener">Open it in Google Wallet</a>
+					The tab could not be opened, so here is the pass:
+					<a href={saveLink} target="_blank" rel="noreferrer noopener">open it in Google Wallet</a>
 					. That link goes to Google and carries the ticket inside it, which is the only way this
 					wallet accepts a pass.
 				</p>
-				{#each linkWarnings as warning, i (i)}
-					<p class="note">{warning}</p>
-				{/each}
 			{/if}
+			{#each linkWarnings as warning, i (i)}
+				<p class="note">{warning}</p>
+			{/each}
 
 			{#if previewRows.length}
 				<details class="preview">

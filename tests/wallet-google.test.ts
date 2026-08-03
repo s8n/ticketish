@@ -15,12 +15,16 @@ import { describe, expect, it } from 'vitest';
 import { createVerify, generateKeyPairSync } from 'node:crypto';
 import {
 	buildGenericObject,
+	buildPassPayload,
 	buildSaveLink,
+	buildTransitObject,
 	googleCaveats,
+	googlePassKind,
 	googleProblem,
 	loadGoogleIssuer,
 	MAX_JWT_LENGTH,
-	SAFE_JWT_LENGTH
+	SAFE_JWT_LENGTH,
+	transitLogoUri
 } from '../src/lib/wallet/google.ts';
 import type { TripSummary } from '../src/lib/wallet/trip.ts';
 import type { BarcodeSymbology } from '../src/lib/tickets/types.ts';
@@ -102,6 +106,93 @@ describe('the issuer credentials', () => {
 	it('insists the issuer ID is the number from the console', async () => {
 		const { json } = serviceAccount();
 		await expect(loadGoogleIssuer(json, 'my-issuer')).rejects.toThrow(/number/);
+	});
+});
+
+const ORIGIN = 'https://ticketish.example';
+
+const periodTrip: TripSummary = {
+	shape: 'period',
+	issuer: 'Test Verbund',
+	product: 'Test area pass',
+	validFrom: '2026-09-01T00:00',
+	validUntil: '2026-09-30T23:59',
+	ticketId: '4242',
+	details: []
+};
+
+describe('which shape of pass a trip becomes', () => {
+	it('makes a journey a transit pass, where Google lays out the route itself', () => {
+		expect(googlePassKind(trip, ORIGIN)).toBe('transit');
+	});
+
+	it('makes anything without a route a generic pass', () => {
+		expect(googlePassKind(periodTrip, ORIGIN)).toBe('generic');
+		expect(googlePassKind({ ...trip, to: undefined }, ORIGIN)).toBe('generic');
+	});
+
+	it('falls back to generic where Google could not fetch a logo', () => {
+		// a transit class needs one, and Google fetches it over the network
+		expect(transitLogoUri('http://localhost:5173')).toBeNull();
+		expect(transitLogoUri(undefined)).toBeNull();
+		expect(transitLogoUri(ORIGIN)).toBe(`${ORIGIN}/icons/icon-192.png`);
+		expect(googlePassKind(trip, 'http://localhost:5173')).toBe('generic');
+	});
+});
+
+describe('the transit pass', () => {
+	/** A journey with everything a leg can hold. */
+	const seated: TripSummary = { ...trip, passenger: 'A Traveller', coach: '7', seat: '41' };
+	const object = () =>
+		buildTransitObject(seated, ascii('TICKET'), AZTEC, '333') as Record<string, unknown>;
+	const localized = (value: unknown) =>
+		(value as { defaultValue: { value: string } }).defaultValue.value;
+
+	it('puts the journey in the leg, where Google renders it as a journey', () => {
+		const leg = object().ticketLeg as Record<string, unknown>;
+		expect(localized(leg.originName)).toBe('Alpha');
+		expect(localized(leg.destinationName)).toBe('Beta');
+		expect(localized(leg.transitOperatorName)).toBe('Test Railways');
+		// no offset: these formats do not say which zone their clock is in
+		expect(leg.departureDateTime).toBe('2026-09-01T08:15:00');
+		// carriage is the vehicle, the coach belongs to the seat
+		expect(leg.carriage).toBe('1234');
+		expect(leg.ticketSeat).toMatchObject({ coach: '7', seat: '41' });
+	});
+
+	it('does not repeat in the rows what the leg already shows', () => {
+		const ids = (object().textModulesData as { id: string }[]).map((r) => r.id);
+		for (const covered of ['train', 'departs', 'class', 'coach', 'seat']) {
+			expect(ids).not.toContain(covered);
+		}
+		// what the leg has no place for is still there
+		expect(ids).toContain('detail0');
+	});
+
+	it('names the passenger and the ticket in the fields meant for them', () => {
+		const o = object();
+		expect(o.ticketNumber).toBe('TKT1');
+		expect(o.passengerNames).toBe('A Traveller');
+		expect(o.tripType).toBe('ONE_WAY');
+	});
+
+	it('declares a class per operator, past draft so an object can exist', () => {
+		const payload = buildPassPayload(seated, ascii('TICKET'), AZTEC, '333', ORIGIN);
+		const [cls] = payload.transitClasses as Record<string, unknown>[];
+		expect(cls.id).toBe('333.ticketish_rail_test_railways');
+		expect(cls.issuerName).toBe('Test Railways');
+		// a draft class cannot have objects created against it
+		expect(cls.reviewStatus).toBe('UNDER_REVIEW');
+		expect(cls.transitType).toBe('RAIL');
+		expect(cls.logo).toEqual({ sourceUri: { uri: `${ORIGIN}/icons/icon-192.png` } });
+		const [obj] = payload.transitObjects as Record<string, unknown>[];
+		expect(obj.classId).toBe(cls.id);
+	});
+
+	it('falls back to a generic pass with no origin to host a logo', () => {
+		const payload = buildPassPayload(seated, ascii('TICKET'), AZTEC, '333', undefined);
+		expect(payload.genericObjects).toBeDefined();
+		expect(payload.transitObjects).toBeUndefined();
 	});
 });
 
