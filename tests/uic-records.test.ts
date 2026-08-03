@@ -119,3 +119,14 @@ describe('918.3 envelope', () => {
 		expect(c.envelope.records[0].raw).toHaveLength(8);
 	});
 });
+
+describe('RICS issuer names', () => {
+	it('names issuers it knows and leaves the rest numeric', async () => {
+		const { ricsName } = await import('../src/lib/tickets/uic/rics.ts');
+		expect(ricsName(3213)).toBe('Hamburger Verkehrsverbund (HVV)');
+		expect(ricsName(1080)).toBeTruthy();
+		expect(ricsName('1080')).toBe(ricsName(1080));
+		expect(ricsName(99999)).toBeNull();
+		expect(ricsName(null)).toBeNull();
+	});
+});

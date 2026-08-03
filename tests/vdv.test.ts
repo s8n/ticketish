@@ -75,6 +75,34 @@ describe('VDV tickets', () => {
 		expect(result.tickets[0].ticketId).toBe(12345678);
 	});
 
+	it('shows the identification medium as text inside a MOTICS container', () => {
+		// the element's bytes are ASCII: a secure element identifier written out
+		const identifier = 'T6230BFA983FE4F29821FE7C87C4FECA9';
+		const element = tlv(0xd7, new Uint8Array([...identifier].map((c) => c.charCodeAt(0))));
+		const withMedium = buildVdv({
+			header: HEADER,
+			productData: concat(tlv(0xda, BASIC_DATA), element)
+		});
+
+		const wrapped = parseVdv(wrapMotics(withMedium.barcode), withMedium.caKeys);
+		const inMotics = wrapped.tickets[0].productData.find((e) => e.tag === 0xd7);
+		expect(inMotics?.text).toBe(identifier);
+
+		// outside a MOTICS container the same bytes stay as hex, since only
+		// there is the value known to be text
+		const plain = parseVdv(withMedium.barcode, withMedium.caKeys);
+		const outside = plain.tickets[0].productData.find((e) => e.tag === 0xd7);
+		expect(outside?.text).toBeUndefined();
+		expect(outside?.hex).toBe(inMotics?.hex);
+	});
+
+	it('leaves a non-textual identification medium as hex', () => {
+		const binary = tlv(0xd7, new Uint8Array([0x00, 0xff, 0x10, 0x80, 0x01]));
+		const built = buildVdv({ header: HEADER, productData: concat(tlv(0xda, BASIC_DATA), binary) });
+		const result = parseVdv(wrapMotics(built.barcode), built.caKeys);
+		expect(result.tickets[0].productData.find((e) => e.tag === 0xd7)?.text).toBeUndefined();
+	});
+
 	it('reports an unknown CA instead of throwing', () => {
 		const result = parseVdv(built.barcode, {});
 		expect(result.recovered).toBe(false);

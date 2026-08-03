@@ -50,6 +50,12 @@ export interface VdvProductDataElement {
 	data: Record<string, unknown> | null;
 	/** Set for the passenger element, which gets its own presentation. */
 	passenger?: VdvPassenger;
+	/**
+	 * Readable form of an element whose bytes are ASCII text. Only filled in
+	 * for the identification medium inside a MOTICS container, where the
+	 * value is the secure element's identifier written out as characters.
+	 */
+	text?: string;
 	hex: string;
 }
 
@@ -315,7 +321,17 @@ function parseBasicData(d: Uint8Array): Record<string, unknown> {
 	};
 }
 
-function parseProductData(data: Uint8Array): VdvProductDataElement[] {
+/** ASCII text, or null when the bytes are not printable. */
+function asAsciiText(data: Uint8Array): string | null {
+	if (!data.length) return null;
+	for (const b of data) if (b < 0x20 || b > 0x7e) return null;
+	return String.fromCharCode(...data);
+}
+
+function parseProductData(
+	data: Uint8Array,
+	{ container }: { container: 'plain' | 'motics' }
+): VdvProductDataElement[] {
 	let items;
 	try {
 		items = parseTlv(data);
@@ -329,11 +345,13 @@ function parseProductData(data: Uint8Array): VdvProductDataElement[] {
 			name: PRODUCT_ELEMENT_NAMES[i.tag] ?? `Element 0x${i.tag.toString(16)}`,
 			data: i.tag === 0xda && i.value.length >= 17 ? parseBasicData(i.value) : null,
 			passenger: i.tag === 0xdb ? (parsePassengerData(i.value) ?? undefined) : undefined,
+			text:
+				i.tag === 0xd7 && container === 'motics' ? (asAsciiText(i.value) ?? undefined) : undefined,
 			hex: hex(i.value)
 		}));
 }
 
-function parseTicket(data: Uint8Array): VdvTicket {
+function parseTicket(data: Uint8Array, container: 'plain' | 'motics'): VdvTicket {
 	if (data.length < 111) throw new Error(`VDV ticket too short (${data.length} bytes)`);
 	const trailer = data.subarray(data.length - 5);
 	if (String.fromCharCode(...trailer.subarray(0, 3)) !== 'VDV') {
@@ -376,7 +394,7 @@ function parseTicket(data: Uint8Array): VdvTicket {
 		locationOrgId: int(commonTransaction, 15, 17),
 		samId: int(issueData, 9, 12),
 		samVersion: issueData[4],
-		productData: parseProductData(product.item.value)
+		productData: parseProductData(product.item.value, { container })
 	};
 }
 
@@ -496,7 +514,7 @@ export function parseVdv(data: Uint8Array, caKeys_: VdvCaKeyStore = CA_KEYS): Vd
 		if (!message) return { ...base, error: 'ticket signature recovery failed' };
 		payloadHex ??= hex(message);
 		try {
-			tickets.push(parseTicket(message));
+			tickets.push(parseTicket(message, container));
 		} catch (e) {
 			return {
 				...base,

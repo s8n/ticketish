@@ -88,6 +88,11 @@
 							{/each}
 						</dl>
 					</div>
+				{:else if el.text}
+					<div class="element">
+						<span class="element-name">{el.name}</span>
+						<code class="text">{el.text}</code>
+					</div>
 				{:else}
 					<details class="element">
 						<summary>{el.name} <span class="soft">({el.hex.length / 2} bytes)</span></summary>
@@ -177,6 +182,12 @@
 	}
 	summary {
 		cursor: pointer;
+	}
+	.text {
+		font-size: 0.78rem;
+		word-break: break-all;
+		display: block;
+		margin-top: 0.2rem;
 	}
 	.hex {
 		font-size: 0.72rem;

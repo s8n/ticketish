@@ -39,6 +39,7 @@ const RICS_NAMES: Record<number, string> = {
 	9901: 'Eurail B.V. (Interrail)',
 	9902: 'Eurail B.V.',
 	3018: 'Transdev / Ostdeutsche Eisenbahn',
+	3213: 'Hamburger Verkehrsverbund (HVV)',
 	5262: 'FlixTrain GmbH'
 };
 
