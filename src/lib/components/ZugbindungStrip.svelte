@@ -37,6 +37,8 @@
 </div>
 
 <style>
+	/* The whole stamp scrolls, label included, so swiping left reclaims that
+	   width and shows more of the route. */
 	.stamp {
 		border: 2px solid var(--signal-red);
 		border-radius: 6px;
@@ -46,6 +48,8 @@
 		gap: 1rem;
 		align-items: baseline;
 		flex-wrap: nowrap;
+		overflow-x: auto;
+		scrollbar-width: thin;
 		background:
 			repeating-linear-gradient(
 				-45deg,
@@ -53,17 +57,17 @@
 				color-mix(in srgb, var(--signal-red) 4%, transparent) 10px 11px
 			);
 	}
-	/* The label stays put; only the content swipes sideways on narrow screens. */
+	/* Never shrink below the content, so the stamp scrolls instead of the
+	   rows being squeezed; grow to fill when there is room. */
 	.body {
-		min-width: 0;
 		flex: 1;
+		min-width: max-content;
 		display: flex;
 		flex-direction: column;
 		gap: 0.35rem;
-		overflow-x: auto;
-		scrollbar-width: thin;
 	}
 	.title {
+		flex: none;
 		font-family: var(--font-display);
 		text-transform: uppercase;
 		font-weight: 700;
