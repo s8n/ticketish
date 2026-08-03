@@ -105,6 +105,45 @@ encoder segments its data is not recoverable from a decode. The error
 correction figures shown usually differ, because the decoder derives them
 from spare capacity instead of reading a setting.
 
+## Adding a ticket to a phone wallet
+
+Tickets in the formats that have an intentional mapping (UIC 918.3 / 918.9 and
+VDV-KA so far) can be written out as an Apple Wallet pass or a Google Wallet
+pass. Both are built and signed in the browser, with credentials you supply.
+There is no service behind this: nothing is uploaded, and the app has no
+signing key of its own.
+
+A pass carries the original barcode byte for byte. Everything else on it was
+read out of that barcode and is only as good as this app's reading of it, so
+the original ticket is still the one that counts.
+
+**Apple Wallet** needs a Pass Type ID certificate from an Apple Developer
+account, as two PEM files. If you have the `.p12` that Keychain exports:
+
+```sh
+openssl pkcs12 -legacy -in Certificates.p12 -clcerts -nokeys -out cert.pem
+openssl pkcs12 -legacy -in Certificates.p12 -nocerts -nodes -out key.pem
+```
+
+The pass type and team identifiers are read out of the certificate, so there
+is nothing to type. The key is imported as non-extractable: the browser signs
+with it and cannot hand the bytes back. Apple's WWDR G4 intermediate is
+bundled, so signing works with no network. Safari is the only iOS browser
+that hands a `.pkpass` to Wallet.
+
+**Google Wallet** needs an issuer ID and a service account key from the Google
+Wallet Business Console, and it only works for tickets whose payload is text.
+Google carries a barcode as a JSON string and defines no Latin-1 or binary
+encoding for it, so a UIC or VDV payload, which is a compressed stream and a
+signature, cannot survive the round trip. Those are refused with that reason
+rather than turned into a pass whose barcode does not scan. An issuer account
+that has not been published also only saves passes for accounts registered on
+it as testers, which is a Google-side setting this app cannot see.
+
+Credentials live in memory unless you tick "keep on this device", which puts
+them in IndexedDB; "forget" deletes that database. Nothing else this app
+touches is ever written to disk.
+
 ## Development
 
 ```sh
@@ -133,6 +172,10 @@ The parsing pipeline is modular by design:
 - `src/lib/input/` - barcode extraction from images (zxing-wasm), PDFs
   (pdf.js), pkpass (fflate) and camera. All WASM/workers are bundled and
   served same-origin so the PWA works offline.
+- `src/lib/wallet/` - wallet export. `trip.ts` holds the per-format mapping
+  and is keyed by every container kind, so a new format has to decide whether
+  it gets a pass; `der.ts` and `cms.ts` write the PKCS#7 signature a `.pkpass`
+  needs, with WebCrypto doing the RSA and no PKI library involved.
 
 ### Tests
 

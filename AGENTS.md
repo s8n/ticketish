@@ -118,6 +118,31 @@ Besides the parser and view, update the two places that list supported
 formats: the empty-state text in `src/routes/+page.svelte` and the
 "What it reads" section in `README.md`.
 
+`EXTRACTORS` in `src/lib/wallet/trip.ts` is keyed by every container kind, so
+a new format will not compile until it says whether it gets a wallet pass.
+`null` is a perfectly good answer and the default one. Only write a mapping
+when you know which of the format's fields belong in the fixed handful a pass
+shows, because a pass is read by a ticket inspector: a barcode over the wrong
+stations is worse than no pass at all.
+
+## Wallet passes
+
+Two things in there have dates on them.
+
+`src/lib/wallet/wwdr.ts` is Apple's WWDR G4 intermediate, bundled because a
+pass has to be signable offline. It expires on 10 December 2030 and passes
+signed after that are refused. `identityProblem` in `identity.ts` says so
+rather than letting the failure happen inside Wallet; replacing the file with
+whatever Apple has moved to is the fix.
+
+The Google Wallet export is limited on purpose. `Barcode.value` is a JSON
+string and the only render encoding Google defines is UTF-8, for QR codes
+only, so a binary payload cannot go into a Google pass and come back out
+unchanged. Every UIC and VDV ticket is binary. `googleProblem` refuses those
+with that reason, and that refusal is a feature: do not "fix" it by base64ing
+the payload or letting the string be read as UTF-8, both of which produce a
+barcode that does not scan.
+
 ## Never put real tickets in tests
 
 Tests must not use ave's tickets, and must not contain values taken from

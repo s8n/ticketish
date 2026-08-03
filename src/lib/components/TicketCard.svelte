@@ -14,6 +14,7 @@
 	import { canRender } from '../input/render.ts';
 	import { tabModel } from './tabs.ts';
 	import BarcodeView from './BarcodeView.svelte';
+	import WalletExport from './WalletExport.svelte';
 
 	let { ticket }: { ticket: ParsedTicket } = $props();
 
@@ -188,6 +189,8 @@
 			{/if}
 		</div>
 	{/if}
+
+	<WalletExport {ticket} />
 </article>
 
 <style>
