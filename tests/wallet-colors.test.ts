@@ -26,9 +26,32 @@ describe('matching an operator', () => {
 		}
 	});
 
-	it('does not confuse the two numbering spaces', () => {
+	it('knows the Swiss operators by both the codes they carry', () => {
+		// SBB signs with a UIC company code and sells under a NOVA org id
+		for (const code of [85, 1085, 1185]) {
+			expect(colouredOperatorName({ scheme: 'rics', code })).toBe('SBB CFF FFS');
+		}
+		for (const code of [11, 351]) {
+			expect(colouredOperatorName({ scheme: 'nova', code })).toBe('SBB CFF FFS');
+		}
+		expect(colouredOperatorName({ scheme: 'rics', code: 3342 })).toBe(
+			'Schweizerische Südostbahn'
+		);
+		expect(passColors({ scheme: 'nova', code: 36 }).hex).toBe('#af6d4b');
+	});
+
+	it('colours a tariff association, which holds no company code at all', () => {
+		expect(colouredOperatorName({ scheme: 'nova', code: 490 })).toBe('Zürcher Verkehrsverbund');
+		expect(passColors({ scheme: 'nova', code: 490 }).hex).toBe('#737171');
+		expect(colouredOperatorName({ scheme: 'nova', code: 452 })).toBe('Tarifverbund Ostwind');
+		expect(passColors({ scheme: 'nova', code: 452 }).hex).toBe('#09315f');
+	});
+
+	it('does not confuse the numbering spaces', () => {
 		// 80 means DB in the UIC space and nothing here in VDV's
 		expect(colouredOperatorName({ scheme: 'vdv', code: 80 })).toBeNull();
+		// 85 is SBB in the UIC space; in NOVA's it is somebody else entirely
+		expect(colouredOperatorName({ scheme: 'nova', code: 85 })).toBeNull();
 	});
 
 	it('falls back to the app palette for an operator with no colour', () => {

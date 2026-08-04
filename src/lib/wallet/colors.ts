@@ -32,9 +32,12 @@ export interface PassColors {
 	label: string;
 }
 
-/** Where the issuer's code came from, since the two numbering spaces overlap. */
+/** Where the issuer's code came from, since the numbering spaces overlap. */
 export interface OperatorCode {
-	scheme: 'rics' | 'vdv';
+	/** `nova` is the Swiss NOVA organisation id, which names tariff
+	 *  associations as well as railways: a zone ticket is the association's
+	 *  product and comes out in the association's colour. */
+	scheme: 'rics' | 'vdv' | 'nova';
 	code: number;
 }
 
@@ -48,6 +51,8 @@ interface OperatorColor {
 	rics?: number[];
 	/** VDV organisation IDs. */
 	vdv?: number[];
+	/** Swiss NOVA organisation ids, as `orgs.json` keys without the padding. */
+	nova?: number[];
 }
 
 const OPERATORS: OperatorColor[] = [
@@ -58,6 +63,35 @@ const OPERATORS: OperatorColor[] = [
 		// 80 and 1080 are DB Fernverkehr, 3080 DB Regio, 5080 DB Vertrieb: one
 		// operator to a passenger, four codes to the ticket
 		rics: [80, 1080, 3080, 5080]
+	},
+	{
+		name: 'SBB CFF FFS',
+		hex: '#d42f16',
+		source: 'specified for this app, close to SBB red without claiming to be it',
+		rics: [85, 1085, 1185],
+		// 011 is the railway, 351 the SBB GmbH that runs the German cross-border
+		// services: the same red to a passenger
+		nova: [11, 351]
+	},
+	{
+		name: 'Schweizerische Südostbahn',
+		hex: '#af6d4b',
+		source: 'specified for this app',
+		rics: [3342],
+		nova: [36, 82]
+	},
+	{
+		name: 'Zürcher Verkehrsverbund',
+		hex: '#737171',
+		source: 'specified for this app',
+		// a tariff association rather than a railway, so it holds no UIC code
+		nova: [490]
+	},
+	{
+		name: 'Tarifverbund Ostwind',
+		hex: '#09315f',
+		source: 'specified for this app',
+		nova: [452]
 	}
 ];
 
@@ -125,9 +159,9 @@ export function paletteFor(hex: string): PassColors {
 /** The operator entry for a code, if the list knows it. */
 function lookup(operator: OperatorCode | undefined): OperatorColor | undefined {
 	if (!operator) return undefined;
-	return OPERATORS.find((entry) =>
-		(operator.scheme === 'rics' ? entry.rics : entry.vdv)?.includes(operator.code)
-	);
+	// the scheme names the field it reads, so a code is only ever matched
+	// against the space it came from
+	return OPERATORS.find((entry) => entry[operator.scheme]?.includes(operator.code));
 }
 
 /** The colours a pass for this operator should use. */
