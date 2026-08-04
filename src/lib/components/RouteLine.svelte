@@ -116,10 +116,10 @@
 		letter-spacing: normal;
 	}
 	.from {
-		margin-right: 0.7rem;
+		margin-right: 0.5rem;
 	}
 	.to {
-		margin-left: 0.7rem;
+		margin-left: 0.5rem;
 	}
 	.half {
 		display: flex;
