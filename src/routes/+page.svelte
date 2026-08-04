@@ -166,7 +166,7 @@
 			runs fully offline once installed · inspired by
 			<a href="https://zügli.app">zügli</a> ·
 			<a href="/credits">credits and licences</a> ·
-			<a href="https://github.com/s8n/ticketish">source code</a>
+			<a href="https://github.com/s8n/ticketish" target="_blank" rel="noopener">source code</a>
 		</p>
 	</footer>
 </div>

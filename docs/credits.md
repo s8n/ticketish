@@ -1,9 +1,13 @@
 # Credits
 
-Every format here was learned from somebody: a published specification, a
-project that had already worked it out, or a table of names nobody else
-publishes. Those sources are listed below, along with the conditions that came
-with two of them.
+Many formats here were learned from somebody: a published specification, a
+project that had already taken the format apart, or a table of names nobody
+else publishes. Those sources are listed below, with the conditions two of them
+came with.
+
+The rest had none of that and were reverse engineered here, barcode held
+against the ticket it came off, field by field until the numbers stopped
+moving. Several of them are written down nowhere else.
 
 ## Specifications and format knowledge
 
