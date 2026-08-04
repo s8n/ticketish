@@ -131,7 +131,8 @@
 		<p>
 			Runs fully offline once installed · UIC ASN.1 specs © UIC via
 			<a href="https://github.com/UnionInternationalCheminsdeFer/UIC-barcode">UIC-barcode</a> ·
-			inspired by <a href="https://github.com/TheEnbyperor/zuegli">zuegli</a>
+			inspired by <a href="https://github.com/TheEnbyperor/zuegli">zuegli</a> ·
+			<a href="https://github.com/s8n/ticketish">source code</a>
 		</p>
 	</footer>
 </div>
