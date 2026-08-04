@@ -27,8 +27,9 @@ import {
 	utcOffsetLabel
 } from '../src/lib/wallet/trip.ts';
 import type { ParsedTicket } from '../src/lib/tickets/types.ts';
-import { tlv } from './helpers/build.ts';
+import { concat, tlv } from './helpers/build.ts';
 import { buildVdv, vdvDateTime, vdvHeader } from './helpers/vdv.ts';
+import { msg, signedTicket, str, time, uint } from './helpers/swisspass.ts';
 
 const dir = fileURLToPath(new URL('./fixtures/public', import.meta.url));
 
@@ -39,16 +40,17 @@ function muster(name: string): ParsedTicket | null {
 }
 
 describe('which formats are exported at all', () => {
-	it('exports the two that have an intentional mapping', () => {
+	it('exports the ones that have an intentional mapping', () => {
 		expect(hasMapping({ kind: 'uic9183' } as never)).toBe(true);
 		expect(hasMapping({ kind: 'vdv' } as never)).toBe(true);
 		expect(hasMapping({ kind: 'dosipas' } as never)).toBe(true);
+		expect(hasMapping({ kind: 'swisspass' } as never)).toBe(true);
 	});
 
 	it('stays out of the way of the formats that do not', () => {
 		// a pass built from a format nobody mapped would be a guess, and the
 		// guess is read by a ticket inspector
-		for (const kind of ['rsp6', 'swisspass', 'mav', 'elb', 'text', 'unknown']) {
+		for (const kind of ['rsp6', 'mav', 'elb', 'text', 'unknown']) {
 			expect(hasMapping({ kind } as never)).toBe(false);
 		}
 	});
@@ -152,6 +154,147 @@ describe('a VDV ticket', () => {
 		expect(trip.from).toBeUndefined();
 		expect(trip.to).toBeUndefined();
 		expect(trip.train).toBeUndefined();
+	});
+});
+
+describe('a SwissPass ticket', () => {
+	// summer, so Zurich is UTC+2 and the offset is not the winter one
+	const VALID_FROM = Date.UTC(2026, 6, 3, 3, 0);
+	const VALID_UNTIL = Date.UTC(2026, 6, 3, 21, 59);
+
+	function nova(parts: { tariff: Uint8Array[]; body?: Uint8Array[]; rics?: string }) {
+		const ticket = concat(
+			uint(1, 123456789),
+			msg(2, ...parts.tariff),
+			msg(5, time(1, Date.UTC(2026, 5, 30, 9, 12)), uint(4, 11)), // sale, by SBB
+			msg(6, str(1, 'MC'), str(2, 'CHF'), str(3, '52.00')), // payment
+			...(parts.body ?? [])
+		);
+		return makeTicket(signedTicket(ticket, parts.rics ?? '1185'), {
+			kind: 'raw',
+			fileName: 'nova.bin'
+		});
+	}
+
+	const route = [
+		msg(1, uint(1, 1), str(2, 'Spartageskarte')),
+		str(2, 'Zürich HB'),
+		str(3, 'Lugano'),
+		uint(4, 1), // travel class: first
+		str(6, 'via Gotthard'),
+		time(8, VALID_FROM),
+		time(9, VALID_UNTIL),
+		uint(19, 2) // route type: route ticket
+	];
+
+	it('becomes a journey over the two stations it names', async () => {
+		const trip = (await tripFor(nova({ tariff: route })))!;
+		expect(trip.shape).toBe('journey');
+		expect(trip.from).toBe('Zürich HB');
+		expect(trip.to).toBe('Lugano');
+		expect(trip.via).toBe('via Gotthard');
+		expect(trip.product).toBe('Spartageskarte');
+		expect(trip.travelClass).toBe('1st class');
+		expect(trip.price).toBe('52.00 CHF');
+		expect(trip.ticketId).toBe('123456789');
+	});
+
+	it('turns the instants it carries into Swiss local time and a real offset', async () => {
+		const trip = (await tripFor(nova({ tariff: route })))!;
+		// 03:00 UTC on a July day is 05:00 in Zurich, at UTC+2
+		expect(trip.validFrom).toBe('2026-07-03T05:00');
+		expect(trip.validUntil).toBe('2026-07-03T23:59');
+		expect(trip.utcOffset).toBe(120);
+		// a validity window is not a departure, so the pass claims no train time
+		expect(trip.departure).toBeUndefined();
+	});
+
+	it('reads the offset off the instant rather than assuming one', async () => {
+		const winter = [
+			msg(1, uint(1, 1), str(2, 'Spartageskarte')),
+			str(2, 'Zürich HB'),
+			str(3, 'Chur'),
+			time(8, Date.UTC(2026, 0, 9, 6, 30))
+		];
+		const trip = (await tripFor(nova({ tariff: winter })))!;
+		expect(trip.validFrom).toBe('2026-01-09T07:30');
+		expect(trip.utcOffset).toBe(60);
+	});
+
+	it('takes the seat off the first leg and names the rest on the back', async () => {
+		const trip = (await tripFor(
+			nova({
+				tariff: route,
+				body: [
+					msg(8, str(11, 'IC 21'), str(12, '7'), str(13, '52'), str(13, '54')),
+					msg(8, str(11, 'IR 46'), str(12, '3'))
+				]
+			})
+		))!;
+		expect(trip.train).toBe('IC 21');
+		expect(trip.coach).toBe('7');
+		expect(trip.seat).toBe('52, 54');
+		expect(trip.details).toContainEqual({ label: 'Further legs', value: 'IR 46 carriage 3' });
+	});
+
+	it('shows a zone ticket as an area rather than a route', async () => {
+		const trip = (await tripFor(
+			nova({
+				tariff: [
+					msg(1, uint(1, 1), str(2, 'Tageskarte 2 Zonen')),
+					time(8, VALID_FROM),
+					time(9, VALID_UNTIL),
+					msg(13, uint(2, 110), uint(3, 490)),
+					msg(13, uint(2, 121), uint(3, 490)),
+					uint(19, 3) // route type: zone ticket
+				]
+			})
+		))!;
+		expect(trip.shape).toBe('period');
+		expect(trip.from).toBeUndefined();
+		expect(trip.details).toContainEqual({ label: 'Zones', value: '110, 121' });
+		// the zones are the association's, so the pass is the association's
+		expect(trip.operator).toEqual({ scheme: 'nova', code: 490 });
+	});
+
+	it('keeps the return half where a one-direction pass cannot show it', async () => {
+		const trip = (await tripFor(
+			nova({
+				tariff: [
+					...route,
+					uint(5, 2), // journey type: return
+					time(10, Date.UTC(2026, 6, 5, 4, 0)),
+					time(11, Date.UTC(2026, 6, 5, 21, 0))
+				]
+			})
+		))!;
+		expect(trip.details).toContainEqual({
+			label: 'Return valid',
+			value: '2026-07-05 06:00 to 2026-07-05 23:00'
+		});
+	});
+
+	it('names the traveller and the reduction the ticket was sold on', async () => {
+		const trip = (await tripFor(
+			nova({
+				tariff: route,
+				body: [msg(3, str(3, 'Muster'), str(4, 'Max'), str(7, 'PERSON_16+'))]
+			})
+		))!;
+		expect(trip.passenger).toBe('Max Muster');
+		expect(trip.details).toContainEqual({ label: 'Reduction', value: 'PERSON_16+' });
+	});
+
+	it('says when a ticket is only a specimen', async () => {
+		const trip = (await tripFor(nova({ tariff: route, body: [msg(7, uint(3, 1))] })))!;
+		expect(trip.details).toContainEqual({
+			label: 'Specimen',
+			value: 'sample ticket, not valid for travel'
+		});
+	});
+
+	it('offers no pass for a ticket with nothing on it but a barcode', async () => {
+		expect(await tripFor(nova({ tariff: [uint(4, 2)] }))).toBeNull();
 	});
 });
 

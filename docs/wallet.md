@@ -1,7 +1,7 @@
 # Wallet passes
 
 Under the **Barcode** tab, tickets in the formats that have an intentional
-mapping (UIC 918.3 / 918.9 and VDV-KA so far) can be written out as a wallet
+mapping (UIC 918.3 / 918.9, VDV-KA and SwissPass so far) can be written out as a wallet
 pass. It sits with the barcode because a pass is the same payload in another
 container rather than a reading of it. Passes are built and signed in the
 browser, with credentials you supply: nothing is uploaded, and the app has no

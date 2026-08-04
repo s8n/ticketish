@@ -50,6 +50,42 @@ export function fmtZoned(
 	return formatted.replace(',', '');
 }
 
+/**
+ * An instant as the wall clock in a named zone, with the offset that applied
+ * at that moment.
+ *
+ * This is the reverse of the problem every other format here has. Most of them
+ * print a wall clock and never say which zone it is in; a NOVA timestamp is
+ * epoch milliseconds, so the moment is exact and the local reading is what has
+ * to be worked out. Intl knows the rules, including which side of a daylight
+ * saving switch the instant fell on, so it does both halves at once.
+ */
+export function localInZone(
+	msecs: number | null | undefined,
+	timeZone: string
+): { local: string; utcOffset: number } | null {
+	if (msecs === null || msecs === undefined) return null;
+	const date = new Date(msecs);
+	if (Number.isNaN(date.getTime())) return null;
+	const parts = new Intl.DateTimeFormat('en-GB', {
+		timeZone,
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit',
+		hour: '2-digit',
+		minute: '2-digit',
+		hourCycle: 'h23',
+		timeZoneName: 'longOffset'
+	}).formatToParts(date);
+	const part = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
+	const zone = /GMT([+-])(\d{2}):(\d{2})/.exec(part('timeZoneName'));
+	return {
+		local: `${part('year')}-${part('month')}-${part('day')}T${part('hour')}:${part('minute')}`,
+		// a bare "GMT", with no offset after it, is UTC itself
+		utcOffset: zone ? (zone[1] === '-' ? -1 : 1) * (Number(zone[2]) * 60 + Number(zone[3])) : 0
+	};
+}
+
 /** Blank and all-zero blocks carry nothing, so they are not worth showing. */
 export const meaningful = (value: string) => (/^[0\s]*$/.test(value) ? null : value.trim());
 

@@ -9,30 +9,7 @@ import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { parseSwissPass, novaOrgName, fmtZurich } from '../src/lib/tickets/swisspass/swisspass.ts';
 import { concat } from './helpers/build.ts';
-
-// ------------------------------------------------------- protobuf writer --
-
-// BigInt based: millisecond timestamps do not fit in 32 bits
-const varint = (value: number): Uint8Array => {
-	const out: number[] = [];
-	let v = BigInt(value);
-	do {
-		let byte = Number(v & 0x7fn);
-		v >>= 7n;
-		if (v) byte |= 0x80;
-		out.push(byte);
-	} while (v);
-	return new Uint8Array(out);
-};
-
-const field = (number: number, wire: number) => varint((number << 3) | wire);
-const uint = (number: number, value: number) => concat(field(number, 0), varint(value));
-const bytes = (number: number, value: Uint8Array) =>
-	concat(field(number, 2), varint(value.length), value);
-const str = (number: number, value: string) => bytes(number, new TextEncoder().encode(value));
-const msg = (number: number, ...parts: Uint8Array[]) => bytes(number, concat(...parts));
-/** Time messages wrap a single millisecond field. */
-const time = (number: number, msecs: number) => msg(number, uint(1, msecs));
+import { msg, signedTicket, str, time, uint } from './helpers/swisspass.ts';
 
 const VALID_FROM = Date.UTC(2024, 4, 19, 8, 0);
 const VALID_UNTIL = Date.UTC(2024, 4, 19, 12, 0);
@@ -68,7 +45,7 @@ function swissPass({ withTraveler = true, specimen = false, rics = '3342' } = {}
 		msg(6, str(1, 'MC'), str(2, 'CHF'), str(3, '5.00')), // payment
 		...(specimen ? [msg(7, uint(3, 1))] : [])
 	);
-	return concat(msg(1, ticket), msg(2, uint(1, 1)), msg(4, str(1, rics), str(2, '00002')));
+	return signedTicket(ticket, rics);
 }
 
 describe('SwissPass tickets', () => {
