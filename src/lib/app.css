@@ -103,7 +103,10 @@ button {
 	font-size: 0.72rem;
 	padding: 0.1rem 0.45rem;
 	border: 1px solid currentcolor;
-	border-radius: 999px;
+	/* A pill on one line, since 10px is already past half the height of one;
+	   a chip that wraps to two keeps its corners instead of turning into a
+	   stadium with the text pressed against the curve. */
+	border-radius: 10px;
 	white-space: nowrap;
 }
 
