@@ -149,4 +149,11 @@
 		display: flex;
 		align-items: center;
 	}
+	/* Every choice is as wide as the widest of them, so a shorter branch used
+	   to stop in mid air with the bracket further to the right. The trailing
+	   link takes up whatever slack the branch left, so both alternatives meet
+	   the closing bracket the way they meet the opening one. */
+	.choice > .link:last-child {
+		flex: 1 0 0.7rem;
+	}
 </style>
