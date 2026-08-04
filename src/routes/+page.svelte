@@ -8,7 +8,12 @@
 	import TicketCard from '$lib/components/TicketCard.svelte';
 	import { store } from '../lib/state/tickets.svelte.ts';
 	import { makeTicket } from '../lib/tickets/parse.ts';
+	import { pickTagline } from '../lib/taglines.ts';
 	import { onMount } from 'svelte';
+
+	// once per load: the page renders in the browser, so there is no prerendered
+	// line for this to disagree with
+	const tagline = pickTagline();
 
 	let busy = $state(false);
 	let cameraOpen = $state(false);
@@ -38,7 +43,7 @@
 </script>
 
 <svelte:head>
-	<title>ticketish - read your train ticket</title>
+	<title>ticketish</title>
 	<meta
 		name="description"
 		content="Decode UIC 918.3 / 918.9 train ticket barcodes in your browser - including the DB Zugbindung. Nothing leaves your device."
@@ -48,7 +53,7 @@
 <div class="page">
 	<header class="masthead">
 		<h1>ticketish</h1>
-		<p class="tagline">reads what your train ticket really says</p>
+		<p class="tagline">{tagline}</p>
 	</header>
 
 	<section class="intake" aria-label="Scan a ticket">
