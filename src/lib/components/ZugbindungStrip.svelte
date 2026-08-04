@@ -16,7 +16,14 @@
 
 <!-- The red overprint stamp: the deciphered Zugbindung. The bound route
      belongs with the trains it binds, so the via map sits inside. -->
-<div class="stamp" role="note" aria-label="Zugbindung - ticket bound to specific trains">
+<!-- `tall` is the via row: the one thing that makes the band deep enough to
+     stand the label on its end without stretching it. -->
+<div
+	class="stamp"
+	class:tall={!!via}
+	role="note"
+	aria-label="Zugbindung - ticket bound to specific trains"
+>
 	<span class="title">Zugbindung</span>
 	<div class="body">
 		<ul>
@@ -124,5 +131,24 @@
 		letter-spacing: 0.1em;
 		font-size: 0.72rem;
 		white-space: nowrap;
+	}
+	/* On a phone the label costs about a third of the width, which is width the
+	   route wants. A band with a via row underneath is deep enough to spend it
+	   the other way round, so the letters stack down the side instead. */
+	@media (max-width: 30rem) {
+		.stamp.tall {
+			align-items: center;
+		}
+		.stamp.tall .title {
+			/* upright, not rotated: a stamp reads top to bottom rather than
+			   lying on its side */
+			writing-mode: vertical-rl;
+			text-orientation: upright;
+			font-size: 0.72rem;
+			line-height: 1.05;
+			/* the tracking that spaces letters across also spaces them down, and
+			   ten letters of it is a lot of height */
+			letter-spacing: 0;
+		}
 	}
 </style>
