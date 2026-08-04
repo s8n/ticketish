@@ -77,6 +77,6 @@
 		word-break: break-word;
 	}
 	.prose :global(a) {
-		color: var(--rail-blue);
+		color: var(--link);
 	}
 </style>

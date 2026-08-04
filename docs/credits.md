@@ -1,7 +1,9 @@
 # Credits
 
-Nothing here reads a ticket on its own. These are the projects, specifications
-and data sources it is built on.
+Every format here was learned from somebody: a published specification, a
+project that had already worked it out, or a table of names nobody else
+publishes. Those sources are listed below, along with the conditions that came
+with two of them.
 
 ## Specifications and format knowledge
 

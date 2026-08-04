@@ -19,6 +19,10 @@
 
 	/* overprint colours */
 	--rail-blue: #2b4c9b;
+	/* Links on the desk, as against on a ticket. The overprint blue is mixed
+	   for apricot paper, and the paper stays light after dark while the desk
+	   does not, so a link needs a colour of its own to follow the surround. */
+	--link: #2b4c9b;
 	--signal-red: #c7151d;
 	--valid-green: #1d7a4f;
 
@@ -40,6 +44,7 @@
 		--paper-hi: #f4e6cf;
 		--paper-lo: #e9d3b0;
 		--paper-edge: #c9ad82;
+		--link: #93aef2;
 		color-scheme: dark;
 	}
 }
