@@ -15,16 +15,15 @@
 </script>
 
 <!-- The red overprint stamp: the deciphered Zugbindung. The bound route
-     belongs with the trains it binds, so the via map sits inside. -->
-<!-- `tall` is the via row: the one thing that makes the band deep enough to
-     stand the label on its end without stretching it. -->
-<div
-	class="stamp"
-	class:tall={!!via}
-	role="note"
-	aria-label="Zugbindung - ticket bound to specific trains"
->
-	<span class="title">Zugbindung</span>
+     belongs with the trains it binds, so the via map sits inside.
+
+     A fieldset for the one thing only a fieldset does: a legend interrupts the
+     border it sits on, natively, with no patch of background pretending to. So
+     the label costs no width at all, which on a phone is the width the route
+     was short of. The role is still note, since this groups no form controls
+     and the element is here for how it draws. -->
+<fieldset class="stamp" role="note" aria-label="Zugbindung - ticket bound to specific trains">
+	<legend class="title">Zugbindung</legend>
 	<div class="body">
 		<ul>
 			{#each bindings as b, i (i)}
@@ -44,22 +43,18 @@
 			</div>
 		{/if}
 	</div>
-</div>
+</fieldset>
 
 <style>
-	/* The whole stamp scrolls, label included, so swiping left reclaims that
-	   width and shows more of the route. */
 	.stamp {
 		border: 2px solid var(--signal-red);
 		border-radius: 6px;
 		color: var(--signal-red);
-		padding: 0.5rem 0.75rem;
-		display: flex;
-		gap: 1rem;
-		align-items: baseline;
-		flex-wrap: nowrap;
-		overflow-x: auto;
-		scrollbar-width: thin;
+		/* a fieldset carries margins and a min-inline-size of min-content, and
+		   that last one would stop the card ever being narrower than the route */
+		margin: 0;
+		min-inline-size: 0;
+		padding: 0.3rem 0.75rem 0.5rem;
 		background:
 			repeating-linear-gradient(
 				-45deg,
@@ -67,22 +62,26 @@
 				color-mix(in srgb, var(--signal-red) 4%, transparent) 10px 11px
 			);
 	}
-	/* Never shrink below the content, so the stamp scrolls instead of the
-	   rows being squeezed; grow to fill when there is room. */
+	/* The rows scroll rather than the whole stamp, now that the label is on the
+	   border and not beside them: swiping the route leaves the label where it
+	   is, the way a stamp on paper stays where it was pressed. */
 	.body {
-		flex: 1;
-		min-width: max-content;
 		display: flex;
 		flex-direction: column;
 		gap: 0.35rem;
+		overflow-x: auto;
+		scrollbar-width: thin;
 	}
 	.title {
-		flex: none;
+		margin-inline-start: 0.25rem;
+		/* the gap the border is cut for: wide enough that the rule stops clear
+		   of the letters */
+		padding-inline: 0.4rem;
 		font-family: var(--font-display);
 		text-transform: uppercase;
 		font-weight: 700;
 		letter-spacing: 0.12em;
-		font-size: 0.95rem;
+		font-size: 0.8rem;
 		white-space: nowrap;
 	}
 	/* Rows size to their content but never narrower than the visible band, so
@@ -131,24 +130,5 @@
 		letter-spacing: 0.1em;
 		font-size: 0.72rem;
 		white-space: nowrap;
-	}
-	/* On a phone the label costs about a third of the width, which is width the
-	   route wants. A band with a via row underneath is deep enough to spend it
-	   the other way round, so the letters stack down the side instead. */
-	@media (max-width: 30rem) {
-		.stamp.tall {
-			align-items: center;
-		}
-		.stamp.tall .title {
-			/* upright, not rotated: a stamp reads top to bottom rather than
-			   lying on its side */
-			writing-mode: vertical-rl;
-			text-orientation: upright;
-			font-size: 0.72rem;
-			line-height: 1.05;
-			/* the tracking that spaces letters across also spaces them down, and
-			   ten letters of it is a lot of height */
-			letter-spacing: 0;
-		}
 	}
 </style>
