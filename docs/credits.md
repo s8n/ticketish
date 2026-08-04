@@ -1,0 +1,68 @@
+# Credits
+
+Nothing here reads a ticket on its own. These are the projects, specifications
+and data sources it is built on.
+
+## Specifications and format knowledge
+
+- ASN.1 specifications © UIC, from
+  [UIC-barcode](https://github.com/UnionInternationalCheminsdeFer/UIC-barcode)
+  (EUPL-1.2 / Apache-2.0), vendored in `scripts/asn-specs/`.
+- Format knowledge and record quirks studied from
+  [zuegli](https://github.com/TheEnbyperor/zuegli) (EUPL-1.2), which also
+  verifies signatures if you want the full treatment. The via-route parser,
+  RSP6 bit layouts, and SwissPass protobuf schema are ports of its code.
+- ELB is specified in **ERA TAP TSI technical document B.12** section 8
+  (ERA-REC-122/TD/02), published by the European Union Agency for Railways.
+  The parser here predates the discovery of that document; B.12 confirmed its
+  offsets and named the fields it had not placed.
+- The SNCF e-billet layout is a port of zuegli's, corroborated field for field
+  by [trainticket.wiki](https://trainticket.wiki/ticket-standards/domestic-standards/france/)
+  and [train-barcode-kaitai-spec](https://github.com/NeoRail/train-barcode-kaitai-spec)
+  (MIT), which between them settled the Latin-1 encoding and the constant at
+  offset 19.
+- The MÁV layout follows the same project's `mav/mav.ksy` (CC0), plus the
+  ticket medium enum and version dependent validity width from Volker Krause's
+  branch of it. The VIA Rail layout follows its `viarail/viarail.ksy`.
+
+## Keys and lookup tables
+
+- RSP6 public keys vendored from
+  [eta's rsp6-decoder](https://git.eta.st/eta/rsp6-decoder) (MIT).
+- VDV CA public keys are built from VDV KA's public LDAP directory by
+  `scripts/build-vdv-keys.py`; a monthly GitHub Action refreshes them. VDV
+  product names are vendored from zuegli's tariff data (see
+  `scripts/vdv-products/`) and merged by `scripts/build-vdv-products.py`.
+- UK station names come from the RDG/National Rail fares feed via
+  `scripts/build-nlc-names.py`, also refreshed monthly. That feed needs a free
+  National Rail Open Data account; the workflow reads the `NR_USERNAME` and
+  `NR_PASSWORD` repository secrets and skips cleanly when they are absent.
+- Turkish station names come from the list TCDD's own e-ticket site reads, via
+  `scripts/build-tcdd-stations.py`, refreshed monthly and needing no
+  credentials. It covers the newer barcode layout; the older layout's 9 digit
+  ids belong to a retired backend that no longer serves a list.
+- DB Leitpunktkürzel and Swiss NOVA organisation names derive from the
+  respective operators' open data.
+
+## Two tables with strings attached
+
+**VDV organisation names** in `src/lib/tickets/vdv/orgs.json` are the table
+compiled by the **KCD+eTicketinfo** Android app, used here with attribution and
+rebuilt by `scripts/build-vdv-orgs.py`. No public register of these IDs exists;
+the complete list sits behind an authenticated API. **That app's licence
+applies to this table.** It is not public-domain reference data and is not
+cleared for commercial reuse: ticketish is a free tool for rail enthusiasts,
+and anyone repackaging it commercially should strip `orgs.json` or clear it
+with the app's authors first. A handful of entries where this repo has a better
+source, or a correction to a typo, override it from `orgs.ts`.
+
+**UIC station names and SNCF five letter mnemonics** both come from
+[trainline-eu/stations](https://github.com/trainline-eu/stations), a single CSV
+published under the **Open Data Commons Open Database License (ODbL) 1.0**,
+built by `scripts/build-station-names.py` and refreshed monthly with no
+credentials. The two tables it produces are a derived database, so the
+attribution and the licence go with them: keep the `_note` in
+`src/lib/tickets/data/uic-stations.json` and `sncf-stations.json`, and keep
+them under ODbL if you redistribute them. SNCF's own open data publishes UIC
+codes and the three letter TVS code but not the mnemonic, so this is the only
+open source for `FRPST` and friends.

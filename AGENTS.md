@@ -70,8 +70,8 @@ imported statically, so callers can stay synchronous.
 KCD+eTicketinfo app, used with attribution. Its licence applies: the table is
 not public-domain reference data and is not cleared for commercial reuse. The
 note travels inside the JSON as `_note` so it cannot be lost, and is repeated
-in `orgs.ts`, `scripts/build-vdv-orgs.py` and the README. Leave all four in
-place.
+in `orgs.ts`, `scripts/build-vdv-orgs.py` and `docs/credits.md`, with the
+README's credits section pointing at it. Leave all five in place.
 
 Do not edit `orgs.json` by hand. Corrections go in the `OVERRIDES` map in
 `orgs.ts`, with a source, so that regenerating from the app stays a clean
