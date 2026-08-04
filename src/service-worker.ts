@@ -5,11 +5,13 @@
 /// <reference lib="webworker" />
 // Offline support: precache the app shell and all built assets (including the
 // zxing WASM and pdf.js worker, which Vite emits as hashed assets).
-import { build, files, version } from '$service-worker';
+import { build, files, prerendered, version } from '$service-worker';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 const CACHE = `ticketish-${version}`;
-const ASSETS = [...build, ...files, '/'];
+// prerendered covers the pages beside the shell, such as /credits: an
+// attribution page that is only there online is not much of an attribution.
+const ASSETS = [...build, ...files, ...prerendered, '/'];
 
 sw.addEventListener('install', (event) => {
 	event.waitUntil(

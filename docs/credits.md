@@ -5,9 +5,12 @@ and data sources it is built on.
 
 ## Specifications and format knowledge
 
-- ASN.1 specifications © UIC, from
-  [UIC-barcode](https://github.com/UnionInternationalCheminsdeFer/UIC-barcode)
-  (EUPL-1.2 / Apache-2.0), vendored in `scripts/asn-specs/`.
+- ASN.1 specifications **© Union Internationale des Chemins de fer**, from
+  [UIC-barcode](https://github.com/UnionInternationalCheminsdeFer/UIC-barcode),
+  licensed EUPL-1.2 or Apache-2.0 at your choice and vendored in
+  `scripts/asn-specs/` with their licence text. The schemas in
+  `src/lib/tickets/asn1/schemas/` are generated from them, ship inside this
+  app, and are derived works under the same terms.
 - Format knowledge and record quirks studied from
   [zuegli](https://github.com/TheEnbyperor/zuegli) (EUPL-1.2), which also
   verifies signatures if you want the full treatment. The via-route parser,
