@@ -4,6 +4,7 @@
 
 	import DropZone from '$lib/components/DropZone.svelte';
 	import CameraScanner from '$lib/components/CameraScanner.svelte';
+	import RawInput from '$lib/components/RawInput.svelte';
 	import TicketCard from '$lib/components/TicketCard.svelte';
 	import { store } from '../lib/state/tickets.svelte.ts';
 	import { makeTicket } from '../lib/tickets/parse.ts';
@@ -11,6 +12,7 @@
 
 	let busy = $state(false);
 	let cameraOpen = $state(false);
+	let rawOpen = $state(false);
 	const cameraSupported =
 		typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getUserMedia;
 
@@ -51,16 +53,40 @@
 
 	<section class="intake" aria-label="Scan a ticket">
 		<DropZone bind:busy />
-		{#if cameraSupported}
-			<button class="camera" onclick={() => (cameraOpen = true)}>
+		<div class="actions">
+			{#if cameraSupported}
+				<button onclick={() => (cameraOpen = true)}>
+					<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+						<path
+							fill="currentcolor"
+							d="M9 3 7.2 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9Zm3 5.5A5.5 5.5 0 1 1 6.5 14 5.5 5.5 0 0 1 12 8.5Zm0 2A3.5 3.5 0 1 0 15.5 14 3.5 3.5 0 0 0 12 10.5Z"
+						/>
+					</svg>
+					Scan with camera
+				</button>
+			{/if}
+			<button onclick={() => (rawOpen = !rawOpen)} aria-expanded={rawOpen}>
 				<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-					<path
-						fill="currentcolor"
-						d="M9 3 7.2 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9Zm3 5.5A5.5 5.5 0 1 1 6.5 14 5.5 5.5 0 0 1 12 8.5Zm0 2A3.5 3.5 0 1 0 15.5 14 3.5 3.5 0 0 0 12 10.5Z"
+					<rect
+						x="2"
+						y="5"
+						width="20"
+						height="14"
+						rx="2"
+						fill="none"
+						stroke="currentcolor"
+						stroke-width="2"
 					/>
+					<rect x="7.5" y="8.5" width="4" height="1.5" fill="currentcolor" />
+					<rect x="8.75" y="8.5" width="1.5" height="7" fill="currentcolor" />
+					<rect x="7.5" y="14" width="4" height="1.5" fill="currentcolor" />
+					<rect x="13.5" y="13.5" width="4" height="1.5" fill="currentcolor" opacity="0.5" />
 				</svg>
-				Scan with camera
+				Raw input
 			</button>
+		</div>
+		{#if rawOpen}
+			<RawInput onclose={() => (rawOpen = false)} />
 		{/if}
 	</section>
 
@@ -83,7 +109,10 @@
 		</section>
 	{:else}
 		<section class="empty">
-			<p>No tickets yet. Drop in an image, PDF or Apple Wallet pass, or scan with the camera.</p>
+			<p>
+				No tickets yet. Drop in an image, PDF or Apple Wallet pass, scan with the camera, or
+				paste a payload straight in.
+			</p>
 			<ul class="formats">
 				<li>
 					<span class="format">UIC 918.3 &amp; 918.9</span>
@@ -168,8 +197,13 @@
 		flex-direction: column;
 		gap: 0.7rem;
 	}
-	.camera {
-		align-self: center;
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.6rem;
+	}
+	.actions button {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
@@ -180,7 +214,7 @@
 		color: var(--bg-text);
 		font-weight: 500;
 	}
-	.camera:hover {
+	.actions button:hover {
 		border-color: var(--rail-blue);
 		color: var(--rail-blue);
 	}

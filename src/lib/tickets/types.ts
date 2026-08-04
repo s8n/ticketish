@@ -97,7 +97,7 @@ export interface BarcodeSymbology {
 
 /** Where a scanned payload came from. */
 export interface TicketSource {
-	kind: 'image' | 'pdf' | 'pkpass' | 'camera' | 'raw';
+	kind: 'image' | 'pdf' | 'pkpass' | 'camera' | 'raw' | 'pasted';
 	fileName?: string;
 	/** Non-barcode context, e.g. Apple Wallet pass.json fields. */
 	passInfo?: PkpassInfo;

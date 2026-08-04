@@ -96,7 +96,8 @@
 			pdf: 'PDF',
 			pkpass: 'Wallet pass',
 			camera: 'camera',
-			raw: 'file'
+			raw: 'file',
+			pasted: 'pasted'
 		}[ticket.source.kind]
 	);
 </script>
