@@ -19,8 +19,8 @@
  * showing a barcode over the wrong stations is worse than no pass, because a
  * ticket inspector reads the pass.
  *
- * Only UIC 918.3 / DOSIPAS, VDV-KA and SwissPass are mapped so far. All are
- * read from what the parsers already produce; nothing is re-parsed here.
+ * Only UIC 918.3 / DOSIPAS, VDV-KA, SwissPass and Renfe are mapped so far. All
+ * are read from what the parsers already produce; nothing is re-parsed here.
  */
 import type { ParsedRecord, ParsedTicket, TicketContainer } from '../tickets/types.ts';
 import type { DbBlData } from '../tickets/records/dbbl.ts';
@@ -31,6 +31,8 @@ import { summarizeFcb, type DocumentSummary } from '../tickets/model.ts';
 import type { VdvBarcode, VdvTicket } from '../tickets/vdv/vdv.ts';
 import type { SwissPassTicket } from '../tickets/swisspass/swisspass.ts';
 import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
+import type { RenfeTicket } from '../tickets/renfe/renfe.ts';
+import { renfeStationName } from '../tickets/renfe/stations.ts';
 import { localInZone } from '../tickets/format.ts';
 import { ricsName } from '../tickets/uic/rics.ts';
 import { loadVdvOrgs, vdvOrgName } from '../tickets/vdv/orgs.ts';
@@ -530,6 +532,85 @@ function swissTrip(ticket: SwissPassTicket): TripSummary | null {
 	};
 }
 
+// ----------------------------------------------------------- Renfe ------
+
+/**
+ * The RICS codes Renfe issues under, which are the only values of the
+ * barcode's company code this app will treat as RICS codes.
+ *
+ * The field was read off a ticket rather than out of a specification, so what
+ * numbering space it belongs to is an assumption: 01071 on a Renfe ticket
+ * matching Renfe Viajeros' RICS code is good evidence and not proof. Matching
+ * it against the whole register would turn a bad assumption into a pass in
+ * another operator's colour, which is the one failure `colors.ts` exists to
+ * avoid, so the check runs the other way round and only recognises Renfe.
+ */
+const RENFE_RICS = new Set([71, 1071]);
+
+function renfeOperator(companyCode: string | undefined): OperatorCode | undefined {
+	const code = Number(companyCode);
+	return RENFE_RICS.has(code) ? { scheme: 'rics', code } : undefined;
+}
+
+/**
+ * A Renfe ticket as a pass.
+ *
+ * Every Renfe barcode is a seat on a named train on a date, so this is always
+ * a journey even in the short form, which carries the train and the seat but
+ * neither the stations nor the departure time. Both wallets handle a journey
+ * whose endpoints are missing, and a pass that says "train 03112, coach 18,
+ * seat 15B" is the ticket: showing it as a period pass would drop the train.
+ *
+ * The times are Spanish local and the barcode never says so, which is the
+ * usual case here, so no offset goes on the pass and the wall clock travels as
+ * written.
+ */
+function renfeTrip(ticket: RenfeTicket): TripSummary | null {
+	const departure = ticket.departureTime
+		? `${ticket.departureDate}T${ticket.departureTime}`
+		: ticket.departureDate;
+
+	const from = renfeStationName(ticket.originCode);
+	const to = renfeStationName(ticket.destinationCode);
+	const operator = renfeOperator(ticket.companyCode);
+
+	const details: TripField[] = [];
+	if (ticket.verificationCode) {
+		// printed under the localizador and asked for alongside it
+		details.push({ label: 'Verification code', value: ticket.verificationCode });
+	}
+	// the company code is the pass's operator when it is one this app can name;
+	// when it is not, the number goes on the back rather than nowhere
+	if (ticket.companyCode && !operator) {
+		details.push({ label: 'Company code', value: ticket.companyCode });
+	}
+	if (ticket.variant === 'qr') {
+		details.push({
+			label: 'Barcode',
+			value: 'the short Renfe form, which carries no stations and no departure time'
+		});
+	}
+
+	return {
+		shape: 'journey',
+		// only a code this app is willing to call Renfe's gets read as a name,
+		// on the same reasoning as the operator below
+		issuer: (operator && ricsName(operator.code)) || 'Renfe',
+		operator,
+		// a code with no name is shown as a code, the way the ticket view shows
+		// it: a pass an inspector reads should not guess at a station
+		from: from ?? (ticket.originCode ? `Station ${ticket.originCode}` : undefined),
+		to: to ?? (ticket.destinationCode ? `Station ${ticket.destinationCode}` : undefined),
+		departure,
+		train: ticket.trainNumber,
+		coach: ticket.coach || undefined,
+		seat: ticket.seat || undefined,
+		ticketId: ticket.ticketNumber,
+		reference: ticket.bookingReference || undefined,
+		details
+	};
+}
+
 // --------------------------------------------------------- registry -----
 
 /**
@@ -550,13 +631,13 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 		map: (c, tables) => vdvTrip(c.barcode, tables)
 	},
 	swisspass: { map: (c) => swissTrip(c.ticket) },
+	renfe: { map: (c) => renfeTrip(c.ticket) },
 	// Everything below reads fine in the app but has no wallet mapping yet.
 	// Adding one is a matter of writing the extractor above and pointing the
 	// entry at it; leaving it null keeps the button hidden.
 	rsp6: null,
 	ssb: null,
 	ssb1: null,
-	renfe: null,
 	tcdd: null,
 	trenitalia: null,
 	eav: null,

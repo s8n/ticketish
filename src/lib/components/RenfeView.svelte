@@ -3,29 +3,11 @@
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
 	import type { RenfeTicket } from '../tickets/renfe/renfe.ts';
+	import { renfeStationLabel } from '../tickets/renfe/stations.ts';
 	import { fmtDate } from '../tickets/format.ts';
 	import RouteLine from './RouteLine.svelte';
 
 	let { ticket }: { ticket: RenfeTicket } = $props();
-
-	// A handful of Renfe station codes; unknown ones show as codes.
-	const STATIONS: Record<string, string> = {
-		'60000': 'Madrid P. Atocha',
-		'71801': 'Barcelona-Sants',
-		'70000': 'Barcelona França',
-		'11014': 'Sevilla-Santa Justa',
-		'03216': 'Valencia Joaquín Sorolla',
-		'54413': 'Málaga María Zambrano',
-		'15100': 'Córdoba',
-		'20309': 'Zaragoza-Delicias',
-		'22308': 'Valladolid-Campo Grande',
-		'78400': 'Girona',
-		'79300': 'Figueres-Vilafant',
-		'04040': 'Alicante-Terminal'
-	};
-
-	const stationLabel = (code: string | undefined) =>
-		code ? (STATIONS[code.padStart(5, '0')] ?? `Station ${code}`) : '?';
 </script>
 
 <div class="renfe">
@@ -36,8 +18,8 @@
 
 	{#if ticket.originCode || ticket.destinationCode}
 		<RouteLine
-			from={stationLabel(ticket.originCode)}
-			to={stationLabel(ticket.destinationCode)}
+			from={renfeStationLabel(ticket.originCode)}
+			to={renfeStationLabel(ticket.destinationCode)}
 			fromTitle={ticket.originCode ? `code ${ticket.originCode}` : null}
 			toTitle={ticket.destinationCode ? `code ${ticket.destinationCode}` : null}
 			size="sm"

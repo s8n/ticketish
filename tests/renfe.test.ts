@@ -8,33 +8,7 @@
 import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { isSsb } from '../src/lib/tickets/ssb/ssb.ts';
-
-const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
-
-/** Short block, which Renfe also issues on its own as a QR code. */
-function blockB({
-	ticketNumber = '7250000000001',
-	unknown = '7180160',
-	date = '190524',
-	train = '03112',
-	coach = '018',
-	seat = '15B',
-	tail = '010',
-	booking = 'TESTAB',
-	code = 'C3HGJ'
-} = {}) {
-	return `${ticketNumber}${unknown}000${date}${train}${coach}${seat}${tail}${booking}..${code}`;
-}
-
-/** Long Aztec form: block A, the short block, zero padding, signature, "~". */
-function aztec(overrides: Parameters<typeof blockB>[0] = {}) {
-	const b = blockB(overrides);
-	const blockA =
-		'7250000000001' + '01071' + '03112' + '19/05/2024' + '11:00' + '0071801' + '0060000' + '018' + '15B';
-	const signature = 'MCwCFEojPU7IR9qyfwaehgZcZq8gQve4AhQ+5TQZ5asM+LxZwEIu5HeU9d3s4Q==';
-	const body = blockA.padEnd(100, '0') + b;
-	return ascii(body.padEnd(416, '0') + signature + '~'.repeat(36));
-}
+import { ascii, renfeAztec as aztec, renfeBlockB as blockB } from './helpers/renfe.ts';
 
 describe('Renfe tickets', () => {
 	it('parses the long Aztec form', () => {

@@ -28,6 +28,7 @@ import {
 } from '../src/lib/wallet/trip.ts';
 import type { ParsedTicket } from '../src/lib/tickets/types.ts';
 import { concat, tlv } from './helpers/build.ts';
+import { ascii, renfeAztec, renfeBlockB } from './helpers/renfe.ts';
 import { buildVdv, vdvDateTime, vdvHeader } from './helpers/vdv.ts';
 import { msg, signedTicket, str, time, uint } from './helpers/swisspass.ts';
 
@@ -45,6 +46,7 @@ describe('which formats are exported at all', () => {
 		expect(hasMapping({ kind: 'vdv' } as never)).toBe(true);
 		expect(hasMapping({ kind: 'dosipas' } as never)).toBe(true);
 		expect(hasMapping({ kind: 'swisspass' } as never)).toBe(true);
+		expect(hasMapping({ kind: 'renfe' } as never)).toBe(true);
 	});
 
 	it('stays out of the way of the formats that do not', () => {
@@ -295,6 +297,79 @@ describe('a SwissPass ticket', () => {
 
 	it('offers no pass for a ticket with nothing on it but a barcode', async () => {
 		expect(await tripFor(nova({ tariff: [uint(4, 2)] }))).toBeNull();
+	});
+});
+
+describe('a Renfe ticket', () => {
+	const renfe = (payload: Uint8Array): ParsedTicket =>
+		makeTicket(payload, { kind: 'raw', fileName: 'renfe.bin' });
+
+	it('is a journey with the train, the seat and the localizador', async () => {
+		const trip = (await tripFor(renfe(renfeAztec())))!;
+		expect(trip.shape).toBe('journey');
+		expect(trip.from).toBe('Barcelona-Sants');
+		expect(trip.to).toBe('Madrid P. Atocha');
+		expect(trip.departure).toBe('2024-05-19T11:00');
+		expect(trip.train).toBe('3112');
+		expect(trip.coach).toBe('18');
+		expect(trip.seat).toBe('15B');
+		expect(trip.reference).toBe('TESTAB');
+		expect(trip.ticketId).toBe('7250000000001');
+		expect(trip.details).toContainEqual({ label: 'Verification code', value: 'C3HGJ' });
+		expect(tripTitle(trip)).toBe('Barcelona-Sants to Madrid P. Atocha');
+	});
+
+	it('reads the company code as Renfe, since Renfe is what it may be', async () => {
+		const trip = (await tripFor(renfe(renfeAztec())))!;
+		expect(trip.issuer).toBe('Renfe Viajeros');
+		expect(trip.operator).toEqual({ scheme: 'rics', code: 1071 });
+	});
+
+	it('refuses to read the code as anybody else, whatever number it holds', async () => {
+		// 01080 is DB Fernverkehr in the RICS register, and a Renfe ticket
+		// carrying it is not evidence that the field is a RICS code at all: a
+		// pass in DB's name and DB's red would be the wrong claim to make
+		const trip = (await tripFor(renfe(renfeAztec({ company: '01080' }))))!;
+		expect(trip.issuer).toBe('Renfe');
+		expect(trip.operator).toBeUndefined();
+		expect(trip.details).toContainEqual({ label: 'Company code', value: '1080' });
+	});
+
+	it('shows a station it cannot name as the code the barcode carried', async () => {
+		const trip = (await tripFor(renfe(renfeAztec({ destination: '0099999' }))))!;
+		expect(trip.from).toBe('Barcelona-Sants');
+		expect(trip.to).toBe('Station 99999');
+	});
+
+	it('keeps the short form a journey, because the train is the point of it', async () => {
+		const trip = (await tripFor(renfe(ascii(renfeBlockB()))))!;
+		expect(trip.shape).toBe('journey');
+		expect(trip.train).toBe('3112');
+		expect(trip.seat).toBe('15B');
+		// the short barcode carries neither, so the pass claims neither and
+		// says on the back why the route is missing
+		expect(trip.from).toBeUndefined();
+		expect(trip.departure).toBe('2024-05-19');
+		expect(trip.details).toContainEqual({
+			label: 'Barcode',
+			value: 'the short Renfe form, which carries no stations and no departure time'
+		});
+	});
+
+	it('leaves nothing it mapped out of the preview', async () => {
+		for (const payload of [renfeAztec(), ascii(renfeBlockB())]) {
+			const trip = (await tripFor(renfe(payload)))!;
+			const shown = previewFields(trip)
+				.map((r) => r.value)
+				.join(' | ');
+			for (const [key, value] of Object.entries(trip)) {
+				if (key === 'shape' || typeof value !== 'string') continue;
+				// only a date-time is rewritten for display, so a localizador
+				// with a T in it is compared as it stands
+				const asShown = /^\d{4}-\d{2}-\d{2}T/.test(value) ? value.replace('T', ' ') : value;
+				expect(shown, `renfe pass does not show ${key}`).toContain(asShown);
+			}
+		}
 	});
 });
 

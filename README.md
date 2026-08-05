@@ -13,7 +13,7 @@ so many fields wrong.
 - **Diverse input options**: images, PDFs (rendered with pdf.js and scanned),
   Apple Wallet `.pkpass` files, the live camera, raw payload files.
 - **Wallet passes**: tickets in the formats that have an intentional mapping
-  (UIC 918.3 / 918.9, VDV-KA and SwissPass so far) can be written out as an Apple or
+  (UIC 918.3 / 918.9, VDV-KA, SwissPass and Renfe so far) can be written out as an Apple or
   Google wallet pass, built and signed in the browser with credentials you
   supply, none are supplied by default (see "What's not here" below).
   [docs/wallet.md](docs/wallet.md) has details on how to obtain relevant keys.
