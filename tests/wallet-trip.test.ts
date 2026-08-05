@@ -307,8 +307,8 @@ describe('a Renfe ticket', () => {
 	it('is a journey with the train, the seat and the localizador', async () => {
 		const trip = (await tripFor(renfe(renfeAztec())))!;
 		expect(trip.shape).toBe('journey');
-		expect(trip.from).toBe('Barcelona-Sants');
-		expect(trip.to).toBe('Madrid P. Atocha');
+		expect(trip.from).toBe('BARCELONA-SANTS');
+		expect(trip.to).toBe('MADRID-PUERTA DE ATOCHA-ALMUDENA GRANDES');
 		expect(trip.departure).toBe('2024-05-19T11:00');
 		expect(trip.train).toBe('3112');
 		expect(trip.coach).toBe('18');
@@ -316,7 +316,7 @@ describe('a Renfe ticket', () => {
 		expect(trip.reference).toBe('TESTAB');
 		expect(trip.ticketId).toBe('7250000000001');
 		expect(trip.details).toContainEqual({ label: 'Verification code', value: 'C3HGJ' });
-		expect(tripTitle(trip)).toBe('Barcelona-Sants to Madrid P. Atocha');
+		expect(tripTitle(trip)).toBe('BARCELONA-SANTS to MADRID-PUERTA DE ATOCHA-ALMUDENA GRANDES');
 	});
 
 	it('reads the company code as Renfe, since Renfe is what it may be', async () => {
@@ -337,7 +337,7 @@ describe('a Renfe ticket', () => {
 
 	it('shows a station it cannot name as the code the barcode carried', async () => {
 		const trip = (await tripFor(renfe(renfeAztec({ destination: '0099999' }))))!;
-		expect(trip.from).toBe('Barcelona-Sants');
+		expect(trip.from).toBe('BARCELONA-SANTS');
 		expect(trip.to).toBe('Station 99999');
 	});
 

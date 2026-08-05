@@ -131,7 +131,8 @@ No functions, bindings or environment variables needed.
 
 Thanks to [zügli](https://github.com/TheEnbyperor/zuegli),
 [eta](https://git.eta.st/eta), [trainline-eu](https://github.com/trainline-eu)
-and [NeoRail](https://github.com/NeoRail).
+and [NeoRail](https://github.com/NeoRail). Spanish station names are open data
+published by Renfe Operadora (origen de los datos: Renfe Operadora, CC BY 4.0).
 
 Everything else, and the licences that come with it, is in
 [docs/credits.md](docs/credits.md).

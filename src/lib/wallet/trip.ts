@@ -32,7 +32,8 @@ import type { VdvBarcode, VdvTicket } from '../tickets/vdv/vdv.ts';
 import type { SwissPassTicket } from '../tickets/swisspass/swisspass.ts';
 import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
 import type { RenfeTicket } from '../tickets/renfe/renfe.ts';
-import { renfeStationName } from '../tickets/renfe/stations.ts';
+import { loadRenfeStations, renfeStationName } from '../tickets/renfe/stations.ts';
+import type { RenfeStationTable } from '../tickets/renfe/stations.ts';
 import { localInZone } from '../tickets/format.ts';
 import { ricsName } from '../tickets/uic/rics.ts';
 import { loadVdvOrgs, vdvOrgName } from '../tickets/vdv/orgs.ts';
@@ -100,6 +101,7 @@ interface Tables {
 	stations: StationTable | null;
 	vdvOrgs: Record<string, string> | null;
 	vdvProducts: Record<string, string> | null;
+	renfeStations: RenfeStationTable | null;
 }
 
 type Kind = TicketContainer['kind'];
@@ -107,7 +109,7 @@ type Of<K extends Kind> = Extract<TicketContainer, { kind: K }>;
 
 interface Extractor<K extends Kind> {
 	/** Which on-demand tables this mapping wants before it runs. */
-	needs?: ('stations' | 'vdvOrgs' | 'vdvProducts')[];
+	needs?: ('stations' | 'vdvOrgs' | 'vdvProducts' | 'renfeStations')[];
 	map: (container: Of<K>, tables: Tables) => TripSummary | null;
 }
 
@@ -565,13 +567,13 @@ function renfeOperator(companyCode: string | undefined): OperatorCode | undefine
  * usual case here, so no offset goes on the pass and the wall clock travels as
  * written.
  */
-function renfeTrip(ticket: RenfeTicket): TripSummary | null {
+function renfeTrip(ticket: RenfeTicket, tables: Tables): TripSummary | null {
 	const departure = ticket.departureTime
 		? `${ticket.departureDate}T${ticket.departureTime}`
 		: ticket.departureDate;
 
-	const from = renfeStationName(ticket.originCode);
-	const to = renfeStationName(ticket.destinationCode);
+	const from = renfeStationName(tables.renfeStations, ticket.originCode);
+	const to = renfeStationName(tables.renfeStations, ticket.destinationCode);
 	const operator = renfeOperator(ticket.companyCode);
 
 	const details: TripField[] = [];
@@ -631,7 +633,10 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 		map: (c, tables) => vdvTrip(c.barcode, tables)
 	},
 	swisspass: { map: (c) => swissTrip(c.ticket) },
-	renfe: { map: (c) => renfeTrip(c.ticket) },
+	renfe: {
+		needs: ['renfeStations'],
+		map: (c, tables) => renfeTrip(c.ticket, tables)
+	},
 	// Everything below reads fine in the app but has no wallet mapping yet.
 	// Adding one is a matter of writing the extractor above and pointing the
 	// entry at it; leaving it null keeps the button hidden.
@@ -671,13 +676,14 @@ export async function tripFor(ticket: ParsedTicket): Promise<TripSummary | null>
 	if (!entry) return null;
 
 	const needs = new Set(entry.needs ?? []);
-	const [stations, vdvOrgs, vdvProducts] = await Promise.all([
+	const [stations, vdvOrgs, vdvProducts, renfeStations] = await Promise.all([
 		needs.has('stations') ? loadUicStations() : null,
 		needs.has('vdvOrgs') ? loadVdvOrgs() : null,
-		needs.has('vdvProducts') ? loadVdvProducts() : null
+		needs.has('vdvProducts') ? loadVdvProducts() : null,
+		needs.has('renfeStations') ? loadRenfeStations() : null
 	]);
 
-	return entry.map(container, { stations, vdvOrgs, vdvProducts });
+	return entry.map(container, { stations, vdvOrgs, vdvProducts, renfeStations });
 }
 
 /**

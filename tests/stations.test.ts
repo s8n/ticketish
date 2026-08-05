@@ -20,8 +20,14 @@ import {
 	uicStationLabel,
 	uicStationName
 } from '../src/lib/tickets/stations.ts';
+import {
+	loadRenfeStations,
+	renfeStationLabel,
+	renfeStationName
+} from '../src/lib/tickets/renfe/stations.ts';
 import uicJson from '../src/lib/tickets/data/uic-stations.json' with { type: 'json' };
 import sncfJson from '../src/lib/tickets/data/sncf-stations.json' with { type: 'json' };
+import renfeJson from '../src/lib/tickets/renfe/stations.json' with { type: 'json' };
 
 describe('the bundled tables', () => {
 	it('keep the attribution note beside the data', () => {
@@ -37,6 +43,25 @@ describe('the bundled tables', () => {
 		expect(entries.length).toBeGreaterThan(20000);
 		for (const [code, name] of entries) {
 			expect(code, `key ${code}`).toMatch(/^\d{7}$/);
+			expect(name.trim(), `name for ${code}`).not.toBe('');
+		}
+	});
+
+	it('keeps Renfe attribution beside the Renfe table', () => {
+		// CC BY is only an attribution licence, so the attribution is all of it
+		expect(renfeJson._note).toMatch(/Renfe Operadora/);
+		expect(renfeJson._note).toMatch(/Creative Commons Attribution 4\.0/);
+		// CC BY also asks that changes be stated, and this table is a subset
+		expect(renfeJson._note).toMatch(/Modified from the original/);
+	});
+
+	it('maps five digit Renfe codes to non-empty names', () => {
+		const entries = Object.entries(renfeJson.stations);
+		expect(entries.length).toBeGreaterThan(800);
+		for (const [code, name] of entries) {
+			// the leading zero is kept: 04040 is Zaragoza Delicias and 4040 is
+			// nothing, so losing it would move a thousand stations
+			expect(code, `key ${code}`).toMatch(/^\d{5}$/);
 			expect(name.trim(), `name for ${code}`).not.toBe('');
 		}
 	});
@@ -127,6 +152,48 @@ describe('sncfStationName', () => {
 
 	it('caches, so the table is only imported once', async () => {
 		expect(await loadSncfStations()).toBe(await loadSncfStations());
+	});
+});
+
+describe('renfeStationName', () => {
+	it('resolves codes from the loaded table', async () => {
+		const names = await loadRenfeStations();
+		expect(renfeStationName(names, '71801')).toBe('BARCELONA-SANTS');
+		expect(renfeStationName(names, '51003')).toBe('SEVILLA-SANTA JUSTA');
+	});
+
+	it('pads a code the barcode wrote short, which is where the space is dense', async () => {
+		const names = await loadRenfeStations();
+		// the parser strips the barcode's leading zeros, and 4040 padded back
+		// out is Zaragoza Delicias rather than nothing
+		expect(renfeStationName(names, '4040')).toBe('ZARAGOZA DELICIAS');
+		expect(renfeStationName(names, '04040')).toBe('ZARAGOZA DELICIAS');
+	});
+
+	it('covers the stations abroad that Renfe sells to', async () => {
+		const names = await loadRenfeStations();
+		// the list carries French and Portuguese stops as well as Spanish ones
+		expect(Object.values(names).length).toBeGreaterThan(800);
+		expect(renfeStationName(names, '99999')).toBeNull();
+	});
+
+	it('returns null for an empty code or before the table has loaded', async () => {
+		const names = await loadRenfeStations();
+		expect(renfeStationName(names, '')).toBeNull();
+		expect(renfeStationName(names, undefined)).toBeNull();
+		// the card renders before the import resolves
+		expect(renfeStationName(null, '71801')).toBeNull();
+	});
+
+	it('caches, so the table is only imported once', async () => {
+		expect(await loadRenfeStations()).toBe(await loadRenfeStations());
+	});
+
+	it('falls back to the code, since a guess would be read as a fact', async () => {
+		const names = await loadRenfeStations();
+		expect(renfeStationLabel(names, '99999')).toBe('Station 99999');
+		expect(renfeStationLabel(null, '71801')).toBe('Station 71801');
+		expect(renfeStationLabel(null, undefined)).toBe('?');
 	});
 });
 

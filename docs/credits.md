@@ -50,6 +50,17 @@ moving. Several of them are written down nowhere else.
   `scripts/build-tcdd-stations.py`, refreshed monthly and needing no
   credentials. It covers the newer barcode layout; the older layout's 9 digit
   ids belong to a retired backend that no longer serves a list.
+- Spanish station names come from the **Estaciones. Listado completo** dataset
+  published by **Renfe Operadora** at
+  [data.renfe.com](https://data.renfe.com/dataset/estaciones-listado-completo)
+  under **Creative Commons Attribution 4.0**, via
+  `scripts/build-renfe-stations.py`, refreshed monthly and needing no
+  credentials. Attribution is the whole of the licence and it travels in the
+  `_note` inside `src/lib/tickets/renfe/stations.json`: *Origen de los datos:
+  Renfe Operadora*. The table is modified from the original, which CC BY asks
+  to be stated: only the code and the name are kept, and the names are left in
+  the upper case Renfe issues them in. Renfe's codes are neither UIC nor Adif
+  numbers, so this is the only table that reads a Renfe barcode's stations.
 - DB Leitpunktkürzel and Swiss NOVA organisation names derive from the
   respective operators' open data.
 

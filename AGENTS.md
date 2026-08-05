@@ -90,6 +90,15 @@ Note that the `uic` numbering is not the domestic one. Köln Hbf is UIC
 8015458 and IBNR 8000207, and it is the UIC number that DB puts in the
 barcode; the CSV's `db_id` column holds the IBNR and is deliberately unused.
 
+`src/lib/tickets/renfe/stations.json` is Renfe Operadora's own station list,
+published as open data under CC BY 4.0. The lightest of the three: credit and
+a statement of what was changed, no restriction on use. Both live in its
+`_note`, and the credit is *Origen de los datos: Renfe Operadora*. Same rule
+about editing: corrections go in the `OVERRIDES` map in `renfe/stations.ts`,
+with a source better than Renfe's own, which is a high bar. Renfe's codes are
+neither UIC nor Adif numbers, and the leading zero matters: `04040` is
+Zaragoza Delicias.
+
 Everything else in the repo is either our own work or vendored from a project
 named in the credits, so these are the files to think twice about.
 
