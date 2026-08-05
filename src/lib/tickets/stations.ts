@@ -11,6 +11,15 @@
  * is a derived database, so the attribution and the licence travel with it:
  * the note is inside each JSON as `_note`, and repeated in the README credits.
  *
+ * The UIC codes come from a second source as well. Trainline's list is a
+ * distributor's catalogue and covers the countries it sells to: Poland had 141
+ * stations of 4,670, Croatia 14 of 566, so a HŽPP or MÁV ticket showed numbers
+ * where names belong. plc-stations.json fills those countries from the UIC
+ * Primary Location Code register and is consulted only where the catalogue is
+ * silent, so the two never disagree about a station. Read the note at the top
+ * of scripts/build-plc-stations.py before touching it: its terms are the least
+ * settled of anything here.
+ *
  * They are large, so they load on demand and separately: an SNCF barcode has
  * no use for 23k UIC codes and a DB ticket has none for the mnemonics. Until a
  * table arrives the raw code is shown, which is what happened for every
@@ -54,10 +63,23 @@ interface StationFile {
 let uicCache: StationTable | null = null;
 let uicPending: Promise<StationTable> | null = null;
 
+/**
+ * Both UIC tables, as one. They are merged rather than consulted in turn
+ * because the register only holds codes the catalogue does not, so there is
+ * nothing to arbitrate: spreading the catalogue second is belt and braces
+ * against a future export overlapping it. The files stay separate on disk,
+ * where their notes and their differing terms are.
+ */
 export async function loadUicStations(): Promise<StationTable> {
 	if (uicCache) return uicCache;
-	uicPending ??= import('./data/uic-stations.json').then((m) => {
-		uicCache = (m as unknown as StationFile).default.stations;
+	uicPending ??= Promise.all([
+		import('./data/plc-stations.json'),
+		import('./data/uic-stations.json')
+	]).then(([plc, catalogue]) => {
+		uicCache = {
+			...(plc as unknown as StationFile).default.stations,
+			...(catalogue as unknown as StationFile).default.stations
+		};
 		return uicCache;
 	});
 	return uicPending;

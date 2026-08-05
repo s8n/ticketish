@@ -2,8 +2,9 @@
 
 Many formats here were learned from somebody: a published specification, a
 project that had already taken the format apart, or a table of names nobody
-else publishes. Those sources are listed below, with the conditions two of them
-came with.
+else publishes. Those sources are listed below, with the conditions some of
+them came with, and with the one whose conditions nobody has been able to
+establish.
 
 The rest had none of that and were reverse engineered here, barcode held
 against the ticket it came off, field by field until the numbers stopped
@@ -100,3 +101,23 @@ The mnemonics come from the CSV's `benerail_id` column, which is what SNCF
 e-billets and ELB barcodes carry, and not from the `sncf_id` column beside it.
 They agree on most stations and disagree on 237, mostly German, so the wrong
 one names the wrong station in the place a correct answer would go.
+
+## One table whose terms are unsettled
+
+**The rest of the UIC station names**, in
+`src/lib/tickets/data/plc-stations.json`, come from the **UIC Primary Location
+Code** register, which RailNetEurope keeps for UIC in the Central Reference
+File Database. Trainline's catalogue covers the stations Trainline sells to,
+which left Poland with 141 stations of 4,670 and Croatia with 14 of 566, so a
+Croatian or Hungarian ticket showed numbers where names belong. This fills the
+countries where that happens and nothing else.
+
+**Its terms are the least settled of anything here.** UIC's own ENEE database
+closed in 2019, the CRD that replaced it sits behind an account, and no reuse
+licence for the register has been identified. It is included because a station
+name on a ticket is a fact the passenger is already holding, and it is kept to
+the minimum that serves that: names and codes, no coordinates, flags, validity
+dates or infrastructure managers, and only for the thin countries. It is one
+file and one loader, so if the terms turn out to forbid this, removing it is a
+small change rather than an unpicking. Anyone redistributing ticketish should
+know it is here.

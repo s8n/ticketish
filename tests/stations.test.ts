@@ -28,6 +28,7 @@ import {
 import uicJson from '../src/lib/tickets/data/uic-stations.json' with { type: 'json' };
 import benerailJson from '../src/lib/tickets/data/benerail-stations.json' with { type: 'json' };
 import renfeJson from '../src/lib/tickets/renfe/stations.json' with { type: 'json' };
+import plcJson from '../src/lib/tickets/data/plc-stations.json' with { type: 'json' };
 
 describe('the bundled tables', () => {
 	it('keep the attribution note beside the data', () => {
@@ -41,6 +42,32 @@ describe('the bundled tables', () => {
 	it('maps seven digit UIC codes to non-empty names', () => {
 		const entries = Object.entries(uicJson.stations);
 		expect(entries.length).toBeGreaterThan(20000);
+		for (const [code, name] of entries) {
+			expect(code, `key ${code}`).toMatch(/^\d{7}$/);
+			expect(name.trim(), `name for ${code}`).not.toBe('');
+		}
+	});
+
+	it('says what the register table is and how far from settled it is', () => {
+		expect(plcJson._note).toMatch(/Primary Location Code/);
+		// the point of the sentence is that whoever finds this file next knows
+		// it is the one to check before shipping anything
+		expect(plcJson._note).toMatch(/no reuse licence has been identified/i);
+		expect(plcJson._export).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+	});
+
+	it('keeps the register out of the catalogue codes, which is what lets them merge', () => {
+		// loadUicStations spreads one over the other and never arbitrates, so
+		// the two must not both hold a code. The build script guarantees it;
+		// this is the guarantee written down where a rebuild would break it.
+		const catalogue = new Set(Object.keys(uicJson.stations));
+		const both = Object.keys(plcJson.stations).filter((code) => catalogue.has(code));
+		expect(both).toEqual([]);
+	});
+
+	it('maps seven digit register codes to non-empty names', () => {
+		const entries = Object.entries(plcJson.stations);
+		expect(entries.length).toBeGreaterThan(5000);
 		for (const [code, name] of entries) {
 			expect(code, `key ${code}`).toMatch(/^\d{7}$/);
 			expect(name.trim(), `name for ${code}`).not.toBe('');
@@ -116,6 +143,25 @@ describe('uicStationName', () => {
 		expect(uicStationName(names, 8019023)).toBe('Koblenz Hbf');
 		expect(names['8029309']).toBeUndefined();
 		expect(uicStationName(names, 8029309)).toBe('Reutlingen Hbf');
+	});
+
+	it('names the countries the catalogue does not sell to', async () => {
+		const names = await loadUicStations();
+		// a HŽPP barcode carries the location code and the parser adds 7800000;
+		// before the register was merged in, 14 Croatian stations had names
+		expect(uicStationName(names, 7871001)).toBe('Tovarnik');
+		expect(uicStationName(names, 7872460)).toBe('Zagreb Borongaj');
+		// and Hungary, where a MÁV ticket up to version 4 numbers stations this way
+		expect(uicStationName(names, 5501032)).toBe('Budaörs');
+		expect(uicStationName(names, 5513912)).toBe('Debrecen');
+	});
+
+	it('lets the catalogue win where both would answer', async () => {
+		const names = await loadUicStations();
+		// Budapest-Keleti is in both spaces of the merge only in the sense that
+		// the catalogue has it; the register's copy was dropped at build time
+		expect(uicStationName(names, 5510017)).toBe('Budapest-Keleti');
+		expect(uicStationName(names, 8015458)).toBe('Köln Hbf');
 	});
 
 	it('works before the table has loaded, and for codes nobody knows', () => {

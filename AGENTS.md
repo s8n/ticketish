@@ -90,6 +90,24 @@ Note that the `uic` numbering is not the domestic one. Köln Hbf is UIC
 8015458 and IBNR 8000207, and it is the UIC number that DB puts in the
 barcode; the CSV's `db_id` column holds the IBNR and is deliberately unused.
 
+`src/lib/tickets/data/plc-stations.json` is the other half of the UIC codes,
+and the file to think hardest about. Trainline's list is a distributor's
+catalogue, so it covers what Trainline sells: Poland had 141 stations of 4,670
+and Croatia 14 of 566, which is why HŽPP and MÁV tickets showed numbers. The
+rest come from the UIC Primary Location Code register, via a CRD export that
+is not published for download and carries no reuse licence anybody here has
+found. It holds names and codes and nothing else, only for the countries where
+the catalogue is thin, and it is deliberately one file and one loader to
+remove. Do not grow it, do not add the coordinates or the flags, and do not
+treat it as settled. `scripts/build-plc-stations.py` reads an export from
+`standards/` (gitignored) and decides thinness per country by rule rather than
+by a list, so a newer export re-answers the question.
+
+The two UIC tables never hold the same code: the register is filtered against
+the catalogue at build time, and `loadUicStations` merges them without
+arbitrating. A test enforces it. Keep it that way rather than writing a
+precedence rule, so the differing terms stay attached to separate files.
+
 The mnemonics come from the CSV's `benerail_id` column, which is the space
 SNCF e-billets and ELB barcodes carry. The `sncf_id` column beside it looks
 identical for most stations and names a different one for 237 of them, mostly
