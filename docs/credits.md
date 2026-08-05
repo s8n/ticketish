@@ -61,8 +61,17 @@ moving. Several of them are written down nowhere else.
   to be stated: only the code and the name are kept, and the names are left in
   the upper case Renfe issues them in. Renfe's codes are neither UIC nor Adif
   numbers, so this is the only table that reads a Renfe barcode's stations.
-- DB Leitpunktkürzel and Swiss NOVA organisation names derive from the
-  respective operators' open data.
+- **DB Leitpunktkürzel**, the route points a Via text is written in, are read
+  out of part 6 of DB's **Entfernungswerk**, the distance tables published with
+  the Deutschlandtarif price list and linked from
+  [bahn.de/agb](https://www.bahn.de/agb), by
+  `scripts/build-db-leitpunkte.py`, refreshed monthly and needing no
+  credentials. That is a tariff publication and not a licensed open data set,
+  so what is taken from it is the abbreviation and the station it stands for
+  and nothing else: not the distance tables, not the IBNR or Verbund columns
+  printed beside them. A new edition lands each December and the JSON records
+  which one it was built from.
+- Swiss NOVA organisation names derive from the operator's open data.
 
 ## Two tables with strings attached
 

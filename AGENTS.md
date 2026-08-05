@@ -106,6 +106,15 @@ with a source better than Renfe's own, which is a high bar. Renfe's codes are
 neither UIC nor Adif numbers, and the leading zero matters: `04040` is
 Zaragoza Delicias.
 
+`src/lib/tickets/data/db-leitpunkte.json` is different in kind: it is read out
+of part 6 of DB's Entfernungswerk, a tariff publication with no reuse licence
+attached rather than an open data set, so do not describe it as one. What is
+kept is the abbreviation and the station it stands for, which is a fact about
+a code. Do not extend it into the rest of the document: the distance tables
+are the part DB actually publishes for its own sake, and the IBNR and Verbund
+columns printed beside the names are deliberately dropped, the IBNR for the
+same reason as above. The `_edition` field says which year's names these are.
+
 Everything else in the repo is either our own work or vendored from a project
 named in the credits, so these are the files to think twice about.
 

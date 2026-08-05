@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: MIT OR EUPL-1.2
 
 import { describe, expect, it } from 'vitest';
-import { parseDbVia, type ViaItem } from '../src/lib/tickets/via.ts';
+import { LEITPUNKT_EDITION, parseDbVia, type ViaItem } from '../src/lib/tickets/via.ts';
+import leitpunkte from '../src/lib/tickets/data/db-leitpunkte.json' with { type: 'json' };
 
 const codes = (items: ViaItem[]): unknown[] =>
 	items.map((i) => (i.kind === 'point' ? i.code : i.choices.map(codes)));
@@ -60,5 +61,34 @@ describe('DB via route parser', () => {
 	it('returns null for non-via text', () => {
 		expect(parseDbVia('just some text')).toBeNull();
 		expect(parseDbVia('')).toBeNull();
+	});
+});
+
+describe('the Leitpunkt table', () => {
+	it('says where it came from and which edition it is', () => {
+		expect(leitpunkte._note).toMatch(/Entfernungswerk/);
+		// an annual document, so the year in here is what says whether the
+		// names are current
+		expect(LEITPUNKT_EDITION).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+	});
+
+	it('maps short upper case codes to non-empty names', () => {
+		const entries = Object.entries(leitpunkte.points);
+		expect(entries.length).toBeGreaterThan(500);
+		for (const [code, name] of entries) {
+			// one to four letters, no digits: a Via text is parsed on that shape
+			expect(code, `key ${code}`).toMatch(/^[A-Z]{1,4}$/);
+			expect(name.trim(), `name for ${code}`).not.toBe('');
+		}
+	});
+
+	it('is the tariff space and not DS100, which abbreviates the same stations', () => {
+		// Augsburg Hbf is MA to the infrastructure side and A to the tariff
+		// side, and a Via text is written in the latter. MA is in this table
+		// too and means Mannheim, so reading one space as the other does not
+		// fail, it just moves the route 300km.
+		const points = leitpunkte.points as Record<string, string>;
+		expect(points['A']).toBe('Augsburg Hbf');
+		expect(points['MA']).toBe('Mannheim Hbf');
 	});
 });

@@ -8,8 +8,15 @@
  * `<nnnn>` switches carrier, `*` separates route points, `(a/b)` are
  * alternative routings. Points are DB Leitpunktkürzel.
  *
- * Ported from zuegli's parse_via.py (© Q, EUPL-1.2); Leitpunkt names from DB
- * open data.
+ * Ported from zuegli's parse_via.py (© Q, EUPL-1.2). The Leitpunkt names come
+ * from part 6 of DB's Entfernungswerk, the tariff document that defines them,
+ * read into db-leitpunkte.json by scripts/build-db-leitpunkte.py and refreshed
+ * monthly. It is an annual publication, so the JSON records which edition it
+ * was built from.
+ *
+ * The table is imported statically rather than on demand: it is 16 KB, and a
+ * Via text is drawn beside the ticket as it renders, so an await here would
+ * push one into every caller for very little.
  */
 import leitpunkte from './data/db-leitpunkte.json' with { type: 'json' };
 import { ricsName } from './uic/rics.ts';
@@ -34,7 +41,10 @@ export interface ViaCarrier {
 	items: ViaItem[];
 }
 
-const LEITPUNKTE = leitpunkte as Record<string, string>;
+const LEITPUNKTE = leitpunkte.points as Record<string, string>;
+
+/** Which edition of the Entfernungswerk the names above were read from. */
+export const LEITPUNKT_EDITION = leitpunkte._edition;
 
 function point(code: string): ViaPoint {
 	code = code.trim();
