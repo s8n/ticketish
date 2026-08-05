@@ -3,8 +3,8 @@
 
 /**
  * Station names for the two identifier spaces that turn up on tickets:
- * seven digit UIC location codes, and the five letter mnemonics SNCF prints
- * on its own barcodes.
+ * seven digit UIC location codes, and the five letter Benerail mnemonics that
+ * SNCF e-billets and ELB barcodes carry.
  *
  * Both tables are built by scripts/build-station-names.py from
  * https://github.com/trainline-eu/stations, which is ODbL 1.0. What comes out
@@ -38,7 +38,12 @@ const UIC_OVERRIDES: Record<string, StationEntry> = {
 	'8029309': { name: 'Reutlingen Hbf', source: 'DB Muster ticket (FV-Supersparpreis)' }
 };
 
-const SNCF_OVERRIDES: Record<string, StationEntry> = {};
+/**
+ * Empty. Note that a name from the neighbouring `sncf_id` space is not a
+ * source: the two disagree about 237 mnemonics, which is why this table is
+ * built from `benerail_id` in the first place.
+ */
+const BENERAIL_OVERRIDES: Record<string, StationEntry> = {};
 
 export type StationTable = Record<string, string>;
 
@@ -58,16 +63,16 @@ export async function loadUicStations(): Promise<StationTable> {
 	return uicPending;
 }
 
-let sncfCache: StationTable | null = null;
-let sncfPending: Promise<StationTable> | null = null;
+let benerailCache: StationTable | null = null;
+let benerailPending: Promise<StationTable> | null = null;
 
-export async function loadSncfStations(): Promise<StationTable> {
-	if (sncfCache) return sncfCache;
-	sncfPending ??= import('./data/sncf-stations.json').then((m) => {
-		sncfCache = (m as unknown as StationFile).default.stations;
-		return sncfCache;
+export async function loadBenerailStations(): Promise<StationTable> {
+	if (benerailCache) return benerailCache;
+	benerailPending ??= import('./data/benerail-stations.json').then((m) => {
+		benerailCache = (m as unknown as StationFile).default.stations;
+		return benerailCache;
 	});
-	return sncfPending;
+	return benerailPending;
 }
 
 /**
@@ -93,14 +98,14 @@ export function uicStationName(
 	return UIC_OVERRIDES[key]?.name ?? names?.[key] ?? null;
 }
 
-/** Station name for an SNCF mnemonic, or null when it is unknown. */
-export function sncfStationName(
+/** Station name for a Benerail mnemonic, or null when it is unknown. */
+export function benerailStationName(
 	names: StationTable | null,
 	code: string | null | undefined
 ): string | null {
 	if (!code) return null;
 	const key = code.trim().toUpperCase();
-	return SNCF_OVERRIDES[key]?.name ?? names?.[key] ?? null;
+	return BENERAIL_OVERRIDES[key]?.name ?? names?.[key] ?? null;
 }
 
 /** The name if it is known, otherwise the code as printed on the ticket. */
@@ -113,12 +118,12 @@ export function uicStationLabel(
 }
 
 /** The name if it is known, otherwise the mnemonic as printed on the ticket. */
-export function sncfStationLabel(
+export function benerailStationLabel(
 	names: StationTable | null,
 	code: string | null | undefined
 ): string | null {
 	if (!code) return null;
-	return sncfStationName(names, code) ?? code;
+	return benerailStationName(names, code) ?? code;
 }
 
 /**

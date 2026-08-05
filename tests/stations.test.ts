@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT OR EUPL-1.2
 
 /**
- * Station name tables: UIC location codes and SNCF mnemonics.
+ * Station name tables: UIC location codes, Benerail mnemonics, Renfe codes.
  *
  * The codes here are either from DB's published Muster specimens or picked off
  * the bundled table itself, never off a real ticket.
@@ -13,10 +13,10 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
 	isUicCodeTable,
-	loadSncfStations,
+	loadBenerailStations,
 	loadUicStations,
-	sncfStationLabel,
-	sncfStationName,
+	benerailStationLabel,
+	benerailStationName,
 	uicStationLabel,
 	uicStationName
 } from '../src/lib/tickets/stations.ts';
@@ -26,13 +26,13 @@ import {
 	renfeStationName
 } from '../src/lib/tickets/renfe/stations.ts';
 import uicJson from '../src/lib/tickets/data/uic-stations.json' with { type: 'json' };
-import sncfJson from '../src/lib/tickets/data/sncf-stations.json' with { type: 'json' };
+import benerailJson from '../src/lib/tickets/data/benerail-stations.json' with { type: 'json' };
 import renfeJson from '../src/lib/tickets/renfe/stations.json' with { type: 'json' };
 
 describe('the bundled tables', () => {
 	it('keep the attribution note beside the data', () => {
 		// the whole point of the note is that it travels with the table
-		for (const json of [uicJson, sncfJson]) {
+		for (const json of [uicJson, benerailJson]) {
 			expect(json._note).toMatch(/trainline-eu\/stations/);
 			expect(json._note).toMatch(/ODbL/);
 		}
@@ -67,8 +67,8 @@ describe('the bundled tables', () => {
 	});
 
 	it('maps five letter mnemonics to non-empty names', () => {
-		const entries = Object.entries(sncfJson.stations);
-		expect(entries.length).toBeGreaterThan(7000);
+		const entries = Object.entries(benerailJson.stations);
+		expect(entries.length).toBeGreaterThan(9000);
 		for (const [code, name] of entries) {
 			expect(code, `key ${code}`).toMatch(/^[A-Z]{5}$/);
 			expect(name.trim(), `name for ${code}`).not.toBe('');
@@ -126,32 +126,44 @@ describe('uicStationName', () => {
 	});
 });
 
-describe('sncfStationName', () => {
+describe('benerailStationName', () => {
 	it('resolves mnemonics from the loaded table', async () => {
-		const names = await loadSncfStations();
-		expect(sncfStationName(names, 'FRPST')).toBe('Paris Gare de l’Est');
-		expect(sncfStationName(names, 'FRAEG')).toBe('Strasbourg');
+		const names = await loadBenerailStations();
+		expect(benerailStationName(names, 'FRPST')).toBe('Paris Gare de l’Est');
+		expect(benerailStationName(names, 'FRAEG')).toBe('Strasbourg');
 	});
 
 	it('covers stations outside France, which SNCF also sells to', async () => {
-		const names = await loadSncfStations();
-		expect(sncfStationName(names, 'DEKOH')).toBe('Köln Hbf');
+		const names = await loadBenerailStations();
+		expect(benerailStationName(names, 'DEKOH')).toBe('Köln Hbf');
 	});
 
 	it('is case and whitespace insensitive, since the field is fixed width', async () => {
-		const names = await loadSncfStations();
-		expect(sncfStationName(names, ' frpst ')).toBe('Paris Gare de l’Est');
+		const names = await loadBenerailStations();
+		expect(benerailStationName(names, ' frpst ')).toBe('Paris Gare de l’Est');
 	});
 
 	it('returns null for an empty or unknown mnemonic', async () => {
-		const names = await loadSncfStations();
-		expect(sncfStationName(names, '')).toBeNull();
-		expect(sncfStationName(names, 'ZZZZZ')).toBeNull();
-		expect(sncfStationName(null, 'FRPST')).toBeNull();
+		const names = await loadBenerailStations();
+		expect(benerailStationName(names, '')).toBeNull();
+		expect(benerailStationName(names, 'ZZZZZ')).toBeNull();
+		expect(benerailStationName(null, 'FRPST')).toBeNull();
 	});
 
 	it('caches, so the table is only imported once', async () => {
-		expect(await loadSncfStations()).toBe(await loadSncfStations());
+		expect(await loadBenerailStations()).toBe(await loadBenerailStations());
+	});
+
+	it('reads the Benerail space and not the SNCF one beside it', async () => {
+		const names = await loadBenerailStations();
+		// The two columns of the source mostly agree, which is what let a table
+		// built from the wrong one survive. These are mnemonics where they do
+		// not: in the SNCF space DEFLS is Freilassing and DEAND is Kulmbach,
+		// and a barcode carrying either means neither.
+		expect(benerailStationName(names, 'DEFLS')).toBe('Salzburg');
+		expect(benerailStationName(names, 'DEAND')).toBe('Andernach');
+		expect(benerailStationName(names, 'DEAXE')).toBe('Solingen Hbf');
+		expect(benerailStationName(names, 'FRLYO')).toBe('Lyon');
 	});
 });
 
@@ -200,13 +212,13 @@ describe('renfeStationName', () => {
 describe('the labels', () => {
 	it('fall back to the code as printed on the ticket', () => {
 		expect(uicStationLabel(null, 8718201)).toBe('8718201');
-		expect(sncfStationLabel(null, 'FRPST')).toBe('FRPST');
+		expect(benerailStationLabel(null, 'FRPST')).toBe('FRPST');
 	});
 
 	it('stay empty when there is no code at all', () => {
 		expect(uicStationLabel(null, null)).toBeNull();
 		expect(uicStationLabel(null, '')).toBeNull();
-		expect(sncfStationLabel(null, undefined)).toBeNull();
+		expect(benerailStationLabel(null, undefined)).toBeNull();
 	});
 });
 

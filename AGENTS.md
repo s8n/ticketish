@@ -77,7 +77,7 @@ Do not edit `orgs.json` by hand. Corrections go in the `OVERRIDES` map in
 `orgs.ts`, with a source, so that regenerating from the app stays a clean
 copy.
 
-`src/lib/tickets/data/uic-stations.json` and `sncf-stations.json` are built
+`src/lib/tickets/data/uic-stations.json` and `benerail-stations.json` are built
 from [trainline-eu/stations](https://github.com/trainline-eu/stations), which
 is ODbL 1.0. What comes out is a derived database, so both files must keep
 their `_note` and stay under ODbL wherever they go. That is a lighter
@@ -89,6 +89,13 @@ source.
 Note that the `uic` numbering is not the domestic one. Köln Hbf is UIC
 8015458 and IBNR 8000207, and it is the UIC number that DB puts in the
 barcode; the CSV's `db_id` column holds the IBNR and is deliberately unused.
+
+The mnemonics come from the CSV's `benerail_id` column, which is the space
+SNCF e-billets and ELB barcodes carry. The `sncf_id` column beside it looks
+identical for most stations and names a different one for 237 of them, mostly
+German: in that space DEFLS is Freilassing where the barcode means Salzburg.
+The table was built from the wrong column once. Do not merge the two, and do
+not add a name from one space to the other's `OVERRIDES` map.
 
 `src/lib/tickets/renfe/stations.json` is Renfe Operadora's own station list,
 published as open data under CC BY 4.0. The lightest of the three: credit and

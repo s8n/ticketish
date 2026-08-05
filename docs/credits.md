@@ -76,13 +76,18 @@ and anyone repackaging it commercially should strip `orgs.json` or clear it
 with the app's authors first. A handful of entries where this repo has a better
 source, or a correction to a typo, override it from `orgs.ts`.
 
-**UIC station names and SNCF five letter mnemonics** both come from
+**UIC station names and Benerail five letter mnemonics** both come from
 [trainline-eu/stations](https://github.com/trainline-eu/stations), a single CSV
 published under the **Open Data Commons Open Database License (ODbL) 1.0**,
 built by `scripts/build-station-names.py` and refreshed monthly with no
 credentials. The two tables it produces are a derived database, so the
 attribution and the licence go with them: keep the `_note` in
-`src/lib/tickets/data/uic-stations.json` and `sncf-stations.json`, and keep
+`src/lib/tickets/data/uic-stations.json` and `benerail-stations.json`, and keep
 them under ODbL if you redistribute them. SNCF's own open data publishes UIC
 codes and the three letter TVS code but not the mnemonic, so this is the only
 open source for `FRPST` and friends.
+
+The mnemonics come from the CSV's `benerail_id` column, which is what SNCF
+e-billets and ELB barcodes carry, and not from the `sncf_id` column beside it.
+They agree on most stations and disagree on 237, mostly German, so the wrong
+one names the wrong station in the place a correct answer would go.

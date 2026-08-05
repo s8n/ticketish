@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2026 ave
 # SPDX-License-Identifier: MIT OR EUPL-1.2
 
-"""Build the UIC station and SNCF mnemonic name tables from trainline-eu/stations.
+"""Build the UIC station and Benerail mnemonic name tables from trainline-eu/stations.
 
 Provenance
 ----------
@@ -21,11 +21,24 @@ Two tables come out of it, because tickets identify stations two ways:
   For Germany this is *not* the domestic IBNR: Koeln Hbf is UIC 8015458 but
   IBNR 8000207, and it is the UIC number that DB puts in the barcode. The IBNR
   lives in the CSV's `db_id` column and is deliberately not used here.
-* `sncf_id` -> the five letter mnemonic SNCF prints on its own barcodes
-  (FRPST, FRAEG). SNCF's open data portal publishes UIC codes and the three
-  letter TVS code but not this one, so the CSV is the only open source for it.
-  Despite the FR prefix on most entries it covers foreign stations SNCF sells
-  to as well.
+* `benerail_id` -> the five character mnemonic that SNCF e-billets and ELB
+  barcodes carry (FRPST, FRAEG). Despite the FR prefix on most entries it
+  covers the foreign stations sold to as well, and the German ones are a large
+  part of ELB's traffic.
+
+  Not `sncf_id`, which is the neighbouring column and was what this built
+  before. The two mostly agree, which is what made the mistake survive: FRPST,
+  FRPLY and DEKOH are the same string in both. But 237 mnemonics name a
+  *different station* in the two spaces, 207 of them German, so a table built
+  from the wrong column called DEFLS Freilassing where the barcode meant
+  Salzburg, and DEAND Kulmbach where it meant Andernach. `benerail_id` also
+  covers 11k stations against `sncf_id`'s 8k.
+
+  Codes that appear only as an `sncf_id` are deliberately not merged in as a
+  fallback. A code that is not a Benerail id is not made into one by there
+  being nothing better: showing the mnemonic unresolved says this app does not
+  know, which is true, where a name from the neighbouring space says something
+  false in the same place a correct answer would go.
 
 Rows without the identifier in question are skipped, which drops the coach and
 bus stops that make up most of the file.
@@ -53,11 +66,11 @@ NOTE = (
     "corrections in the OVERRIDES map in src/lib/tickets/stations.ts."
 )
 
-# Sanity floors. The source has held around 23k UIC codes and 8k mnemonics for
+# Sanity floors. The source has held around 23k UIC codes and 11k mnemonics for
 # a long time, so a collapse means the CSV changed shape rather than half of
 # Europe closing its stations.
 MIN_UIC = 20000
-MIN_SNCF = 7000
+MIN_BENERAIL = 9000
 
 
 def fetch() -> str:
@@ -81,7 +94,7 @@ def main() -> int:
         return 1
 
     uic: dict[str, str] = {}
-    sncf: dict[str, str] = {}
+    benerail: dict[str, str] = {}
     for row in csv.DictReader(io.StringIO(text), delimiter=";"):
         name = (row.get("name") or "").strip()
         if not name:
@@ -91,19 +104,19 @@ def main() -> int:
         # rather than a UIC location code.
         if len(code) == 7 and code.isdigit():
             uic[code] = name
-        mnemonic = (row.get("sncf_id") or "").strip().upper()
+        mnemonic = (row.get("benerail_id") or "").strip().upper()
         if len(mnemonic) == 5 and mnemonic.isalpha():
-            sncf[mnemonic] = name
+            benerail[mnemonic] = name
 
-    if len(uic) < MIN_UIC or len(sncf) < MIN_SNCF:
+    if len(uic) < MIN_UIC or len(benerail) < MIN_BENERAIL:
         print(
-            f"only {len(uic)} UIC codes and {len(sncf)} mnemonics, refusing to write",
+            f"only {len(uic)} UIC codes and {len(benerail)} mnemonics, refusing to write",
             file=sys.stderr,
         )
         return 1
 
     write(DATA / "uic-stations.json", uic, int)
-    write(DATA / "sncf-stations.json", sncf, str)
+    write(DATA / "benerail-stations.json", benerail, str)
     return 0
 
 
