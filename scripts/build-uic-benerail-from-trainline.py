@@ -44,7 +44,7 @@ Rows without the identifier in question are skipped, which drops the coach and
 bus stops that make up most of the file.
 
 Usage:
-    python scripts/build-station-names.py
+    python scripts/build-uic-benerail-from-trainline.py
 """
 import csv
 import io
@@ -62,7 +62,7 @@ NOTE = (
     "Derived from https://github.com/trainline-eu/stations, which is published "
     "under the Open Data Commons Open Database License (ODbL) 1.0. This table "
     "is a derived database: keep the attribution and keep it under ODbL. "
-    "Rebuilt by scripts/build-station-names.py; do not edit by hand, put "
+    "Rebuilt by scripts/build-uic-benerail-from-trainline.py; do not edit by hand, put "
     "corrections in the OVERRIDES map in src/lib/tickets/stations.ts."
 )
 

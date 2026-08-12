@@ -6,7 +6,7 @@
  * seven digit UIC location codes, and the five letter Benerail mnemonics that
  * SNCF e-billets and ELB barcodes carry.
  *
- * Both tables are built by scripts/build-station-names.py from
+ * Both tables are built by scripts/build-uic-benerail-from-trainline.py from
  * https://github.com/trainline-eu/stations, which is ODbL 1.0. What comes out
  * is a derived database, so the attribution and the licence travel with it:
  * the note is inside each JSON as `_note`, and repeated in the README credits.
@@ -17,7 +17,7 @@
  * where names belong. plc-stations.json fills those countries from the UIC
  * Primary Location Code register and is consulted only where the catalogue is
  * silent, so the two never disagree about a station. Read the note at the top
- * of scripts/build-plc-stations.py before touching it: its terms are the least
+ * of scripts/build-uic-from-plc.py before touching it: its terms are the least
  * settled of anything here.
  *
  * They are large, so they load on demand and separately: an SNCF barcode has

@@ -53,7 +53,7 @@ disagree about a station and never have to be reconciled: this one is consulted
 where the other one is silent.
 
 Usage:
-    python scripts/build-plc-stations.py
+    python scripts/build-uic-from-plc.py
 """
 import json
 import pathlib
@@ -84,7 +84,7 @@ NOTE = (
     "reuse licence has been identified for the register, which makes this the "
     "least settled table in this repo: it holds names and codes and nothing "
     "else, and it is one file and one loader to remove if the terms turn out to "
-    "forbid it. Rebuilt by scripts/build-plc-stations.py from a CRD export; do "
+    "forbid it. Rebuilt by scripts/build-uic-from-plc.py from a CRD export; do "
     "not edit by hand, put corrections in the OVERRIDES map in "
     "src/lib/tickets/stations.ts."
 )

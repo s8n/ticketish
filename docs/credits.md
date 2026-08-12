@@ -136,7 +136,7 @@ source, or a correction to a typo, override it from `orgs.ts`.
 **UIC station names and Benerail five letter mnemonics** both come from
 [trainline-eu/stations](https://github.com/trainline-eu/stations), a single CSV
 published under the **Open Data Commons Open Database License (ODbL) 1.0**,
-built by `scripts/build-station-names.py` and refreshed monthly with no
+built by `scripts/build-uic-benerail-from-trainline.py` and refreshed monthly with no
 credentials. The two tables it produces are a derived database, so the
 attribution and the licence go with them: keep the `_note` in
 `src/lib/tickets/data/uic-stations.json` and `benerail-stations.json`, and keep

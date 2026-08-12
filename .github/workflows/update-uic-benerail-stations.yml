@@ -1,11 +1,11 @@
 # SPDX-FileCopyrightText: 2026 ave
 # SPDX-License-Identifier: MIT OR EUPL-1.2
 
-name: Update station names
+name: Update UIC and Benerail station names
 
 # UIC location codes and SNCF mnemonics both come from trainline-eu/stations,
 # a single ODbL 1.0 CSV that needs no credentials. See
-# scripts/build-station-names.py for the attribution the tables carry.
+# scripts/build-uic-benerail-from-trainline.py for the attribution the tables carry.
 on:
   schedule:
     - cron: '31 4 4 * *' # 04:31 UTC on the 4th of each month
@@ -25,7 +25,7 @@ jobs:
           python-version: '3.12'
 
       - name: Rebuild station name tables
-        run: python scripts/build-station-names.py
+        run: python scripts/build-uic-benerail-from-trainline.py
 
       - name: Commit and push if changed
         run: |

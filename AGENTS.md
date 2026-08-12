@@ -196,6 +196,15 @@ fine to use and are committed.
   schema and the organisation table). Several of this repo's parsers are ports
   of its code. Its maintainer handles signature verification; that is
   deliberately out of scope here.
+- `https://api.kontrolor.si/stations`, which zuegli reads, answers with tens of
+  thousands of UIC location codes and their names, coordinates and country. It
+  covers far more codes than the tables here, mostly German and French
+  operational points, and its names are the infrastructure register's rather
+  than a passenger's: ST PANCRAS where a ticket says London St Pancras
+  International. Worth a look if a country's stations are ever thin enough to
+  matter, as a place to look one code up rather than as a table to vendor: it
+  is undocumented, publishes no terms, and its domain does not resolve, so it
+  has less provenance than the PLC export does.
 - [UIC-barcode](https://github.com/UnionInternationalCheminsdeFer/UIC-barcode)
   (EUPL-1.2 / Apache-2.0): the official UIC reference implementation. The
   ASN.1 specs vendored in `scripts/asn-specs/` come from its `asn-specs/`
