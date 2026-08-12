@@ -9,6 +9,8 @@
 	import { store } from '../lib/state/tickets.svelte.ts';
 	import { makeTicket } from '../lib/tickets/parse.ts';
 	import { pickTagline } from '../lib/taglines.ts';
+	import { version } from '$app/environment';
+	import { updates } from '../lib/state/updates.svelte.ts';
 	import { onMount } from 'svelte';
 
 	// once per load: the page renders in the browser, so there is no prerendered
@@ -39,6 +41,7 @@
 		const sample = new URLSearchParams(location.search).get('sample');
 		if (sample === '') loadSamples();
 		else if (sample) loadSamples([{ file: sample, name: sample }]);
+		updates.start();
 	});
 </script>
 
@@ -94,6 +97,15 @@
 			<RawInput onclose={() => (rawOpen = false)} />
 		{/if}
 	</section>
+
+	{#if updates.ready}
+		<!-- Never applied on its own: a scanned ticket is only in memory, and a
+		     reload nobody asked for would take it with it. -->
+		<p class="update" aria-live="polite">
+			A new version of ticketish is available.
+			<button onclick={() => updates.apply()}>Reload</button>
+		</p>
+	{/if}
 
 	{#if store.errors.length}
 		<section class="errors" aria-live="polite">
@@ -168,6 +180,17 @@
 			<a href="/credits">credits and licences</a> ·
 			<a href="https://github.com/s8n/ticketish" target="_blank" rel="noopener">source code</a>
 		</p>
+		<!-- An installed copy can be any age, and the commit and the build time
+		     are what turn "it does not do that here" into something answerable.
+		     Tapping it asks for a new one: a real control for the people who go
+		     looking, set as plain text for everybody else. -->
+		<p class="version">
+			<button type="button" onclick={() => updates.check(true)} title="Check for updates">
+				{version}
+			</button>{#if updates.checking}<span> · checking</span>{:else if updates.upToDate}<span>
+					· up to date</span
+				>{/if}
+		</p>
 	</footer>
 </div>
 
@@ -222,6 +245,30 @@
 	.actions button:hover {
 		border-color: var(--rail-blue);
 		color: var(--rail-blue);
+	}
+	/* News rather than a warning, so it borrows the rail blue instead of the
+	   red an error is set in. */
+	.update {
+		margin: 0;
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		align-items: baseline;
+		border: 1px solid color-mix(in srgb, var(--rail-blue) 45%, transparent);
+		color: var(--rail-blue);
+		border-radius: 6px;
+		padding: 0.45rem 0.7rem;
+		font-size: 0.88rem;
+	}
+	.update button {
+		background: none;
+		border: none;
+		color: inherit;
+		padding: 0;
+		font: inherit;
+		text-decoration: underline;
+		cursor: pointer;
+		white-space: nowrap;
 	}
 	.errors {
 		display: flex;
@@ -318,6 +365,22 @@
 	}
 	footer p {
 		margin: 0;
+	}
+	.version {
+		margin-top: 0.35rem;
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		opacity: 0.7;
+	}
+	/* A button so that a keyboard and a screen reader can reach it, wearing
+	   the surrounding text's clothes so that nothing announces itself. */
+	.version button {
+		font: inherit;
+		color: inherit;
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
 	}
 	footer a {
 		color: inherit;

@@ -9,17 +9,34 @@ import { build, files, prerendered, version } from '$service-worker';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 const CACHE = `ticketish-${version}`;
+
+/**
+ * Files in static/ that the host reads as configuration rather than serving.
+ * Precaching one is pointless at best: the install is all or nothing, so a
+ * host that answers 404 for it would take every update down with it.
+ */
+const NOT_SERVED = /\/_(headers|redirects|routes\.json)$/;
+
 // prerendered covers the pages beside the shell, such as /credits: an
 // attribution page that is only there online is not much of an attribution.
-const ASSETS = [...build, ...files, ...prerendered, '/'];
+const ASSETS = [
+	...build,
+	...files.filter((path) => !NOT_SERVED.test(path)),
+	...prerendered,
+	'/'
+];
 
 sw.addEventListener('install', (event) => {
-	event.waitUntil(
-		caches
-			.open(CACHE)
-			.then((cache) => cache.addAll(ASSETS))
-			.then(() => sw.skipWaiting())
-	);
+	// No skipWaiting here on purpose. A new worker that takes over mid-session
+	// deletes the cache the open page is still importing from, and this app
+	// loads tables and the barcode writer late, so the page would start failing
+	// at whatever it did next. The new version waits until the reader says so.
+	event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));
+});
+
+// Which the app does by asking, once it has told them a new version is ready.
+sw.addEventListener('message', (event) => {
+	if ((event.data as { type?: string } | null)?.type === 'skip-waiting') sw.skipWaiting();
 });
 
 sw.addEventListener('activate', (event) => {

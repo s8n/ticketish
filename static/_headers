@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+#
+# Cloudflare Pages reads this from the root of the deployed site. Its default
+# for everything is "public, max-age=0, must-revalidate", which is right for
+# anything that can change under a fixed name and wasteful for the rest.
+
+# Hashed by content, so a given name can never mean anything else. A year and
+# immutable means a returning visitor spends no round trip on them at all.
+/_app/immutable/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The one file that must never be answered from a cache: it is what tells the
+# browser a new version exists, and Pages already sends must-revalidate for it.
+# Said outright so that a change to the default cannot quietly freeze an
+# installed app on an old build.
+/service-worker.js
+  Cache-Control: no-cache
