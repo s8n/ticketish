@@ -1,0 +1,9 @@
+{
+"_note": "Entries from UIC's RICS register at https://www.uic.org/support-activities/it/rics, merged on top of ERA's export by scripts/build-era-orgs.py. An entry patches the code where it already sits; \"_target\" says which of the two tables it belongs in, and is only needed for a code neither of them carries.",
+"0": { "_target": "rics", "n": "Unspecified (RICS 0)" },
+"0042": { "until": "2016-06-21" },
+"0061": { "until": "2000-01-01" },
+"1024": { "_target": "rics", "n": "Lietuvos geležinkeliai" },
+"1284": { "_target": "rics", "n": "High Speed Alliance", "until": "2015-06-30" },
+"5101": { "until": "2025-02-21" }
+}

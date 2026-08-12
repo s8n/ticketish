@@ -16,8 +16,8 @@
  */
 import type { Component } from 'svelte';
 import type { PkpassInfo, TicketContainer } from '../tickets/types.ts';
-import { ricsName } from '../tickets/uic/rics.ts';
-import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
+import { ricsName, type IssuerTables } from '../tickets/uic/rics.ts';
+import { novaOrgLabel, type NovaOrgTable } from '../tickets/swisspass/orgs.ts';
 import { vdvOrgName } from '../tickets/vdv/orgs.ts';
 import Rsp6View from './Rsp6View.svelte';
 import SwissPassView from './SwissPassView.svelte';
@@ -44,6 +44,10 @@ type Of<K extends Kind> = Extract<TicketContainer, { kind: K }>;
 export interface IssuerContext {
 	/** VDV organisation table; null until it loads, so the code shows first. */
 	vdvOrgs: Record<string, string> | null;
+	/** The company code tables; null until they load, so the code shows first. */
+	issuerNames?: IssuerTables | null;
+	/** Swiss organisation numbers, for the formats that name an issuer by one. */
+	novaOrgs?: NovaOrgTable | null;
 	/** Apple Wallet metadata from the file the payload came out of. */
 	passInfo?: PkpassInfo;
 }
@@ -53,6 +57,14 @@ interface ContainerEntry<K extends Kind> {
 	label: (c: Of<K>) => string;
 	/** Who issued the ticket, or null when the format does not say. */
 	issuer?: (c: Of<K>, ctx: IssuerContext) => string | null;
+	/**
+	 * Set where the issuer is named by company code, so the card knows to
+	 * fetch the tables. They are large, and a format that spells its issuer
+	 * out has no use for them.
+	 */
+	needsIssuerNames?: boolean;
+	/** The same for the Swiss organisation numbers. */
+	needsNovaOrgs?: boolean;
 	/**
 	 * The component that draws this container's data. Absent for the envelope
 	 * formats, whose records each get their own view, and for the two that the
@@ -64,20 +76,26 @@ interface ContainerEntry<K extends Kind> {
 	props?: (c: Of<K>) => Record<string, unknown>;
 }
 
-const rics = (code: number | string | null | undefined, fallback: string) =>
-	ricsName(code) ?? (code !== null && code !== undefined ? `RICS ${code}` : fallback);
+const rics = (
+	code: number | string | null | undefined,
+	fallback: string,
+	{ issuerNames }: IssuerContext
+) =>
+	ricsName(code, issuerNames) ?? (code !== null && code !== undefined ? `RICS ${code}` : fallback);
 
 const containers: { [K in Kind]: ContainerEntry<K> } = {
 	uic9183: {
 		label: (c) => `UIC 918.3 v${c.envelope.envelopeVersion}`,
-		issuer: (c) => rics(c.envelope.issuerRics || null, 'Unknown issuer')
+		issuer: (c, ctx) => rics(c.envelope.issuerRics || null, 'Unknown issuer', ctx),
+		needsIssuerNames: true
 	},
 	dosipas: {
 		label: (c) => `DOSIPAS U${c.envelope.headerVersion}`,
-		issuer: (c) => {
+		issuer: (c, { issuerNames }) => {
 			const sp = c.envelope.securityProvider;
-			return ricsName(sp) ?? (sp !== null ? `Provider ${sp}` : 'Unknown issuer');
-		}
+			return ricsName(sp, issuerNames) ?? (sp !== null ? `Provider ${sp}` : 'Unknown issuer');
+		},
+		needsIssuerNames: true
 	},
 	rsp6: {
 		label: (c) => (c.ticket.ticketType === '08' ? 'RSP6 railcard' : 'RSP6'),
@@ -87,12 +105,22 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 	},
 	swisspass: {
 		label: () => 'SwissPass / NOVA',
-		issuer: (c) => {
+		issuer: (c, { issuerNames, novaOrgs }) => {
 			const keyRics = c.ticket.keyMeta?.rics;
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const org = (c.ticket.ticketData as any)?.sale?.issuingOrg as number | undefined;
-			return ricsName(keyRics) ?? novaOrgName(org) ?? (keyRics ? `RICS ${keyRics}` : 'SwissPass');
+			// The NOVA org is who sold the ticket; the key's RICS is whoever
+			// signed it, which on a Swiss ticket is often the association that
+			// runs NOVA rather than the operator. Sold beats signed here, and
+			// it is the order the pass colour already picks its operator in.
+			return (
+				novaOrgLabel(novaOrgs ?? null, org) ??
+				ricsName(keyRics, issuerNames) ??
+				(keyRics ? `RICS ${keyRics}` : 'SwissPass')
+			);
 		},
+		needsIssuerNames: true,
+		needsNovaOrgs: true,
 		view: SwissPassView,
 		props: (c) => ({ ticket: c.ticket })
 	},
@@ -110,13 +138,15 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 	},
 	ssb: {
 		label: (c) => `SSB v${c.envelope.version}`,
-		issuer: (c) => rics(c.envelope.issuerRics, 'SSB'),
+		issuer: (c, ctx) => rics(c.envelope.issuerRics, 'SSB', ctx),
+		needsIssuerNames: true,
 		view: SsbView,
 		props: (c) => ({ envelope: c.envelope })
 	},
 	ssb1: {
 		label: (c) => `SSB1 v${c.ticket.version}`,
-		issuer: (c) => rics(c.ticket.issuerRics, 'SSB1'),
+		issuer: (c, ctx) => rics(c.ticket.issuerRics, 'SSB1', ctx),
+		needsIssuerNames: true,
 		view: Ssb1View,
 		props: (c) => ({ ticket: c.ticket })
 	},
@@ -146,7 +176,8 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 	},
 	mav: {
 		label: (c) => `MÁV v${c.ticket.version}`,
-		issuer: (c) => ricsName(c.ticket.issuerRics) ?? 'MÁV',
+		issuer: (c, { issuerNames }) => ricsName(c.ticket.issuerRics, issuerNames) ?? 'MÁV',
+		needsIssuerNames: true,
 		view: MavView,
 		props: (c) => ({ ticket: c.ticket })
 	},

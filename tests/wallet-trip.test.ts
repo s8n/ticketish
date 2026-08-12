@@ -189,6 +189,26 @@ describe('a SwissPass ticket', () => {
 		uint(19, 2) // route type: route ticket
 	];
 
+	it('names the organisation that sold it, not the key that signed it', async () => {
+		// the sale block says org 11, and the signing key is 1185: a Swiss
+		// ticket is often signed by one body on behalf of the seller, and the
+		// seller is who a pass is about
+		const trip = (await tripFor(nova({ tariff: route })))!;
+		expect(trip.issuer).toBe('Schweizerische Bundesbahnen SBB');
+	});
+
+	it('falls back to the signing key when the sale names no organisation', async () => {
+		const ticket = concat(
+			uint(1, 123456789),
+			msg(2, ...route),
+			msg(5, time(1, Date.UTC(2026, 5, 30, 9, 12))) // sale, with no org
+		);
+		const trip = (await tripFor(
+			makeTicket(signedTicket(ticket, '1185'), { kind: 'raw', fileName: 'nova.bin' })
+		))!;
+		expect(trip.issuer).toMatch(/Swiss Federal Railways/);
+	});
+
 	it('becomes a journey over the two stations it names', async () => {
 		const trip = (await tripFor(nova({ tariff: route })))!;
 		expect(trip.shape).toBe('journey');
@@ -320,8 +340,10 @@ describe('a Renfe ticket', () => {
 	});
 
 	it('reads the company code as Renfe, since Renfe is what it may be', async () => {
+		// 1071 is Renfe Operadora in ERA's register, which is where the name
+		// comes from now that rics.json no longer guesses at this one
 		const trip = (await tripFor(renfe(renfeAztec())))!;
-		expect(trip.issuer).toBe('Renfe Viajeros');
+		expect(trip.issuer).toBe('Renfe Operadora');
 		expect(trip.operator).toEqual({ scheme: 'rics', code: 1071 });
 	});
 

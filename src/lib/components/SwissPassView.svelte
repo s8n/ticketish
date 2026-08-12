@@ -3,10 +3,20 @@
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
 	import type { SwissPassTicket } from '../tickets/swisspass/swisspass.ts';
-	import { fmtZurich, novaOrgName } from '../tickets/swisspass/swisspass.ts';
+	import { fmtZurich } from '../tickets/swisspass/swisspass.ts';
+	import { loadNovaOrgs, novaOrgLabel, type NovaOrgTable } from '../tickets/swisspass/orgs.ts';
 	import RouteLine from './RouteLine.svelte';
 
 	let { ticket }: { ticket: SwissPassTicket } = $props();
+
+	// The zones and the seller are organisation numbers; the table loads on
+	// demand and the number shows on its own until it lands.
+	let orgs = $state<NovaOrgTable | null>(null);
+	$effect(() => {
+		loadNovaOrgs().then((o) => (orgs = o));
+	});
+
+	const orgName = (code: number | undefined) => novaOrgLabel(orgs, code);
 
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	const data = $derived(ticket.ticketData as any);
@@ -53,7 +63,7 @@
 			{#each tariff.zones as z, i (i)}
 				<span class="zone">
 					{z.allZones ? 'all zones' : `Zone ${z.zoneId}`}
-					{#if novaOrgName(z.zoneOrg)}<span class="zone-org">{novaOrgName(z.zoneOrg)}</span>{/if}
+					{#if orgName(z.zoneOrg)}<span class="zone-org">{orgName(z.zoneOrg)}</span>{/if}
 				</span>
 			{/each}
 		</div>
@@ -116,9 +126,9 @@
 	{/if}
 
 	<dl class="fields divider">
-		{#if novaOrgName(sale.issuingOrg)}
+		{#if orgName(sale.issuingOrg)}
 			<dt>Issued by</dt>
-			<dd>{novaOrgName(sale.issuingOrg)} <span class="soft">(org {sale.issuingOrg})</span></dd>
+			<dd>{orgName(sale.issuingOrg)} <span class="soft">(org {sale.issuingOrg})</span></dd>
 		{:else if sale.issuingOrg}
 			<dt>Issuing org</dt>
 			<dd>{sale.issuingOrg}</dd>

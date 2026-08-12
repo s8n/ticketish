@@ -60,9 +60,17 @@ const OPERATORS: OperatorColor[] = [
 		name: 'Deutsche Bahn',
 		hex: '#ee0020',
 		source: 'specified for this app; DB publishes its own red as #ec0016',
-		// 80 and 1080 are DB Fernverkehr, 3080 DB Regio, 5080 DB Vertrieb: one
-		// operator to a passenger, four codes to the ticket
-		rics: [80, 1080, 3080, 5080]
+		// One operator to a passenger, seven codes to the ticket, all of them
+		// out of ERA's register: 0080 DB InfraGO, 1080 Deutsche Bahn AG, 1180 DB
+		// Vertrieb, 2480 DB Fernverkehr, 2580 DB Regio. The last two are
+		// revoked allocations of DB Fernverkehr and DB Regio, kept because a
+		// ticket outlives the code it was issued under.
+		//
+		// 3080 and 5080 were in here as DB Regio and DB Vertrieb until the
+		// register said otherwise: they belong to LOKORAIL a.s. and PKP
+		// Energetyka, and a Slovak or Polish ticket in DB red would be a worse
+		// answer than the app's own palette. Do not put them back.
+		rics: [80, 1080, 1180, 2480, 2580, 3396, 3864]
 	},
 	{
 		name: 'SBB CFF FFS',
@@ -77,7 +85,11 @@ const OPERATORS: OperatorColor[] = [
 		name: 'Schweizerische Südostbahn',
 		hex: '#af6d4b',
 		source: 'specified for this app',
-		rics: [3342],
+		// All three codes the register gives SOB: 5458 the railway, 5459 and
+		// 5460 the infrastructure side. Whether the latter two ever reach a
+		// ticket is not something checked here, and a code that never arrives
+		// costs nothing, where leaving one out shows the wrong colour.
+		rics: [5458, 5459, 5460],
 		nova: [36, 82]
 	},
 	{

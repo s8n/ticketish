@@ -19,7 +19,7 @@
 	note={'Barely decoded. No specification for this format is published, and only the two times above are placed: the record may describe one leg or the whole journey, and its stations, date, fare and reference number have not been found in it.'}
 />
 
-<details class="raw">
+<details class="raw readout">
 	<summary>Undecoded payload ({ticket.byteLength} bytes)</summary>
 	<code class="hex">{ticket.bodyHex}</code>
 </details>

@@ -72,7 +72,54 @@ moving. Several of them are written down nowhere else.
   and nothing else: not the distance tables, not the IBNR or Verbund columns
   printed beside them. A new edition lands each December and the JSON records
   which one it was built from.
-- Swiss NOVA organisation names derive from the operator's open data.
+- **Swiss Geschäftsorganisation numbers**, which a SwissPass ticket names its
+  seller and its zones by, come from the business organisations dataset the
+  **Geschäftsstelle Systemaufgaben Kundeninformation (SKI)** publishes as Open
+  Data on behalf of the BAV at
+  [opentransportdata.swiss](https://opentransportdata.swiss/), via
+  `scripts/build-nova-orgs.py`, refreshed monthly and needing no credentials.
+  The [terms of use](https://opentransportdata.swiss/de/terms-of-use/) want the
+  source named, which is *opentransportdata.swiss* and travels in the `_note`
+  inside the JSON, and they want the data kept current with its source, which
+  is why the monthly refresh is part of the obligation rather than a
+  convenience. Modified from the original: of twenty-three columns the
+  organisation number, the German name and abbreviation and the end of
+  validity are kept, and an organisation with several validity windows is
+  reduced to the row that runs latest.
+- **Organisation Codes** in `src/lib/tickets/uic/era-orgs.json` come from the
+  Organisation Code Register published by the **European Union Agency for
+  Railways** at [teleref.era.europa.eu](https://teleref.era.europa.eu/), via
+  `scripts/build-era-orgs.py`, refreshed monthly and needing no credentials.
+  Since January 2026 UIC allocates RICS codes only outside the EU and ERA
+  allocates Organisation Codes inside it, in the same numbering: an operator
+  that held a RICS code kept the value. So this is the register behind the
+  hand curated names in `rics.json`, thousands of entries deep. ERA's
+  [copyright notice](https://www.era.europa.eu/content/disclaimer-and-copyright-notice)
+  authorises reproduction provided the source is acknowledged, which is the
+  whole of the obligation and travels in the `_note` inside the JSON: *source,
+  European Union Agency for Railways*. What is taken is modified from the
+  original, which is worth stating either way: of fifteen columns only the
+  code, the organisation name, its acronym and the country are kept, the
+  country as a two letter code rather than the name the column holds, and the
+  codes ERA has revoked are folded in from the export's second sheet with the
+  revocation written into the name. The address, email, phone and role columns are left
+  where they are, since no ticket needs them and ERA's
+  [Terms of Use](https://teleref.era.europa.eu/termsOfUsage-OCR-v1.0.pdf)
+  treat the contact details as personal data.
+- The other half of the same numbering is the **RICS register** published by
+  the **International Union of Railways** at
+  [uic.org](https://www.uic.org/support-activities/it/rics?recherche=rics),
+  which is where a company code came from before ERA took the EU allocations
+  over, and where the codes outside the EU still come from. UIC publishes it as
+  a PDF and grants no reuse licence over it, so it is not vendored here. ERA's
+  export marks each row as an Organisation Code or a RICS code, so the mirrored
+  RICS ones are split out of the same download into
+  `src/lib/tickets/uic/rics.json`, under ERA's terms and with ERA's credit. A
+  code the register does not mirror is added by hand in
+  `scripts/rics-era-overrides.json`, one at a time and with a source, which is
+  where 1284 comes from. Whether ERA keeps mirroring UIC's allocations after
+  the transition period is not settled, and the railways outside the EU are
+  where the two registers would diverge first.
 
 ## Two tables with strings attached
 

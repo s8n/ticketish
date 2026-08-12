@@ -25,7 +25,7 @@
 	note={'The older ČD layout, for which no specification is published. Only the three timestamps are placed; the route, distance and fare are printed on the ticket but have not been found in the barcode.'}
 />
 
-<details class="raw">
+<details class="raw readout">
 	<summary>Undecoded body ({ticket.bodyHex.length / 2} bytes)</summary>
 	<code class="hex">{ticket.bodyHex}</code>
 </details>

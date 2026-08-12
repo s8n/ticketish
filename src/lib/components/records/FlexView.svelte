@@ -5,7 +5,7 @@
 	import type { FlexData } from '../../tickets/records/uflex.ts';
 	import { summarizeFcb, type FcbTicket, type Traveler } from '../../tickets/model.ts';
 	import { docTypeLabel, fmtClass, fmtDate, fmtPrice } from '../../tickets/format.ts';
-	import { ricsName } from '../../tickets/uic/rics.ts';
+	import { loadIssuerNames, ricsName, type IssuerTables } from '../../tickets/uic/rics.ts';
 	import { parseDbVia } from '../../tickets/via.ts';
 	import { uicCountryName, isoNumericCountryName } from '../../tickets/countries.ts';
 	import {
@@ -29,6 +29,13 @@
 	let uicStations = $state<StationTable | null>(null);
 	$effect(() => {
 		loadUicStations().then((s) => (uicStations = s));
+	});
+
+	// Issuer, carriers and the via route are all company codes. Same deal as
+	// the stations above: the code shows until the tables land.
+	let issuerNames = $state<IssuerTables | null>(null);
+	$effect(() => {
+		loadIssuerNames().then((n) => (issuerNames = n));
 	});
 
 	const docs = $derived(summarizeFcb(ticket, uicStations));
@@ -143,7 +150,7 @@
 		const nums = (d.includedCarrierNum as number[]) ?? [];
 		const ia5 = (d.includedCarrierIA5 as string[]) ?? [];
 		return [
-			...nums.map((n) => ricsName(n) ?? `RICS ${n}`),
+			...nums.map((n) => ricsName(n, issuerNames) ?? `RICS ${n}`),
 			...ia5
 		];
 	}
@@ -162,7 +169,7 @@
 <div class="flex-view">
 	{#each docs as doc, i (i)}
 		{@const st = stations(doc.data)}
-		{@const via = parseDbVia((doc.data.validRegionDesc as string) ?? '')}
+		{@const via = parseDbVia((doc.data.validRegionDesc as string) ?? '', issuerNames)}
 		{@const activated = activatedDays(doc.data, doc.validFrom)}
 		{@const carriers = carrierList(doc.data)}
 		<section class="doc">
@@ -293,7 +300,7 @@
 		<dt>Issuer</dt>
 		<dd>
 			{issuing.issuerName ??
-				ricsName(issuing.issuerNum ?? issuing.securityProviderNum) ??
+				ricsName(issuing.issuerNum ?? issuing.securityProviderNum, issuerNames) ??
 				issuing.issuerNum ??
 				'unknown'}
 		</dd>
@@ -309,7 +316,7 @@
 			<dd>Secure paper ticket</dd>{/if}
 	</dl>
 
-	<details class="alldata">
+	<details class="alldata readout">
 		<summary>All decoded data (FCB v{data.fcbVersion})</summary>
 		<div class="tree"><JsonTree value={ticket} /></div>
 	</details>

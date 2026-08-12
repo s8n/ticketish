@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
+name: Update Swiss organisation numbers
+
+# A SwissPass ticket names its seller and its zones by Geschäftsorganisation
+# number. The table comes from the business organisations dataset SKI
+# publishes as open data, and refreshing it is not only tidiness: the terms of
+# use ask for the data to be kept current with its source. Needs no
+# credentials.
+on:
+  schedule:
+    - cron: '19 4 9 * *' # 04:19 UTC on the 9th of each month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Rebuild Swiss organisation table
+        run: python scripts/build-nova-orgs.py
+
+      - name: Commit and push if changed
+        run: |
+          if git diff --quiet -- src/lib/tickets/swisspass/orgs.json; then
+            echo "No changes to the Swiss organisation table."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/lib/tickets/swisspass/orgs.json
+          git commit -m "Update Swiss organisation numbers"
+          git push

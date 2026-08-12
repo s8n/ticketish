@@ -101,7 +101,7 @@
 				{:else}
 					<details class="element">
 						<summary>{el.name} <span class="soft">({el.hex.length / 2} bytes)</span></summary>
-						<code class="hex">{el.hex}</code>
+						<code class="hex readout">{el.hex}</code>
 					</details>
 				{/if}
 			{/each}

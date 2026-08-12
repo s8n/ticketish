@@ -126,10 +126,12 @@ describe('918.3 envelope', () => {
 describe('RICS issuer names', () => {
 	it('names issuers it knows and leaves the rest numeric', async () => {
 		const { ricsName } = await import('../src/lib/tickets/uic/rics.ts');
-		expect(ricsName(3213)).toBe('Hamburger Verkehrsverbund (HVV)');
-		expect(ricsName(1080)).toBeTruthy();
-		expect(ricsName('1080')).toBe(ricsName(1080));
-		expect(ricsName(99999)).toBeNull();
-		expect(ricsName(null)).toBeNull();
+		const { loadIssuerNames } = await import('../src/lib/tickets/uic/rics.ts');
+		const names = await loadIssuerNames();
+		expect(ricsName(3213, names)).toMatch(/Hamburger Verkehrsverbund/);
+		expect(ricsName(1073, names)).toBeTruthy();
+		expect(ricsName('1073', names)).toBe(ricsName(1073, names));
+		expect(ricsName(99999, names)).toBeNull();
+		expect(ricsName(null, names)).toBeNull();
 	});
 });

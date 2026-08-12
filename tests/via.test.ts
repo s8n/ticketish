@@ -13,7 +13,8 @@ describe('DB via route parser', () => {
 		const route = parseDbVia('Via: <1080>HAR*(HH*LWL*WBE/UE*SAW*SDL)*BSP');
 		expect(route).not.toBeNull();
 		expect(route!.length).toBe(1);
-		expect(route![0].carriers).toEqual([{ code: '1080', name: 'DB Fernverkehr AG' }]);
+		// no table passed, so the carrier stays a code and the view prints it
+		expect(route![0].carriers).toEqual([{ code: '1080', name: null }]);
 		expect(codes(route![0].items)).toEqual([
 			'HAR',
 			[
@@ -22,6 +23,12 @@ describe('DB via route parser', () => {
 			],
 			'BSP'
 		]);
+	});
+
+	it('names the carrier when the caller has the organisation table', async () => {
+		const { loadIssuerNames } = await import('../src/lib/tickets/uic/rics.ts');
+		const route = parseDbVia('Via: <1080>HH*FF', await loadIssuerNames());
+		expect(route![0].carriers).toEqual([{ code: '1080', name: 'DB AG (Deutsche Bahn AG)' }]);
 	});
 
 	it('parses the Super Sparpreis fixture via', () => {

@@ -30,12 +30,12 @@ import type { FcbTicket, Traveler } from '../tickets/model.ts';
 import { summarizeFcb, type DocumentSummary } from '../tickets/model.ts';
 import type { VdvBarcode, VdvTicket } from '../tickets/vdv/vdv.ts';
 import type { SwissPassTicket } from '../tickets/swisspass/swisspass.ts';
-import { novaOrgName } from '../tickets/swisspass/swisspass.ts';
+import { loadNovaOrgs, novaOrgLabel, type NovaOrgTable } from '../tickets/swisspass/orgs.ts';
 import type { RenfeTicket } from '../tickets/renfe/renfe.ts';
 import { loadRenfeStations, renfeStationName } from '../tickets/renfe/stations.ts';
 import type { RenfeStationTable } from '../tickets/renfe/stations.ts';
 import { localInZone } from '../tickets/format.ts';
-import { ricsName } from '../tickets/uic/rics.ts';
+import { loadIssuerNames, ricsName, type IssuerTables } from '../tickets/uic/rics.ts';
 import { loadVdvOrgs, vdvOrgName } from '../tickets/vdv/orgs.ts';
 import { loadVdvProducts, vdvProductName } from '../tickets/vdv/products.ts';
 import { loadUicStations, uicStationName, isUicCodeTable } from '../tickets/stations.ts';
@@ -102,6 +102,10 @@ interface Tables {
 	vdvOrgs: Record<string, string> | null;
 	vdvProducts: Record<string, string> | null;
 	renfeStations: RenfeStationTable | null;
+	/** The company code tables, for naming an issuer by its code. */
+	issuerNames: IssuerTables | null;
+	/** Swiss organisation numbers, which NOVA tickets name their seller by. */
+	novaOrgs: NovaOrgTable | null;
 }
 
 type Kind = TicketContainer['kind'];
@@ -109,7 +113,14 @@ type Of<K extends Kind> = Extract<TicketContainer, { kind: K }>;
 
 interface Extractor<K extends Kind> {
 	/** Which on-demand tables this mapping wants before it runs. */
-	needs?: ('stations' | 'vdvOrgs' | 'vdvProducts' | 'renfeStations')[];
+	needs?: (
+		| 'stations'
+		| 'vdvOrgs'
+		| 'vdvProducts'
+		| 'renfeStations'
+		| 'issuerNames'
+		| 'novaOrgs'
+	)[];
 	map: (container: Of<K>, tables: Tables) => TripSummary | null;
 }
 
@@ -309,7 +320,7 @@ function uicTrip(records: ParsedRecord[], issuerRics: number | string | null, ta
 	// Nothing to put on a pass but a barcode: better to offer no pass at all.
 	if (!parts.from && !parts.validFrom && !parts.departure && !parts.product) return null;
 
-	const issuer = parts.issuer ?? ricsName(issuerRics) ?? 'Rail ticket';
+	const issuer = parts.issuer ?? ricsName(issuerRics, tables.issuerNames) ?? 'Rail ticket';
 	// A route makes it a journey even without a departure time: a flexible
 	// ticket between two stations is still a trip from one to the other, and
 	// showing it as an area pass would throw the route away.
@@ -448,7 +459,7 @@ function novaOperator(data: NovaTicket, rics: string | undefined): OperatorCode 
  * validity do the work. That still makes it a journey when it names two
  * stations, on the same reasoning as a flexible UIC ticket.
  */
-function swissTrip(ticket: SwissPassTicket): TripSummary | null {
+function swissTrip(ticket: SwissPassTicket, tables: Tables): TripSummary | null {
 	const data = ticket.ticketData as unknown as NovaTicket;
 	const tariff = data.tariff ?? {};
 
@@ -512,7 +523,12 @@ function swissTrip(ticket: SwissPassTicket): TripSummary | null {
 
 	return {
 		shape: from && to ? 'journey' : 'period',
-		issuer: ricsName(ticket.keyMeta?.rics) ?? novaOrgName(data.sale?.issuingOrg) ?? 'SwissPass',
+		// Who sold it before whoever signed it, the same way `novaOperator`
+		// below picks the code the colour keys on.
+		issuer:
+			novaOrgLabel(tables.novaOrgs, data.sale?.issuingOrg) ??
+			ricsName(ticket.keyMeta?.rics, tables.issuerNames) ??
+			'SwissPass',
 		operator: novaOperator(data, ticket.keyMeta?.rics),
 		utcOffset: validFrom?.utcOffset,
 		product,
@@ -542,12 +558,21 @@ function swissTrip(ticket: SwissPassTicket): TripSummary | null {
  *
  * The field was read off a ticket rather than out of a specification, so what
  * numbering space it belongs to is an assumption: 01071 on a Renfe ticket
- * matching Renfe Viajeros' RICS code is good evidence and not proof. Matching
- * it against the whole register would turn a bad assumption into a pass in
- * another operator's colour, which is the one failure `colors.ts` exists to
- * avoid, so the check runs the other way round and only recognises Renfe.
+ * matching Renfe Operadora's company code is good evidence and not proof.
+ * Matching it against the whole register would turn a bad assumption into a
+ * pass in another operator's colour, which is the one failure `colors.ts`
+ * exists to avoid, so the check runs the other way round and only recognises
+ * Renfe. That matters more now than it did: `ricsName` falls back to ERA's
+ * register, so an unguarded lookup would name thousands of codes confidently
+ * and wrongly.
+ *
+ * 71 was in here as Renfe Operadora until the register said otherwise: it is
+ * ADIF, the infrastructure manager, which issues no passenger tickets, so it
+ * failed the test this set exists to apply. Renfe Viajeros is 1171 and Renfe
+ * Mercancías 2171; neither has turned up in the field, and a code goes in
+ * here when a ticket carries it, not because the register lists it.
  */
-const RENFE_RICS = new Set([71, 1071]);
+const RENFE_RICS = new Set([1071]);
 
 function renfeOperator(companyCode: string | undefined): OperatorCode | undefined {
 	const code = Number(companyCode);
@@ -597,7 +622,7 @@ function renfeTrip(ticket: RenfeTicket, tables: Tables): TripSummary | null {
 		shape: 'journey',
 		// only a code this app is willing to call Renfe's gets read as a name,
 		// on the same reasoning as the operator below
-		issuer: (operator && ricsName(operator.code)) || 'Renfe',
+		issuer: (operator && ricsName(operator.code, tables.issuerNames)) || 'Renfe',
 		operator,
 		// a code with no name is shown as a code, the way the ticket view shows
 		// it: a pass an inspector reads should not guess at a station
@@ -621,20 +646,23 @@ function renfeTrip(ticket: RenfeTicket, tables: Tables): TripSummary | null {
  */
 const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 	uic9183: {
-		needs: ['stations'],
+		needs: ['stations', 'issuerNames'],
 		map: (c, tables) => uicTrip(c.envelope.records, c.envelope.issuerRics || null, tables)
 	},
 	dosipas: {
-		needs: ['stations'],
+		needs: ['stations', 'issuerNames'],
 		map: (c, tables) => uicTrip(c.envelope.records, c.envelope.securityProvider, tables)
 	},
 	vdv: {
 		needs: ['vdvOrgs', 'vdvProducts'],
 		map: (c, tables) => vdvTrip(c.barcode, tables)
 	},
-	swisspass: { map: (c) => swissTrip(c.ticket) },
+	swisspass: {
+		needs: ['issuerNames', 'novaOrgs'],
+		map: (c, tables) => swissTrip(c.ticket, tables)
+	},
 	renfe: {
-		needs: ['renfeStations'],
+		needs: ['renfeStations', 'issuerNames'],
 		map: (c, tables) => renfeTrip(c.ticket, tables)
 	},
 	// Everything below reads fine in the app but has no wallet mapping yet.
@@ -676,14 +704,23 @@ export async function tripFor(ticket: ParsedTicket): Promise<TripSummary | null>
 	if (!entry) return null;
 
 	const needs = new Set(entry.needs ?? []);
-	const [stations, vdvOrgs, vdvProducts, renfeStations] = await Promise.all([
+	const [stations, vdvOrgs, vdvProducts, renfeStations, issuerNames, novaOrgs] = await Promise.all([
 		needs.has('stations') ? loadUicStations() : null,
 		needs.has('vdvOrgs') ? loadVdvOrgs() : null,
 		needs.has('vdvProducts') ? loadVdvProducts() : null,
-		needs.has('renfeStations') ? loadRenfeStations() : null
+		needs.has('renfeStations') ? loadRenfeStations() : null,
+		needs.has('issuerNames') ? loadIssuerNames() : null,
+		needs.has('novaOrgs') ? loadNovaOrgs() : null
 	]);
 
-	return entry.map(container, { stations, vdvOrgs, vdvProducts, renfeStations });
+	return entry.map(container, {
+		stations,
+		vdvOrgs,
+		vdvProducts,
+		renfeStations,
+		issuerNames,
+		novaOrgs
+	});
 }
 
 /**

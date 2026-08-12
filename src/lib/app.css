@@ -163,6 +163,21 @@ button {
 	color: var(--ink-soft);
 }
 
+/* Anything shown as it came off the barcode: a hex dump, an undecoded body,
+   the decoded data as a tree. Set in mono by whatever draws it, and boxed off
+   here so that machine output is visibly not part of the ticket's face.
+
+   A `details` gets the box once it is open, so a row of closed disclosures
+   stays a row of summaries rather than a stack of empty frames. */
+.readout:not(details),
+details.readout[open] {
+	background: color-mix(in srgb, var(--paper-hi) 55%, white 45%);
+	border: 1px solid var(--paper-edge);
+	border-radius: 4px;
+	padding: 0.6rem;
+	overflow-x: auto;
+}
+
 /* The name of the product a ticket is, at the top of its view. */
 .product {
 	font-family: var(--font-display);

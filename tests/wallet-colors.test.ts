@@ -18,9 +18,10 @@ const dir = fileURLToPath(new URL('./fixtures/public', import.meta.url));
 
 describe('matching an operator', () => {
 	it('knows DB by every code it issues under', () => {
-		// 80 and 1080 are DB Fernverkehr, 3080 DB Regio, 5080 DB Vertrieb: the
-		// name on the ticket varies, the colour should not
-		for (const code of [80, 1080, 3080, 5080]) {
+		// group, sales, long distance and regional, plus the two allocations
+		// that were revoked and are still on tickets: the name on the ticket
+		// varies, the colour should not
+		for (const code of [80, 1080, 1180, 2480, 2580, 3396, 3864]) {
 			expect(colouredOperatorName({ scheme: 'rics', code })).toBe('Deutsche Bahn');
 			expect(passColors({ scheme: 'rics', code }).hex).toBe('#ee0020');
 		}
@@ -34,9 +35,12 @@ describe('matching an operator', () => {
 		for (const code of [11, 351]) {
 			expect(colouredOperatorName({ scheme: 'nova', code })).toBe('SBB CFF FFS');
 		}
-		expect(colouredOperatorName({ scheme: 'rics', code: 3342 })).toBe(
-			'Schweizerische Südostbahn'
-		);
+		for (const code of [5458, 5459, 5460]) {
+			expect(colouredOperatorName({ scheme: 'rics', code })).toBe('Schweizerische Südostbahn');
+		}
+		// 3342 is the Verband öffentlicher Verkehr, which signs NOVA tickets
+		// for the whole Swiss sector, so it is nobody's brand colour
+		expect(colouredOperatorName({ scheme: 'rics', code: 3342 })).toBeNull();
 		expect(passColors({ scheme: 'nova', code: 36 }).hex).toBe('#af6d4b');
 	});
 

@@ -1,52 +1,1232 @@
 {
-	"10": "VR (Finland)",
-	"43": "MÁV-START Zrt",
-	"60": "Iarnród Éireann",
-	"71": "Renfe Operadora",
-	"75": "TCDD",
-	"80": "DB Fernverkehr AG",
-	"81": "ÖBB",
-	"82": "Chemins de Fer Luxembourgeois",
-	"83": "Trenitalia",
-	"84": "NS",
-	"85": "SBB",
-	"86": "DSB",
-	"87": "SNCF",
-	"88": "SNCB/NMBS",
-	"1010": "VR (Finland)",
-	"1024": "Lietuvos geležinkeliai",
-	"1071": "Renfe Viajeros",
-	"1073": "Hellenic Train",
-	"1076": "Norske tog / Entur",
-	"1080": "DB Fernverkehr AG",
-	"1083": "Trenitalia S.p.A.",
-	"1084": "NS International",
-	"1085": "SBB CFF FFS",
-	"1088": "SNCB/NMBS",
-	"1154": "České dráhy",
-	"1155": "MÁV",
-	"1156": "ZSSK",
-	"1165": "MÁV-START",
-	"1174": "SJ AB",
-	"1179": "PKP Intercity",
-	"1181": "ÖBB Personenverkehr AG",
-	"1183": "Trenitalia",
-	"1184": "Nederlandse Spoorwegen",
-	"1185": "SBB CFF FFS",
-	"1186": "DSB",
-	"1187": "SNCF Voyageurs",
-	"1251": "Koleje Mazowieckie",
-	"3018": "Transdev / Ostdeutsche Eisenbahn",
-	"3080": "DB Regio AG",
-	"3153": "Snälltåget",
-	"3189": "Arriva vlaky s.r.o.",
-	"3213": "Hamburger Verkehrsverbund (HVV)",
-	"3342": "Schweizerische Südostbahn (SOB)",
-	"5008": "Flix Train",
-	"5080": "DB Vertrieb GmbH",
-	"5197": "WESTbahn",
-	"5245": "European Sleeper",
-	"5262": "FlixTrain GmbH",
-	"9901": "Eurail B.V. (Interrail)",
-	"9902": "Eurail B.V."
+"_note": "RICS codes to the organisations that hold them. The register above marks each row as an Organisation Code or a RICS Code; these are the RICS ones, which UIC allocates and ERA mirrors, split out so that the two halves of the numbering answer separately. Same source and same terms as era-orgs.json: from the European Union Agency for Railways at https://teleref.era.europa.eu/, reproduction authorised provided the source is acknowledged, so keep the credit wherever the table goes: source, European Union Agency for Railways. Rebuilt by scripts/build-era-orgs.py with scripts/rics-era-overrides.json applied on top; do not edit by hand, put corrections in that file.",
+"_edition": "2026-08-12",
+"orgs": {
+"0000": {
+"n": "Unspecified (RICS 0)"
+},
+"0015": {
+"n": "Rail Manche Finance",
+"a": "RMF",
+"c": "GB"
+},
+"0016": {
+"n": "RD",
+"c": "CH"
+},
+"0017": {
+"n": "European Night Services Ltd",
+"a": "ENS",
+"c": "GB"
+},
+"0020": {
+"n": "Joint Stock Company 'Russian Railways'",
+"a": "OAO RZD",
+"c": "RU"
+},
+"0021": {
+"n": "Belarusian Railways",
+"a": "BC",
+"c": "BY"
+},
+"0022": {
+"n": "Aktiengesellschaft „Ukrainska zaliznytsya\"",
+"a": "Ukrainska zaliznytsya",
+"c": "UA"
+},
+"0023": {
+"n": "Calea Ferată din Moldova",
+"c": "MD"
+},
+"0027": {
+"n": "Kazakhstan Temir Zholy",
+"a": "KTZ",
+"c": "KZ"
+},
+"0028": {
+"n": "Sakartvelos Rkinigza",
+"a": "GR",
+"c": "GE"
+},
+"0029": {
+"n": "Uzbekistan Temir Yullari",
+"a": "UTI",
+"c": "UZ"
+},
+"0030": {
+"n": "Railways of D.P.R.K.",
+"a": "ZC",
+"c": "KP"
+},
+"0031": {
+"n": "Mongolian-Russian Joint-Stock Company “Ulaanbaatar railway”",
+"a": "UBTZ",
+"c": "MN"
+},
+"0032": {
+"n": "đường sắt Việt Nam",
+"a": "DSVN",
+"c": "VN"
+},
+"0033": {
+"n": "Chinese Railways",
+"a": "CR",
+"c": "CN"
+},
+"0041": {
+"n": "Hekurudha Shqiptarë SH.A.",
+"a": "HSH",
+"c": "AL"
+},
+"0042": {
+"n": "EAST JAPAN RAILWAY COMPANY",
+"a": "JRE",
+"c": "JP",
+"until": "2016-06-21"
+},
+"0044": {
+"n": "Željeznice Republike Srpske",
+"a": "ŽRS",
+"c": "BA"
+},
+"0050": {
+"n": "J.P. Željeznice Federacije BiH d.o.o.",
+"a": "ŽFBH",
+"c": "BA"
+},
+"0057": {
+"n": "Azerbaijan Railways",
+"c": "AZ"
+},
+"0058": {
+"n": "South Caucasus Railway CJSC",
+"a": "CJSC SCR",
+"c": "AM"
+},
+"0059": {
+"n": "Kyrgyz Railways",
+"a": "KTJ",
+"c": "KG"
+},
+"0061": {
+"n": "Korea Railroad Corporation",
+"a": "KORAIL",
+"c": "KP",
+"until": "2000-01-01"
+},
+"0063": {
+"n": "BLS Netz AG",
+"c": "CH"
+},
+"0065": {
+"n": "Makedonski Železnici Infrastructure-Skopje",
+"a": "CFARYM-I",
+"c": "MK"
+},
+"0066": {
+"n": "Tajikistan Railways",
+"a": "TDZ",
+"c": "TJ"
+},
+"0067": {
+"n": "Turkmenistan Railways",
+"a": "TRK",
+"c": "TM"
+},
+"0070": {
+"n": "Network Rail Limited",
+"a": "Network Rail",
+"c": "GB"
+},
+"0072": {
+"n": "Infrastruktura Železnice Srbije",
+"a": "IŽS",
+"c": "RS"
+},
+"0075": {
+"n": "Türkiye Cumhuriyeti Devlet Demiryolları Taşımacılık Anonim Şirketi",
+"a": "TCDD Taşımacılık A.Ş.",
+"c": "TR"
+},
+"0076": {
+"n": "Bane NOR",
+"c": "NO"
+},
+"0085": {
+"n": "Swiss Federal Railways - Infrastructure",
+"a": "SBB Infrastructure",
+"c": "CH"
+},
+"0090": {
+"n": "Egyptian National Railways",
+"a": "ENR",
+"c": "EG"
+},
+"0091": {
+"n": "Société nationale des chemins de fer tunisiens (SNCFT)",
+"a": "SNCFT",
+"c": "TN"
+},
+"0092": {
+"n": "Société Nationale des Transports Ferroviaires",
+"a": "SNTF",
+"c": "DZ"
+},
+"0093": {
+"n": "Office National des Chemins de Fer du Maroc",
+"a": "ONCF",
+"c": "MA"
+},
+"0095": {
+"n": "Israel Railways",
+"a": "ISR",
+"c": "IL"
+},
+"0096": {
+"n": "Rahahan-e Djjomhouri-e Eslami Iran",
+"a": "RAI",
+"c": "IR"
+},
+"0097": {
+"n": "Administration Générale des Chemins de fer Syriens",
+"a": "CFS",
+"c": "SY"
+},
+"0098": {
+"n": "Lebanon Railways",
+"a": "CEL",
+"c": "LB"
+},
+"0099": {
+"n": "Iraqi Republic Railways Establishment",
+"a": "IRR",
+"c": "IQ"
+},
+"0175": {
+"n": "PASIFIK EURASIA DEMIRYOLU TREN ISLETMECILIGI A.S.",
+"a": "PASIFIK EURASIA DTI",
+"c": "TR"
+},
+"0275": {
+"n": "PASIFIK EURASIA LOJISTIK DIS TICARET A.S.",
+"a": "PASIFIK EURASIA LOJISTIK",
+"c": "TR"
+},
+"0375": {
+"n": "PARS DEMIRYOLU ISLETMECILIGI A S",
+"a": "PARS Rail",
+"c": "TR"
+},
+"1020": {
+"n": "Russian Railways State Joint Company-Holding",
+"a": "RZD holding",
+"c": "RU"
+},
+"1024": {
+"n": "Lietuvos geležinkeliai"
+},
+"1033": {
+"n": "Chinese Railways-Holding",
+"a": "CR holding",
+"c": "CN"
+},
+"1062": {
+"n": "Željeznički prevoz Crne Gore AD",
+"a": "ŽPCG",
+"c": "ME"
+},
+"1065": {
+"n": "Makedonski Železnici Transport AD Skopje",
+"a": "CFARYM-T",
+"c": "MK"
+},
+"1076": {
+"n": "Vygruppen AS",
+"a": "Vy",
+"c": "NO"
+},
+"1085": {
+"n": "SBB AG",
+"c": "CH"
+},
+"1120": {
+"n": "Joint Stock Company 'FEDERAL PASSENGER COMPANY'",
+"a": "JSC 'FPC'",
+"c": "RU"
+},
+"1163": {
+"n": "BLS AG Personenverkehr",
+"a": "BLS P",
+"c": "CH"
+},
+"1170": {
+"n": "Association of Train Operating Companies Limited",
+"a": "ATOC Ltd",
+"c": "GB"
+},
+"1172": {
+"n": "Srbija Voz a.d.",
+"a": "SV",
+"c": "RS"
+},
+"1176": {
+"n": "Entur AS",
+"a": "Entur",
+"c": "NO"
+},
+"1185": {
+"n": "Swiss Federal Railways-Passenger subsidiary",
+"a": "SBB-Passengers",
+"c": "CH"
+},
+"1284": {
+"n": "High Speed Alliance",
+"until": "2015-06-30"
+},
+"1385": {
+"n": "Schweizerische Bundesbahnen Personenverkehr",
+"a": "SBB2",
+"c": "CH"
+},
+"2131": {
+"n": "Boldtumur Eruu Gol LLC",
+"a": "BTEG",
+"c": "MN"
+},
+"2162": {
+"n": "Montecargo AD",
+"a": "MC",
+"c": "ME"
+},
+"2170": {
+"n": "DB Cargo (UK) Ltd",
+"a": "DBCUK",
+"c": "GB"
+},
+"2172": {
+"n": "Srbija Kargo a.d.",
+"a": "SK",
+"c": "RS"
+},
+"2185": {
+"n": "SBB Cargo AG",
+"c": "CH"
+},
+"2585": {
+"n": "SBB Cargo International AG",
+"a": "SBBC Int",
+"c": "CH"
+},
+"3001": {
+"n": "EUROFIMA European Company for the Financing of Railroad Rolling Stock",
+"a": "Eurofima",
+"c": "CH"
+},
+"3007": {
+"n": "Comité international des transports ferroviaires",
+"a": "CIT",
+"c": "CH"
+},
+"3008": {
+"n": "Stena Line UK Ltd",
+"a": "StL UK",
+"c": "GB"
+},
+"3017": {
+"n": "Centralbahn AG",
+"c": "CH"
+},
+"3022": {
+"n": "Société Nationale des Chemins de Fer du Congo",
+"a": "SNCC",
+"c": "CD"
+},
+"3028": {
+"n": "Visit Narvik",
+"a": "Narvik",
+"c": "NO"
+},
+"3031": {
+"n": "Joopar Passenger & Freight Trains co.",
+"a": "J.P.F.T.",
+"c": "IR"
+},
+"3041": {
+"n": "Rail Europe Group Inc",
+"a": "REG-Eurail",
+"c": "US"
+},
+"3045": {
+"n": "ACP Marketing Canada Inc.",
+"a": "ACP-Eurail",
+"c": "CA"
+},
+"3096": {
+"n": "DB Cargo Schweiz GmbH",
+"a": "DBCCH",
+"c": "CH"
+},
+"3149": {
+"n": "SPRINGMASTER",
+"c": "ZA"
+},
+"3190": {
+"n": "Željeznička infrastruktura Crne Gore AD-Podgorica",
+"a": "ŽICG AD-Podgorica",
+"c": "ME"
+},
+"3193": {
+"n": "Transalpin Eisenbahn AG",
+"a": "TAE",
+"c": "CH"
+},
+"3203": {
+"n": "Crossrail AG",
+"a": "CR",
+"c": "CH"
+},
+"3212": {
+"n": "Kombinovani Prevoz d.o.o.",
+"a": "KP",
+"c": "RS"
+},
+"3240": {
+"n": "TRANSWAGGON AG",
+"a": "TWA",
+"c": "CH"
+},
+"3260": {
+"n": "S Rail DOO Subotica",
+"a": "S Rail DOO",
+"c": "RS"
+},
+"3267": {
+"n": "Rhätische Bahn AG",
+"a": "RhB",
+"c": "CH"
+},
+"3287": {
+"n": "National Railroad Passenger Corporation",
+"a": "Amtrak",
+"c": "US"
+},
+"3328": {
+"n": "Xrail A.G.",
+"a": "Xrail",
+"c": "CH"
+},
+"3342": {
+"n": "Verband öffentlicher Verkehr",
+"a": "VöV",
+"c": "CH"
+},
+"3344": {
+"n": "Afghanistan Railway Authority",
+"a": "ARA",
+"c": "AF"
+},
+"3346": {
+"n": "Standard Logistic d.o.o.",
+"a": "Standard Logistic",
+"c": "RS"
+},
+"3349": {
+"n": "Trans Cargo Logistic doo Beograd (Novi Beograd)",
+"a": "TCL Serbia",
+"c": "RS"
+},
+"3356": {
+"n": "BLS Cargo AG",
+"a": "BLSC",
+"c": "CH"
+},
+"3357": {
+"n": "GB Railfreight Limited",
+"c": "GB"
+},
+"3373": {
+"n": "Swiss Rail Traffic AG",
+"a": "SRTAG",
+"c": "CH"
+},
+"3386": {
+"n": "JSC Yamal Railway Company",
+"a": "YRW",
+"c": "RU"
+},
+"3388": {
+"n": "AO AK Yakutia Railways",
+"a": "AO AK YRW",
+"c": "RU"
+},
+"3389": {
+"n": "OOO Shipping Company UKRFERRY",
+"a": "OOO UKRFERRY",
+"c": "UA"
+},
+"3402": {
+"n": "Network Rail High Speed",
+"a": "NR HS",
+"c": "GB"
+},
+"3403": {
+"n": "Flytoget AS",
+"a": "FT",
+"c": "NO"
+},
+"3448": {
+"n": "Switzerland Travel Center Ltd",
+"a": "STC",
+"c": "GB"
+},
+"3450": {
+"n": "Mongolian Railway State Owned Shareholding Company",
+"a": "MTZ SOSC",
+"c": "MN"
+},
+"3466": {
+"n": "WRS Widmer Rail Services AG",
+"a": "WRS AG",
+"c": "CH"
+},
+"3471": {
+"n": "TR Trans Rail AG",
+"a": "TR",
+"c": "CH"
+},
+"3517": {
+"n": "Rail Operations Group",
+"a": "ROGL",
+"c": "GB"
+},
+"3520": {
+"n": "ZAO Railway Corporation 'North Eastern Asia' Jilin Province",
+"a": "ZAO North Eastern Asia",
+"c": "CN"
+},
+"3527": {
+"n": "LTE Schweiz GmbH",
+"a": "LTE CH",
+"c": "CH"
+},
+"3538": {
+"n": "railCare AG",
+"a": "RLC",
+"c": "CH"
+},
+"3552": {
+"n": "TX Logistik GmbH Schweiz",
+"a": "TXL",
+"c": "CH"
+},
+"3571": {
+"n": "OAO Zheldorservice",
+"a": "OAO \"PK \"ZhDS\"\"",
+"c": "MD"
+},
+"3579": {
+"n": "Rhomberg Sersa Rail AG",
+"a": "RSRAG",
+"c": "CH"
+},
+"3582": {
+"n": "Grenland Rail AS",
+"a": "GRAS",
+"c": "NO"
+},
+"3586": {
+"n": "BETONPLUS Company",
+"a": "BETONPLUS",
+"c": "AL"
+},
+"3588": {
+"n": "NCL NEO CARGO LOGISTIC d.o.o., Beograd, Zvezdara",
+"a": "NCL NEO CARGO LOGISTIC d.o.o.",
+"c": "RS"
+},
+"3603": {
+"n": "Pannon Rail d.o.o.",
+"a": "PR",
+"c": "RS"
+},
+"3635": {
+"n": "VTG Schweiz GmbH (ex AAEC)",
+"a": "VTG CH (ex AAEC)",
+"c": "CH"
+},
+"3656": {
+"n": "Northern Ireland Railways Company Limited",
+"a": "NIR",
+"c": "GB"
+},
+"3672": {
+"n": "Eurorail Logistics d.o.o..",
+"a": "ERS",
+"c": "RS"
+},
+"3674": {
+"n": "Albametal",
+"c": "AL"
+},
+"3683": {
+"n": "FEDASOLUCIONS AD",
+"a": "FEDASOLUCIONS",
+"c": "AD"
+},
+"3690": {
+"n": "NIS a.d. Novi Sad",
+"a": "NIS a.d.",
+"c": "RS"
+},
+"3727": {
+"n": "Transagent Operator d.o.o. Beograd",
+"a": "TOP",
+"c": "RS"
+},
+"3733": {
+"n": "Go Ahead Norge AS",
+"a": "GAN",
+"c": "GB"
+},
+"3748": {
+"n": "Lokotrans d.o.o.",
+"a": "Lokotrans",
+"c": "RS"
+},
+"3754": {
+"n": "Despotija d.o.o.",
+"a": "Despotija doo",
+"c": "RS"
+},
+"3758": {
+"n": "MEV Schweiz AG",
+"a": "MEV CH",
+"c": "CH"
+},
+"3781": {
+"n": "SJ Norge AS",
+"a": "SJ Norge",
+"c": "NO"
+},
+"3783": {
+"n": "Direct Rail Services Limited",
+"a": "DRSL",
+"c": "GB"
+},
+"3796": {
+"n": "ANAPET ULUSLARARASI NAK.PET.INS.SAN.VE TIC.A.S.",
+"a": "ANAPET",
+"c": "TR"
+},
+"3822": {
+"n": "Vy Tog AS",
+"a": "Vy Tog",
+"c": "NO"
+},
+"3833": {
+"n": "Korea Railroad Corporation.",
+"a": "KORAIL",
+"c": "KR"
+},
+"3838": {
+"n": "MFD Rail GmbH",
+"a": "MFD",
+"c": "CH"
+},
+"3846": {
+"n": "Hupac Intermodal SA",
+"a": "HISA",
+"c": "CH"
+},
+"3881": {
+"n": "Rail Transport Logistic d.o.o.",
+"a": "RTL",
+"c": "RS"
+},
+"3891": {
+"n": "Rail-360 A.Barthel",
+"a": "R360",
+"c": "CH"
+},
+"3913": {
+"n": "16 FEBRUAR PODGORICA DOO",
+"a": "16F",
+"c": "ME"
+},
+"3915": {
+"n": "Schweizerische Trassenvergabestelle",
+"a": "TVS",
+"c": "CH"
+},
+"3917": {
+"n": "Regionalbahn Thurbo AG",
+"a": "THU",
+"c": "CH"
+},
+"3948": {
+"n": "Global Neologistics DOO",
+"a": "GNL",
+"c": "RS"
+},
+"3962": {
+"n": "PIMK d.o.o. Dimitrovgrad",
+"a": "PIMK",
+"c": "RS"
+},
+"4023": {
+"n": "ACTS AG",
+"a": "ACTSB",
+"c": "CH"
+},
+"4024": {
+"n": "Alcosuisse, Profitcenter der Eidg. Alkoholverwaltung",
+"a": "ALCO",
+"c": "CH"
+},
+"4025": {
+"n": "Brenntag Schweizerhall AG",
+"a": "BSH",
+"c": "CH"
+},
+"4026": {
+"n": "CARBAGAS",
+"a": "CARBA",
+"c": "CH"
+},
+"4028": {
+"n": "Cica SA",
+"a": "CICA",
+"c": "CH"
+},
+"4029": {
+"n": "Diversified Investments SA",
+"a": "DI",
+"c": "CH"
+},
+"4030": {
+"n": "Delta Rail Wagon GmbH",
+"a": "DRW",
+"c": "CH"
+},
+"4031": {
+"n": "Furrer Frey AG",
+"a": "FFAG",
+"c": "CH"
+},
+"4032": {
+"n": "HASTAG (Zurich) AG",
+"a": "HKAG",
+"c": "CH"
+},
+"4033": {
+"n": "Holcim (Schweiz) AG",
+"a": "HOLCH",
+"c": "CH"
+},
+"4034": {
+"n": "Hupac SA",
+"a": "Hupac",
+"c": "CH"
+},
+"4035": {
+"n": "Logistikbasis der Armee",
+"a": "LBA",
+"c": "CH"
+},
+"4036": {
+"n": "LONZA AG",
+"a": "LONZA",
+"c": "CH"
+},
+"4037": {
+"n": "Makies AG",
+"a": "MAKI",
+"c": "CH"
+},
+"4038": {
+"n": "Marti Infra AG",
+"a": "MARTI",
+"c": "CH"
+},
+"4039": {
+"n": "Mitrag AG",
+"a": "MITRA",
+"c": "CH"
+},
+"4040": {
+"n": "NOVATRANS",
+"c": "CH"
+},
+"4041": {
+"n": "Osterwalder St. Gallen AG",
+"a": "OSAG",
+"c": "CH"
+},
+"4042": {
+"n": "Osterwalder Zürich AG",
+"a": "OZAG",
+"c": "CH"
+},
+"4043": {
+"n": "Post CH AG",
+"a": "Post CH",
+"c": "CH"
+},
+"4044": {
+"n": "RAlpin AG",
+"a": "RALP",
+"c": "CH"
+},
+"4045": {
+"n": "rheinland cargo Schweiz GmbH",
+"a": "RCS",
+"c": "CH"
+},
+"4046": {
+"n": "Sea Rail",
+"a": "SEARS",
+"c": "CH"
+},
+"4047": {
+"n": "Speno International SA",
+"a": "Speno",
+"c": "CH"
+},
+"4048": {
+"n": "Swissrail SA",
+"a": "SWR",
+"c": "CH"
+},
+"4050": {
+"n": "Thommen-Furler AG",
+"a": "TFCH",
+"c": "CH"
+},
+"4052": {
+"n": "TRANSWAGGON Vagon Isletmeleri Ltd. Sti.",
+"a": "TWA CH",
+"c": "CH"
+},
+"4053": {
+"n": "Ciments Vigier SA",
+"a": "VIGIER",
+"c": "CH"
+},
+"4054": {
+"n": "VTG Schweiz GmbH",
+"c": "CH"
+},
+"4055": {
+"n": "Wascosa AG",
+"a": "WASCO",
+"c": "CH"
+},
+"4056": {
+"n": "Weiacher Kies AG",
+"a": "WKAG",
+"c": "CH"
+},
+"4280": {
+"n": "Colas Rail Ltd",
+"a": "COLGB",
+"c": "GB"
+},
+"4281": {
+"n": "STVA UK Limited",
+"a": "STVA UK",
+"c": "GB"
+},
+"4282": {
+"n": "VTG Rail UK Limited",
+"a": "VTGUK",
+"c": "GB"
+},
+"4313": {
+"n": "Baneservice AS",
+"c": "NO"
+},
+"4314": {
+"n": "CargoNet AS",
+"a": "CN",
+"c": "NO"
+},
+"4342": {
+"n": "MSK a.d. Kikinda",
+"a": "MSK",
+"c": "RS"
+},
+"4391": {
+"n": "AR-GÜ Demiryolu Tasima ve Depoculuk A.S.",
+"a": "ARGU",
+"c": "TR"
+},
+"4392": {
+"n": "TRANSTUR Uluslararasi Nakliyat ve Ticaret A.S",
+"a": "TRTUR",
+"c": "TR"
+},
+"4920": {
+"n": "M-Rail za zeleznicki prevoz robe Krnjesevci",
+"a": "M-Rail",
+"c": "RS"
+},
+"5003": {
+"n": "HSL Schweiz GmbH",
+"a": "HSLCH",
+"c": "CH"
+},
+"5009": {
+"n": "OBL Logistic doo Beograd",
+"a": "OBL",
+"c": "RS"
+},
+"5034": {
+"n": "TM Togdrift AS",
+"a": "TMAS",
+"c": "NO"
+},
+"5070": {
+"n": "Sinhron Rail d.o.o. Beograd- Novi Beograd",
+"a": "Sinhron Rail",
+"c": "RS"
+},
+"5083": {
+"n": "Tavantolgoi railway LLC",
+"a": "TTZ",
+"c": "MN"
+},
+"5086": {
+"n": "Onrail AS",
+"a": "Onrail",
+"c": "NO"
+},
+"5091": {
+"n": "Borgir Limited",
+"a": "Borgir",
+"c": "GB"
+},
+"5097": {
+"n": "Umwelt- und Transportlogistik AG",
+"a": "UTLAG",
+"c": "CH"
+},
+"5098": {
+"n": "Kombinovani Prevoz Montenegro DOO",
+"a": "KPM",
+"c": "ME"
+},
+"5101": {
+"n": "AS207960 Cyfyngedig",
+"a": "AS207960",
+"c": "GB",
+"until": "2025-02-21"
+},
+"5104": {
+"n": "FAIRTIQ AG",
+"a": "FAIRTIQ",
+"c": "CH"
+},
+"5106": {
+"n": "ENNA Transport Bgd",
+"a": "ENNA BGD",
+"c": "RS"
+},
+"5109": {
+"n": "BauRail AG",
+"a": "BRAG",
+"c": "CH"
+},
+"5118": {
+"n": "ATM BG LIMITED LIABILITY CIE FOR AUTOMATION, ENERGY AND MEASUREMENT TECHNIQUES, BELGRADE (NOVI BEOGRAD)",
+"a": "ATM BG DOO NOVI BEOGRAD",
+"c": "RS"
+},
+"5184": {
+"n": "Schweizerische Bundesbahnen SBB Infrastruktur Baulogistik",
+"a": "SBB Infrastruktur Baulogistik",
+"c": "CH"
+},
+"5186": {
+"n": "Schweizerische Bundesbahnen SBB Infrastruktur",
+"a": "SBBInfrastruktur PathOrderTool",
+"c": "CH"
+},
+"5210": {
+"n": "Mars Lojistik Uluslararasi Tasimacilik Dep. Dag. ve Tic. A.S",
+"a": "MARS LOGISTICS",
+"c": "TR"
+},
+"5212": {
+"n": "LCC PROMVAGONTRANS",
+"a": "PROMVAGONTRANS",
+"c": "UA"
+},
+"5213": {
+"n": "Etihad Rail Company - PJSC",
+"a": "Etihad Rail",
+"c": "AE"
+},
+"5226": {
+"n": "Chemins de fer du Jura",
+"a": "CJ",
+"c": "CH"
+},
+"5230": {
+"n": "Transports de la region Morges Bière Cossonay SA",
+"a": "MBC",
+"c": "CH"
+},
+"5234": {
+"n": "Transports publics fribourgeois TPF INFRA SA",
+"a": "TPF INFRA",
+"c": "CH"
+},
+"5240": {
+"n": "Hafenbahn Schweiz AG",
+"a": "HBSAG",
+"c": "CH"
+},
+"5244": {
+"n": "Transports Publics Neuchâtelois SA",
+"a": "transN",
+"c": "CH"
+},
+"5249": {
+"n": "Sihltal Zürich Uetliberg Bahn SZU AG",
+"a": "SZU",
+"c": "CH"
+},
+"5259": {
+"n": "Kryukovsky Railway Car Building Works Public Joint Stock Company",
+"a": "PJSC Kryukovsky RCBW",
+"c": "UA"
+},
+"5307": {
+"n": "Lao National Railway State Enterprise",
+"a": "LNRE",
+"c": "LA"
+},
+"5328": {
+"n": "Emmentalbahn GmbH",
+"a": "ETB",
+"c": "CH"
+},
+"5343": {
+"n": "Raillog A/S",
+"a": "RLGN",
+"c": "NO"
+},
+"5356": {
+"n": "PVT Limited Liability Company",
+"a": "PVT LLC",
+"c": "UA"
+},
+"5369": {
+"n": "Railctive Limited Liability Companie",
+"a": "Railactive LLC",
+"c": "UA"
+},
+"5397": {
+"n": "Qnamic AG",
+"c": "CH"
+},
+"5429": {
+"n": "Transports de Martigny et régions SA",
+"a": "TMR",
+"c": "CH"
+},
+"5458": {
+"n": "Schweizerische Südostbahn AG, Transport EVU",
+"a": "SOB T",
+"c": "CH"
+},
+"5459": {
+"n": "Schweizerische Südostbahn AG, Infrastrukturmanager",
+"a": "SOB-I",
+"c": "CH"
+},
+"5460": {
+"n": "Schweizerische Südostbahn AG, Infrastruktur",
+"a": "SOB-I-TI",
+"c": "CH"
+},
+"5473": {
+"n": "E 60 Shipping Line LLC",
+"a": "E 60 Shipping",
+"c": "GE"
+},
+"5475": {
+"n": "RAILIMPEX doo",
+"a": "RAILIMPEX",
+"c": "RS"
+},
+"5491": {
+"n": "Oensingen-Balsthal-Bahn AG",
+"a": "OeBB",
+"c": "CH"
+},
+"5495": {
+"n": "Transports publics fribourgeois Trafic (TPF TRAFIC) SA",
+"a": "TPF TRAFIC",
+"c": "CH"
+},
+"5558": {
+"n": "Inferno Communications Ltd",
+"a": "Inferno Comms",
+"c": "GB"
+},
+"5585": {
+"n": "OpenTrainTimes Ltd.",
+"a": "OpenTrainTimes",
+"c": "GB"
+},
+"5601": {
+"n": "Jura Cement Fabriken AG",
+"a": "JURA CEMENT",
+"c": "CH"
+},
+"5602": {
+"n": "Juracime S.A.",
+"a": "JURACIME",
+"c": "CH"
+},
+"5605": {
+"n": "Anatolian National Train Operation Network",
+"a": "ANTON",
+"c": "TR"
+},
+"5610": {
+"n": "Saudi Arabia Railway",
+"a": "SAR",
+"c": "SA"
+},
+"5670": {
+"n": "Nyx Telecom",
+"a": "NyxTel",
+"c": "US"
+},
+"5680": {
+"n": "RegionAlps SA",
+"a": "RA",
+"c": "CH"
+},
+"5690": {
+"n": "Verein Dampfbahn Bern-Konolfingen",
+"a": "VDBB",
+"c": "CH"
+},
+"5692": {
+"n": "Rail Historic",
+"a": "RAILH",
+"c": "CH"
+},
+"5700": {
+"n": "Dampfbahn-Verein Zürcher Oberland",
+"a": "DVZO",
+"c": "CH"
+},
+"5723": {
+"n": "AKDOGAN TREN KARGO TASIMACILIK A.S.",
+"a": "TREN KARGO",
+"c": "TR"
+},
+"5727": {
+"n": "RVT-Historique",
+"a": "RVTH",
+"c": "CH"
+},
+"5734": {
+"n": "zb Zentralbahn AG",
+"a": "zb",
+"c": "CH"
+},
+"5735": {
+"n": "TransClassService",
+"a": "TCS",
+"c": "RU"
+},
+"5739": {
+"n": "Historische Seethalbahn",
+"a": "HSTB",
+"c": "CH"
+},
+"5758": {
+"n": "Train Charter Services GmbH",
+"a": "TCS CH",
+"c": "CH"
+},
+"5760": {
+"n": "Contargo AG",
+"a": "Contargo",
+"c": "CH"
+},
+"5765": {
+"n": "samdesk Canada Inc.",
+"a": "samdesk",
+"c": "CA"
+},
+"6100": {
+"n": "Korea Heavy Industry and Development",
+"a": "KHIND",
+"c": "KR"
+},
+"6104": {
+"n": "JOSEF MEYER Rail AG",
+"c": "CH"
+},
+"6105": {
+"n": "Rail Access AG",
+"a": "RAAG",
+"c": "CH"
+},
+"6106": {
+"n": "Bertschi AG",
+"a": "Bertschi",
+"c": "CH"
+},
+"6107": {
+"n": "Rock Rail ENORM Limited",
+"a": "Rock Rail ENORM",
+"c": "GB"
+},
+"6108": {
+"n": "Rytec SA",
+"c": "NO"
+},
+"6111": {
+"n": "Mongoliantrans Line LLC",
+"a": "LLC MTL",
+"c": "MN"
+},
+"6112": {
+"n": "UKRLINE LLC",
+"a": "UKRL",
+"c": "GE"
+},
+"6113": {
+"n": "Mongolian Trans Logistic LLC",
+"a": "LLC MTL",
+"c": "MN"
+},
+"7085": {
+"n": "Chemoil Logistics AG",
+"a": "Chemoil",
+"c": "CH"
+},
+"7087": {
+"n": "Voyages SNCF UK Limited",
+"a": "VSUK",
+"c": "GB"
+},
+"7281": {
+"n": "Rail Cargo Carrier - Serbia d.o.o. Beograd",
+"a": "RCC-RS",
+"c": "RS"
+},
+"7387": {
+"n": "Voyages SNCF Suisse SARL",
+"a": "VSS",
+"c": "CH"
+}
+}
 }

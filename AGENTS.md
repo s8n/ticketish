@@ -7,6 +7,17 @@ commit messages. Use hyphens, commas, colons, or restructure the sentence.
 For missing-value placeholders in the UI, use an en dash. Generated fixture
 data under `tests/fixtures/` is byte-faithful barcode content and exempt.
 
+Docs and comments say what is true now, not what used to be. A reader has not
+seen the earlier version, so a correction to a state nobody can see takes their
+attention away from the thing being documented. Git holds the history, and a
+commit message is where a change is explained. Naming what was tried and why it
+failed is different when the decision still has to hold, the way `colors.ts`
+says which codes not to put back: that is a rule with its reason attached.
+
+Comments should not go stale when the data does. Counts, file sizes and the
+contents of a table that is rebuilt monthly all drift, so describe what the
+data is rather than how much of it there was on the day.
+
 ## Licence headers
 
 Every code file carries an SPDX header, and a new one is not finished until it
@@ -50,12 +61,12 @@ needs belongs in the install. `src/service-worker.ts` precaches every built
 asset, and new assets should stay in that precache rather than being fetched
 on demand to save install bytes.
 
-Install size is not the thing to optimise here. The zxing reader WASM is
-about 1 MB and the writer another 648 KB, and both are precached on purpose:
-an installed app that cannot decode or re-encode a ticket offline has failed
-at its one job. Lazy-load large assets off the *initial page load* by all
-means, which is why the writer is a dynamic import, but let the service
-worker cache them anyway.
+Install size is not the thing to optimise here. The zxing reader and writer
+WASM are the largest things in the bundle and are precached on purpose: an
+installed app that cannot decode or re-encode a ticket offline has failed at
+its one job. Lazy-load large assets off the *initial page load* by all means,
+which is why the writer is a dynamic import, but let the service worker cache
+them anyway.
 
 Do not add anything that needs a network round trip at runtime. Lookup tables
 that a parser depends on (station names, keys, product lists, issuer names)
@@ -66,75 +77,39 @@ imported statically, so callers can stay synchronous.
 
 ## Data with strings attached
 
-`src/lib/tickets/vdv/orgs.json` is the organisation table compiled by the
-KCD+eTicketinfo app, used with attribution. Its licence applies: the table is
-not public-domain reference data and is not cleared for commercial reuse. The
-note travels inside the JSON as `_note` so it cannot be lost, and is repeated
-in `orgs.ts`, `scripts/build-vdv-orgs.py` and `docs/credits.md`, with the
-README's credits section pointing at it. Leave all five in place.
+Several tables come with terms. `LICENSE.md` says which, and each file's
+`_note` carries the obligation with the data: keep both in place, and do not
+strip a `_note` when regenerating.
 
-Do not edit `orgs.json` by hand. Corrections go in the `OVERRIDES` map in
-`orgs.ts`, with a source, so that regenerating from the app stays a clean
-copy.
+None of the generated tables is edited by hand. Corrections go in the
+`OVERRIDES` map beside the loader, with a source, so that regenerating stays a
+clean copy.
 
-`src/lib/tickets/data/uic-stations.json` and `benerail-stations.json` are built
-from [trainline-eu/stations](https://github.com/trainline-eu/stations), which
-is ODbL 1.0. What comes out is a derived database, so both files must keep
-their `_note` and stay under ODbL wherever they go. That is a lighter
-obligation than the VDV table's, attribution and share-alike rather than a
-commercial-use question, but it is still an obligation. Same rule about
-editing: corrections go in the `OVERRIDES` maps in `stations.ts`, with a
-source.
+The traps that are invisible at the point of the mistake:
 
-Note that the `uic` numbering is not the domestic one. Köln Hbf is UIC
-8015458 and IBNR 8000207, and it is the UIC number that DB puts in the
-barcode; the CSV's `db_id` column holds the IBNR and is deliberately unused.
-
-`src/lib/tickets/data/plc-stations.json` is the other half of the UIC codes,
-and the file to think hardest about. Trainline's list is a distributor's
-catalogue, so it covers what Trainline sells: Poland had 141 stations of 4,670
-and Croatia 14 of 566, which is why HŽPP and MÁV tickets showed numbers. The
-rest come from the UIC Primary Location Code register, via a CRD export that
-is not published for download and carries no reuse licence anybody here has
-found. It holds names and codes and nothing else, only for the countries where
-the catalogue is thin, and it is deliberately one file and one loader to
-remove. Do not grow it, do not add the coordinates or the flags, and do not
-treat it as settled. `scripts/build-plc-stations.py` reads an export from
-`standards/` (gitignored) and decides thinness per country by rule rather than
-by a list, so a newer export re-answers the question.
-
-The two UIC tables never hold the same code: the register is filtered against
-the catalogue at build time, and `loadUicStations` merges them without
-arbitrating. A test enforces it. Keep it that way rather than writing a
-precedence rule, so the differing terms stay attached to separate files.
-
-The mnemonics come from the CSV's `benerail_id` column, which is the space
-SNCF e-billets and ELB barcodes carry. The `sncf_id` column beside it looks
-identical for most stations and names a different one for 237 of them, mostly
-German: in that space DEFLS is Freilassing where the barcode means Salzburg.
-The table was built from the wrong column once. Do not merge the two, and do
-not add a name from one space to the other's `OVERRIDES` map.
-
-`src/lib/tickets/renfe/stations.json` is Renfe Operadora's own station list,
-published as open data under CC BY 4.0. The lightest of the three: credit and
-a statement of what was changed, no restriction on use. Both live in its
-`_note`, and the credit is *Origen de los datos: Renfe Operadora*. Same rule
-about editing: corrections go in the `OVERRIDES` map in `renfe/stations.ts`,
-with a source better than Renfe's own, which is a high bar. Renfe's codes are
-neither UIC nor Adif numbers, and the leading zero matters: `04040` is
-Zaragoza Delicias.
-
-`src/lib/tickets/data/db-leitpunkte.json` is different in kind: it is read out
-of part 6 of DB's Entfernungswerk, a tariff publication with no reuse licence
-attached rather than an open data set, so do not describe it as one. What is
-kept is the abbreviation and the station it stands for, which is a fact about
-a code. Do not extend it into the rest of the document: the distance tables
-are the part DB actually publishes for its own sake, and the IBNR and Verbund
-columns printed beside the names are deliberately dropped, the IBNR for the
-same reason as above. The `_edition` field says which year's names these are.
-
-Everything else in the repo is either our own work or vendored from a project
-named in the credits, so these are the files to think twice about.
+- `benerail_id` is the mnemonic space SNCF e-billets and ELB barcodes carry.
+  The `sncf_id` column beside it looks identical and names a different station
+  for 237 of them: DEFLS is Freilassing there where the barcode means
+  Salzburg. Do not merge the two, and do not put a name from one space into
+  the other's `OVERRIDES`.
+- UIC location codes are not the domestic numbering. Köln Hbf is UIC 8015458
+  and IBNR 8000207, and it is the UIC number that DB puts in the barcode; the
+  CSV's `db_id` column holds the IBNR and is deliberately unused.
+- `src/lib/tickets/data/plc-stations.json` comes from a UIC register export
+  that is not published for download and carries no reuse licence. It is
+  deliberately one file and one loader to remove: do not grow it, do not add
+  the coordinates or the flags, and do not treat it as settled.
+- `src/lib/tickets/vdv/orgs.json` is not cleared for commercial reuse, which
+  is the one table whose terms change what may be done with the app rather
+  than what has to be credited.
+- The two UIC tables never hold the same code. The register is filtered
+  against the catalogue at build time and `loadUicStations` merges them
+  without arbitrating, so the differing terms stay attached to separate files.
+  A test enforces it; keep it that way rather than writing a precedence rule.
+- `src/lib/tickets/data/db-leitpunkte.json` is read out of a DB tariff
+  publication. What is kept is the abbreviation and the station it stands for,
+  which is a fact about a code; do not extend it into the distance tables or
+  the columns printed beside the names.
 
 ## Sample tickets and what may ship
 
@@ -178,42 +153,26 @@ app's own palette. A nearly-right brand colour is worse than none, since the
 default honestly says the pass came from here while a wrong red says it came
 from DB.
 
-Two things in there have dates on them.
-
 `src/lib/wallet/wwdr.ts` is Apple's WWDR G4 intermediate, bundled because a
 pass has to be signable offline. It expires on 10 December 2030 and passes
 signed after that are refused. `identityProblem` in `identity.ts` says so
 rather than letting the failure happen inside Wallet; replacing the file with
 whatever Apple has moved to is the fix.
 
-The Google Wallet export rests on something undocumented, and the comments
-say so in both directions. `Barcode.value` is a JSON string and the only
-render encoding Google defines is UTF-8, for QR codes only. There is no
-binary field. The bytes go in one character per byte anyway, because other
-issuers do that and Google reads them back the same way, which is the same
-convention Apple names outright with `messageEncoding`. Both wallets share
-`latin1Message` for it.
-
-Do not present that as reliable and do not "fix" it by base64ing the payload
-or letting the string be read as UTF-8, both of which produce a barcode that
-does not scan. `googleCaveats` is where the uncertainty is written down, and
-it belongs in front of the reader before they press the button.
-
-Images are not a way round any of it: every image field takes a URI that
-Google's servers fetch, and the one upload API that avoids public hosting
-needs an OAuth token, so it cannot work offline.
-
-Length is the other open question. A binary ticket signs to roughly three
-thousand characters against the 1800 Google documents as safe, so
-`SAFE_JWT_LENGTH` warns and only `MAX_JWT_LENGTH` refuses. Getting genuinely
-under the limit means the REST API and an OAuth token exchange, which is a
-network round trip and a different design; do not half-build it.
+The Google Wallet export rests on something undocumented, and `googleCaveats`
+is where that uncertainty is written down for the reader before they press the
+button. Read it and the comments around `latin1Message` before changing how a
+payload is carried: base64ing it, letting the string be read as UTF-8, or
+reaching for an image field all produce a pass that is worse than the one that
+is there, and getting under Google's length limit honestly means an OAuth
+token exchange, which is a network round trip and a different design. Do not
+half-build it.
 
 ## Never put real tickets in tests
 
-Tests must not use ave's tickets, and must not contain values taken from
-them: no PNRs, ticket numbers, station codes, dates, names or prices copied
-off a real ticket, even in a comment or a commit message.
+Tests must not use anybody's real tickets, and must not contain values taken
+from them: no PNRs, ticket numbers, station codes, dates, names or prices
+copied off a real ticket, even in a comment or a commit message.
 
 Build the payload instead. `tests/helpers/` has the tools: bit writers, TLV
 and UIC 918.3 envelope builders, and throwaway RSA keys for the formats that
@@ -234,9 +193,9 @@ fine to use and are committed.
   reference for ticket format knowledge and issuer quirks. Look in
   `main/uic/` (918.3 envelope, U_TLAY, 0080BL/0080VU, via-route parsing),
   `main/rsp/` (UK RSP6 bit layouts), and `main/swisspass/` (NOVA protobuf
-  schema). Several of this repo's parsers are ports of its code. Its
-  maintainer handles signature verification; that is deliberately out of
-  scope here.
+  schema and the organisation table). Several of this repo's parsers are ports
+  of its code. Its maintainer handles signature verification; that is
+  deliberately out of scope here.
 - [UIC-barcode](https://github.com/UnionInternationalCheminsdeFer/UIC-barcode)
   (EUPL-1.2 / Apache-2.0): the official UIC reference implementation. The
   ASN.1 specs vendored in `scripts/asn-specs/` come from its `asn-specs/`
@@ -247,11 +206,9 @@ fine to use and are committed.
   bytes reversed).
 - **ERA TAP TSI technical document B.12** (ERA-REC-122/TD/02): section 8
   specifies ELB, the Element List Barcode, which `src/lib/tickets/elb/` reads.
-  It is the only format here with a published specification that was found
-  *after* the parser was written, and it agreed with it. Keep a copy in
-  `standards/` (gitignored, so fetch it from era.europa.eu) when working on
-  ELB. B.12 also covers the other TAP TSI barcodes, so it is worth a look
-  before reverse engineering anything new.
+  Keep a copy in `standards/` (gitignored, so fetch it from era.europa.eu)
+  when working on ELB. B.12 also covers the other TAP TSI barcodes, so it is
+  worth a look before reverse engineering anything new.
 - [trainticket.wiki](https://trainticket.wiki/ticket-standards/) and
   [train-barcode-kaitai-spec](https://github.com/NeoRail/train-barcode-kaitai-spec)
   (MIT, Kaitai files CC0): the reference for the national formats nobody

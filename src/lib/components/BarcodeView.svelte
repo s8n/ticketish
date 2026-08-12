@@ -150,7 +150,7 @@
 		{/if}
 	{/if}
 
-	<details class="rawtoggle">
+	<details class="rawtoggle readout">
 		<summary>Raw payload ({raw.length} bytes)</summary>
 		<RawView {raw} />
 	</details>

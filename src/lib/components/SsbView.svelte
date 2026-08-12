@@ -4,7 +4,7 @@
 
 	import type { SsbEnvelope, SsbOneTicketFlags, SsbStation } from '../tickets/ssb/ssb.ts';
 	import { fmtDate } from '../tickets/format.ts';
-	import { ricsName } from '../tickets/uic/rics.ts';
+	import { loadIssuerNames, ricsName, type IssuerTables } from '../tickets/uic/rics.ts';
 	import { uicCountryName } from '../tickets/countries.ts';
 	import { loadUicStations, uicStationName, type StationTable } from '../tickets/stations.ts';
 	import RouteLine from './RouteLine.svelte';
@@ -16,6 +16,14 @@
 	let stations = $state<StationTable | null>(null);
 	$effect(() => {
 		loadUicStations().then((s) => (stations = s));
+	});
+
+	// The issuer is a company code, and the card header resolves the same one:
+	// without the tables here the two would disagree on one ticket, which reads
+	// as a parsing bug rather than as a table that had not loaded.
+	let issuerNames = $state<IssuerTables | null>(null);
+	$effect(() => {
+		loadIssuerNames().then((n) => (issuerNames = n));
 	});
 
 	const r = $derived(envelope.data);
@@ -159,7 +167,7 @@
 		{/if}
 	{:else}
 		<p class="note">{envelope.unsupported ?? 'This SSB ticket type is not decoded yet.'}</p>
-		<details>
+		<details class="readout">
 			<summary>Raw body ({envelope.bodyHex.length / 2} bytes)</summary>
 			<code class="hex">{envelope.bodyHex}</code>
 		</details>
@@ -169,7 +177,7 @@
 		<dt>Ticket type</dt>
 		<dd>{envelope.ticketTypeName} <span class="soft">({envelope.ticketType})</span></dd>
 		<dt>Issuer</dt>
-		<dd>{ricsName(envelope.issuerRics) ?? `RICS ${envelope.issuerRics}`}</dd>
+		<dd>{ricsName(envelope.issuerRics, issuerNames) ?? `RICS ${envelope.issuerRics}`}</dd>
 	</dl>
 </div>
 

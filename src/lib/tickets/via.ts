@@ -19,7 +19,7 @@
  * push one into every caller for very little.
  */
 import leitpunkte from './data/db-leitpunkte.json' with { type: 'json' };
-import { ricsName } from './uic/rics.ts';
+import { ricsName, type IssuerTables } from './uic/rics.ts';
 
 export interface ViaPoint {
 	kind: 'point';
@@ -52,13 +52,13 @@ function point(code: string): ViaPoint {
 	return name ? { kind: 'point', code, name } : { kind: 'point', code };
 }
 
-function carrierOf(num: string, items: ViaItem[]): ViaCarrier {
+function carrierOf(num: string, items: ViaItem[], names: IssuerTables | null): ViaCarrier {
 	if (items.length === 0) items.push({ kind: 'point', code: 'ANY' });
 	return {
 		carriers: num
 			.split(',')
 			.filter((c) => c !== '')
-			.map((code) => ({ code, name: ricsName(code) })),
+			.map((code) => ({ code, name: ricsName(code, names) })),
 		items
 	};
 }
@@ -67,8 +67,13 @@ function hasContent(items: ViaItem[]): boolean {
 	return items.some((i) => i.kind === 'options' || (i.kind === 'point' && i.code !== ''));
 }
 
-/** Parse a via string. Returns null when it doesn't look like a via route. */
-export function parseDbVia(via: string): ViaCarrier[] | null {
+/**
+ * Parse a via string. Returns null when it doesn't look like a via route.
+ *
+ * The carrier codes are company codes, so a caller that has loaded the issuer
+ * tables gets names for them; without them the codes show, as they always have.
+ */
+export function parseDbVia(via: string, names: IssuerTables | null = null): ViaCarrier[] | null {
 	let pos = 0;
 	const data = via;
 	const eof = () => pos >= data.length;
@@ -149,7 +154,8 @@ export function parseDbVia(via: string): ViaCarrier[] | null {
 				}
 			} else if (c === '<') {
 				items.push(point(pointText));
-				if (carrierNum || hasContent(items)) route.push(carrierOf(carrierNum, cleanup(items)));
+				if (carrierNum || hasContent(items))
+					route.push(carrierOf(carrierNum, cleanup(items), names));
 				state = 'carrier';
 				carrierNum = '';
 				pointText = '';
@@ -164,7 +170,7 @@ export function parseDbVia(via: string): ViaCarrier[] | null {
 	}
 
 	if (pointText) flushPoint();
-	if (carrierNum || hasContent(items)) route.push(carrierOf(carrierNum, cleanup(items)));
+	if (carrierNum || hasContent(items)) route.push(carrierOf(carrierNum, cleanup(items), names));
 
 	return route.length ? route : null;
 }

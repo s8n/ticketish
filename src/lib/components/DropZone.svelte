@@ -63,7 +63,12 @@
 	<span class="label">
 		{#if busy}Reading…{:else}Drop a ticket here - image, PDF or .pkpass{/if}
 	</span>
-	<span class="hint">or click to choose a file<span class="paste"> · paste works too</span></span>
+	<!-- The space before the separator is written as an expression because the
+	     compiler trims whitespace at the start of an element, and this one is
+	     inside the span on purpose: it goes away with it on a touch device. -->
+	<span class="hint"
+		>or click to choose a file<span class="paste">{' '}· paste works too</span></span
+	>
 </button>
 
 <input

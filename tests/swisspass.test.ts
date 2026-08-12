@@ -7,8 +7,15 @@
  */
 import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
-import { parseSwissPass, novaOrgName, fmtZurich } from '../src/lib/tickets/swisspass/swisspass.ts';
+import { parseSwissPass, fmtZurich } from '../src/lib/tickets/swisspass/swisspass.ts';
+import {
+	loadNovaOrgs,
+	novaOrgCode,
+	novaOrgLabel,
+	type NovaOrg
+} from '../src/lib/tickets/swisspass/orgs.ts';
 import { concat } from './helpers/build.ts';
+import orgsJson from '../src/lib/tickets/swisspass/orgs.json' with { type: 'json' };
 import { msg, signedTicket, str, time, uint } from './helpers/swisspass.ts';
 
 const VALID_FROM = Date.UTC(2024, 4, 19, 8, 0);
@@ -48,6 +55,35 @@ function swissPass({ withTraveler = true, specimen = false, rics = '3342' } = {}
 	return signedTicket(ticket, rics);
 }
 
+describe('orgs.json', () => {
+	const table: Record<string, NovaOrg> = orgsJson.orgs;
+
+	it('keeps the source credit beside the data', () => {
+		// the terms ask for opentransportdata.swiss to be named as the source of
+		// the raw data, so it travels in the file rather than only in the credits
+		expect(orgsJson._note).toMatch(/opentransportdata\.swiss/);
+		expect(orgsJson._note).toMatch(/up to date/i);
+	});
+
+	it('is a map of organisation numbers to non-empty names', () => {
+		const entries = Object.entries(table);
+		expect(entries.length).toBeGreaterThan(1000);
+		for (const [id, org] of entries) {
+			// decimal, and never padded: the register writes 11, not 011
+			expect(id, `key ${id}`).toMatch(/^[1-9]\d*$/);
+			expect(org.n.trim(), `name for ${id}`).not.toBe('');
+			expect(org.until ?? '9999-12-31', `until for ${id}`).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+		}
+	});
+
+	it('leaves out the end of validity for a number that has none', () => {
+		// atlas writes an open-ended row as 9999-12-31, which is not a date
+		// worth carrying into the app
+		expect(Object.values(table).some((o) => o.until)).toBe(true);
+		expect(Object.values(table).every((o) => o.until !== '9999-12-31')).toBe(true);
+	});
+});
+
 describe('SwissPass tickets', () => {
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	it('decodes the protobuf structure', () => {
@@ -86,9 +122,32 @@ describe('SwissPass tickets', () => {
 		expect(marked.extra.specimen).toBe(true);
 	});
 
-	it('names known transport organisations', () => {
-		expect(novaOrgName(490)).toBeTruthy();
-		expect(novaOrgName(999999)).toBeNull();
+	it('names known transport organisations', async () => {
+		const orgs = await loadNovaOrgs();
+		expect(novaOrgLabel(orgs, 490)).toMatch(/Z(ü|u)rcher Verkehrsverbund/);
+		// the register keys on the plain number, and a ticket may pad it
+		expect(novaOrgLabel(orgs, '011')).toBe(novaOrgLabel(orgs, 11));
+		expect(novaOrgLabel(orgs, 999999)).toBeNull();
+		expect(novaOrgLabel(null, 490)).toBeNull();
+	});
+
+	it("says when a number stopped being anybody's, as of the day it is read", () => {
+		const orgs = { '70': { n: 'Südostbahn Gemeinschaft', a: 'SOB Gem', until: '2001-10-12' } };
+		expect(novaOrgLabel(orgs, 70, new Date('2001-01-01'))).toBe(
+			'SOB Gem (Südostbahn Gemeinschaft)'
+		);
+		expect(novaOrgLabel(orgs, 70, new Date('2026-08-12'))).toBe(
+			'SOB Gem (Südostbahn Gemeinschaft) (Expired 2001-10-12, GO-Nr. 70)'
+		);
+		// the last day of validity is still a day of validity
+		expect(novaOrgLabel(orgs, 70, new Date('2001-10-12'))).not.toContain('Expired');
+	});
+
+	it('reads a number the way the register writes it', () => {
+		expect(novaOrgCode('011')).toBe('11');
+		expect(novaOrgCode(11)).toBe('11');
+		expect(novaOrgCode('')).toBeNull();
+		expect(novaOrgCode('eleven')).toBeNull();
 	});
 
 	it('formats times in Swiss local time', () => {

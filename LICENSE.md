@@ -58,8 +58,33 @@ them under EUPL-1.2.
   merged `src/lib/tickets/vdv/products.json` is EUPL-1.2 for the same reason.
   The one exception is `scripts/vdv-products/productids_ticketish.json`, which
   is ours: MIT or ODbL, at your option.
-- `src/lib/tickets/uic/rics.json` is hand curated here from the public UIC RICS
-  register, so the compilation is ours: MIT or ODbL, at your option.
+- `src/lib/tickets/swisspass/orgs.json` holds the Swiss Geschäftsorganisation
+  numbers, built from the business organisations dataset published as Open Data
+  on [opentransportdata.swiss](https://opentransportdata.swiss/) by the
+  Geschäftsstelle SKI. Its
+  [terms of use](https://opentransportdata.swiss/de/terms-of-use/) ask for
+  opentransportdata.swiss to be named as the source of the raw data, which
+  travels in the file's `_note`, for anything derived to be published under our
+  own name, and for the data to be kept up to date with its source, which is
+  what the monthly workflow is for. No share-alike and no restriction on use,
+  so the compilation here is ours: MIT or ODbL, at your option.
+- `src/lib/tickets/uic/rics.json` holds the RICS codes, which UIC allocates and
+  ERA mirrors. It is built from the same ERA export as `era-orgs.json` below,
+  from the rows the register marks as RICS codes, and carries the same
+  acknowledgement. On top of it goes `scripts/rics-era-overrides.json`, which is
+  hand kept here from the
+  [UIC RICS register](https://www.uic.org/support-activities/it/rics?recherche=rics):
+  UIC publishes that as a PDF and grants no reuse licence over it, so what is
+  taken is a code and the organisation it stands for, one at a time, and that
+  compilation is ours: MIT or ODbL, at your option.
+- `src/lib/tickets/uic/era-orgs.json` is the Organisation Code Register
+  published by the **European Union Agency for Railways**. ERA's copyright
+  notice grants reproduction provided the source is acknowledged, so keep the
+  acknowledgement with the table: *source, European Union Agency for Railways*.
+  It travels in the file's `_note` along with what was changed. Use is also
+  subject to ERA's [Terms of Use](https://teleref.era.europa.eu/termsOfUsage-OCR-v1.0.pdf),
+  which ask that the reference data be used for rail-sector purposes and within
+  the published technical constraints.
 
 ## Data with no licence granted
 
@@ -83,8 +108,6 @@ comes with a licence agreement of its own.
   public LDAP directory.
 - `src/lib/tickets/tcdd/stations.json`: from the station list TCDD's own
   e-ticket site reads.
-- `src/lib/tickets/swisspass/orgs.json`: Swiss NOVA organisation names, from
-  the operators' open data.
 - `src/lib/tickets/data/db-leitpunkte.json`: DB Leitpunktkürzel, from DB open
   data.
 - `src/lib/tickets/data/uic-countries.json`: UIC country codes, from the UIC

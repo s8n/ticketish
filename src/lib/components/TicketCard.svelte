@@ -10,6 +10,8 @@
 	import RawView from './records/RawView.svelte';
 	import { containerInfo } from './containers.ts';
 	import { loadVdvOrgs } from '../tickets/vdv/orgs.ts';
+	import { loadIssuerNames, type IssuerTables } from '../tickets/uic/rics.ts';
+	import { loadNovaOrgs, type NovaOrgTable } from '../tickets/swisspass/orgs.ts';
 	import { store } from '../state/tickets.svelte.ts';
 	import { canRender } from '../input/render.ts';
 	import { tabModel } from './tabs.ts';
@@ -30,8 +32,27 @@
 	});
 
 	const info = $derived(containerInfo(container));
+
+	// The same for the formats that name their issuer by company code: the
+	// header shows "RICS 2480" for as long as the tables take to arrive.
+	let issuerNames = $state<IssuerTables | null>(null);
+	$effect(() => {
+		if (info.needsIssuerNames) loadIssuerNames().then((n) => (issuerNames = n));
+	});
+
+	// Swiss tickets name their seller by organisation number instead.
+	let novaOrgs = $state<NovaOrgTable | null>(null);
+	$effect(() => {
+		if (info.needsNovaOrgs) loadNovaOrgs().then((o) => (novaOrgs = o));
+	});
+
 	const issuer = $derived(
-		info.issuer?.(container, { vdvOrgs, passInfo: ticket.source.passInfo }) ?? null
+		info.issuer?.(container, {
+			vdvOrgs,
+			issuerNames,
+			novaOrgs,
+			passInfo: ticket.source.passInfo
+		}) ?? null
 	);
 
 	const specimen = $derived.by(() => {
@@ -172,11 +193,11 @@
 		{@const FormatView = info.view}
 		<FormatView {...info.props?.(container)} />
 	{:else if container.kind === 'text'}
-		<pre class="text-payload">{container.text}</pre>
+		<pre class="text-payload readout">{container.text}</pre>
 		<p class="note">This barcode carries plain text, not any form of supported ticket data.</p>
 	{:else if container.kind === 'unknown'}
 		<p class="note">Could not recognize this payload. Raw bytes:</p>
-		<pre class="text-payload">{hexDump(ticket.raw.subarray(0, 512))}</pre>
+		<pre class="text-payload readout">{hexDump(ticket.raw.subarray(0, 512))}</pre>
 	{/if}
 
 	{#if active && !barcodeOpen}
@@ -184,10 +205,12 @@
 			{#if ActiveView}
 				<ActiveView data={active.data} />
 			{:else}
-				<RawView raw={active.raw} error={active.error} />
+				<!-- A record with no view of its own is all readout, so it gets the
+				     box the raw record below a decoded one gets. -->
+				<div class="readout"><RawView raw={active.raw} error={active.error} /></div>
 			{/if}
 			{#if ActiveView}
-				<details class="rawtoggle">
+				<details class="rawtoggle readout">
 					<summary>Raw record ({active.id.trim()} v{active.version}, {active.raw.length} bytes)</summary>
 					<RawView raw={active.raw} />
 				</details>
@@ -301,11 +324,6 @@
 	.text-payload {
 		font-family: var(--font-mono);
 		font-size: 0.8rem;
-		background: color-mix(in srgb, var(--paper-hi) 55%, white 45%);
-		border: 1px solid var(--paper-edge);
-		border-radius: 4px;
-		padding: 0.6rem;
-		overflow-x: auto;
 		margin: 0 0 0.4rem;
 	}
 	.note {
@@ -348,11 +366,5 @@
 		cursor: pointer;
 		font-size: 0.78rem;
 		color: var(--ink-soft);
-	}
-	.rawtoggle[open] {
-		background: color-mix(in srgb, var(--paper-hi) 55%, white 45%);
-		border: 1px solid var(--paper-edge);
-		border-radius: 4px;
-		padding: 0.5rem;
 	}
 </style>

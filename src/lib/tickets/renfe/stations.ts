@@ -58,6 +58,7 @@ export async function loadRenfeStations(): Promise<RenfeStationTable> {
 }
 
 /** Codes are five digits; a barcode pads them and the parser strips that. */
+/** Codes are five digits and the leading zero counts: 04040 is Zaragoza. */
 const key = (code: string) => code.padStart(5, '0');
 
 /** The station's name, or null when nothing here knows the code. */

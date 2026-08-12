@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
+name: Update ERA organisation codes
+
+# Since January 2026 the EU half of the company codes on a ticket is allocated
+# by the European Union Agency for Railways rather than UIC, and ERA publishes
+# the whole register as a spreadsheet. It moves: organisations are added,
+# renamed and revoked continuously, so it is worth refreshing. Needs no
+# credentials.
+on:
+  schedule:
+    - cron: '37 4 7 * *' # 04:37 UTC on the 7th of each month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Rebuild ERA organisation table
+        run: python scripts/build-era-orgs.py
+
+      - name: Commit and push if changed
+        # The export is the source of both halves of the numbering: the codes
+        # it calls Organisation Codes and the RICS ones it mirrors.
+        run: |
+          if git diff --quiet -- src/lib/tickets/uic/era-orgs.json src/lib/tickets/uic/rics.json; then
+            echo "No changes to the organisation tables."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/lib/tickets/uic/era-orgs.json src/lib/tickets/uic/rics.json
+          git commit -m "Update ERA organisation codes"
+          git push

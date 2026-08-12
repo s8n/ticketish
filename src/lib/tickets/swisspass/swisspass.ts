@@ -7,10 +7,7 @@
  * Schema reverse-engineered by zuegli (main/swisspass/swisspass.proto,
  * EUPL-1.2); decoded here with a small hand-written proto3 wire reader.
  */
-import orgsJson from './orgs.json' with { type: 'json' };
 import { fmtZoned } from '../format.ts';
-
-const ORGS = orgsJson as Record<string, string>;
 
 // ---- minimal proto3 wire reader ----------------------------------------
 
@@ -263,11 +260,6 @@ export function isSwissPass(data: Uint8Array): boolean {
 	} catch {
 		return false;
 	}
-}
-
-export function novaOrgName(code: number | undefined): string | null {
-	if (code === undefined) return null;
-	return ORGS[String(code).padStart(3, '0')] ?? null;
 }
 
 /** Format an epoch-milliseconds timestamp in Swiss local time. */
