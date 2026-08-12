@@ -177,18 +177,18 @@
 		<p>
 			runs fully offline once installed · inspired by
 			<a href="https://zügli.app">zügli</a> ·
-			<a href="/credits">credits and licences</a> ·
-			<a href="https://github.com/s8n/ticketish" target="_blank" rel="noopener">source code</a>
+			<a href="/credits">credits and licences</a>
 		</p>
 		<!-- An installed copy can be any age, and the commit and the build time
 		     are what turn "it does not do that here" into something answerable.
 		     Tapping it asks for a new one: a real control for the people who go
 		     looking, set as plain text for everybody else. -->
 		<p class="version">
-			<button type="button" onclick={() => updates.check(true)} title="Check for updates">
-				{version}
-			</button>{#if updates.checking}<span> · checking</span>{:else if updates.upToDate}<span>
-					· up to date</span
+			<a href="https://github.com/s8n/ticketish" target="_blank" rel="noopener">source code</a> ·
+			<button type="button" class="build" onclick={() => updates.check(true)} title="Check for updates"
+				>{version}</button
+			>{#if updates.checking}<span class="build">{' '}· checking</span>{:else if updates.upToDate}<span
+					class="build">{' '}· up to date</span
 				>{/if}
 		</p>
 	</footer>
@@ -368,6 +368,10 @@
 	}
 	.version {
 		margin-top: 0.35rem;
+	}
+	/* Only the build string is set as machine text; the link beside it is part
+	   of the footer's prose. */
+	.build {
 		font-family: var(--font-mono);
 		font-size: 0.72rem;
 		opacity: 0.7;
@@ -375,7 +379,6 @@
 	/* A button so that a keyboard and a screen reader can reach it, wearing
 	   the surrounding text's clothes so that nothing announces itself. */
 	.version button {
-		font: inherit;
 		color: inherit;
 		background: none;
 		border: none;
