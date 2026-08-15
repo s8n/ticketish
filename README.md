@@ -59,6 +59,13 @@ so many fields wrong.
 - **VDV-KA** - German Verbund tickets and the Deutschlandticket: BER-TLV
   envelope with ISO 9796-2 message recovery against the VDV CA certificates,
   MOTICS copy-protection containers included
+- **BoB** - the Swedish national standard, so one format for every regional
+  authority (Skånetrafiken, Västtrafik, SL and the rest) rather than one
+  operator's: zlib compressed CBOR in an Aztec, holding a JWS-over-CBOR
+  signature from the issuer wrapped in a second one the app re-makes every few
+  seconds. Ticket id, travellers, validity interval and the named conditions
+  are read. Neither signature is verified, and a captured barcode stops
+  validating almost at once, which the card explains
 - **SSB and SSB1** - older bit-packed UIC barcodes: reservations, travel and
   group tickets, passes, NS/DB Keycards and ČD's OneTicket (type 24, the Czech
   integrated tariff), plus the 107-byte SSB1 variant used by VR (Finland)

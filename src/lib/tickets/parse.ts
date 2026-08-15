@@ -22,6 +22,7 @@ import { isViaRail, parseViaRail } from './viarail/viarail.ts';
 import { isHzpp, parseHzpp } from './hzpp/hzpp.ts';
 import { isCdLegacy, parseCdLegacy } from './cd/legacy.ts';
 import { isNsb, parseNsb } from './nsb/nsb.ts';
+import { isBob, parseBob } from './bob/bob.ts';
 import { isSncfETicket, parseSncfETicket } from './sncf/eticket.ts';
 
 // Record parsers register themselves on import.
@@ -67,6 +68,7 @@ const DETECTORS: Detector[] = [
 	{ matches: isRenfe, parse: (d) => ({ kind: 'renfe', ticket: parseRenfe(d) }) },
 	{ matches: isMav, parse: (d) => ({ kind: 'mav', ticket: parseMav(d) }) },
 	{ matches: isNsb, parse: (d) => ({ kind: 'nsb', ticket: parseNsb(d) }) },
+	{ matches: isBob, parse: (d) => ({ kind: 'bob', ticket: parseBob(d) }), certain: true },
 	{ matches: isCdLegacy, parse: (d) => ({ kind: 'cd-legacy', ticket: parseCdLegacy(d) }) },
 	{ matches: isHzpp, parse: (d) => ({ kind: 'hzpp', ticket: parseHzpp(d) }) },
 	{ matches: isViaRail, parse: (d) => ({ kind: 'viarail', ticket: parseViaRail(d) }) },

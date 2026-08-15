@@ -148,6 +148,11 @@
 					🇨🇭 Swiss mobile tickets
 				</li>
 				<li>
+					<span class="format">BoB</span>
+					🇸🇪 Swedish public transport: Skånetrafiken, Västtrafik, SL and the other regional
+					authorities
+				</li>
+				<li>
 					<span class="format">SSB &amp; SSB1</span>
 					Older barcodes operators like VR (🇫🇮) still issue, plus NS (🇳🇱) and DB (🇩🇪) Keycards
 				</li>

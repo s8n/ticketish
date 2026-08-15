@@ -665,6 +665,13 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 		needs: ['renfeStations', 'issuerNames'],
 		map: (c, tables) => renfeTrip(c.ticket, tables)
 	},
+	// BoB is null for a reason of its own rather than for want of an extractor.
+	// The barcode carries a device signature the issuing app re-makes every few
+	// seconds, and an inspector's reader checks how recent that stamp is, so a
+	// pass holding a copy of the symbol is refused however well its fields are
+	// filled in. A pass that fails at the barcode is worse than no pass, and
+	// nothing this app can put in one would change that.
+	bob: null,
 	// Everything below reads fine in the app but has no wallet mapping yet.
 	// Adding one is a matter of writing the extractor above and pointing the
 	// entry at it; leaving it null keeps the button hidden.

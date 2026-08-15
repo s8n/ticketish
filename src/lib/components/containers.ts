@@ -36,6 +36,7 @@ import CdLegacyView from './CdLegacyView.svelte';
 import NsbView from './NsbView.svelte';
 import UzView from './UzView.svelte';
 import SncfETicketView from './SncfETicketView.svelte';
+import BobView from './BobView.svelte';
 
 type Kind = TicketContainer['kind'];
 type Of<K extends Kind> = Extract<TicketContainer, { kind: K }>;
@@ -203,6 +204,17 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 		label: () => 'NSB',
 		issuer: () => 'NSB / Vy',
 		view: NsbView,
+		props: (c) => ({ ticket: c.ticket })
+	},
+	bob: {
+		label: () => 'BoB',
+		// BoB is the Swedish standard rather than one operator's format, and the
+		// participant id is all a ticket says about who issued it. Samtrafiken's
+		// register of ids is behind a login, so the number is shown as it stands
+		// rather than guessed at from the products a ticket happens to carry.
+		issuer: (c) =>
+			c.ticket.issuer.issuerId ? `BoB participant ${c.ticket.issuer.issuerId}` : 'BoB ticket',
+		view: BobView,
 		props: (c) => ({ ticket: c.ticket })
 	},
 	uz: {

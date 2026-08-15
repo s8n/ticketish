@@ -60,6 +60,7 @@ export type TicketContainer =
 	| { kind: 'hzpp'; ticket: import('./hzpp/hzpp.ts').HzppTicket }
 	| { kind: 'cd-legacy'; ticket: import('./cd/legacy.ts').CdLegacyTicket }
 	| { kind: 'nsb'; ticket: import('./nsb/nsb.ts').NsbTicket }
+	| { kind: 'bob'; ticket: import('./bob/bob.ts').BobTicket }
 	| { kind: 'uz'; ticket: import('./uz/uz.ts').UzTicket }
 	| { kind: 'sncf-eticket'; ticket: import('./sncf/eticket.ts').SncfETicket }
 	| { kind: 'text'; text: string }
