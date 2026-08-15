@@ -67,13 +67,6 @@
 			{ticket.device.algorithm ?? '–'}, stamped {fmtDate(ticket.device.signedAt)}
 		</dd>
 	</dl>
-
-	<p class="note">
-		The device signature is re-made every few seconds and an inspector's reader checks how
-		recent it is, so this barcode stops validating shortly after it was captured even though
-		the ticket inside it runs to its own end date. Neither signature is verified here: the
-		keys are in Samtrafiken's participant registry, which is not public.
-	</p>
 </div>
 
 <style>
@@ -109,8 +102,6 @@
 	}
 	.tc-label {
 		font-size: 0.72rem;
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
 		color: var(--ink-soft);
 	}
 	.tc code {
@@ -121,11 +112,5 @@
 	.sig {
 		border-top: 1px dotted var(--paper-edge);
 		padding-top: 0.7rem;
-	}
-	.note {
-		margin: 0;
-		font-size: 0.78rem;
-		line-height: 1.5;
-		color: var(--ink-soft);
 	}
 </style>

@@ -65,7 +65,8 @@ so many fields wrong.
   signature from the issuer wrapped in a second one the app re-makes every few
   seconds. Ticket id, travellers, validity interval and the named conditions
   are read. Neither signature is verified, and a captured barcode stops
-  validating almost at once, which the card explains
+  validating almost at once: the card shows the stamp the device signature
+  carries, which is what an inspector's reader checks the age of
 - **SSB and SSB1** - older bit-packed UIC barcodes: reservations, travel and
   group tickets, passes, NS/DB Keycards and ČD's OneTicket (type 24, the Czech
   integrated tariff), plus the 107-byte SSB1 variant used by VR (Finland)
