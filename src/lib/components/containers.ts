@@ -19,6 +19,7 @@ import type { PkpassInfo, TicketContainer } from '../tickets/types.ts';
 import { ricsName, type IssuerTables } from '../tickets/uic/rics.ts';
 import { novaOrgLabel, type NovaOrgTable } from '../tickets/swisspass/orgs.ts';
 import { vdvOrgName } from '../tickets/vdv/orgs.ts';
+import { bobParticipantLabel } from '../tickets/bob/participants.ts';
 import Rsp6View from './Rsp6View.svelte';
 import SwissPassView from './SwissPassView.svelte';
 import VdvView from './VdvView.svelte';
@@ -209,11 +210,10 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 	bob: {
 		label: () => 'BoB',
 		// BoB is the Swedish standard rather than one operator's format, and the
-		// participant id is all a ticket says about who issued it. Samtrafiken's
-		// register of ids is behind a login, so the number is shown as it stands
-		// rather than guessed at from the products a ticket happens to carry.
-		issuer: (c) =>
-			c.ticket.issuer.issuerId ? `BoB participant ${c.ticket.issuer.issuerId}` : 'BoB ticket',
+		// participant id is all a ticket says about who issued it. The bundled
+		// register names most ids; one it has not heard of shows as its number,
+		// since ids are allocated as participants join.
+		issuer: (c) => bobParticipantLabel(c.ticket.issuer.issuerId),
 		view: BobView,
 		props: (c) => ({ ticket: c.ticket })
 	},

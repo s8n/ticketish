@@ -88,6 +88,15 @@ them under EUPL-1.2.
 
 ## Data with no licence granted
 
+- `src/lib/tickets/bob/participants.json` is the BoB participant id register,
+  read from a page in Samtrafiken's BoB Confluence space that needs a login and
+  publishes no reuse terms. What is taken is an id and the organisation that
+  holds it, which is a fact about a number and the only thing that makes a BoB
+  ticket's issuer legible; the page is not redistributed and nothing else on it
+  is kept. The contact person named against each participant is deliberately
+  not here, and should not be added: it is personal data a ticket parser has no
+  use for. Anyone redistributing ticketish should satisfy themselves about this
+  file the same way they would about `vdv/orgs.json` below.
 - `src/lib/tickets/vdv/orgs.json` is the organisation table compiled by the
   KCD+eTicketinfo Android app, used with attribution. No licence was granted to
   us and none is granted onward. It is not public domain reference data and is

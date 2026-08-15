@@ -11,6 +11,7 @@
 	 * a detail of the envelope.
 	 */
 	import type { BobTicket } from '../tickets/bob/bob.ts';
+	import { bobParticipantLabel } from '../tickets/bob/participants.ts';
 	import { fmtDate } from '../tickets/format.ts';
 
 	let { ticket }: { ticket: BobTicket } = $props();
@@ -44,7 +45,7 @@
 					<dd>{claim.condition.names.join(', ')}</dd>
 				{/if}
 				<dt>Issued by</dt>
-				<dd>Participant {claim.participantId}</dd>
+				<dd>{bobParticipantLabel(claim.participantId)}</dd>
 			</dl>
 
 			{#if claim.condition}
