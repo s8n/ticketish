@@ -97,6 +97,15 @@ them under EUPL-1.2.
   not here, and should not be added: it is personal data a ticket parser has no
   use for. Anyone redistributing ticketish should satisfy themselves about this
   file the same way they would about `vdv/orgs.json` below.
+- `src/lib/tickets/data/db-leitpunkte.json` holds the DB Leitpunktkürzel, the
+  route point abbreviations a Via text is written in. They come from part 6 of
+  the Entfernungswerk, which DB publishes as a tariff document with the
+  Deutschlandtarif price list: it is not a licensed open data set and should
+  not be described as one. What is taken is an abbreviation and the station it
+  stands for, which is a fact about a code rather than a copy of the document;
+  the document is not redistributed and its distance tables are untouched. The
+  IBNR printed beside each name is deliberately not kept, since this repo uses
+  UIC codes and holding both would invite reading one as the other.
 - `src/lib/tickets/vdv/orgs.json` is the organisation table compiled by the
   KCD+eTicketinfo Android app, used with attribution. No licence was granted to
   us and none is granted onward. It is not public domain reference data and is
@@ -117,8 +126,6 @@ comes with a licence agreement of its own.
   public LDAP directory.
 - `src/lib/tickets/tcdd/stations.json`: from the station list TCDD's own
   e-ticket site reads.
-- `src/lib/tickets/data/db-leitpunkte.json`: DB Leitpunktkürzel, from DB open
-  data.
 - `src/lib/tickets/data/uic-countries.json`: UIC country codes, from the UIC
   reference data.
 - `tests/fixtures/public/` and `static/samples/`: DB's published Muster
