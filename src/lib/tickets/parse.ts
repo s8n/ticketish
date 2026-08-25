@@ -19,6 +19,7 @@ import { isUz, parseUz } from './uz/uz.ts';
 import { isElb, parseElb } from './elb/elb.ts';
 import { isMav, parseMav } from './mav/mav.ts';
 import { isViaRail, parseViaRail } from './viarail/viarail.ts';
+import { isBcbp, parseBcbp } from './bcbp/bcbp.ts';
 import { isHzpp, parseHzpp } from './hzpp/hzpp.ts';
 import { isCdLegacy, parseCdLegacy } from './cd/legacy.ts';
 import { isNsb, parseNsb } from './nsb/nsb.ts';
@@ -72,6 +73,7 @@ const DETECTORS: Detector[] = [
 	{ matches: isCdLegacy, parse: (d) => ({ kind: 'cd-legacy', ticket: parseCdLegacy(d) }) },
 	{ matches: isHzpp, parse: (d) => ({ kind: 'hzpp', ticket: parseHzpp(d) }) },
 	{ matches: isViaRail, parse: (d) => ({ kind: 'viarail', ticket: parseViaRail(d) }) },
+	{ matches: isBcbp, parse: (d) => ({ kind: 'bcbp', ticket: parseBcbp(d) }) },
 	{ matches: isElb, parse: (d) => ({ kind: 'elb', ticket: parseElb(d) }) },
 	{ matches: isSncfETicket, parse: (d) => ({ kind: 'sncf-eticket', ticket: parseSncfETicket(d) }) },
 	{ parse: (d) => ({ kind: 'dosipas', envelope: parseDosipas(d) }) },

@@ -1,7 +1,8 @@
 # ticketish
 
 Reads what your train ticket really says. A fully client-side SvelteKit PWA
-that decodes the 2D barcodes on rail tickets, mainly European ones.
+that decodes the 2D barcodes on rail tickets, mainly European ones, and on
+airline boarding passes.
 
 Inspired by an attempt to parse a nightmarish Swedish train ticket that got
 so many fields wrong.
@@ -86,6 +87,11 @@ so many fields wrong.
   which the bundled table names, and MÁV's own numbering from version 5
 - **VIA Rail** - Canadian boarding passes, a 124 character fixed-width ASCII
   Aztec with VIA's own four letter station codes and bare local times
+- **IATA BCBP** - airline boarding passes, format M, whichever symbology the
+  airline chose to print it in. Every leg of the itinerary, with cabin, seat,
+  sequence number, ticket number, frequent flyer and baggage details, plus the
+  bag tag series and the optional signature. It carries no time of day and no
+  year, so the card says what the flight date was worked out from
 - **HŽPP** - Croatian tickets. The plaintext form (`B1`, 33 pipe separated
   fields) is read in full, including prices in kuna or euro depending on which
   side of the 2023 switchover it was sold. The encrypted form (`A1`) is

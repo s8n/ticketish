@@ -675,6 +675,11 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 	// Everything below reads fine in the app but has no wallet mapping yet.
 	// Adding one is a matter of writing the extractor above and pointing the
 	// entry at it; leaving it null keeps the button hidden.
+	// A BCBP record dates a flight by the day of the year and carries no time
+	// at all, so a pass made from one would show a departure that was guessed
+	// twice over: once for the year, once for the hour. The airline's own app
+	// has both and issues the pass that boards the flight.
+	bcbp: null,
 	rsp6: null,
 	ssb: null,
 	ssb1: null,

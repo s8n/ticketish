@@ -32,6 +32,7 @@ import EavView from './EavView.svelte';
 import ElbView from './ElbView.svelte';
 import MavView from './MavView.svelte';
 import ViaRailView from './ViaRailView.svelte';
+import BcbpView from './BcbpView.svelte';
 import HzppView from './HzppView.svelte';
 import CdLegacyView from './CdLegacyView.svelte';
 import NsbView from './NsbView.svelte';
@@ -187,6 +188,20 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 		label: () => 'VIA Rail',
 		issuer: () => 'VIA Rail Canada',
 		view: ViaRailView,
+		props: (c) => ({ ticket: c.ticket })
+	},
+	bcbp: {
+		label: (c) => (c.ticket.version === null ? 'IATA BCBP' : `IATA BCBP v${c.ticket.version}`),
+		// Item 21 names the airline that issued the pass, which on an interline
+		// itinerary is not the one flying the first leg. Where it is missing the
+		// operating carrier is the only airline the record names at all. Both
+		// are IATA designators and no table for them is bundled, so the code is
+		// what the header shows.
+		issuer: (c) => {
+			const code = c.ticket.issuerDesignator ?? c.ticket.legs[0]?.operatingCarrier;
+			return code ? `Airline ${code}` : 'Boarding pass';
+		},
+		view: BcbpView,
 		props: (c) => ({ ticket: c.ticket })
 	},
 	hzpp: {

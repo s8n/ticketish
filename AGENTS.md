@@ -218,6 +218,13 @@ fine to use and are committed.
   Keep a copy in `standards/` (gitignored, so fetch it from era.europa.eu)
   when working on ELB. B.12 also covers the other TAP TSI barcodes, so it is
   worth a look before reverse engineering anything new.
+- **IATA BCBP Implementation Guide**, seventh edition, which
+  `src/lib/tickets/bcbp/` is written against. Keep a copy in `standards/`
+  (gitignored, so fetch it from iata.org). It describes the record and defines
+  the arithmetic behind items 6, 10 and 17, which is what makes the layout
+  recoverable, but the field table and the value lists live in Resolution 792,
+  which IATA sells. Anything the guide does not define is shown as issued
+  rather than labelled from a guess.
 - [trainticket.wiki](https://trainticket.wiki/ticket-standards/) and
   [train-barcode-kaitai-spec](https://github.com/NeoRail/train-barcode-kaitai-spec)
   (MIT, Kaitai files CC0): the reference for the national formats nobody

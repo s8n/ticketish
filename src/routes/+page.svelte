@@ -161,6 +161,10 @@
 					The Element List Barcode of TAP TSI B.12, on Eurostar and SNCF (🇫🇷) stock
 				</li>
 				<li>
+					<span class="format">IATA BCBP</span>
+					✈️ Airline boarding passes, every leg of the itinerary
+				</li>
+				<li>
 					<span class="format">Custom formats</span>
 					Renfe (🇪🇸), MÁV (🇭🇺), HŽPP (🇭🇷), ČD (🇨🇿), VIA Rail (🇨🇦), SNCF e-billets (🇫🇷),
 					TCDD (🇹🇷), Trenitalia (🇮🇹) and UZ (🇺🇦)
