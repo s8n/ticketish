@@ -48,6 +48,12 @@ const displayNames =
 export function isoNumericCountryName(code: number): string {
 	const alpha2 = ISO_NUMERIC[code];
 	if (!alpha2) return `country ${code}`;
+	return isoAlpha2CountryName(alpha2);
+}
+
+/** An ISO 3166-1 alpha-2 code as a country name, or the code where Intl has none. */
+export function isoAlpha2CountryName(alpha2: string): string {
+	if (!alpha2) return '';
 	try {
 		return displayNames?.of(alpha2) ?? alpha2;
 	} catch {

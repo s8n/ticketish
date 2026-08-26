@@ -4,14 +4,36 @@
 
 	/**
 	 * A boarding pass, one block per flight leg and one for the booking they
-	 * share. Airport and airline codes are shown as issued: BCBP names nothing,
-	 * and no table for either is bundled.
+	 * share.
+	 *
+	 * BCBP names nothing: its airports and airlines are codes, and the tables
+	 * that turn them back into places and carriers load on demand. Until they
+	 * land, and for the codes they do not cover, the card shows what the pass
+	 * itself prints.
 	 */
 	import type { BcbpLeg, BcbpTicket } from '../tickets/bcbp/bcbp.ts';
 	import { fmtDate } from '../tickets/format.ts';
 	import RouteLine from './RouteLine.svelte';
+	import {
+		airlineLabel,
+		airportName,
+		airportPlace,
+		loadAirlines,
+		loadAirports,
+		type AirlineTable,
+		type AirportTable
+	} from '../tickets/bcbp/codes.ts';
 
 	let { ticket }: { ticket: BcbpTicket } = $props();
+
+	// Both load on demand: until they land the codes show, which is what the
+	// pass itself prints and what this view showed before the tables existed.
+	let airports = $state<AirportTable | null>(null);
+	let airlines = $state<AirlineTable | null>(null);
+	$effect(() => {
+		loadAirports().then((a) => (airports = a));
+		loadAirlines().then((a) => (airlines = a));
+	});
 
 	const yesNo = (value: boolean | null) => (value === null ? null : value ? 'Yes' : 'No');
 
@@ -21,11 +43,23 @@
 			? `${leg.airlineNumericCode} ${leg.documentSerial}`
 			: (leg.documentSerial ?? null);
 
+	/** The airline behind a designator, or the designator where there is none. */
+	const named = (code: string | null) => (code ? airlineLabel(airlines, code) : null);
+
 	const frequentFlyer = (leg: BcbpLeg) =>
-		[leg.frequentFlyerAirline, leg.frequentFlyerNumber].filter(Boolean).join(' ') || null;
+		[named(leg.frequentFlyerAirline), leg.frequentFlyerNumber].filter(Boolean).join(' ') || null;
 
 	const legRows = (leg: BcbpLeg): [string, string | null | undefined][] => [
 		['Flight date', leg.flightDate ? fmtDate(leg.flightDate) : null],
+		// ElbView does the same: once a name is on the route line, the code it
+		// came from should still be somewhere on the card.
+		[
+			'Airport codes',
+			airportName(airports, leg.fromAirport) === leg.fromAirport &&
+			airportName(airports, leg.toAirport) === leg.toAirport
+				? null
+				: `${leg.fromAirport} → ${leg.toAirport}`
+		],
 		['Cabin', leg.compartmentLabel ?? leg.compartment],
 		['Seat', leg.seat],
 		['Booking reference', leg.pnr],
@@ -33,7 +67,12 @@
 		['Status', leg.passengerStatusLabel ?? leg.passengerStatus],
 		['Ticket number', ticketNumber(leg)],
 		// Only worth a row where the ticket was sold under someone else's code.
-		['Marketed by', leg.marketingCarrier === leg.operatingCarrier ? null : leg.marketingCarrier],
+		[
+			'Marketed by',
+			leg.marketingCarrier === leg.operatingCarrier
+				? null
+				: named(leg.marketingCarrier)
+		],
 		['Frequent flyer', frequentFlyer(leg)],
 		['Baggage allowance', leg.freeBaggageAllowanceLabel],
 		['Fast track', yesNo(leg.fastTrack)],
@@ -75,11 +114,24 @@
 		<section class="leg" class:block={i > 0}>
 			<header>
 				<span class="product">{leg.operatingCarrier} {leg.flightNumber ?? ''}</span>
-				{#if ticket.legs.length > 1}
-					<span class="soft">Leg {i + 1} of {ticket.legs.length}</span>
-				{/if}
+				<span class="soft">
+					{airlineLabel(airlines, leg.operatingCarrier)}{#if ticket.legs.length > 1}
+						· leg {i + 1} of {ticket.legs.length}{/if}
+				</span>
 			</header>
-			<RouteLine from={leg.fromAirport} to={leg.toAirport} size="sm" />
+			<!-- The codes stay in reach as hover text, since they are what the
+			     pass prints and what a gate agent reads back. -->
+			<RouteLine
+				from={airportName(airports, leg.fromAirport)}
+				to={airportName(airports, leg.toAirport)}
+				fromTitle={[leg.fromAirport, airportPlace(airports, leg.fromAirport)]
+					.filter(Boolean)
+					.join(' · ')}
+				toTitle={[leg.toAirport, airportPlace(airports, leg.toAirport)]
+					.filter(Boolean)
+					.join(' · ')}
+				size="sm"
+			/>
 			<dl class="fields">
 				{#each visible(legRows(leg)) as [label, value] (label)}
 					<dt>{label}</dt>

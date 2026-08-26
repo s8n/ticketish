@@ -19,6 +19,7 @@ import type { PkpassInfo, TicketContainer } from '../tickets/types.ts';
 import { ricsName, type IssuerTables } from '../tickets/uic/rics.ts';
 import { novaOrgLabel, type NovaOrgTable } from '../tickets/swisspass/orgs.ts';
 import { vdvOrgName } from '../tickets/vdv/orgs.ts';
+import { airlineName, type AirlineTable } from '../tickets/bcbp/codes.ts';
 import { bobParticipantLabel } from '../tickets/bob/participants.ts';
 import Rsp6View from './Rsp6View.svelte';
 import SwissPassView from './SwissPassView.svelte';
@@ -51,6 +52,8 @@ export interface IssuerContext {
 	issuerNames?: IssuerTables | null;
 	/** Swiss organisation numbers, for the formats that name an issuer by one. */
 	novaOrgs?: NovaOrgTable | null;
+	/** IATA airline designators; null until they load, so the code shows first. */
+	airlines?: AirlineTable | null;
 	/** Apple Wallet metadata from the file the payload came out of. */
 	passInfo?: PkpassInfo;
 }
@@ -68,6 +71,8 @@ interface ContainerEntry<K extends Kind> {
 	needsIssuerNames?: boolean;
 	/** The same for the Swiss organisation numbers. */
 	needsNovaOrgs?: boolean;
+	/** The same for the airline designators. */
+	needsAirlines?: boolean;
 	/**
 	 * The component that draws this container's data. Absent for the envelope
 	 * formats, whose records each get their own view, and for the two that the
@@ -196,12 +201,15 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 		// standard defines as whoever wrote the airline-use field, and on an
 		// interline itinerary is not the airline flying the first leg. Where it
 		// is missing the operating carrier is the only airline the record names
-		// at all. Both are IATA designators and no table for them is bundled,
-		// so the code is what the header shows.
-		issuer: (c) => {
+		// at all.
+		issuer: (c, { airlines }) => {
 			const code = c.ticket.issuerDesignator ?? c.ticket.legs[0]?.operatingCarrier;
-			return code ? `Airline ${code}` : 'Boarding pass';
+			if (!code) return 'Boarding pass';
+			// The table loads on demand, so this reads "Airline BA" until it
+			// arrives and for the designators it does not cover.
+			return airlineName(airlines ?? null, code) ?? `Airline ${code}`;
 		},
+		needsAirlines: true,
 		view: BcbpView,
 		props: (c) => ({ ticket: c.ticket })
 	},

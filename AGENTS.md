@@ -106,6 +106,13 @@ The traps that are invisible at the point of the mistake:
   against the catalogue at build time and `loadUicStations` merges them
   without arbitrating, so the differing terms stay attached to separate files.
   A test enforces it; keep it that way rather than writing a precedence rule.
+- `src/lib/tickets/data/airlines.json` is a derived database under ODbL, from
+  OpenFlights by way of npow/airline-codes. The ISC licence on that package
+  covers its code and not the table. IATA designators get reused, so it holds
+  only the ones with exactly one live airline; LH and SQ are shared with cargo
+  arms and are named in `bcbp/codes.ts` instead. Its neighbour
+  `airports.json` is PDDL, so nothing travels with that one, but keep the
+  credit.
 - `src/lib/tickets/data/db-leitpunkte.json` is read out of a DB tariff
   publication. What is kept is the abbreviation and the station it stands for,
   which is a fact about a code; do not extend it into the distance tables or

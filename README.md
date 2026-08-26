@@ -90,8 +90,8 @@ so many fields wrong.
 - **IATA BCBP** - airline boarding passes, format M, whichever symbology the
   airline chose to print it in. Every leg of the itinerary, with cabin, seat,
   sequence number, ticket number, frequent flyer and baggage details, plus the
-  bag tag series and the optional signature. It carries no time of day and no
-  year, so the card says what the flight date was worked out from
+  bag tag series and the optional signature. Airports and airlines are named
+  from bundled tables built off OurAirports and OpenFlights
 - **HŽPP** - Croatian tickets. The plaintext form (`B1`, 33 pipe separated
   fields) is read in full, including prices in kuna or euro depending on which
   side of the 2023 switchover it was sold. The encrypted form (`A1`) is

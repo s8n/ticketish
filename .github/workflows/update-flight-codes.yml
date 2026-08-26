@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
+name: Update airport and airline codes
+
+# Two sources on different terms, so two scripts and two tables. Airports come
+# from datasets/airport-codes under PDDL 1.0, which dedicates them to the
+# public domain; airlines come from OpenFlights via npow/airline-codes under
+# ODbL 1.0, which is share-alike and travels with the table. See each script's
+# docstring and docs/credits.md. Neither needs credentials.
+on:
+  schedule:
+    - cron: '26 4 11 * *' # 04:26 UTC on the 11th of each month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Run both even if the first fails: one source being down is no reason
+      # to leave the other table a month out of date.
+      - name: Rebuild the airport table
+        id: airports
+        continue-on-error: true
+        run: python scripts/build-airports.py
+
+      - name: Rebuild the airline table
+        id: airlines
+        continue-on-error: true
+        run: python scripts/build-airlines.py
+
+      - name: Commit and push if changed
+        run: |
+          paths="src/lib/tickets/data/airports.json src/lib/tickets/data/airlines.json"
+          if git diff --quiet -- $paths; then
+            echo "No changes to the airport or airline tables."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add $paths
+            git commit -m "Update airport and airline codes"
+            git push
+          fi
+
+      # Reported after the commit, so a table that did rebuild still lands.
+      - name: Fail if either source could not be read
+        if: steps.airports.outcome == 'failure' || steps.airlines.outcome == 'failure'
+        run: |
+          echo "airports: ${{ steps.airports.outcome }}, airlines: ${{ steps.airlines.outcome }}"
+          exit 1

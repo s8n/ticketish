@@ -12,6 +12,7 @@
 	import { loadVdvOrgs } from '../tickets/vdv/orgs.ts';
 	import { loadIssuerNames, type IssuerTables } from '../tickets/uic/rics.ts';
 	import { loadNovaOrgs, type NovaOrgTable } from '../tickets/swisspass/orgs.ts';
+	import { loadAirlines, type AirlineTable } from '../tickets/bcbp/codes.ts';
 	import { store } from '../state/tickets.svelte.ts';
 	import { canRender } from '../input/render.ts';
 	import { tabModel } from './tabs.ts';
@@ -46,11 +47,18 @@
 		if (info.needsNovaOrgs) loadNovaOrgs().then((o) => (novaOrgs = o));
 	});
 
+	// A boarding pass names its issuer by IATA designator.
+	let airlines = $state<AirlineTable | null>(null);
+	$effect(() => {
+		if (info.needsAirlines) loadAirlines().then((a) => (airlines = a));
+	});
+
 	const issuer = $derived(
 		info.issuer?.(container, {
 			vdvOrgs,
 			issuerNames,
 			novaOrgs,
+			airlines,
 			passInfo: ticket.source.passInfo
 		}) ?? null
 	);

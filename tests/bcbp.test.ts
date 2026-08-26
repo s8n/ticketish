@@ -13,6 +13,13 @@
 import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { isBcbp, parseBcbp } from '../src/lib/tickets/bcbp/bcbp.ts';
+import {
+	airlineLabel,
+	airlineName,
+	airportName,
+	airportPlace,
+	type AirportTable
+} from '../src/lib/tickets/bcbp/codes.ts';
 
 const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
 
@@ -396,5 +403,41 @@ describe('BCBP boarding passes', () => {
 		expect(isBcbp(ascii('1234567890123'.padEnd(124, ' ')))).toBe(false);
 		expect(isBcbp(ascii('eRIV'.padEnd(85, '0')))).toBe(false);
 		expect(isBcbp(ascii(['TCDD_B', '6', '3', '0'].join('$').padEnd(80, '$')))).toBe(false);
+	});
+});
+
+describe('naming the codes a boarding pass is written in', () => {
+	it('names an airport and keeps the code as the fallback', () => {
+		const airports = { LHR: ['London Heathrow', 'London', 'GB'] } satisfies AirportTable;
+		expect(airportName(airports, 'LHR')).toBe('London Heathrow');
+		expect(airportPlace(airports, 'LHR')).toBe('London, United Kingdom');
+		// a metropolitan area code is not an airport and is in no catalogue
+		expect(airportName(airports, 'LON')).toBe('LON');
+		expect(airportPlace(airports, 'LON')).toBeNull();
+		// and until the table loads there is nothing but the code
+		expect(airportName(null, 'LHR')).toBe('LHR');
+	});
+
+	it('copes with an airport the catalogue gives no town or country', () => {
+		const airports = { ZZZ: ['Somewhere'] } satisfies AirportTable;
+		expect(airportName(airports, 'ZZZ')).toBe('Somewhere');
+		expect(airportPlace(airports, 'ZZZ')).toBeNull();
+	});
+
+	it('names an airline, and answers for the designators two of them share', () => {
+		const airlines = { BA: 'British Airways' };
+		expect(airlineName(airlines, 'BA')).toBe('British Airways');
+		expect(airlineLabel(airlines, 'BA')).toBe('British Airways');
+		// the build script leaves LH out, since Lufthansa Cargo holds it too
+		expect(airlines).not.toHaveProperty('LH');
+		expect(airlineName(airlines, 'LH')).toBe('Lufthansa');
+		expect(airlineName(airlines, 'SQ')).toBe('Singapore Airlines');
+	});
+
+	it('shows a designator it cannot name as the designator', () => {
+		expect(airlineName({}, 'QQ')).toBeNull();
+		expect(airlineLabel({}, 'QQ')).toBe('QQ');
+		expect(airlineName(null, 'BA')).toBeNull();
+		expect(airlineName({ BA: 'British Airways' }, null)).toBeNull();
 	});
 });

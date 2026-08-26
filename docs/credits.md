@@ -121,7 +121,7 @@ moving. Several of them are written down nowhere else.
   the transition period is not settled, and the railways outside the EU are
   where the two registers would diverge first.
 
-## Two tables with strings attached
+## Tables with strings attached
 
 **VDV organisation names** in `src/lib/tickets/vdv/orgs.json` are the table
 compiled by the **KCD+eTicketinfo** Android app, used here with attribution and
@@ -148,6 +148,31 @@ The mnemonics come from the CSV's `benerail_id` column, which is what SNCF
 e-billets and ELB barcodes carry, and not from the `sncf_id` column beside it.
 They agree on most stations and disagree on 237, mostly German, so the wrong
 one names the wrong station in the place a correct answer would go.
+
+**IATA airline designators** in `src/lib/tickets/data/airlines.json` come from
+[npow/airline-codes](https://github.com/npow/airline-codes), which republishes
+the [OpenFlights](https://openflights.org/data.php) airline database, built by
+`scripts/build-airlines.py` and refreshed monthly with no credentials. **The
+ISC licence on that package covers its code, not the data.** OpenFlights
+publishes under the **Open Data Commons Open Database License (ODbL) 1.0**,
+with the contents under the Database Contents License, and asks that you
+acknowledge the source and license public derived works freely. This table is
+a derived database, so both go with it: keep the `_note` and keep it under
+ODbL if you redistribute it.
+
+Designators get reused, so only the ones held by exactly one airline
+OpenFlights marks as active are here. Two live airlines share LH and SQ with
+their cargo arms; the script declines to choose and `bcbp/codes.ts` names them
+in its `OVERRIDES` map instead.
+
+**IATA airport codes** in `src/lib/tickets/data/airports.json` come from
+[datasets/airport-codes](https://github.com/datasets/airport-codes), which
+tidies the nightly [OurAirports](https://ourairports.com/data/) export and
+republishes it under the **Open Data Commons Public Domain Dedication and
+Licence (PDDL) 1.0**, built by `scripts/build-airports.py` alongside the
+airlines. PDDL is a dedication rather than a licence, so nothing has to travel
+with this one; the credit is kept anyway, because a table nobody can trace is
+a table nobody can check.
 
 ## One table whose terms are unsettled
 
