@@ -291,12 +291,53 @@ describe('BCBP boarding passes', () => {
 		expect(t.security).toEqual({ type: '1', data: signature });
 	});
 
-	it('leaves the codes the guide does not define as codes', () => {
-		// the guide says TSA maintains the vetting statuses without naming them
-		const t = parseBcbp(full({}, {}), NOW);
-		expect(t.legs[0].selectee).toBe('0');
-		expect(t.legs[0].idAdIndicator).toBe('0');
-		expect(t.legs[0].documentVerification).toBe('1');
+	it('names the codes version 3 defines', () => {
+		const l = parseBcbp(full(), NOW).legs[0];
+		expect(l.selecteeLabel).toBe('Not a selectee');
+		expect(l.documentVerificationLabel).toBe('Required');
+		expect(l.idAdIndicatorLabel).toBe('IDN1, positive space');
+	});
+
+	it('leaves the selectee value the guide hands to the TSA unlabelled', () => {
+		// version 3 defines 0 and 1; the seventh edition adds a 3 and does not
+		expect(parseBcbp(full(), NOW).legs[0].selectee).toBe('0');
+		const three = parseBcbp(
+			pass('A/B', 'E', leg({}, unique() + repeated({ selectee: '3' }))),
+			NOW
+		).legs[0];
+		expect(three.selectee).toBe('3');
+		expect(three.selecteeLabel).toBeNull();
+	});
+
+	it('reads the gender codes version 8 added to the passenger description', () => {
+		for (const [code, label] of [
+			['0', 'Adult'],
+			['2', 'Female'],
+			['X', 'Unspecified'],
+			['U', 'Undisclosed']
+		]) {
+			const t = parseBcbp(full({}, { passengerDescription: code }), NOW);
+			expect(t.passengerDescriptionLabel).toBe(label);
+		}
+	});
+
+	it('keeps the two check-in source lists apart, since only one has a kiosk X', () => {
+		// item 14 can say transfer kiosk; item 12 has no such value
+		const t = parseBcbp(full({}, { checkIn: 'X', issuance: 'X' }), NOW);
+		expect(t.sourceOfCheckIn).toBe('X');
+		expect(t.sourceOfCheckInLabel).toBeNull();
+		expect(t.sourceOfIssuanceLabel).toBe('Transfer kiosk');
+	});
+
+	it('spells a baggage allowance out, and leaves an unrecognised one alone', () => {
+		const allowance = (v: string) =>
+			parseBcbp(pass('A/B', 'E', leg({}, unique() + repeated({ baggage: v }))), NOW).legs[0];
+		expect(allowance('23K').freeBaggageAllowanceLabel).toBe('23 kg');
+		expect(allowance('2PC').freeBaggageAllowanceLabel).toBe('2 pieces');
+		expect(allowance('1PC').freeBaggageAllowanceLabel).toBe('1 piece');
+		expect(allowance('50L').freeBaggageAllowanceLabel).toBe('50 lb');
+		// nothing in Resolution 722's shape, so it stays as the issuer wrote it
+		expect(allowance('NIL').freeBaggageAllowanceLabel).toBe('NIL');
 	});
 
 	it('names the cabins Resolution 728 designates', () => {
@@ -340,6 +381,7 @@ describe('BCBP boarding passes', () => {
 
 		expect(isBcbp(swap(0, 'S'))).toBe(false); // format S was dropped in 2007
 		expect(isBcbp(swap(1, '0'))).toBe(false); // a pass has at least one leg
+		expect(isBcbp(swap(1, '5'))).toBe(false); // and version 3 caps it at four
 		expect(isBcbp(swap(30, 'aaa'))).toBe(false); // airport codes are upper case
 		expect(isBcbp(swap(33, '123'))).toBe(false); // and are letters
 		expect(isBcbp(swap(44, '400'))).toBe(false); // no year has a day 400

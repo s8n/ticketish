@@ -192,11 +192,12 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 	},
 	bcbp: {
 		label: (c) => (c.ticket.version === null ? 'IATA BCBP' : `IATA BCBP v${c.ticket.version}`),
-		// Item 21 names the airline that issued the pass, which on an interline
-		// itinerary is not the one flying the first leg. Where it is missing the
-		// operating carrier is the only airline the record names at all. Both
-		// are IATA designators and no table for them is bundled, so the code is
-		// what the header shows.
+		// Item 21 names the airline the boarding pass came out of, which the
+		// standard defines as whoever wrote the airline-use field, and on an
+		// interline itinerary is not the airline flying the first leg. Where it
+		// is missing the operating carrier is the only airline the record names
+		// at all. Both are IATA designators and no table for them is bundled,
+		// so the code is what the header shows.
 		issuer: (c) => {
 			const code = c.ticket.issuerDesignator ?? c.ticket.legs[0]?.operatingCarrier;
 			return code ? `Airline ${code}` : 'Boarding pass';

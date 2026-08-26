@@ -5,13 +5,18 @@
  * IATA Bar Coded Boarding Pass (BCBP), format M: the printable ASCII record
  * in the PDF417, Aztec, DataMatrix or QR code on an airline boarding pass.
  *
- * The structure is in the BCBP Implementation Guide, seventh edition, kept in
- * `standards/` (gitignored, so fetch it from iata.org). The guide describes
- * how the record is built and what each item means, but leaves the field
- * table and the value lists to Resolution 792, which is sold rather than
- * published. So the offsets here come from the guide's arithmetic for items
- * 6, 10 and 17 read against the sample passes, and the layout is checked
- * against passes from seven airlines on four continents.
+ * Written against the material in `standards/flights/` (gitignored, since
+ * Resolution 792 is sold rather than published): the BCBP Implementation
+ * Guide, seventh edition, which explains the record and defines the
+ * arithmetic behind items 6, 10 and 17, and Resolution 792's own item and
+ * value tables at version 3, which fix the offsets and say what each code
+ * means. The change notes for versions 7 and 8 are there too. The layout is
+ * checked against passes from seven airlines on four continents.
+ *
+ * Codes the tables leave to a later version or to another body are shown as
+ * issued rather than labelled from a guess. The selectee indicator is the one
+ * to watch: version 3 defines "0" and "1", and the seventh edition guide adds
+ * a "3" whose meaning it hands to the TSA without naming it.
  *
  * A record is three kinds of field bolted together:
  *
@@ -22,7 +27,9 @@
  *   (item 10 counts them), then the ones that describe that leg (item 17),
  *   then whatever the airline wanted to put in item 4. Later legs get the
  *   last two only;
- * - an optional signature after the last leg, introduced by a "^".
+ * - an optional signature after the last leg, introduced by a "^". It covers
+ *   everything in front of it except items 25 to 29, which are the "^" and
+ *   the two fields describing the signature itself.
  *
  * Every one of those lengths is written in the record, so an issuer that
  * stops early or pads past the end stays readable: the lengths are believed,
@@ -84,7 +91,7 @@ const PASSENGER_STATUS: Record<string, string> = {
 	'2': 'Baggage checked, passenger not checked in',
 	'3': 'Checked in, baggage checked',
 	'4': 'Passed security',
-	'5': 'Passed the gate reader',
+	'5': 'Passed the gate exit, coupon used',
 	'6': 'Transit',
 	'7': 'Standby',
 	'8': 'Boarding pass revalidated',
@@ -92,7 +99,11 @@ const PASSENGER_STATUS: Record<string, string> = {
 	A: 'Up- or downgrade needed at close out'
 };
 
-/** Item 15. Who the passenger is, to the extent the airline records it. */
+/**
+ * Item 15. Who the passenger is, to the extent the airline records it. The
+ * digits are version 3's; "X" and "U" are what version 8 took out of the
+ * letters it had reserved, and are the only change that version made.
+ */
 const PASSENGER_DESCRIPTION: Record<string, string> = {
 	'0': 'Adult',
 	'1': 'Male',
@@ -101,18 +112,73 @@ const PASSENGER_DESCRIPTION: Record<string, string> = {
 	'4': 'Infant',
 	'5': 'No passenger (cabin baggage)',
 	'6': 'Adult travelling with an infant',
-	'7': 'Unaccompanied minor'
+	'7': 'Unaccompanied minor',
+	X: 'Unspecified',
+	U: 'Undisclosed'
 };
 
-/** Items 12 and 14: where the passenger checked in, and where the pass came out. */
-const SOURCE: Record<string, string> = {
+/** Item 12: where the passenger started the check-in. */
+const CHECK_IN_SOURCE: Record<string, string> = {
 	W: 'Web',
 	K: 'Airport kiosk',
-	R: 'Remote kiosk',
+	R: 'Remote or off site kiosk',
 	M: 'Mobile device',
 	O: 'Airport agent',
 	T: 'Town agent',
 	V: 'Third party vendor'
+};
+
+/**
+ * Item 14: where the pass itself was printed, which the guide points out need
+ * not be where the passenger checked in. Not the same list as item 12's: this
+ * one has a transfer kiosk, which is a place you can only print at.
+ */
+const ISSUANCE_SOURCE: Record<string, string> = {
+	W: 'Web',
+	K: 'Airport kiosk',
+	X: 'Transfer kiosk',
+	R: 'Remote or off site kiosk',
+	M: 'Mobile device',
+	O: 'Airport agent',
+	T: 'Town agent',
+	V: 'Third party vendor'
+};
+
+/** Item 18. Version 3's two values; the "3" a later version added is not here. */
+const SELECTEE: Record<string, string> = {
+	'0': 'Not a selectee',
+	'1': 'Selectee'
+};
+
+/** Item 108, which is about the passenger's travel documents, not this one. */
+const DOCUMENT_VERIFICATION: Record<string, string> = {
+	'0': 'Not required',
+	'1': 'Required',
+	'2': 'Performed'
+};
+
+/**
+ * Item 89, the industry discount the ticket was sold under, as Recommended
+ * Practice 1788 classifies them. Most of the values are themselves the trade
+ * abbreviation rather than a description, so that is what they are shown as.
+ */
+const ID_AD: Record<string, string> = {
+	'0': 'IDN1, positive space',
+	'1': 'IDN2, space available',
+	'2': 'IDB1, positive space',
+	'3': 'IDB2, space available',
+	'4': 'AD',
+	'5': 'DG',
+	'6': 'DM',
+	'7': 'GE',
+	'8': 'IG',
+	'9': 'RG',
+	A: 'UD',
+	B: 'ID, unclassified industry discount',
+	C: 'IDFS1',
+	D: 'IDFS2',
+	E: 'IDR1',
+	F: 'IDR2'
 };
 
 /** Item 16. The guide's own section on itinerary receipts is where "I" is. */
@@ -162,21 +228,31 @@ export interface BcbpLeg {
 	/** Item 143, the last ten digits of the electronic ticket number. */
 	documentSerial: string | null;
 	/**
-	 * Item 18. The guide says United States travel requires this and that the
-	 * values are the vetting statuses TSA maintains, without naming them, so
-	 * the code is shown as issued.
+	 * Item 18, which United States travel requires. Version 3 defines "0" and
+	 * "1"; the seventh edition guide adds a "3" and says the vetting statuses
+	 * are the TSA's to define, so that one gets no label.
 	 */
 	selectee: string | null;
+	selecteeLabel: string | null;
 	/** Item 108, whether the passenger's travel documents need checking. */
 	documentVerification: string | null;
+	documentVerificationLabel: string | null;
 	/** Item 19, the airline whose flight number the ticket was sold under. */
 	marketingCarrier: string | null;
+	/** Item 20, the airline whose programme the number below belongs to. */
 	frequentFlyerAirline: string | null;
+	/**
+	 * Item 236. Carries its own airline designator in front of the number on
+	 * the carriers that write it that way, so it is not always just digits.
+	 */
 	frequentFlyerNumber: string | null;
-	/** Item 89, the industry discount category. Values are not in the guide. */
+	/** Item 89, the industry discount the ticket was sold under. */
 	idAdIndicator: string | null;
-	/** Item 118, e.g. "20K" or "2PC". */
+	idAdIndicatorLabel: string | null;
+	/** Item 118, as issued: "20K", "2PC". */
 	freeBaggageAllowance: string | null;
+	/** The same spelled out, where it is a count and one of the three units. */
+	freeBaggageAllowanceLabel: string | null;
 	/** Item 254, whether the passenger may use the priority security lane. */
 	fastTrack: boolean | null;
 	/** Item 4, which the standard leaves entirely to the airline. */
@@ -282,6 +358,24 @@ const code = (value: string) => (value.trim() === '' ? null : value.trim());
 const label = (map: Record<string, string>, value: string | null) =>
 	value === null ? null : (map[value] ?? null);
 
+/**
+ * Item 118 spelled out. Resolution 722 writes an allowance as a count and one
+ * of three units, so "23K" is 23 kilos and "2PC" two pieces. Anything not in
+ * that shape keeps to the field as issued, which is what the pass prints.
+ */
+const BAGGAGE_UNITS: Record<string, [string, string]> = {
+	K: ['kg', 'kg'],
+	L: ['lb', 'lb'],
+	PC: ['piece', 'pieces']
+};
+
+function baggageAllowance(value: string | null): string | null {
+	const parts = value === null ? null : /^(\d+)(K|L|PC)$/.exec(value);
+	if (!parts) return value;
+	const [singular, plural] = BAGGAGE_UNITS[parts[2]];
+	return `${parts[1]} ${Number(parts[1]) === 1 ? singular : plural}`;
+}
+
 function bagTag(raw: string): BcbpBagTag | null {
 	if (!/^\d{13}$/.test(raw) || meaningful(raw) === null) return null;
 	return {
@@ -325,7 +419,9 @@ export function isBcbp(data: Uint8Array): boolean {
 	if (data.length < HEAD + LEG) return false;
 	if (!isPrintableAscii(data)) return false;
 	const s = new TextDecoder().decode(data);
-	if (s[0] !== 'M' || !/^[1-9]$/.test(s[1])) return false;
+	// Version 3 caps an itinerary at four legs, to keep the symbol printable.
+	// Format S, the single leg one, was dropped from the standard in 2007.
+	if (s[0] !== 'M' || !/^[1-4]$/.test(s[1])) return false;
 
 	// The first leg is what settles it: three letter airport codes on either
 	// side of a designator, a day that is a day, and a length written in hex.
@@ -437,12 +533,16 @@ export function parseBcbp(data: Uint8Array, now: Date = new Date()): BcbpTicket 
 			airlineNumericCode,
 			documentSerial,
 			selectee,
+			selecteeLabel: label(SELECTEE, selectee),
 			documentVerification,
+			documentVerificationLabel: label(DOCUMENT_VERIFICATION, documentVerification),
 			marketingCarrier,
 			frequentFlyerAirline,
 			frequentFlyerNumber,
 			idAdIndicator,
+			idAdIndicatorLabel: label(ID_AD, idAdIndicator),
 			freeBaggageAllowance,
+			freeBaggageAllowanceLabel: baggageAllowance(freeBaggageAllowance),
 			fastTrack: fast === null ? null : fast === 'Y',
 			airlineUse
 		});
@@ -470,9 +570,9 @@ export function parseBcbp(data: Uint8Array, now: Date = new Date()): BcbpTicket 
 		passengerDescription,
 		passengerDescriptionLabel: label(PASSENGER_DESCRIPTION, passengerDescription),
 		sourceOfCheckIn,
-		sourceOfCheckInLabel: label(SOURCE, sourceOfCheckIn),
+		sourceOfCheckInLabel: label(CHECK_IN_SOURCE, sourceOfCheckIn),
 		sourceOfIssuance,
-		sourceOfIssuanceLabel: label(SOURCE, sourceOfIssuance),
+		sourceOfIssuanceLabel: label(ISSUANCE_SOURCE, sourceOfIssuance),
 		issueDate,
 		documentType,
 		documentTypeLabel: label(DOCUMENT_TYPES, documentType),

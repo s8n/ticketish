@@ -35,11 +35,13 @@
 		// Only worth a row where the ticket was sold under someone else's code.
 		['Marketed by', leg.marketingCarrier === leg.operatingCarrier ? null : leg.marketingCarrier],
 		['Frequent flyer', frequentFlyer(leg)],
-		['Baggage allowance', leg.freeBaggageAllowance],
+		['Baggage allowance', leg.freeBaggageAllowanceLabel],
 		['Fast track', yesNo(leg.fastTrack)],
-		['Selectee code', leg.selectee],
-		['Document check', leg.documentVerification],
-		['ID/AD code', leg.idAdIndicator],
+		// The seventh edition adds a selectee value it leaves the TSA to define,
+		// so an unlabelled one is shown as the code it is.
+		['Selectee', leg.selecteeLabel ?? leg.selectee],
+		['Travel document check', leg.documentVerificationLabel ?? leg.documentVerification],
+		['Industry discount', leg.idAdIndicatorLabel ?? leg.idAdIndicator],
 		['Airline use', leg.airlineUse]
 	];
 
@@ -66,21 +68,6 @@
 
 	const visible = (rows: [string, string | null | undefined][]) =>
 		rows.filter(([, v]) => v !== null && v !== undefined && v !== '');
-
-	/**
-	 * The two things a reader should not take at face value. Which date the
-	 * year came from decides how much weight the flight date carries, so the
-	 * note says which it was rather than leaving both possibilities open.
-	 */
-	const note = $derived(
-		[
-			'A BCBP record carries no time of day, and dates a flight by the day of the year alone.',
-			ticket.yearFrom === 'issue'
-				? 'The year here is the issuing date’s, which itself records only its last digit, so a pass more than ten years old reads as one decade too new.'
-				: 'This pass does not say when it was issued, so the year is the one that puts the flight nearest today.',
-			'Airport and airline codes are shown as issued.'
-		].join(' ')
-	);
 </script>
 
 <div class="bcbp">
@@ -120,8 +107,6 @@
 			<code class="text">{ticket.security.data}</code>
 		</details>
 	{/if}
-
-	<p class="note">{note}</p>
 </div>
 
 <style>
@@ -161,12 +146,5 @@
 		word-break: break-all;
 		display: block;
 		margin-top: 0.2rem;
-	}
-	.note {
-		margin: 0;
-		font-size: 0.8rem;
-		color: var(--ink-soft);
-		border-top: 1px dashed var(--paper-edge);
-		padding-top: 0.5rem;
 	}
 </style>
