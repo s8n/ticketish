@@ -97,7 +97,7 @@
 		['Electronic ticket', yesNo(ticket.electronicTicket)],
 		['Checked in via', ticket.sourceOfCheckInLabel ?? ticket.sourceOfCheckIn],
 		['Pass issued via', ticket.sourceOfIssuanceLabel ?? ticket.sourceOfIssuance],
-		['Issued by', ticket.issuerDesignator],
+		['Issued by', named(ticket.issuerDesignator)],
 		['Issued', ticket.issueDate ? fmtDate(ticket.issueDate) : null],
 		['Bag tags', bags.join(', ') || null],
 		['Standard', ticket.version === null ? null : `Resolution 792 version ${ticket.version}`],

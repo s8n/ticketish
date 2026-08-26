@@ -197,13 +197,14 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 	},
 	bcbp: {
 		label: (c) => (c.ticket.version === null ? 'IATA BCBP' : `IATA BCBP v${c.ticket.version}`),
-		// Item 21 names the airline the boarding pass came out of, which the
-		// standard defines as whoever wrote the airline-use field, and on an
-		// interline itinerary is not the airline flying the first leg. Where it
-		// is missing the operating carrier is the only airline the record names
-		// at all.
+		// The airline flying the first leg, which is the one whose flight number
+		// is printed on the pass and the one the passenger is dealing with.
+		// Item 21 is a different question: the standard defines it as whoever
+		// wrote the airline-use field, so on interline stock it names a carrier
+		// the passenger never sees. That one gets a row of its own in the view,
+		// and only stands in here if the record somehow carries no leg.
 		issuer: (c, { airlines }) => {
-			const code = c.ticket.issuerDesignator ?? c.ticket.legs[0]?.operatingCarrier;
+			const code = c.ticket.legs[0]?.operatingCarrier || c.ticket.issuerDesignator;
 			if (!code) return 'Boarding pass';
 			// The table loads on demand, so this reads "Airline BA" until it
 			// arrives and for the designators it does not cover.
