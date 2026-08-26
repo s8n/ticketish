@@ -5,9 +5,9 @@ name: Update airport and airline codes
 
 # Two sources on different terms, so two scripts and two tables. Airports come
 # from datasets/airport-codes under PDDL 1.0, which dedicates them to the
-# public domain; airlines come from OpenFlights via npow/airline-codes under
-# ODbL 1.0, which is share-alike and travels with the table. See each script's
-# docstring and docs/credits.md. Neither needs credentials.
+# public domain; airlines come from OpenTravelData under CC-BY 4.0, which asks
+# for attribution and nothing else. See each script's docstring and
+# docs/credits.md. Neither needs credentials.
 on:
   schedule:
     - cron: '26 4 11 * *' # 04:26 UTC on the 11th of each month

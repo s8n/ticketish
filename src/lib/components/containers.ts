@@ -204,11 +204,16 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 		// the passenger never sees. That one gets a row of its own in the view,
 		// and only stands in here if the record somehow carries no leg.
 		issuer: (c, { airlines }) => {
-			const code = c.ticket.legs[0]?.operatingCarrier || c.ticket.issuerDesignator;
+			const leg = c.ticket.legs[0];
+			const code = leg?.operatingCarrier || c.ticket.issuerDesignator;
 			if (!code) return 'Boarding pass';
+			// Asked as of the flight rather than as of today, since IATA
+			// reassigns designators and an old pass belongs to the old holder.
 			// The table loads on demand, so this reads "Airline BA" until it
 			// arrives and for the designators it does not cover.
-			return airlineName(airlines ?? null, code) ?? `Airline ${code}`;
+			return (
+				airlineName(airlines ?? null, code, leg?.flightDate ?? null) ?? `Airline ${code}`
+			);
 		},
 		needsAirlines: true,
 		view: BcbpView,

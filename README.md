@@ -91,7 +91,9 @@ so many fields wrong.
   airline chose to print it in. Every leg of the itinerary, with cabin, seat,
   sequence number, ticket number, frequent flyer and baggage details, plus the
   bag tag series and the optional signature. Airports and airlines are named
-  from bundled tables built off OurAirports and OpenFlights
+  from bundled tables built off OurAirports and OpenTravelData, the airline
+  one dated so a code reassigned since the flight still names the right
+  carrier
 - **HŽPP** - Croatian tickets. The plaintext form (`B1`, 33 pipe separated
   fields) is read in full, including prices in kuna or euro depending on which
   side of the 2023 switchover it was sold. The encrypted form (`A1`) is

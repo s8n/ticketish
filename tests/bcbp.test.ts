@@ -14,10 +14,12 @@ import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { isBcbp, parseBcbp } from '../src/lib/tickets/bcbp/bcbp.ts';
 import {
+	airlineByAccountingCode,
 	airlineLabel,
 	airlineName,
 	airportName,
 	airportPlace,
+	type AirlineTable,
 	type AirportTable
 } from '../src/lib/tickets/bcbp/codes.ts';
 
@@ -424,20 +426,60 @@ describe('naming the codes a boarding pass is written in', () => {
 		expect(airportPlace(airports, 'ZZZ')).toBeNull();
 	});
 
-	it('names an airline, and answers for the designators two of them share', () => {
-		const airlines = { BA: 'British Airways' };
+	it('names an airline, and takes the current holder when no date is given', () => {
+		const airlines: AirlineTable = { BA: [['British Airways', '1974-03-31', '', 125]] };
 		expect(airlineName(airlines, 'BA')).toBe('British Airways');
 		expect(airlineLabel(airlines, 'BA')).toBe('British Airways');
-		// the build script leaves LH out, since Lufthansa Cargo holds it too
-		expect(airlines).not.toHaveProperty('LH');
+	});
+
+	it('names the airline that held the code on the day of the flight', () => {
+		// AZ was Alitalia's until it folded, and has been ITA Airways' since.
+		// Both records carry the handover date, so the day itself is ITA's.
+		const airlines: AirlineTable = {
+			AZ: [
+				['Alitalia', '1999-03-01', '2021-10-15', 55],
+				['ITA Airways', '2021-10-15', '', 55]
+			]
+		};
+		expect(airlineName(airlines, 'AZ', '2019-06-05')).toBe('Alitalia');
+		expect(airlineName(airlines, 'AZ', '2021-10-14')).toBe('Alitalia');
+		expect(airlineName(airlines, 'AZ', '2021-10-15')).toBe('ITA Airways');
+		expect(airlineName(airlines, 'AZ', '2026-08-26')).toBe('ITA Airways');
+		// and with no date at all, whoever holds it now
+		expect(airlineName(airlines, 'AZ')).toBe('ITA Airways');
+	});
+
+	it('prefers the passenger airline where two of them hold one code', () => {
+		// a boarding pass is a passenger document, and both of these are current
+		const airlines: AirlineTable = {
+			LH: [
+				['Lufthansa', '1955-01-01', '', 220, 'P'],
+				['Lufthansa Cargo', '1977-01-01', '', 20, 'C']
+			]
+		};
 		expect(airlineName(airlines, 'LH')).toBe('Lufthansa');
-		expect(airlineName(airlines, 'SQ')).toBe('Singapore Airlines');
+		expect(airlineName(airlines, 'LH', '2019-06-05')).toBe('Lufthansa');
+	});
+
+	it('reads a blank date as an open end rather than an unknown one', () => {
+		const airlines: AirlineTable = { LG: [['Luxair']] };
+		expect(airlineName(airlines, 'LG')).toBe('Luxair');
+		expect(airlineName(airlines, 'LG', '1975-01-01')).toBe('Luxair');
+	});
+
+	it('names an airline by the accounting code the pass bills under', () => {
+		const airlines: AirlineTable = { LG: [['Luxair', '', '', 149]] };
+		// item 142 is three digits with leading zeros, and is not a designator
+		expect(airlineByAccountingCode(airlines, '149')).toBe('Luxair');
+		expect(airlineByAccountingCode(airlines, '000')).toBeNull();
+		expect(airlineByAccountingCode(airlines, 'LG')).toBeNull();
+		expect(airlineByAccountingCode(null, '149')).toBeNull();
 	});
 
 	it('shows a designator it cannot name as the designator', () => {
 		expect(airlineName({}, 'QQ')).toBeNull();
 		expect(airlineLabel({}, 'QQ')).toBe('QQ');
 		expect(airlineName(null, 'BA')).toBeNull();
-		expect(airlineName({ BA: 'British Airways' }, null)).toBeNull();
+		expect(airlineName({ BA: [['British Airways']] }, null)).toBeNull();
 	});
 });

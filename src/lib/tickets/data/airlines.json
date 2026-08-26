@@ -1,969 +1,10749 @@
 {
-"_note": "IATA airline designators and names from https://github.com/npow/airline-codes, which republishes the OpenFlights airline database (https://openflights.org/data.php). That database is made available under the Open Data Commons Open Database License (ODbL) 1.0, with its contents under the Database Contents License. This table is a derived database: keep the attribution and keep it under ODbL. Only codes held by exactly one airline OpenFlights marks active are here, since designators get reused. Rebuilt by scripts/build-airlines.py; do not edit by hand, put corrections in the OVERRIDES map in src/lib/tickets/bcbp/codes.ts.",
+"_note": "IATA airline designators, their validity, accounting codes and names from https://github.com/opentraveldata/opentraveldata (opentraveldata/optd_airlines.csv), which OpenTravelData curates and publishes under the Creative Commons Attribution 4.0 licence (https://creativecommons.org/licenses/by/4.0/). Keep the attribution; nothing else travels with it. Each entry is [name, valid from, valid until, accounting code, type], trailing empties dropped, and a blank date means an open end. Rebuilt by scripts/build-airlines.py; do not edit by hand, put corrections in the OVERRIDES map in src/lib/tickets/bcbp/codes.ts.",
 "airlines": {
-"01": "Bobb Air Freight",
-"0B": "Blue Air",
-"0D": "Darwin Airline",
-"0G": "Global Airlines",
-"0M": "All America MX",
-"0P": "All America BOPY",
-"0X": "Copenhagen Express",
-"0Y": "All America CO",
-"11": "TUIfly (X3)",
-"12": "12 North",
-"13": "Eastern Atlantic Virtual Airlines",
-"1B": "Abacus International",
-"1C": "OneChina",
-"1E": "TransRussiaAirlines",
-"1F": "CB Airways UK ( Interliging Flights )",
-"1I": "NetJets",
-"1K": "BudgetAir",
-"1R": "All America CL",
-"1T": "1Time Airline",
-"1X": "Island Express Air",
-"1Y": "All America BR",
-"20": "Air Salone",
-"24": "Euro Jet",
-"2A": "Deutsche Bahn",
-"2B": "Aerocondor",
-"2D": "Aero VIP (2D)",
-"2F": "Frontier Flying Service",
-"2I": "Star Peru (2I)",
-"2J": "Air Burkina",
-"2K": "Aerolineas Galapagos (Aerogal)",
-"2L": "Helvetic Airways",
-"2M": "Moldavian Airlines",
-"2N": "NextJet",
-"2O": "Air Salone",
-"2P": "Air Philippines",
-"2Q": "Air Cargo Carriers",
-"2R": "All America AR",
-"2S": "Air Carnival",
-"2T": "Haiti Ambassador Airlines",
-"2U": "Air Guinee Express",
-"2W": "Welcome Air",
-"2X": "Regionalia Uruguay",
-"3B": "JobAir",
-"3E": "Air Choice One",
-"3F": "Fly Colombia ( Interliging Flights )",
-"3I": "Air Comet Chile",
-"3K": "Jetstar Asia Airways",
-"3L": "Intersky",
-"3M": "Silver Airways (3M)",
-"3O": "Air Arabia Maroc",
-"3P": "Tiara Air",
-"3Q": "Yunnan Airlines",
-"3R": "Moskovia Airlines",
-"3S": "Air Antilles Express",
-"3T": "Turan Air",
-"3U": "Sichuan Airlines",
-"3W": "Malawian Airlines",
-"47": "88",
-"4A": "Air Kiribati",
-"4B": "Boutique Air (Priv)",
-"4C": "Aires",
-"4D": "Air Sinai",
-"4G": "Gazpromavia",
-"4H": "United Airways",
-"4K": "Askari Aviation",
-"4L": "Euroline",
-"4M": "LAN Argentina",
-"4N": "Air North Charter - Canada",
-"4O": "Interjet (ABC Aerolineas)",
-"4P": "Business Aviation",
-"4Q": "Safi Airlines",
-"4R": "Hamburg International",
-"4S": "Vuola Italia",
-"4T": "Belair Airlines",
-"4U": "Germanwings",
-"4X": "Red Jet Mexico",
-"4Z": "Airlink (SAA)",
-"5B": "Bassaka airlines",
-"5C": "CAL Cargo Air Lines",
-"5D": "Aerolitoral",
-"5E": "SGA Airlines",
-"5G": "Skyservice Airlines",
-"5H": "Fly540",
-"5J": "Cebu Pacific",
-"5K": "Hi Fly (5K)",
-"5L": "Aerosur",
-"5M": "Sibaviatrans",
-"5N": "Aeroflot-Nord",
-"5P": "Pal airlines",
-"5Q": "BQB Lineas Aereas",
-"5T": "Canadian North",
-"5W": "Astraeus",
-"5Y": "Atlas Air",
-"5Z": "VivaColombia",
-"69": "Royal European Airlines",
-"6A": "Consorcio Aviaxsa",
-"6B": "TUIfly Nordic",
-"6C": "Vuela Cuba",
-"6D": "Pelita",
-"6E": "IndiGo Airlines",
-"6F": "MAT Airways",
-"6G": "Air Wales",
-"6H": "Israir",
-"6I": "Fly 6ix",
-"6J": "Skynet Asia Airways",
-"6K": "Asian Spirit",
-"6P": "Gryphon Airlines",
-"6R": "Alrosa Mirny Air Enterprise",
-"6T": "Air Mandalay",
-"6U": "Air Cargo Germany",
-"6V": "Via Conectia Airlines",
-"6W": "Saratov Aviation Division",
-"6Y": "SmartLynx Airlines",
-"76": "Southjet",
-"77": "Southjet connect",
-"78": "Southjet cargo",
-"7B": "Krasnojarsky Airlines",
-"7C": "Jeju Air",
-"7E": "Aeroline GmbH",
-"7F": "First Air",
-"7G": "Star Flyer",
-"7H": "Era Alaska",
-"7I": "Insel Air (7I/INC) (Priv)",
-"7J": "Tajik Air",
-"7K": "Kogalymavia Air Company",
-"7L": "Sun D'Or",
-"7M": "Mongolian International Air Lines",
-"7O": "All Colombia",
-"7P": "Metro Batavia",
-"7Q": "Pan Am World Airways Dominicana",
-"7R": "Svyaz Rossiya",
-"7T": "Air Glaciers",
-"7W": "Wayraper",
-"7Y": "Med Airways",
-"7Z": "Halcyonair",
-"88": "All Australia",
-"8A": "Atlas Blue",
-"8B": "BusinessAir",
-"8D": "Astair",
-"8E": "Bering Air",
-"8F": "STP Airways",
-"8H": "Heli France",
-"8I": "Myway Airlines",
-"8J": "Jet4You",
-"8K": "Voestar",
-"8L": "Cargo Plus Aviation",
-"8N": "Barents AirLink",
-"8O": "West Coast Air",
-"8P": "Pacific Coastal Airline",
-"8R": "TRIP Linhas A",
-"8T": "Air Tindi",
-"8U": "Afriqiyah Airways",
-"8V": "Astral Aviation",
-"8Z": "Wizz Air Hungary",
-"99": "Ciao Air",
-"9A": "All Africa",
-"9C": "China SSS",
-"9E": "Pinnacle Airlines",
-"9H": "MDLR Airlines",
-"9I": "International Europe",
-"9J": "Regionalia Chile",
-"9K": "Cape Air",
-"9L": "Colgan Air",
-"9N": "Regional Air Iceland",
-"9Q": "PB Air",
-"9R": "SATENA",
-"9S": "Spring Airlines",
-"9T": "Transwest Air",
-"9U": "Air Moldova",
-"9V": "Volotea Costa Rica",
-"9W": "Jet Airways",
-"9X": "Regionalia Venezuela",
-"9Y": "Air Kazakhstan",
-"A1": "Atifly",
-"A2": "All America",
-"A3": "Aegean Airlines",
-"A4": "Southern Winds Airlines",
-"A5": "Airlinair",
-"A6": "Air Alps Aviation (A6)",
-"A7": "Air Plus Comet",
-"A9": "Georgian Airways",
-"AA": "American Airlines",
-"AB": "Air Berlin",
-"AC": "Air Canada",
-"AD": "Azul",
-"AE": "Mandarin Airlines",
-"AF": "Air France",
-"AG": "All America US",
-"AH": "Air Algerie",
-"AI": "Air India Limited",
-"AJ": "Aero Contractors",
-"AK": "AirAsia",
-"AL": "Skywalk Airlines",
-"AM": "AeroMéxico",
-"AN": "Ansett Australia",
-"AO": "Avianova (Russia)",
-"AP": "Air One",
-"AQ": "Aloha Airlines",
-"AR": "Aerolineas Argentinas",
-"AS": "Alaska Airlines",
-"AT": "Royal Air Maroc",
-"AU": "Austral Lineas Aereas",
-"AV": "Avianca - Aerovias Nacionales de Colombia",
-"AW": "Asian Wings Airways",
-"AX": "Trans States Airlines",
-"AY": "Finnair",
-"AZ": "Alitalia",
-"B0": "Aws express",
-"B1": "Baltic Air lines",
-"B2": "Belavia Belarusian Airlines",
-"B4": "Flyglobespan",
-"B5": "Flightline",
-"B6": "JetBlue Airways",
-"B7": "Uni Air",
-"B8": "Eritrean Airlines",
-"BA": "British Airways",
-"BB": "Seaborne Airlines",
-"BC": "Skymark Airlines",
-"BD": "bmi",
-"BE": "Flybe",
-"BF": "Aero-Service",
-"BG": "Biman Bangladesh Airlines",
-"BH": "Hawkair",
-"BI": "Royal Brunei Airlines",
-"BJ": "Nouvel Air Tunisie",
-"BK": "Potomac Air",
-"BL": "Jetstar Pacific",
-"BM": "Air Sicilia",
-"BN": "Horizon Airlines",
-"BP": "Air Botswana",
-"BQ": "Buquebus Líneas Aéreas",
-"BR": "EVA Air",
-"BT": "Air Baltic",
-"BU": "Baikotovitchestrian Airlines",
-"BV": "Blue Panorama Airlines",
-"BW": "Caribbean Airlines",
-"BX": "Air Busan",
-"BY": "Thomsonfly",
-"BZ": "Black Stallion Airways",
-"C0": "Centralwings",
-"C1": "CanXpress",
-"C2": "CanXplorer",
-"C4": "LionXpress",
-"C5": "CommutAir",
-"C7": "Sky Wing Pacific",
-"C9": "Cirrus Airlines",
-"CA": "Air China",
-"CB": "CCML Airlines",
-"CC": "Air Atlanta Icelandic",
-"CD": "Air India Regional",
-"CE": "Nationwide Airlines",
-"CF": "City Airline",
-"CG": "Airlines PNG",
-"CH": "Bemidji Airlines",
-"CI": "China Airlines",
-"CJ": "BA CityFlyer",
-"CL": "Lufthansa CityLine",
-"CM": "Copa Airlines",
-"CN": "Canadian National Airways",
-"CQ": "SOCHI AIR",
-"CS": "Continental Micronesia",
-"CT": "Alitalia Cityliner",
-"CU": "Cubana de Aviación",
-"CV": "Air Chathams",
-"CW": "Air Marshall Islands",
-"CX": "Cathay Pacific",
-"CY": "Cyprus Airways",
-"CZ": "China Southern Airlines",
-"D1": "Domenican Airlines",
-"D2": "Severstal Air Company",
-"D3": "Daallo Airlines",
-"D6": "Interair South Africa",
-"D7": "AirAsia X",
-"D8": "Djibouti Airlines",
-"D9": "Aeroflot-Don",
-"DA": "Dana Air",
-"DB": "Brit Air",
-"DC": "Golden Air",
-"DD": "Nok Air",
-"DE": "Condor Flugdienst",
-"DF": "Michael Airlines",
-"DG": "South East Asian Airlines",
-"DH": "Dennis Sky",
-"DI": "dba",
-"DK": "Eastland Air",
-"DL": "Delta Air Lines",
-"DM": "Maersk",
-"DN": "Senegal Airlines",
-"DO": "Dominicana de Aviaci",
-"DP": "First Choice Airways",
-"DQ": "Coastal Air",
-"DR": "Air Mediterranee",
-"DS": "EasyJet (DS)",
-"DT": "TAAG Angola Airlines",
-"DU": "Norwegian Long Haul AS",
-"DV": "Scat Air",
-"DX": "DAT Danish Air Transport",
-"DY": "Norwegian Air Shuttle",
-"DZ": "Starline.kz",
-"E1": "Usa Sky Cargo",
-"E2": "Eagle Atlantic Airlines",
-"E3": "Domodedovo Airlines",
-"E4": "Elysian Airlines",
-"E5": "Air Arabia Egypt",
-"E8": "City Airways",
-"E9": "Compagnie Africaine d'Aviation",
-"EA": "European Air Express",
-"EC": "Avialeasing Aviation Company",
-"ED": "Airblue",
-"EE": "Nordica",
-"EF": "Far Eastern Air Transport",
-"EG": "Japan Asia Airways",
-"EI": "Aer Lingus",
-"EJ": "New England Airlines",
-"EK": "Emirates",
-"EL": "Air Nippon",
-"EM": "Aero Benin",
-"EN": "Air Dolomiti",
-"EO": "Express One International",
-"EP": "Iran Aseman Airlines",
-"EQ": "TAME",
-"ER": "Fly Europa",
-"ES": "EuropeSky",
-"ET": "Ethiopian Airlines",
-"EU": "Empresa Ecuatoriana De Aviacion",
-"EV": "Atlantic Southeast Airlines",
-"EW": "Eurowings",
-"EX": "Europe Jet",
-"EY": "Etihad Airways",
-"EZ": "Evergreen International Airlines",
-"F1": "Fly Brasil",
-"F5": "Fly One",
-"F7": "Flybaboo",
-"F8": "Air2there",
-"F9": "Frontier Airlines",
-"FA": "Epic Holiday",
-"FB": "Bulgaria Air",
-"FC": "Finncomm Airlines",
-"FD": "Thai AirAsia",
-"FF": "Fly France",
-"FG": "Ariana Afghan Airlines",
-"FH": "FlyHigh Airlines Ireland (FH)",
-"FI": "Icelandair",
-"FJ": "Air Pacific",
-"FK": "Africa West",
-"FL": "AirTran Airways",
-"FM": "Shanghai Airlines",
-"FN": "Regional Airlines",
-"FO": "Airlines Of Tasmania",
-"FP": "Freedom Air",
-"FQ": "Thomas Cook Airlines",
-"FR": "Ryanair",
-"FS": "Servicios de Transportes A",
-"FT": "Siem Reap Airways",
-"FU": "Felix Airways",
-"FV": "Rossiya-Russian Airlines",
-"FW": "Ibex Airlines",
-"FX": "FOX Linhas Aereas",
-"FY": "Firefly",
-"FZ": "Fly Dubai",
-"G0": "Ghana International Airlines",
-"G1": "Indya Airline Group",
-"G3": "Gol Transportes Aéreos",
-"G4": "Allegiant Air",
-"G5": "Huaxia",
-"G6": "Air Volga",
-"G7": "GoJet Airlines",
-"G8": "Go Air",
-"G9": "Air Arabia",
-"GA": "Garuda Indonesia",
-"GB": "BRAZIL AIR",
-"GE": "TransAsia Airways",
-"GF": "Gulf Air Bahrain",
-"GG": "Air Guyane",
-"GH": "Globus",
-"GI": "Itek Air",
-"GJ": "Eurofly Service",
-"GK": "Genesis",
-"GL": "Air Greenland",
-"GM": "German International Air Lines",
-"GN": "GNB Linhas Aereas",
-"GO": "Kuzu Airlines Cargo",
-"GP": "Gadair European Airlines",
-"GQ": "Sky Express",
-"GR": "Aurigny Air Services",
-"GS": "Air Foyle",
-"GT": "GB Airways",
-"GV": "Aero Flight",
-"GW": "Kuban Airlines",
-"GX": "GermanXL",
-"GY": "Gabon Airlines",
-"GZ": "Air Rarotonga",
-"H1": "Hankook Air US",
-"H2": "Sky Airline",
-"H3": "Harbour Air (Priv)",
-"H5": "I-Fly",
-"H6": "Hageland Aviation Services",
-"H7": "Eagle Air",
-"H8": "Dalavia",
-"H9": "PEGASUS AIRLINES-",
-"HA": "Hawaiian Airlines",
-"HC": "Himalayan Airlines",
-"HD": "Hokkaido International Airlines",
-"HE": "Luftfahrtgesellschaft Walter",
-"HF": "Hapagfly",
-"HG": "Niki",
-"HH": "Air Hamburg (AHO)",
-"HI": "Papillon Grand Canyon Helicopters",
-"HK": "Yangon Airways",
-"HM": "Air Seychelles",
-"HN": "Hankook Airline",
-"HO": "Juneyao Airlines",
-"HP": "America West Airlines",
-"HR": "China United Airlines",
-"HT": "Hellenic Imperial Airways",
-"HU": "Hainan Airlines",
-"HV": "Transavia Holland",
-"HW": "Hello",
-"HX": "Hong Kong Airlines",
-"HY": "Uzbekistan Airways",
-"HZ": "Sat Airlines",
-"I2": "Iberia Express",
-"I3": "ATA Airlines (Iran)",
-"I4": "International AirLink",
-"I5": "Indonesia Sky",
-"I6": "MexicanaLink",
-"I7": "Paramount Airways",
-"I8": "IzAvia",
-"IA": "Iraqi Airways",
-"IB": "Iberia Airlines",
-"IC": "Indian Airlines",
-"ID": "Interlink Airlines",
-"IE": "Solomon Airlines",
-"IF": "Islas Airways",
-"IG": "Meridiana",
-"II": "LSM International",
-"IJ": "Spring Airlines Japan",
-"IK": "Imair Airlines",
-"IN": "MAT Macedonian Airlines",
-"IO": "Indonesian Airlines",
-"IP": "Island Spirit",
-"IQ": "Augsburg Airways",
-"IR": "Iran Air",
-"IS": "Island Airlines",
-"IT": "Kingfisher Airlines",
-"IV": "Wind Jet",
-"IW": "Wings Air",
-"IX": "Air India Express",
-"IY": "Yemenia",
-"IZ": "Arkia Israel Airlines",
-"J1": "OneJet",
-"J2": "Azerbaijan Airlines",
-"J3": "Northwestern Air",
-"J4": "ALAK",
-"J5": "Alaska Seaplane Service",
-"J7": "Denim Air",
-"J8": "Berjaya Air",
-"J9": "Jazeera Airways",
-"JA": "Air Bosna",
-"JB": "Helijet",
-"JC": "JAL Express",
-"JD": "Japan Air System",
-"JE": "Mango",
-"JF": "Jetairfly",
-"JG": "Jetgo Australia",
-"JH": "Fuji Dream Airlines",
-"JI": "Midway Airlines",
-"JJ": "TAM Brazilian Airlines",
-"JK": "Spanair",
-"JL": "Japan Airlines",
-"JM": "Air Jamaica",
-"JN": "Excel Airways",
-"JO": "JALways",
-"JP": "Adria Airways",
-"JQ": "Jetstar Airways",
-"JR": "Joy Air",
-"JS": "Air Koryo",
-"JT": "Lion Mentari Airlines",
-"JU": "Air Serbia",
-"JV": "Bearskin Lake Air Service",
-"JW": "Arrow Air",
-"JX": "Jusur airways",
-"JY": "Aereonautica militare",
-"JZ": "Skyways Express",
-"K1": "Kostromskie avialinii",
-"K2": "Eurolot",
-"K5": "SeaPort Airlines",
-"K6": "Cambodia Angkor Air (K6)",
-"K7": "KoralBlue Airlines",
-"K8": "Zambia Skyways",
-"KA": "Dragonair",
-"KB": "Druk Air",
-"KC": "Air Astana",
-"KD": "KD Avia",
-"KE": "Korean Air",
-"KF": "Blue1",
-"KG": "Royal Airways",
-"KH": "Kharkiv Airlines",
-"KI": "Adam Air",
-"KJ": "British Mediterranean Airways",
-"KK": "Atlasjet",
-"KL": "KLM Royal Dutch Airlines",
-"KM": "Air Malta",
-"KN": "China United",
-"KO": "Alaska Central Express",
-"KP": "Dense Airways",
-"KQ": "Kenya Airways",
-"KR": "Comores Airlines",
-"KS": "Peninsula Airways",
-"KT": "VickJet",
-"KU": "Kuwait Airways",
-"KV": "Kavminvodyavia",
-"KW": "Carnival Air Lines",
-"KX": "Cayman Airways",
-"KY": "KSY",
-"KZ": "Dense Connection",
-"L1": "All Argentina",
-"L3": "LTU Austria",
-"L4": "Luchsh Airlines",
-"L5": "Lufttransport",
-"L6": "Mauritania Airlines International",
-"L7": "Lugansk Airlines",
-"L8": "Line Blue",
-"L9": "All Asia",
-"LA": "LAN Airlines",
-"LB": "Air Costa",
-"LC": "Varig Log",
-"LE": "Liberty Airways",
-"LF": "FlyNordic",
-"LG": "Luxair",
-"LI": "Leeward Islands Air Transport",
-"LJ": "Jin Air",
-"LK": "Air Luxor",
-"LM": "Linhas A",
-"LN": "Libyan Arab Airlines",
-"LO": "LOT Polish Airlines",
-"LP": "LAN Peru",
-"LQ": "LCM AIRLINES",
-"LR": "LACSA",
-"LS": "Jet2.com",
-"LT": "Air Lituanica",
-"LU": "LAN Express",
-"LV": "Albanian Airlines",
-"LW": "Pacific Wings",
-"LX": "Swiss International Air Lines",
-"LY": "El Al Israel Airlines",
-"LZ": "Balkan Bulgarian Airlines",
-"M1": "Maryland Air",
-"M2": "MHS Aviation GmbH",
-"M3": "ABSA - Aerolinhas Brasileiras",
-"M4": "Marysya Airlines",
-"M5": "Kenmore Air",
-"M7": "MasAir",
-"M8": "TransNusa Air",
-"M9": "Motor Sich",
-"MA": "Malév",
-"MB": "MNG Airlines",
-"MD": "Air Madagascar",
-"ME": "Middle East Airlines",
-"MF": "Xiamen Airlines",
-"MH": "Malaysia Airlines",
-"MI": "SilkAir",
-"MJ": "L",
-"MK": "Air Mauritius",
-"ML": "Maldivo Airlines",
-"MM": "Peach Aviation",
-"MN": "Comair",
-"MO": "Abu Dhabi Amiri Flight",
-"MP": "Martinair",
-"MQ": "American Eagle Airlines",
-"MR": "Homer Air",
-"MS": "Egyptair",
-"MT": "Thomas Cook Airlines",
-"MU": "China Eastern Airlines",
-"MW": "Maya Island Air",
-"MX": "Mexicana de Aviaci",
-"MY": "Midwest Airlines (Egypt)",
-"MZ": "Merpati Nusantara Airlines",
-"N0": "Norte Lineas Aereas",
-"N1": "N1",
-"N3": "Volaris El Salvador",
-"N4": "Regionalia México",
-"N5": "Skagway Air Service",
-"N7": "All Spain",
-"N8": "National Air Cargo",
-"N9": "All Europe",
-"NA": "Al-Naser Airlines",
-"NB": "Sterling Airlines",
-"NC": "National Jet Systems",
-"NE": "SkyEurope",
-"NF": "Air Vanuatu",
-"NG": "Lauda Air",
-"NH": "All Nippon Airways",
-"NI": "Portugalia",
-"NJ": "Nordic Global Airlines",
-"NK": "Spirit Airlines",
-"NL": "Shaheen Air International",
-"NM": "Air Madrid",
-"NN": "VIM Airlines",
-"NP": "Nile Air",
-"NQ": "Air Japan",
-"NR": "Jettor Airlines",
-"NS": "Caucasus Airlines",
-"NT": "Binter Canarias",
-"NU": "Japan Transocean Air",
-"NW": "Northwest Airlines",
-"NX": "Air Macau",
-"NY": "Air Iceland",
-"NZ": "Air New Zealand",
-"O1": "Orbit Airlines Azerbaijan",
-"O2": "Oceanic Airlines",
-"O6": "Oceanair",
-"O7": "Ozjet Airlines",
-"O8": "Oasis Hong Kong Airlines",
-"OA": "Olympic Airlines",
-"OB": "Astrakhan Airlines",
-"OC": "Catovair",
-"OD": "Malindo Air",
-"OF": "Air Finland",
-"OG": "AirOnix",
-"OH": "Comair",
-"OI": "Orchid Airlines",
-"OJ": "Overland Airways",
-"OK": "Czech Airlines",
-"OL": "Ostfriesische Lufttransport",
-"OM": "MIAT Mongolian Airlines",
-"ON": "Nauru Air Corporation",
-"OO": "SkyWest",
-"OP": "Air Pegasus",
-"OQ": "Chongqing Airlines",
-"OR": "Arkefly",
-"OS": "Austrian Airlines",
-"OT": "Aeropelican Air Services",
-"OU": "Croatia Airlines",
-"OV": "Estonian Air",
-"OX": "Orient Thai Airlines",
-"OY": "Omni Air International",
-"OZ": "Asiana Airlines",
-"P0": "Proflight Commuter Services",
-"P4": "Patriot Airways",
-"P5": "AeroRep",
-"P7": "Regional Paraguaya",
-"P8": "Air Mekong",
-"P9": "Peruvian Airlines",
-"PA": "Parmiss Airlines (IPV)",
-"PC": "Pegasus Airlines",
-"PD": "Porter Airlines",
-"PE": "Air Europe",
-"PF": "Primera Air",
-"PG": "Bangkok Airways",
-"PH": "Polynesian Airlines",
-"PI": "Piedmont Airlines (1948-1989)",
-"PJ": "Air Saint Pierre",
-"PK": "Pakistan International Airlines",
-"PL": "Aeroper",
-"PM": "Tropic Air",
-"PN": "West Air China",
-"PO": "FlyPortugal",
-"PP": "Air Indus",
-"PQ": "LSM Airlines",
-"PR": "Philippine Airlines",
-"PS": "Ukraine International Airlines",
-"PT": "Red Jet Andes",
-"PU": "PLUNA",
-"PV": "PAN Air",
-"PW": "Precision Air",
-"PX": "Air Niugini",
-"PY": "Surinam Airways",
-"PZ": "TAM Mercosur",
-"Q2": "Maldivian",
-"Q3": "SOCHI AIR CHATER",
-"Q4": "SOCHI AIR EXPRESS",
-"Q5": "40-Mile Air",
-"Q6": "Aero Condor Peru",
-"Q7": "SkyBahamas Airlines",
-"Q8": "Pacific East Asia Cargo Airlines",
-"Q9": "Arik Niger",
-"QA": "Click (Mexicana)",
-"QB": "Georgian National Airlines",
-"QC": "Camair-co",
-"QD": "Dobrolet",
-"QF": "Qantas",
-"QG": "Citilink Indonesia",
-"QH": "Air Florida",
-"QI": "Cimber Air",
-"QJ": "Jet Airways",
-"QK": "Air Canada Jazz",
-"QL": "Aero Lanka",
-"QM": "Air Malawi",
-"QO": "Origin Pacific Airways",
-"QP": "Air Kenya (Priv)",
-"QQ": "Alliance Airlines",
-"QR": "Qatar Airways",
-"QS": "Travel Service",
-"QT": "TAMPA",
-"QU": "East African",
-"QV": "Lao Airlines",
-"QW": "Blue Wings",
-"QX": "Horizon Air",
-"QY": "Red Jet Canada",
-"QZ": "Indonesia AirAsia",
-"R2": "Orenburg Airlines",
-"R3": "Aircompany Yakutia",
-"R4": "Rossiya",
-"R5": "Malta Air Charter",
-"R6": "RACSA",
-"R7": "Aserca Airlines",
-"R8": "AirRussia",
-"RA": "Nepal Airlines",
-"RB": "Syrian Arab Airlines",
-"RC": "Atlantic Airways",
-"RD": "Ryan International Airlines",
-"RE": "Aer Arann",
-"RF": "Florida West International Airways",
-"RG": "VRG Linhas Aereas",
-"RI": "Mandala Airlines",
-"RJ": "Royal Jordanian",
-"RK": "Air Afrique",
-"RL": "Royal Falcon",
-"RM": "Rainbow Air US",
-"RN": "Rainbow Air (RAI)",
-"RO": "Tarom",
-"RP": "Chautauqua Airlines",
-"RQ": "Kam Air",
-"RR": "REXAIR VIRTUEL",
-"RS": "Sky Regional",
-"RT": "Real Tonga",
-"RU": "Rainbow Air Euro",
-"RV": "Caspian Airlines",
-"RW": "Republic Airlines",
-"RY": "Rainbow Air Canada",
-"RZ": "Euro Exec Express",
-"S0": "Spike Airlines",
-"S1": "Serbian Airlines",
-"S2": "Air Sahara",
-"S3": "Santa Barbara Airlines",
-"S4": "SATA International",
-"S5": "Shuttle America",
-"S6": "Salmon Air",
-"S7": "S7 Airlines",
-"S8": "Snowbird Airlines",
-"S9": "Starbow Airlines",
-"SA": "South African Airways",
-"SB": "Air Caledonie International",
-"SC": "Shandong Airlines",
-"SD": "Sudan Airways",
-"SE": "XL Airways France",
-"SG": "Spicejet",
-"SH": "Sharp Airlines",
-"SI": "Skynet Airlines",
-"SJ": "Sriwijaya Air",
-"SK": "Scandinavian Airlines System",
-"SL": "Thai Lion Air",
-"SM": "Spirit of Manila Airlines",
-"SN": "Brussels Airlines",
-"SO": "Salsa d'Haiti",
-"SP": "SATA Air Acores",
-"SS": "Corsairfly",
-"ST": "Germania",
-"SU": "Aeroflot Russian Airlines",
-"SV": "Saudi Arabian Airlines",
-"SW": "Air Namibia",
-"SX": "SkyWork Airlines",
-"SY": "Sun Country Airlines",
-"SZ": "Salzburg arrows",
-"T0": "TACA Peru",
-"T2": "Thai Air Cargo",
-"T3": "Eastern Airways",
-"T4": "Hellas Jet",
-"T5": "Turkmenistan Airlines",
-"T6": "Trans Pas Air",
-"T7": "Twin Jet",
-"TA": "Grupo TACA",
-"TB": "TrasBrasil",
-"TC": "Air Tanzania",
-"TD": "Atlantis European Airways",
-"TE": "FlyLal",
-"TG": "Thai Airways International",
-"TH": "TransBrasil Airlines",
-"TI": "TransHolding",
-"TJ": "T.J. Air",
-"TK": "Turkish Airlines",
-"TL": "Airnorth",
-"TM": "Air Mozambique",
-"TN": "Air Tahiti Nui",
-"TO": "Transavia France",
-"TP": "TAP Portugal",
-"TQ": "Texas Wings",
-"TS": "Air Transat",
-"TT": "Tiger Airways Australia",
-"TU": "Tunisair",
-"TV": "Virgin Express",
-"TW": "Tway Airlines",
-"TX": "Air Caraïbes",
-"TY": "Iberworld",
-"TZ": "Scoot",
-"U1": "Aviabus",
-"U2": "easyJet",
-"U3": "Avies",
-"U4": "PMTair",
-"U5": "USA3000 Airlines",
-"U6": "Ural Airlines",
-"U7": "Northern Dene Airways",
-"U8": "Armavia",
-"U9": "Tatarstan Airlines",
-"UA": "United Airlines",
-"UB": "Myanma Airways",
-"UD": "Hex'Air",
-"UE": "Nasair",
-"UF": "UM Airlines",
-"UG": "Tuninter",
-"UH": "US Helicopter Corporation",
-"UI": "Eurocypria Airlines",
-"UJ": "AlMasria Universal Airlines",
-"UK": "Air Vistara",
-"UL": "SriLankan Airlines",
-"UM": "Air Zimbabwe",
-"UN": "Transaero Airlines",
-"UO": "Hong Kong Express Airways",
-"UP": "Bahamasair",
-"UR": "UTair-Express",
-"US": "US Airways",
-"UT": "UTair Aviation",
-"UU": "Air Austral",
-"UW": "UVT Aero",
-"UX": "Air Europa",
-"UZ": "El-Buraq Air Transport",
-"V0": "Conviasa",
-"V1": "VIA Líneas Aéreas",
-"V2": "Vision Airlines (V2)",
-"V3": "Carpatair",
-"V5": "Danube Wings (V5)",
-"V6": "VIP Ecuador",
-"V7": "VOLOTEA Airways",
-"V8": "ATRAN Cargo Airlines",
-"V9": "Star1 Airlines",
-"VA": "Virgin Australia",
-"VC": "Strategic Airlines",
-"VD": "Air Libert",
-"VE": "Volare Airlines",
-"VF": "Valuair",
-"VG": "VLM Airlines",
-"VH": "Virgin Pacific",
-"VI": "Volga-Dnepr Airlines",
-"VJ": "Royal Air Cambodge",
-"VK": "Virgin Nigeria Airways",
-"VL": "Air VIA",
-"VN": "Vietnam Airlines",
-"VO": "Tyrolean Airways",
-"VP": "VASP",
-"VQ": "Viking Hellas",
-"VR": "TACV",
-"VS": "Virgin Atlantic Airways",
-"VT": "Air Tahiti",
-"VU": "Air Ivoire",
-"VV": "Aerosvit Airlines",
-"VW": "Aeromar",
-"VX": "Virgin America",
-"VY": "Vueling Airlines",
-"VZ": "MyTravel Airways",
-"W1": "World Experience Airline",
-"W2": "Maastricht Airlines",
-"W3": "World Scale Airlines",
-"W4": "AeroWorld",
-"W5": "Mahan Air",
-"W6": "Wizz Air",
-"W7": "Austral Brasil",
-"W9": "Air Bagan",
-"WA": "KLM Cityhopper",
-"WB": "Rwandair Express",
-"WC": "Islena De Inversiones",
-"WD": "Amsterdam Airlines",
-"WE": "Thai Smile Airways",
-"WF": "Widerøe",
-"WG": "Sunwing",
-"WH": "China Northwest Airlines (WH)",
-"WJ": "WebJet Linhas A",
-"WK": "Edelweiss Air",
-"WM": "Windward Islands Airways",
-"WN": "Southwest Airlines",
-"WO": "World Airways",
-"WP": "Island Air (WP)",
-"WQ": "PanAm World Airways",
-"WR": "WestJet Encore",
-"WS": "WestJet",
-"WU": "Wizz Air Ukraine",
-"WV": "Swe Fly",
-"WW": "bmibaby",
-"WX": "CityJet",
-"WY": "Oman Air",
-"WZ": "Red Wings",
-"X3": "TUIfly",
-"X5": "Fly Romania",
-"XA": "XAIR USA",
-"XB": "NEXT Brasil",
-"XE": "ExpressJet",
-"XF": "Vladivostok Air",
-"XG": "Calima Aviacion",
-"XJ": "Mesaba Airlines",
-"XK": "Corse-Mediterranee",
-"XL": "Aerolane",
-"XM": "Alitalia Express",
-"XN": "Xpressair",
-"XO": "LTE International Airways",
-"XP": "XPTO",
-"XQ": "SunExpress",
-"XR": "Skywest Australia",
-"XV": "BVI Airways",
-"XW": "Sky Express",
-"XX": "Greenfly",
-"XY": "Nas Air",
-"XZ": "Congo Express",
-"Y1": "Yellowstone Club Private Shuttle",
-"Y4": "Volaris",
-"Y5": "Asia Wings",
-"Y7": "NordStar Airlines",
-"Y8": "Marusya Airways",
-"Y9": "Kish Air",
-"YC": "Ciel Canadien",
-"YD": "Gomelavia",
-"YE": "Yellowtail",
-"YH": "Yangon Airways Ltd.",
-"YK": "Cyprus Turkish Airlines",
-"YL": "Yamal Airlines",
-"YM": "Montenegro Airlines",
-"YO": "TransHolding System",
-"YQ": "Polet Airlines (Priv)",
-"YR": "SENIC AIRLINES",
-"YS": "Régional",
-"YT": "Yeti Airways",
-"YV": "Mesa Airlines",
-"YW": "Air Nostrum",
-"YX": "Midwest Airlines",
-"YY": "Virginwings",
-"YZ": "LSM AIRLINES",
-"Z0": "All Argentina Express",
-"Z2": "Zest Air",
-"Z3": "Avient Aviation",
-"Z4": "Zoom Airlines",
-"Z5": "INAVIA Internacional",
-"Z6": "ZABAIKAL AIRLINES",
-"Z7": "REDjet",
-"Z8": "Amaszonas",
-"Z9": "Flightlink Tanzania",
-"ZC": "Korongo Airlines",
-"ZE": "Eastar Jet",
-"ZF": "Athens Airways",
-"ZG": "Viva Macau",
-"ZH": "Shenzhen Airlines",
-"ZI": "Aigle Azur",
-"ZJ": "Zambezi Airlines (ZMA)",
-"ZK": "Great Lakes Airlines",
-"ZL": "Regional Express",
-"ZM": "Apache Air",
-"ZN": "Zenith International Airline",
-"ZP": "Zabaykalskii Airlines",
-"ZQ": "Locair",
-"ZS": "Sama Airlines",
-"ZT": "Tomp Airlines",
-"ZV": "V Air",
-"ZW": "Air Wisconsin",
-"ZX": "Japan Regio",
-"ZY": "Ada Air",
-"ZZ": "Zz"
+"0B": [
+[
+"Blue Air",
+"2004-12-01",
+"2020-02-18"
+],
+[
+"Blue Air",
+"2020-02-18",
+"2022-09-06"
+],
+[
+"BBN Airlines Indonesia",
+"2024-09-27"
+]
+],
+"0C": [
+[
+"Catovair"
+]
+],
+"0D": [
+[
+"Darwin Airline",
+"",
+"2014-10-31",
+779
+]
+],
+"0E": [
+[
+"Amadeus PDF 0E",
+"",
+"2014-06-01",
+0,
+"D"
+]
+],
+"0J": [
+[
+"Premium Jet AG",
+"",
+"",
+254
+]
+],
+"0N": [
+[
+"North Star Air",
+"2023-01-27"
+]
+],
+"0O": [
+[
+"STA Travel",
+"1971-01-01"
+]
+],
+"0P": [
+[
+"Palau Pacific Airways"
+]
+],
+"0V": [
+[
+"Vietnam Air Services Company",
+"1987-12-31",
+"2015-09-01",
+368
+],
+[
+"Vietnam Air Services Company",
+"2016-05-01",
+"",
+338
+]
+],
+"0W": [
+[
+"W Caribbean Costa Rica"
+]
+],
+"1A": [
+[
+"Amadeus",
+"1987-01-01",
+"",
+790,
+"G"
+]
+],
+"1B": [
+[
+"Abacus",
+"",
+"",
+0,
+"G"
+]
+],
+"1C": [
+[
+"EDS Information Business",
+"",
+"",
+0,
+"G"
+]
+],
+"1D": [
+[
+"Raddix Solutions",
+"",
+"",
+0,
+"G"
+]
+],
+"1E": [
+[
+"Travelsky Technology",
+"",
+"",
+252,
+"G"
+]
+],
+"1F": [
+[
+"Infini Travel Information",
+"",
+"",
+788,
+"G"
+]
+],
+"1G": [
+[
+"Travelport Galileo",
+"",
+"",
+0,
+"G"
+]
+],
+"1H": [
+[
+"Sirena Travel",
+"",
+"",
+446
+]
+],
+"1I": [
+[
+"Netjets Aviation"
+],
+[
+"Netjets Europe"
+]
+],
+"1J": [
+[
+"Axess International"
+]
+],
+"1K": [
+[
+"Sutra"
+]
+],
+"1L": [
+[
+"Navitaire Open Skies",
+"",
+"",
+0,
+"G"
+]
+],
+"1M": [
+[
+"Sirena Jsc"
+]
+],
+"1N": [
+[
+"Navitaire New Skies",
+"",
+"",
+892,
+"G"
+]
+],
+"1O": [
+[
+"Phoenix Systems Dertours",
+"",
+"",
+0,
+"G"
+]
+],
+"1P": [
+[
+"Travelport Worldspan",
+"",
+"",
+523,
+"G"
+]
+],
+"1Q": [
+[
+"Joint Stock Company Ital"
+]
+],
+"1R": [
+[
+"Bird Information Systems"
+]
+],
+"1S": [
+[
+"Sabre",
+"",
+"",
+0,
+"G"
+]
+],
+"1T": [
+[
+"East Line"
+]
+],
+"1U": [
+[
+"ITA Software",
+"",
+"",
+0,
+"G"
+]
+],
+"1V": [
+[
+"Galileo International",
+"",
+"",
+588,
+"G"
+]
+],
+"1W": [
+[
+"Sabre",
+"",
+"",
+0,
+"G"
+]
+],
+"1X": [
+[
+"Branson Air Express",
+"2010-05-17"
+]
+],
+"1Y": [
+[
+"Electronic Data Systems (EDS)",
+"",
+"",
+0,
+"G"
+]
+],
+"1Z": [
+[
+"Fantasia Info Network"
+]
+],
+"2A": [
+[
+"Deutsche Bahn",
+"",
+"",
+0,
+"R"
+]
+],
+"2B": [
+[
+"Ak Bars Aero",
+"2010-01-01",
+"2015-01-12",
+441,
+"P"
+],
+[
+"Albawings",
+"2016-01-01"
+]
+],
+"2C": [
+[
+"SNCF",
+"",
+"",
+0,
+"R"
+]
+],
+"2D": [
+[
+"Aero VIP (Argentina)",
+"1999-06-23",
+"2010-08-31",
+592,
+"P"
+],
+[
+"Eastern Airlines, LLC",
+"2010-10-01",
+"2018-03-31",
+54
+],
+[
+"Eastern Airlines, LLC",
+"2018-04-01",
+"",
+54
+]
+],
+"2E": [
+[
+"Smokey Bay Air"
+]
+],
+"2F": [
+[
+"Frontier Flying Service",
+"1950-01-01",
+"2014-12-31"
+],
+[
+"Fair Aviation",
+"2016-11-01"
+]
+],
+"2G": [
+[
+"Angara Airlines",
+"",
+"",
+735,
+"P"
+]
+],
+"2H": [
+[
+"Thalys",
+"",
+"",
+56,
+"R"
+]
+],
+"2I": [
+[
+"Star Perú",
+"1997-05-01",
+"",
+156
+]
+],
+"2J": [
+[
+"Air Burkina",
+"",
+"",
+226
+]
+],
+"2K": [
+[
+"Aerolineas Galapagos",
+"",
+"",
+547
+]
+],
+"2L": [
+[
+"Helvetic Airways",
+"",
+"",
+102
+]
+],
+"2M": [
+[
+"Moldavian Airlines",
+"1994-08-19",
+"2015-12-31",
+860
+],
+[
+"Maya Island Air",
+"2016-09-01",
+"",
+391
+]
+],
+"2N": [
+[
+"Nextjet",
+"2002-01-01",
+"",
+121
+]
+],
+"2O": [
+[
+"Redemption"
+]
+],
+"2P": [
+[
+"PAL Express",
+"1995-02-13",
+"",
+211
+]
+],
+"2Q": [
+[
+"Air Cargo Carriers",
+"1986-01-01",
+"2003-12-31",
+0,
+"C"
+],
+[
+"Avitrans Nordic",
+"2004-01-01",
+"2010-12-31",
+0,
+"T"
+],
+[
+"Nuovo Trasporto Viaggiatori",
+"2012-04-01",
+"2014-12-31"
+],
+[
+"Air Cargo Carriers",
+"2015-01-01",
+"",
+0,
+"C"
+]
+],
+"2R": [
+[
+"VIA Rail Canada",
+"1977-01-01",
+"",
+830,
+"R"
+]
+],
+"2S": [
+[
+"Sunny Airways",
+"2011-08-16",
+"2012-12-31"
+],
+[
+"Air Carnival",
+"2016-07-18"
+]
+],
+"2T": [
+[
+"Alajnihah Airways",
+"",
+"2015-04-01",
+311
+],
+[
+"Timbis Air",
+"2009-11-01",
+"2025-12-17"
+],
+[
+"BermudAir",
+"2025-12-17"
+]
+],
+"2U": [
+[
+"Ero Sun d'Or",
+"",
+"",
+383,
+"P"
+]
+],
+"2V": [
+[
+"Amtrak",
+"",
+"",
+554,
+"R"
+]
+],
+"2W": [
+[
+"World 2 Fly, S.L"
+],
+[
+"Welcome Air",
+"2000-05-01",
+"2015-03-31"
+]
+],
+"2X": [
+[
+"Amadeus 2X",
+"",
+"2014-06-01",
+799,
+"D"
+]
+],
+"2Y": [
+[
+"Amadeus PDF 2Y",
+"",
+"2014-06-01",
+0,
+"D"
+]
+],
+"2Z": [
+[
+"Passaredo Transportes",
+"2014-05-01",
+"",
+678,
+"P"
+]
+],
+"3A": [
+[
+"Chu Kong Passenger Transport",
+"",
+"",
+28,
+"F"
+]
+],
+"3B": [
+[
+"Job Air"
+]
+],
+"3C": [
+[
+"Air Chathams",
+"1984-01-01"
+],
+[
+"Calima Aviacion",
+"2003-01-01",
+"2014-01-01",
+507
+]
+],
+"3D": [
+[
+"Dokasch"
+]
+],
+"3E": [
+[
+"Multi Aero"
+]
+],
+"3F": [
+[
+"Pacific Airways"
+]
+],
+"3G": [
+[
+"Gambia Bird",
+"2012-10-01",
+"2014-12-31",
+213
+],
+[
+"AsiaCargo Express",
+"2015-02-01",
+"",
+380,
+"C"
+]
+],
+"3H": [
+[
+"Air Inuit",
+"1978-11-01",
+"",
+466
+]
+],
+"3I": [
+[
+"Pison Airways Ltd"
+]
+],
+"3J": [
+[
+"Jubba Airways Kenya",
+"1954-01-01",
+"",
+535
+]
+],
+"3K": [
+[
+"Jetstar Asia Airways",
+"2004-12-07",
+"",
+375
+]
+],
+"3L": [
+[
+"Air Arabia Abu Dhabi"
+],
+[
+"InterSky",
+"2002-11-05",
+"2015-11-05",
+222
+]
+],
+"3M": [
+[
+"Silver Airways",
+"2010-01-01",
+"",
+449,
+"PC"
+]
+],
+"3N": [
+[
+"Air Urga",
+"",
+"",
+746
+]
+],
+"3O": [
+[
+"Air Arabia Maroc",
+"2009-05-01",
+"",
+452
+]
+],
+"3P": [
+[
+"World 2 Fly Portugal"
+],
+[
+"Tiara Air Aruba",
+"2006-04-01",
+"2016-11-30",
+253
+],
+[
+"Air Philip",
+"2018-06-01",
+"2019-03-31",
+711
+]
+],
+"3Q": [
+[
+"Carib Aviation Limited"
+]
+],
+"3R": [
+[
+"Moskovia Airlines",
+"1995-10-04",
+"2014-08-01",
+520
+],
+[
+"Divi Divi Air",
+"2002-01-01",
+"",
+742
+]
+],
+"3S": [
+[
+"Air Antilles Express",
+"",
+"",
+875
+]
+],
+"3T": [
+[
+"Tarco Air"
+]
+],
+"3U": [
+[
+"Sichuan Airlines",
+"1988-01-01",
+"",
+876
+]
+],
+"3V": [
+[
+"Tnt Airways",
+"",
+"",
+756
+]
+],
+"3W": [
+[
+"EuroManx",
+"2002-08-19",
+"2008-05-09"
+],
+[
+"Malawian Airlines",
+"2014-01-31",
+"",
+529
+]
+],
+"3X": [
+[
+"Premier Trans Aire",
+"",
+"",
+435,
+"C"
+]
+],
+"3Y": [
+[
+"Kartika Airlines",
+"2001-05-15",
+"2010-12-31"
+]
+],
+"3Z": [
+[
+"Travel Service Polska",
+"2012-05-01",
+"",
+0,
+"T"
+]
+],
+"4A": [
+[
+"Aviana Airways",
+"2008-01-01",
+"2014-01-01"
+],
+[
+"Aero Transporte",
+"2014-01-01",
+"",
+212
+]
+],
+"4B": [
+[
+"Aviastar TU",
+"2004-01-01",
+"2012-12-31",
+210
+],
+[
+"Boutique Air",
+"2013-01-01",
+"",
+184
+]
+],
+"4C": [
+[
+"LATAM Colombia",
+"1981-01-01",
+"",
+35
+]
+],
+"4D": [
+[
+"Air Sinai",
+"",
+"",
+903
+]
+],
+"4E": [
+[
+"Tanana Air Service"
+]
+],
+"4F": [
+[
+"Air City",
+"2015-10-01",
+"2015-12-31"
+],
+[
+"Freedom Airline Express",
+"2019-05-01"
+]
+],
+"4G": [
+[
+"Gazpromavia",
+"",
+"",
+579
+]
+],
+"4H": [
+[
+"United Airways Bangladesh",
+"",
+"",
+584
+]
+],
+"4I": [
+[
+"Ihy Izmir Havayollari",
+"",
+"2018-12-30",
+597
+]
+],
+"4J": [
+[
+"Flydamas Airlines",
+"2013-01-01",
+"2018-12-31"
+],
+[
+"JetAir Caribbean",
+"2022-11-15",
+"2024-06-18"
+]
+],
+"4K": [
+[
+"Air Askari Aviation",
+"1995-01-01",
+"2001-01-01"
+],
+[
+"Kenn Borek Air",
+"2009-01-01",
+"2018-01-01"
+],
+[
+"Freedom Airline Express (Somalia)",
+"2019-05-01"
+]
+],
+"4L": [
+[
+"Euroline Airlines",
+"2004-07-01",
+"2010-12-31"
+],
+[
+"Georgian International Airlines",
+"2011-01-01",
+"2014-09-30"
+],
+[
+"Palau National Airlines",
+"2014-10-01"
+]
+],
+"4M": [
+[
+"LATAM Argentina",
+"2005-01-01",
+"",
+469
+]
+],
+"4N": [
+[
+"Air North",
+"1977-01-01",
+"",
+287
+]
+],
+"4O": [
+[
+"Interjet",
+"2005-12-01",
+"2020-10-01",
+837
+],
+[
+"Air Montenegro",
+"2020-10-02",
+"",
+400
+]
+],
+"4P": [
+[
+"Travel Air"
+]
+],
+"4Q": [
+[
+"Safi Airways",
+"",
+"",
+741
+]
+],
+"4R": [
+[
+"Renfe Viajeros",
+"1941-01-24",
+"2015-12-31"
+],
+[
+"Abakan-Avia",
+"1992-01-01",
+"2014-07-10"
+],
+[
+"Hamburg International",
+"1998-07-01",
+"2010-10-20"
+],
+[
+"Star East Airline",
+"2017-01-01"
+]
+],
+"4S": [
+[
+"Star Airways"
+]
+],
+"4T": [
+[
+"Belair Airlines"
+]
+],
+"4U": [
+[
+"Germanwings",
+"1997-01-01",
+"",
+51
+]
+],
+"4V": [
+[
+"Lacbravo",
+"",
+"",
+408
+]
+],
+"4W": [
+[
+"Warbelows Air Ventures"
+]
+],
+"4X": [
+[
+"Atlantic Express Airline"
+]
+],
+"4Y": [
+[
+"Flight Alaska",
+"1950-01-01",
+"2017-03-04",
+0,
+"PT"
+],
+[
+"Discover Airlines",
+"2021-07-24"
+]
+],
+"4Z": [
+[
+"South African Airlink",
+"1978-01-01",
+"2009-12-31",
+749
+],
+[
+"TTA Airlink",
+"2010-01-01",
+"2010-12-31",
+0,
+"P"
+],
+[
+"Airlink",
+"2011-01-01",
+"",
+749
+]
+],
+"5B": [
+[
+"Chanchangi Airlines",
+"1994-01-01",
+"2015-01-01"
+],
+[
+"Bassaka Air",
+"2013-01-01",
+"",
+590
+]
+],
+"5C": [
+[
+"Nature Air",
+"",
+"2017-12-31"
+],
+[
+"Challenge Aero",
+"2018-01-01",
+"",
+0,
+"T"
+]
+],
+"5D": [
+[
+"Aeroméxico Connect",
+"1988-01-01",
+"",
+642
+]
+],
+"5E": [
+[
+"Aero"
+],
+[
+"SGA Airlines",
+"2002-01-01",
+"2014-12-31"
+]
+],
+"5F": [
+[
+"Arctic Circle Air",
+"1953-01-01",
+"2009-12-31"
+],
+[
+"Fly One",
+"2013-01-01",
+"",
+130
+]
+],
+"5G": [
+[
+"Aero Cuahonte",
+"1957-11-01",
+"2007-12-31"
+],
+[
+"Skyservice",
+"1986-11-01",
+"2010-03-31"
+],
+[
+"Fly540 Ghana",
+"2011-11-01",
+"2014-05-31"
+],
+[
+"Shirak Savia",
+"2022-07-14"
+]
+],
+"5H": [
+[
+"Five Fourty Aviation",
+"2006-01-01",
+"",
+540
+]
+],
+"5I": [
+[
+"ALSA",
+"1923-01-01"
+]
+],
+"5J": [
+[
+"Cebu Pacific",
+"1996-03-08",
+"",
+203
+]
+],
+"5K": [
+[
+"Odessa Airlines",
+"1996-01-01",
+"2006-12-31"
+],
+[
+"Hi Fly",
+"2006-01-01",
+"",
+654
+]
+],
+"5L": [
+[
+"AeroSur",
+"1992-01-01",
+"2012-12-31",
+275
+],
+[
+"Fly Salone",
+"2015-12-11"
+]
+],
+"5M": [
+[
+"Montserrat Airways"
+]
+],
+"5N": [
+[
+"Jsc Nordavia",
+"",
+"",
+316
+]
+],
+"5O": [
+[
+"ASL Airlines France",
+"1991-01-01",
+"",
+558
+]
+],
+"5P": [
+[
+"Small Planet Airlines",
+"2016-05-01",
+"2018-10-31"
+],
+[
+"PAL Airlines",
+"2018-11-01",
+"",
+676,
+"P"
+]
+],
+"5Q": [
+[
+"BQB Líneas Aéreas",
+"2010-01-01",
+"2015-04-30",
+567,
+"P"
+]
+],
+"5R": [
+[
+"RUTACA Airlines",
+"1974-01-01",
+"",
+765
+],
+[
+"Karthago Airlines",
+"2002-01-01",
+"2010-12-31"
+]
+],
+"5S": [
+[
+"Servicios Aereos Profesionales"
+]
+],
+"5T": [
+[
+"Canadian North",
+"1989-01-01",
+"",
+518
+]
+],
+"5U": [
+[
+"LADE",
+"1940-09-01",
+"2014-12-31"
+],
+[
+"Transportes Aéreos Guatemaltecos",
+"1969-01-01",
+"",
+911
+]
+],
+"5V": [
+[
+"Everts",
+"",
+"",
+840
+]
+],
+"5W": [
+[
+"WESTBahn",
+"2011-12-11",
+"2020-10-31"
+],
+[
+"Wizz Air Abu Dhabi",
+"2020-11-01"
+]
+],
+"5X": [
+[
+"UPS Airlines",
+"1998-01-01",
+"",
+406
+]
+],
+"5Y": [
+[
+"Express Rail Link",
+"",
+"2014-06-01",
+0,
+"R"
+],
+[
+"Isles of Scilly Skybus",
+"1984-03-01",
+"2015-12-31"
+],
+[
+"Atlas Air",
+"1992-01-01",
+"",
+0,
+"CT"
+]
+],
+"5Z": [
+[
+"Bismillah Airlines",
+"1998-01-01",
+"2015-01-01"
+],
+[
+"CemAir",
+"2005-01-01",
+"",
+225
+]
+],
+"6A": [
+[
+"Aviacsa",
+"1990-01-01",
+"2011-12-31"
+],
+[
+"Armenia Airways",
+"2013-01-01",
+"",
+616
+]
+],
+"6B": [
+[
+"Tuifly Nordic",
+"",
+"",
+951
+]
+],
+"6C": [
+[
+"Air Timor",
+"",
+"",
+586
+]
+],
+"6D": [
+[
+"Travel Service Slovensko",
+"2010-01-01",
+"",
+0,
+"T"
+]
+],
+"6E": [
+[
+"IndiGo",
+"2006-08-04"
+]
+],
+"6F": [
+[
+"Afrijet Airlines",
+"2000-01-01",
+"2008-12-31"
+],
+[
+"MAT Airways",
+"2009-01-01",
+"2011-12-31"
+],
+[
+"Primera Air Nordic",
+"2015-04-01"
+]
+],
+"6G": [
+[
+"Air Wales",
+"2000-01-01",
+"2006-04-30"
+],
+[
+"Sun Air Express",
+"2012-01-01",
+"2016-03-07",
+504
+],
+[
+"Executive Express Aviation",
+"2013-01-01",
+"2013-01-31",
+677
+],
+[
+"Go2Sky",
+"2013-02-14"
+]
+],
+"6H": [
+[
+"Israir Airlines",
+"",
+"",
+818
+]
+],
+"6I": [
+[
+"Air Alsie",
+"",
+"",
+248,
+"PT"
+]
+],
+"6J": [
+[
+"Solaseed Air",
+"2002-01-01"
+]
+],
+"6K": [
+[
+"Songbird Airways",
+"1990-01-01"
+],
+[
+"Inter Airlines",
+"1999-12-17",
+"2008-11-18"
+],
+[
+"Kyrgyz Trans Avia",
+"2009-01-01",
+"2015-12-31"
+]
+],
+"6L": [
+[
+"Aklak Air",
+"",
+"",
+709
+]
+],
+"6M": [
+[
+"Air Minas Linhas Aereas"
+]
+],
+"6N": [
+[
+"Al Naser Wings Airlines",
+"2009-02-01",
+"2013-12-31",
+503
+],
+[
+"Niger Airlines",
+"2014-01-01",
+"",
+720
+]
+],
+"6O": [
+[
+"Orbest",
+"2007-01-01"
+]
+],
+"6P": [
+[
+"Club Air",
+"2002-10-01",
+"2008-05-31"
+]
+],
+"6Q": [
+[
+"Cham Wings Airlines",
+"",
+"",
+386
+]
+],
+"6R": [
+[
+"ALROSA",
+"2000-01-01"
+]
+],
+"6S": [
+[
+"Kato Airlines",
+"1996-01-01",
+"2008-09-01"
+],
+[
+"Saudi Gulf Airlines",
+"2016-09-01",
+"",
+571
+]
+],
+"6T": [
+[
+"Air Mandalay",
+"",
+"",
+373
+]
+],
+"6U": [
+[
+"Air Ukraine",
+"1992-01-01",
+"2002-12-31"
+],
+[
+"Air Cargo Germany",
+"2009-01-01",
+"2013-12-31",
+0,
+"C"
+],
+[
+"Unique Air",
+"2014-01-01",
+"2016-09-30"
+]
+],
+"6V": [
+[
+"Avanza"
+]
+],
+"6W": [
+[
+"Saratov Airlines",
+"",
+"",
+26
+]
+],
+"6X": [
+[
+"Amadeus 6X",
+"",
+"2014-06-01",
+172,
+"D"
+]
+],
+"6Y": [
+[
+"SmartLynx Airlines",
+"1993-01-01",
+"",
+0,
+"T"
+]
+],
+"6Z": [
+[
+"Eurasia Air"
+]
+],
+"7A": [
+[
+"Air Next",
+"2004-08-20",
+"2010-12-31"
+],
+[
+"Air Jet",
+"2015-01-01",
+"2015-12-31"
+],
+[
+"Express Air Cargo",
+"2015-01-01",
+"",
+336
+]
+],
+"7B": [
+[
+"Fly Blue Crane",
+"2015-09-01",
+"2017-02-03",
+562
+]
+],
+"7C": [
+[
+"Jeju Air",
+"2005-01-01",
+"",
+806
+]
+],
+"7D": [
+[
+"Donbassaero",
+"1993-01-01",
+"2013-01-14",
+897
+],
+[
+"MGC Aviation",
+"2012-01-01"
+]
+],
+"7E": [
+[
+"Sylt Air"
+]
+],
+"7F": [
+[
+"First Air",
+"",
+"",
+245
+]
+],
+"7G": [
+[
+"StarFlyer",
+"2006-03-16",
+"",
+922
+]
+],
+"7H": [
+[
+"Era Aviation",
+"1948-01-01",
+"2016-06-30",
+808
+],
+[
+"Ravn Alaska",
+"2016-07-01",
+"",
+808
+]
+],
+"7I": [
+[
+"Insel Air International",
+"2006-01-01",
+"",
+958
+]
+],
+"7J": [
+[
+"Tajik Air",
+"",
+"",
+502
+]
+],
+"7K": [
+[
+"Kogalymavia Airlines"
+]
+],
+"7L": [
+[
+"Aero Caribbean",
+"",
+"",
+164
+]
+],
+"7M": [
+[
+"Mayair",
+"",
+"",
+10
+]
+],
+"7N": [
+[
+"PAWA Dominicana",
+"2003-01-01",
+"",
+185
+],
+[
+"Amadeus 7N",
+"2011-01-25",
+"2014-06-01",
+0,
+"D"
+]
+],
+"7O": [
+[
+"Travel Service Hungary",
+"2001-01-01"
+]
+],
+"7P": [
+[
+"Air Panama",
+"",
+"",
+23
+]
+],
+"7Q": [
+[
+"Elite Airways"
+]
+],
+"7R": [
+[
+"RusLine",
+"1999-01-01",
+"",
+362
+]
+],
+"7S": [
+[
+"Amadeus PDF 7S",
+"",
+"2014-06-01",
+792,
+"D"
+],
+[
+"Ryan Air Services",
+"1953-01-01"
+],
+[
+"Ryan Air Services",
+"1953-01-01",
+"2012-12-31"
+]
+],
+"7T": [
+[
+"Trenitalia",
+"2000-01-01",
+"",
+0,
+"R"
+]
+],
+"7U": [
+[
+"Aviaenergo",
+"1992-01-01",
+"2011-12-31",
+765
+],
+[
+"Alpha Air Transport",
+"2014-01-01",
+"",
+428
+]
+],
+"7V": [
+[
+"Federal Airlines",
+"",
+"",
+739
+]
+],
+"7W": [
+[
+"Wind Rose Aviation",
+"",
+"",
+461
+]
+],
+"7X": [
+[
+"Amadeus 7X",
+"",
+"2014-06-01",
+791,
+"D"
+]
+],
+"7Y": [
+[
+"Mann Yadanarpon Airlines",
+"2014-02-01"
+]
+],
+"7Z": [
+[
+"Halcyon Air Cabo Verde",
+"",
+"",
+159
+]
+],
+"8A": [
+[
+"Panama Airways",
+"",
+"",
+691
+]
+],
+"8B": [
+[
+"TransNusa Air Services",
+"2005-08-04"
+],
+[
+"Intira Airlines",
+"2009-12-01",
+"2015-01-16"
+]
+],
+"8C": [
+[
+"Air Transport International",
+"1988-01-01",
+"",
+813
+],
+[
+"Shanxi Airlines",
+"2001-07-06",
+"2009-12-31"
+],
+[
+"East Star Airlines",
+"2005-01-01",
+"2009-03-15"
+]
+],
+"8D": [
+[
+"Servant Air",
+"",
+"1997-01-01"
+],
+[
+"FitsAir",
+"1997-01-02"
+]
+],
+"8E": [
+[
+"Bering Air",
+"1979-10-03"
+]
+],
+"8F": [
+[
+"STP Airways",
+"",
+"",
+470
+]
+],
+"8G": [
+[
+"Girjet",
+"2003-07-31",
+"2008-04-30"
+],
+[
+"Mid Africa Aviation",
+"2014-01-01"
+]
+],
+"8H": [
+[
+"Highland Airways",
+"1991-01-01",
+"2010-03-24"
+],
+[
+"BH Air",
+"2002-01-01",
+"",
+366
+]
+],
+"8I": [
+[
+"Insel Air Aruba",
+"2014-01-01",
+"",
+778
+]
+],
+"8J": [
+[
+"Línea Aerea Eco Jet"
+]
+],
+"8L": [
+[
+"Lucky Air",
+"2004-07-01",
+"",
+859
+]
+],
+"8M": [
+[
+"Myanmar Airways International",
+"1946-01-01",
+"",
+599
+]
+],
+"8N": [
+[
+"Regional Air Services"
+]
+],
+"8O": [
+[
+"Westcoast Air",
+"1996-01-01",
+"2010-03-31"
+]
+],
+"8P": [
+[
+"Pacific Coastal Airlines",
+"",
+"",
+905
+]
+],
+"8Q": [
+[
+"Onur Air",
+"1992-04-14",
+"",
+66
+]
+],
+"8R": [
+[
+"Sol Líneas Aéreas",
+"2005-01-01",
+"2020-01-01",
+300
+],
+[
+"Amelia",
+"2020-02-01",
+"",
+942
+]
+],
+"8S": [
+[
+"Shun Tak China",
+"",
+"",
+802
+]
+],
+"8T": [
+[
+"Air Tindi",
+"",
+"",
+744
+]
+],
+"8U": [
+[
+"Afriqiyah Airways",
+"",
+"",
+546
+]
+],
+"8V": [
+[
+"Wright Air Services",
+"1967-01-01",
+"1999-12-31",
+0,
+"P"
+],
+[
+"Astral Aviation",
+"2000-01-01",
+"",
+485
+]
+],
+"8W": [
+[
+"Private Wings",
+"1991-01-01",
+"2016-05-31"
+],
+[
+"Fly All Ways Airlines",
+"2016-01-22"
+]
+],
+"8X": [
+[
+"Amadeus 8X",
+"",
+"2014-06-01",
+794,
+"D"
+]
+],
+"8Y": [
+[
+"Air Burundi",
+"1971-01-01",
+"2009-12-31"
+],
+[
+"Pan Pacific Airlines",
+"1998-01-01"
+]
+],
+"8Z": [
+[
+"Amadeus 8Z",
+"",
+"2014-06-01",
+0,
+"D"
+],
+[
+"Wizz Air Bulgaria",
+"2005-01-01",
+"2011-12-31"
+],
+[
+"Congo Airways",
+"2016-09-01"
+]
+],
+"9A": [
+[
+"Aladia Airlines"
+]
+],
+"9B": [
+[
+"AccesRail",
+"",
+"",
+450,
+"R"
+]
+],
+"9C": [
+[
+"Spring Airlines",
+"2004-01-01",
+"",
+89
+]
+],
+"9D": [
+[
+"Genghis Khan Airlines"
+],
+[
+"Toumai Air Tchad",
+"2004-01-01",
+"2015-12-31",
+371,
+"P"
+],
+[
+"DETA Air",
+"2006-01-01",
+"2013-12-31"
+]
+],
+"9E": [
+[
+"Endeavor Air",
+"1985-01-01",
+"",
+430
+]
+],
+"9F": [
+[
+"Eurostar",
+"1994-01-01",
+"",
+814,
+"R"
+]
+],
+"9G": [
+[
+"9G Rail",
+"",
+"",
+0,
+"R"
+]
+],
+"9H": [
+[
+"Chang An Airlines",
+"1992-04-11",
+"",
+856
+],
+[
+"Dutch Antilles Express",
+"2005-01-01",
+"2013-09-19"
+]
+],
+"9I": [
+[
+"Air India Regional",
+"1996-06-21"
+],
+[
+"Helitrans",
+"1996-06-21",
+"2015-01-01"
+]
+],
+"9J": [
+[
+"Dana Air",
+"2008-01-01",
+"",
+234
+]
+],
+"9K": [
+[
+"Cape Air",
+"1989-01-01",
+"",
+306
+]
+],
+"9L": [
+[
+"West Link Airways"
+]
+],
+"9M": [
+[
+"Central Mountain Air",
+"",
+"",
+634
+]
+],
+"9N": [
+[
+"Tropic Air",
+"1979-01-01",
+"",
+789,
+"PC"
+]
+],
+"9O": [
+[
+"OUIGO for AccesRail",
+"",
+"",
+450,
+"R"
+],
+[
+"National Airways Cameroon",
+"2000-02-21",
+"2008-03-01",
+357
+]
+],
+"9P": [
+[
+"Air Arabia Jordan",
+"",
+"2018-04-01",
+311
+],
+[
+"Fly Jinnah",
+"2022-10-01"
+]
+],
+"9Q": [
+[
+"Caicos Express Airways",
+"2011-01-01"
+]
+],
+"9R": [
+[
+"SATENA",
+"1962-01-01"
+]
+],
+"9S": [
+[
+"Amadeus PDF 9S",
+"",
+"2014-06-01",
+793,
+"D"
+],
+[
+"Southern Air",
+"1998-10-01",
+"",
+99
+]
+],
+"9T": [
+[
+"Athabaska Airways",
+"1955-01-01",
+"1999-12-31"
+],
+[
+"Transwest Air",
+"2000-01-01",
+"2010-12-31"
+],
+[
+"ACT Airlines",
+"2004-01-01",
+"2010-12-31",
+556
+],
+[
+"MyCargo Airlines",
+"2011-01-01",
+"",
+556
+]
+],
+"9U": [
+[
+"Air Moldova",
+"",
+"",
+572
+]
+],
+"9V": [
+[
+"Avior Airlines",
+"1994-01-01",
+"",
+742
+]
+],
+"9W": [
+[
+"Jet Airways",
+"1993-05-05",
+"",
+589
+]
+],
+"9X": [
+[
+"Congo Express",
+"2010-01-01",
+"2014-01-01"
+],
+[
+"Southern Airways Express",
+"2013-01-01",
+"",
+504
+]
+],
+"9Y": [
+[
+"National Airways"
+],
+[
+"National Airways Ethiopia",
+"2007-11-01",
+"2015-12-31",
+789
+],
+[
+"Fly Georgia",
+"2011-01-01",
+"2013-12-31",
+671
+]
+],
+"9Z": [
+[
+"Amadeus PDF 9Z",
+"",
+"2014-06-01",
+0,
+"D"
+],
+[
+"SNCF Inoui for AccesRail",
+"",
+"",
+450,
+"R"
+]
+],
+"A0": [
+[
+"L'Avion",
+"2007-01-03",
+"2009-04-04"
+],
+[
+"Macair Jet",
+"2015-01-01",
+"2019-06-01",
+177
+],
+[
+"BA EuroFlyer",
+"2021-01-01"
+]
+],
+"A1": [
+[
+"G Switch Works",
+"",
+"2015-09-23",
+0,
+"G"
+],
+[
+"APG Distribution System",
+"2015-09-24"
+]
+],
+"A2": [
+[
+"Astra Airlines",
+"2008-07-05",
+"2019-12-31",
+273
+],
+[
+"Animawings",
+"2020-01-01"
+]
+],
+"A3": [
+[
+"Aegean Airlines",
+"1999-05-28",
+"",
+390
+]
+],
+"A4": [
+[
+"South Wind",
+"1940-12-01",
+"1971-11-14"
+],
+[
+"Aerocon",
+"2005-01-01",
+"2016-12-31",
+702
+],
+[
+"Azimuth",
+"2017-02-01",
+"",
+222
+]
+],
+"A5": [
+[
+"HOP!",
+"2013-03-31",
+"2026-01-22",
+163,
+"P"
+],
+[
+"Air France HOP",
+"2026-01-22",
+"",
+163,
+"P"
+]
+],
+"A6": [
+[
+"Air Alps Aviation",
+"1999-01-01",
+"2014-03-01",
+527
+],
+[
+"Yunnan Hongtu Airline",
+"2016-01-01",
+"",
+389
+]
+],
+"A7": [
+[
+"Aéreo Calafia",
+"1993-01-01"
+],
+[
+"Air Comet",
+"1996-01-01",
+"2009-12-21"
+],
+[
+"Air Niamey",
+"2007-01-01",
+"2010-12-31"
+]
+],
+"A8": [
+[
+"Aerolink Uganda"
+],
+[
+"Benin Golf Air",
+"2002-01-01",
+"2012-07-31"
+]
+],
+"A9": [
+[
+"Georgian Airways",
+"",
+"",
+606
+]
+],
+"AA": [
+[
+"American Airlines",
+"1934-01-01",
+"",
+1
+]
+],
+"AB": [
+[
+"Air Berlin",
+"1979-01-01",
+"2017-10-28",
+745
+],
+[
+"Bonza",
+"2023-01-31"
+]
+],
+"AC": [
+[
+"Air Canada",
+"1965-01-01",
+"",
+14
+]
+],
+"AD": [
+[
+"Azul Brazilian Airlines",
+"2008-01-01",
+"",
+577
+]
+],
+"AE": [
+[
+"Mandarin Airlines",
+"",
+"",
+803
+]
+],
+"AF": [
+[
+"Air France",
+"1933-10-07",
+"",
+57
+]
+],
+"AG": [
+[
+"Aruba Airlines",
+"2013-01-01",
+"",
+209
+]
+],
+"AH": [
+[
+"Air Algerie",
+"1947-03-15",
+"",
+124
+]
+],
+"AI": [
+[
+"Air India",
+"1932-10-15",
+"",
+98
+]
+],
+"AJ": [
+[
+"Aztec Worldwide Airlines"
+],
+[
+"Air Belgium",
+"1979-05-01",
+"2000-10-31"
+]
+],
+"AK": [
+[
+"AirAsia",
+"1996-11-16",
+"",
+807
+]
+],
+"AL": [
+[
+"Air Leisure",
+"",
+"2022-10-22"
+],
+[
+"Air Leisure"
+],
+[
+"Midwest Connect",
+"1994-01-01",
+"2009-12-31"
+]
+],
+"AM": [
+[
+"AeroMexico",
+"",
+"",
+139
+]
+],
+"AN": [
+[
+"HOP Airlinair",
+"2020-01-01",
+"2026-01-22"
+],
+[
+"Advanced Air",
+"2026-01-22"
+]
+],
+"AO": [
+[
+"Air Juan Aviation"
+],
+[
+"Avianova",
+"2009-08-27",
+"2011-10-10"
+]
+],
+"AP": [
+[
+"Air One",
+"1983-01-01",
+"2014-10-30",
+867
+],
+[
+"AlbaStar",
+"2014-11-01",
+"",
+374
+]
+],
+"AQ": [
+[
+"Map Management Planning",
+"",
+"2015-01-01"
+],
+[
+"9 Air",
+"2015-01-01",
+"",
+902
+]
+],
+"AR": [
+[
+"Aerolíneas Argentinas",
+"1950-12-07",
+"",
+44
+]
+],
+"AS": [
+[
+"Alaska Airlines",
+"1944-06-06",
+"",
+27
+]
+],
+"AT": [
+[
+"Royal Air Maroc",
+"1957-01-01",
+"",
+147
+]
+],
+"AU": [
+[
+"Austral Líneas Aéreas",
+"1958-01-01",
+"",
+143
+]
+],
+"AV": [
+[
+"Avianca",
+"1919-12-05",
+"",
+134
+]
+],
+"AW": [
+[
+"Africa World Airlines",
+"2012-09-21",
+"",
+394
+]
+],
+"AX": [
+[
+"Trans States Airlines",
+"1982-01-01",
+"",
+414
+]
+],
+"AY": [
+[
+"Finnair",
+"1923-11-01",
+"",
+105
+]
+],
+"AZ": [
+[
+"Alitalia",
+"1999-03-01",
+"2021-10-15",
+55
+],
+[
+"ITA Airways",
+"2021-10-15",
+"",
+55
+]
+],
+"B0": [
+[
+"La Compagnie",
+"2014-01-01",
+"",
+2
+]
+],
+"B1": [
+[
+"Cions Software",
+"2001-01-01"
+]
+],
+"B2": [
+[
+"Belavia",
+"1996-03-05",
+"",
+628
+]
+],
+"B3": [
+[
+"Bhutan Airlines",
+"2011-12-07",
+"",
+0,
+"P"
+]
+],
+"B4": [
+[
+"Zanair",
+"",
+"",
+698
+]
+],
+"B5": [
+[
+"Fly-SAX",
+"1989-01-01",
+"",
+305
+]
+],
+"B6": [
+[
+"JetBlue",
+"2000-02-11",
+"",
+279
+]
+],
+"B7": [
+[
+"Uni Airways",
+"",
+"",
+525
+]
+],
+"B8": [
+[
+"Eritrean Airlines",
+"",
+"",
+637
+]
+],
+"B9": [
+[
+"Iran Air Tours",
+"1973-01-01",
+"",
+491
+]
+],
+"BA": [
+[
+"British Airways",
+"1974-03-31",
+"",
+125
+]
+],
+"BB": [
+[
+"Seaborne Airlines",
+"1992-01-01",
+"",
+376
+]
+],
+"BC": [
+[
+"Skymark Airlines",
+"1998-09-19"
+]
+],
+"BD": [
+[
+"British Midland International",
+"1938-01-01",
+"2012-10-27",
+236
+],
+[
+"Cambodia Bayon Airlines",
+"2014-09-01",
+"",
+688
+]
+],
+"BE": [
+[
+"Flybe",
+"1979-01-01",
+"",
+267
+]
+],
+"BF": [
+[
+"Vincent Aviation",
+"1992-01-01",
+"2014-10-24",
+0,
+"P"
+],
+[
+"French Bee",
+"2016-01-01",
+"",
+396
+]
+],
+"BG": [
+[
+"Biman Bangladesh Airline",
+"1972-02-04",
+"",
+997
+]
+],
+"BH": [
+[
+"Hawkair",
+"1994-01-01",
+"2016-11-18",
+993
+]
+],
+"BI": [
+[
+"Royal Brunei",
+"",
+"",
+672
+]
+],
+"BJ": [
+[
+"Nouvelair",
+"1990-03-21",
+"",
+796
+]
+],
+"BK": [
+[
+"Okay Airways",
+"",
+"",
+866
+]
+],
+"BL": [
+[
+"Jetstar Pacific Airlines",
+"",
+"",
+550
+]
+],
+"BM": [
+[
+"bmi regional",
+"1987-01-01",
+"",
+480
+]
+],
+"BN": [
+[
+"Luxwing Ltd"
+],
+[
+"Horizon Airlines",
+"1973-01-01",
+"2004-03-31"
+],
+[
+"Bahrain Air",
+"2008-02-01",
+"2013-02-12",
+937
+]
+],
+"BO": [
+[
+"Bluebird Nordic",
+"2001-03-01",
+"2012-09-12",
+290,
+"C"
+],
+[
+"BB Airways",
+"2012-09-13",
+"",
+505
+]
+],
+"BP": [
+[
+"Air Botswana",
+"",
+"",
+636
+]
+],
+"BQ": [
+[
+"Bukovyna Airlines",
+"1999-01-01",
+"2015-12-31",
+616
+],
+[
+"SkyAlps",
+"2021-06-17"
+]
+],
+"BR": [
+[
+"EVA Air",
+"1989-03-01",
+"",
+695
+]
+],
+"BS": [
+[
+"British International",
+"",
+"2014-06-01"
+],
+[
+"US-Bangla Airlines",
+"2014-07-17"
+]
+],
+"BT": [
+[
+"airBaltic",
+"1995-01-01",
+"",
+657
+]
+],
+"BU": [
+[
+"Scandinavian Airlines",
+"1946-01-01",
+"2007-12-31",
+117
+],
+[
+"Compagnie Africaine d'Aviation",
+"1993-01-01",
+"",
+883
+]
+],
+"BV": [
+[
+"Blue Panorama Airlines",
+"",
+"",
+4
+]
+],
+"BW": [
+[
+"Air Jamaica",
+"1968-10-01",
+"2015-12-31"
+],
+[
+"Caribbean Airlines",
+"2007-01-01",
+"",
+106
+]
+],
+"BX": [
+[
+"Air Busan",
+"2007-01-01",
+"",
+982
+]
+],
+"BY": [
+[
+"Thomson Airways",
+"2004-01-01",
+"2017-10-02",
+754
+],
+[
+"TUI Airways",
+"2017-10-02",
+"",
+754
+]
+],
+"BZ": [
+[
+"Bluebird Airways",
+"2008-01-01"
+]
+],
+"C0": [
+[
+"Centralwings"
+]
+],
+"C1": [
+[
+"Tectimes Sudamerica",
+"",
+"",
+322
+]
+],
+"C2": [
+[
+"Ceiba Intercontinental",
+"",
+"",
+304
+]
+],
+"C3": [
+[
+"Trade Air",
+"1994-04-01"
+]
+],
+"C4": [
+[
+"Alma De Mexico",
+"",
+"",
+665
+]
+],
+"C5": [
+[
+"CommutAir",
+"1989-08-01",
+"",
+841
+]
+],
+"C6": [
+[
+"Canjet Airlines",
+"",
+"2015-09-01"
+],
+[
+"Centrum Air",
+"2023-02-15"
+]
+],
+"C7": [
+[
+"Cinnamon Air",
+"2013-01-01",
+"",
+0,
+"P"
+]
+],
+"C8": [
+[
+"Cargolux Italia",
+"",
+"2013-12-31",
+0,
+"C"
+],
+[
+"Cronos Airlines",
+"2007-01-01",
+"",
+498,
+"P"
+]
+],
+"C9": [
+[
+"Cirrus Airlines",
+"1995-02-01",
+"2012-01-20",
+251
+],
+[
+"Skywise",
+"2015-02-11"
+]
+],
+"CA": [
+[
+"Air China",
+"1988-01-01",
+"",
+999
+]
+],
+"CB": [
+[
+"ScotAirways",
+"",
+"2013-03-31",
+969
+],
+[
+"Trans Caribbean Air ExportImport"
+]
+],
+"CC": [
+[
+"Macair Airlines",
+"1996-01-01",
+"2009-01-31"
+],
+[
+"CM Airlines",
+"2008-01-01",
+"2018-12-31",
+907
+]
+],
+"CD": [
+[
+"Corendon Dutch Airlines"
+]
+],
+"CE": [
+[
+"Chalair Aviation",
+"",
+"",
+980
+]
+],
+"CF": [
+[
+"City Airline",
+"1997-01-01",
+"2011-11-29",
+419
+],
+[
+"China Postal Airlines",
+"1997-02-27"
+]
+],
+"CG": [
+[
+"PNG Air",
+"1987-01-01",
+"",
+626
+]
+],
+"CH": [
+[
+"Bemidji Airlines",
+"",
+"",
+872
+]
+],
+"CI": [
+[
+"China Airlines",
+"1959-12-16",
+"",
+297
+]
+],
+"CJ": [
+[
+"BA CityFlyer"
+]
+],
+"CK": [
+[
+"China Cargo Airlines",
+"1998-07-30",
+"2010-12-31",
+0,
+"C"
+],
+[
+"China Cargo Airlines",
+"2011-01-01",
+"",
+0,
+"C"
+]
+],
+"CL": [
+[
+"Lufthansa CityLine",
+"1958-01-01",
+"",
+683
+]
+],
+"CM": [
+[
+"Copa Airlines",
+"1947-08-15",
+"",
+230
+]
+],
+"CN": [
+[
+"Grand China Air",
+"2007-01-01",
+"",
+895
+]
+],
+"CO": [
+[
+"Continental Airlines",
+"",
+"2012-03-03",
+5
+],
+[
+"Cobalt Air",
+"2015-09-01"
+]
+],
+"CP": [
+[
+"Canadian Airlines",
+"1987-01-01",
+"2000-12-31"
+],
+[
+"Compass Airlines",
+"2006-01-01",
+"",
+3
+]
+],
+"CQ": [
+[
+"Coastal Travels"
+],
+[
+"Czech Connect Airlines",
+"2011-01-01",
+"2012-01-31",
+909
+]
+],
+"CR": [
+[
+"OAG Worldwide"
+]
+],
+"CS": [
+[
+"Comlux Aruba"
+],
+[
+"Continental Micronesia",
+"1968-05-16",
+"2010-12-22"
+]
+],
+"CT": [
+[
+"Alitalia CityLiner",
+"2006-06-07"
+]
+],
+"CU": [
+[
+"Cubana De Aviacion",
+"",
+"",
+136
+]
+],
+"CV": [
+[
+"Cargolux",
+"1970-03-04",
+"",
+172,
+"C"
+]
+],
+"CW": [
+[
+"Air Marshall Islands",
+"1980-01-01",
+"2015-12-31"
+]
+],
+"CX": [
+[
+"Cathay Pacific",
+"1946-09-24",
+"",
+160
+]
+],
+"CY": [
+[
+"Cyprus Airways",
+"1947-01-01",
+"2015-01-09",
+48
+],
+[
+"Charlie Airlines",
+"2017-06-01",
+"",
+78
+]
+],
+"CZ": [
+[
+"China Southern Airlines",
+"1989-01-01",
+"",
+784
+]
+],
+"D0": [
+[
+"DHL Air UK",
+"1982-01-01",
+"",
+936
+]
+],
+"D2": [
+[
+"Severstal Air Company",
+"",
+"",
+103
+]
+],
+"D3": [
+[
+"Daallo Airlines",
+"",
+"",
+991
+]
+],
+"D4": [
+[
+"Alidaunia",
+"",
+"2015-12-31"
+],
+[
+"DART Ltd",
+"2016-01-01",
+"",
+443
+]
+],
+"D5": [
+[
+"Dauair",
+"2005-01-01",
+"2006-12-31"
+]
+],
+"D6": [
+[
+"Interair",
+"1993-01-01",
+"",
+625
+]
+],
+"D7": [
+[
+"AirAsia X",
+"",
+"",
+843
+]
+],
+"D8": [
+[
+"Djibouti Airlines",
+"1996-01-01",
+"2009-07-31"
+],
+[
+"Norwegian Air International",
+"2012-01-01",
+"2021-10-31"
+],
+[
+"Norwegian Air Sweden AOC",
+"2021-11-01"
+]
+],
+"D9": [
+[
+"Donavia",
+"",
+"",
+733
+]
+],
+"DA": [
+[
+"Air Georgia"
+]
+],
+"DB": [
+[
+"HOP Brit Air",
+"1975-01-01",
+"",
+750
+]
+],
+"DC": [
+[
+"Braathens Regional Airways",
+"1993-08-15",
+"",
+215,
+"P"
+]
+],
+"DD": [
+[
+"Nok Air"
+]
+],
+"DE": [
+[
+"Condor",
+"1956-01-01",
+"",
+881
+]
+],
+"DF": [
+[
+"Condor Berlin"
+]
+],
+"DG": [
+[
+"Cebgo",
+"1993-01-01",
+"",
+931
+]
+],
+"DH": [
+[
+"Douniah Airlines",
+"",
+"",
+0,
+"P"
+]
+],
+"DI": [
+[
+"Deutsche BA",
+"1992-01-01",
+"2003-12-31"
+],
+[
+"dba",
+"2004-01-01",
+"2008-12-31"
+],
+[
+"Norwegian Air UK",
+"2015-01-01",
+"",
+762
+]
+],
+"DJ": [
+[
+"Virgin Australia Regional",
+"1963-01-01",
+"2000-08-30",
+608
+],
+[
+"Virgin Australia",
+"2000-08-31",
+"2012-12-31",
+856
+],
+[
+"AirAsia Japan",
+"2012-08-01"
+]
+],
+"DK": [
+[
+"Thomas Cook Airlines",
+"",
+"",
+630
+]
+],
+"DL": [
+[
+"Delta Air Lines",
+"1929-06-17",
+"",
+6
+]
+],
+"DM": [
+[
+"Asian Air",
+"",
+"2022-08-30"
+],
+[
+"Arajet",
+"2022-09-01"
+]
+],
+"DN": [
+[
+"Senegal Airlines",
+"2011-01-25",
+"2016-04-12",
+440
+],
+[
+"Norwegian Air Argentina",
+"2018-10-16",
+"",
+323
+]
+],
+"DO": [
+[
+"Discovery Airways"
+]
+],
+"DP": [
+[
+"Perla Airlines",
+"",
+"2015-01-01"
+],
+[
+"Pobeda",
+"2014-12-01"
+]
+],
+"DQ": [
+[
+"Delta Connection",
+"",
+"",
+521
+]
+],
+"DR": [
+[
+"Ruili Airlines"
+]
+],
+"DS": [
+[
+"easyJet Switzerland",
+"1989-03-23"
+]
+],
+"DT": [
+[
+"Taag",
+"",
+"",
+118
+]
+],
+"DU": [
+[
+"Norwegian Long Haul",
+"2012-01-01"
+]
+],
+"DV": [
+[
+"SCAT Airlines",
+"1997-01-01",
+"",
+655
+]
+],
+"DW": [
+[
+"Aero Charter",
+"",
+"2014-12-31",
+187
+],
+[
+"Great Dane Airlines",
+"2019-06-01"
+]
+],
+"DX": [
+[
+"Danish Air Transport",
+"1989-01-01",
+"",
+243
+]
+],
+"DY": [
+[
+"Norwegian Air Shuttle (NAS)",
+"1993-01-01",
+"2021-10-31",
+328
+],
+[
+"Norwegian Air Shuttle AOC",
+"2021-11-01"
+]
+],
+"DZ": [
+[
+"Donghai Airlines",
+"",
+"",
+893
+]
+],
+"E2": [
+[
+"Eagle Atlantic Airlines",
+"2013-10-31",
+"2014-12-31",
+0,
+"P"
+]
+],
+"E3": [
+[
+"New Gen Airways",
+"2012-07-01"
+]
+],
+"E4": [
+[
+"Elysian Airlines",
+"2006-01-01",
+"2010-12-31"
+],
+[
+"Eastok Avia",
+"2006-06-01",
+"2010-04-30",
+265
+],
+[
+"Estelar Latinoamerica",
+"2009-01-01",
+"2017-12-31",
+52
+],
+[
+"Enter Air",
+"2009-10-15",
+"",
+0,
+"T"
+]
+],
+"E5": [
+[
+"Samara Airlines",
+"1992-01-01",
+"2008-12-31"
+],
+[
+"Air Arabia Egypt",
+"2009-09-09",
+"",
+844
+]
+],
+"E6": [
+[
+"Eurowings Europe",
+"2016-07-01"
+]
+],
+"E7": [
+[
+"Equaflight Service",
+"",
+"",
+965,
+"P"
+],
+[
+"Estafeta Carga Aerea",
+"",
+"2013-12-31",
+0,
+"C"
+]
+],
+"E8": [
+[
+"Alpi Eagles",
+"1979-01-01",
+"2007-12-31"
+],
+[
+"SA Regional Airlines",
+"1997-01-01",
+"2013-12-31"
+],
+[
+"City Airways",
+"2012-09-01",
+"2022-12-31"
+],
+[
+"Bees Airlines",
+"2023-01-01"
+]
+],
+"E9": [
+[
+"Evelop Airlines",
+"2013-01-01",
+"",
+783
+]
+],
+"EA": [
+[
+"East Air Lines",
+"1926-01-01",
+"1991-01-18"
+],
+[
+"East Horizon Airlines",
+"2013-12-01",
+"2014-12-31"
+],
+[
+"East Air Lines",
+"2015-05-28",
+"2017-09-30",
+7
+]
+],
+"EB": [
+[
+"Wamos Air",
+"2003-06-23",
+"",
+460
+]
+],
+"EC": [
+[
+"easyJet Europe",
+"2017-07-18"
+]
+],
+"ED": [
+[
+"Air Explore"
+]
+],
+"EE": [
+[
+"Aero Airlines",
+"2002-01-01",
+"2008-01-31",
+350
+],
+[
+"Eastern SkyJets",
+"2008-02-01",
+"2015-10-31"
+],
+[
+"Nordica",
+"2015-11-01"
+]
+],
+"EF": [
+[
+"Eznis Airways",
+"",
+"2013-12-31",
+646,
+"PC"
+],
+[
+"Fly CamInter",
+"2016-03-17",
+"",
+448
+]
+],
+"EG": [
+[
+"East Air",
+"",
+"",
+447
+]
+],
+"EH": [
+[
+"ANA Wings",
+"2010-10-01"
+]
+],
+"EI": [
+[
+"Aer Lingus",
+"1936-05-27",
+"",
+53
+]
+],
+"EJ": [
+[
+"New England Airlines"
+]
+],
+"EK": [
+[
+"Emirates",
+"1985-10-25",
+"",
+176
+]
+],
+"EL": [
+[
+"Air Nippon",
+"1974-10-10",
+"2012-04-01"
+],
+[
+"Ellinair",
+"2014-02-19"
+]
+],
+"EM": [
+[
+"Aero Benin",
+"",
+"",
+282
+]
+],
+"EN": [
+[
+"Air Dolomiti",
+"",
+"",
+101
+]
+],
+"EO": [
+[
+"FlyCongo",
+"2012-03-24",
+"2013-10-31",
+663
+],
+[
+"Air Go Egypt",
+"2014-01-01"
+]
+],
+"EP": [
+[
+"Iran Aseman Airlines",
+"1980-01-01",
+"",
+815
+]
+],
+"EQ": [
+[
+"TAME",
+"1962-12-17",
+"",
+269
+]
+],
+"ER": [
+[
+"Air East",
+"1967-01-01",
+"1974-12-31"
+],
+[
+"SereneAir",
+"2017-01-29"
+]
+],
+"ES": [
+[
+"DHL International Aviation ME",
+"1979-01-01",
+"2017-12-31",
+155
+],
+[
+"Estelar Latinoamerica",
+"2018-01-01",
+"",
+52
+]
+],
+"ET": [
+[
+"Ethiopian Airlines",
+"1946-04-08",
+"",
+71
+]
+],
+"EU": [
+[
+"Chengdu Airlines",
+"",
+"",
+811
+]
+],
+"EV": [
+[
+"ExpressJet Airlines",
+"2001-01-01",
+"",
+862
+]
+],
+"EW": [
+[
+"Eurowings",
+"1994-01-01",
+"",
+104
+]
+],
+"EX": [
+[
+"Avianca Express"
+]
+],
+"EY": [
+[
+"Etihad Airways",
+"2003-01-01",
+"",
+607
+]
+],
+"EZ": [
+[
+"Sun Air of Scandinavia"
+]
+],
+"F1": [
+[
+"Farelogix",
+"",
+"",
+941,
+"G"
+]
+],
+"F2": [
+[
+"Safarilink Aviation",
+"",
+"",
+0,
+"P"
+]
+],
+"F3": [
+[
+"FAI rent-a-jet",
+"1987-01-01",
+"2017-08-31"
+],
+[
+"Fly Excellent",
+"2007-01-01",
+"2008-12-31"
+],
+[
+"Flyadeal",
+"2017-09-23"
+]
+],
+"F4": [
+[
+"Air Flamenco"
+]
+],
+"F5": [
+[
+"Cosmic Air",
+"1997-01-01",
+"2008-12-31",
+548
+],
+[
+"Fly540 Angola",
+"2011-01-01",
+"2014-05-31"
+]
+],
+"F6": [
+[
+"Fly2sky"
+]
+],
+"F7": [
+[
+"Etihad Regional",
+"2003-01-01",
+"2017-12-12",
+33
+]
+],
+"F8": [
+[
+"Freedom Airlines",
+"2002-01-01",
+"2010-12-31"
+],
+[
+"Flair Airlines",
+"2005-01-01"
+]
+],
+"F9": [
+[
+"Frontier Airlines",
+"1994-07-05",
+"",
+422
+]
+],
+"FA": [
+[
+"Safair"
+]
+],
+"FB": [
+[
+"Bulgaria Air",
+"",
+"",
+623
+]
+],
+"FC": [
+[
+"Finncomm Airlines",
+"1993-01-01",
+"2011-12-31",
+216
+],
+[
+"Viva Colombia",
+"2012-12-25",
+"2019-01-28",
+641
+],
+[
+"Fly Corporate",
+"2016-01-01",
+"2020-08-11",
+441
+],
+[
+"Link Airways",
+"2020-08-11"
+]
+],
+"FD": [
+[
+"Thai AirAsia",
+"2003-12-08",
+"",
+900
+]
+],
+"FE": [
+[
+"Far Eastern Air Transport",
+"1957-01-01",
+"",
+436
+]
+],
+"FG": [
+[
+"Ariana Afghan Airlines",
+"",
+"",
+255
+]
+],
+"FH": [
+[
+"Freebird Airlines"
+]
+],
+"FI": [
+[
+"Icelandair",
+"1937-01-01",
+"",
+108
+]
+],
+"FJ": [
+[
+"Fiji Airways",
+"",
+"",
+260
+]
+],
+"FK": [
+[
+"Africa West Cargo",
+"",
+"2013-12-31",
+0,
+"C"
+],
+[
+"Kelowna Flightcraft Air Charter",
+"2015-01-01"
+]
+],
+"FL": [
+[
+"Airtran Airways",
+"1993-10-26",
+"",
+332
+]
+],
+"FM": [
+[
+"Shanghai Airlines",
+"1985-01-01",
+"",
+774
+]
+],
+"FN": [
+[
+"Royal Air Maroc Express",
+"",
+"2014-12-31",
+147
+],
+[
+"Fastjet",
+"2011-01-01",
+"2019-11-30",
+334
+],
+[
+"Fastjet Zimbabwe",
+"2015-01-01",
+"",
+334
+]
+],
+"FO": [
+[
+"Felix Airways",
+"",
+"",
+569
+]
+],
+"FP": [
+[
+"Freedom Air",
+"1974-01-01",
+"2015-03-01",
+224
+],
+[
+"Pelican Airlines",
+"2016-01-01"
+]
+],
+"FQ": [
+[
+"Brindabella Airlines",
+"",
+"2013-12-14",
+0,
+"P"
+],
+[
+"SOL SA LINEAS AEREAS (DBA Flyest Lineas Aereas)"
+]
+],
+"FR": [
+[
+"Ryanair",
+"1985-07-08"
+]
+],
+"FS": [
+[
+"Flyr"
+],
+[
+"Syphax Airlines",
+"2012-04-29",
+"2015-10-30",
+393
+]
+],
+"FT": [
+[
+"Farnair Switzerland",
+"1984-01-01",
+"2015-03-01"
+],
+[
+"FlyEgypt",
+"2015-02-12",
+"",
+171
+]
+],
+"FU": [
+[
+"Fuzhou Airlines",
+"2014-10-30",
+"",
+666
+]
+],
+"FV": [
+[
+"Rossiya",
+"1992-01-01",
+"",
+195
+]
+],
+"FW": [
+[
+"Ibex Airlines",
+"2000-08-07"
+]
+],
+"FX": [
+[
+"Fedex"
+]
+],
+"FY": [
+[
+"Flyfirefly",
+"2007-01-01",
+"",
+918
+]
+],
+"FZ": [
+[
+"flydubai",
+"2009-06-01",
+"",
+141
+]
+],
+"G0": [
+[
+"Alianza Glancelot"
+]
+],
+"G2": [
+[
+"Jet Express",
+"1989-01-01",
+"2008-12-31"
+],
+[
+"Albatros Airlines",
+"2010-12-01",
+"2012-12-31"
+],
+[
+"Galeyr Airline",
+"2017-06-01",
+"",
+233
+]
+],
+"G3": [
+[
+"Gol Transportes Aéreos",
+"2001-01-15",
+"",
+127
+]
+],
+"G4": [
+[
+"Guizhou Airlines",
+"1991-01-01",
+"1998-12-31"
+],
+[
+"Allegiant Air",
+"1998-06-01",
+"",
+268
+]
+],
+"G5": [
+[
+"China Express Airlines",
+"2006-01-01",
+"",
+987
+]
+],
+"G6": [
+[
+"Ghadames Air Transport",
+"2004-01-01",
+"2006-12-31"
+],
+[
+"Angkor Airways",
+"2007-01-01",
+"2008-12-31"
+],
+[
+"Denim Air",
+"2016-04-01"
+]
+],
+"G7": [
+[
+"GoJet Airlines",
+"2004-01-01",
+"",
+573
+]
+],
+"G8": [
+[
+"Go First",
+"2005-11-01"
+]
+],
+"G9": [
+[
+"Air Arabia",
+"2003-10-28",
+"",
+514
+]
+],
+"GA": [
+[
+"Garuda Indonesia",
+"1949-01-26",
+"",
+126
+]
+],
+"GB": [
+[
+"ABX Air",
+"1980-01-01",
+"",
+832
+]
+],
+"GC": [
+[
+"Gambia International Airlines",
+"1996-01-23",
+"2004-04-30",
+34
+],
+[
+"Global Feeder Services",
+"2016-08-01"
+]
+],
+"GD": [
+[
+"Aviair"
+]
+],
+"GE": [
+[
+"TransAsia Airways",
+"1951-05-21",
+"2016-11-22",
+170
+],
+[
+"Lift Airline",
+"2020-10-01",
+"",
+170
+]
+],
+"GF": [
+[
+"Gulf Air",
+"1950-01-01",
+"",
+72
+]
+],
+"GG": [
+[
+"Sky Lease Cargo",
+"1973-01-01",
+"",
+576
+]
+],
+"GH": [
+[
+"Globus",
+"",
+"",
+674
+]
+],
+"GI": [
+[
+"Itek Air",
+"",
+"",
+420
+]
+],
+"GJ": [
+[
+"Eurofly",
+"1989-05-26",
+"2010-02-28"
+],
+[
+"Zhejiang Loong Airlines",
+"2013-12-29",
+"",
+891
+]
+],
+"GK": [
+[
+"Jetstar Japan",
+"",
+"",
+798
+]
+],
+"GL": [
+[
+"Air Greenland",
+"2002-01-01",
+"",
+631
+]
+],
+"GM": [
+[
+"Air Slovakia",
+"1994-01-01",
+"2010-06-01"
+],
+[
+"Germania Flug",
+"2015-03-26",
+"2019-02-05"
+],
+[
+"Chair Airlines",
+"2019-06-11",
+"",
+581
+]
+],
+"GN": [
+[
+"Air Gabon",
+"1951-01-01",
+"2006-12-31",
+185
+]
+],
+"GO": [
+[
+"Go"
+]
+],
+"GP": [
+[
+"Pantanal Linhas Aéreas",
+"1993-01-01",
+"2013-12-31"
+],
+[
+"APG Airlines",
+"2016-01-01",
+"",
+275
+]
+],
+"GQ": [
+[
+"Sky Express",
+"2005-07-01",
+"",
+633
+]
+],
+"GR": [
+[
+"Aurigny Air Services",
+"",
+"",
+924
+]
+],
+"GS": [
+[
+"Tianjin Airlines",
+"2007-01-01",
+"",
+826
+]
+],
+"GT": [
+[
+"GB Airways",
+"1931-01-01",
+"2008-03-30"
+],
+[
+"flyvista",
+"2014-08-04",
+"2015-05-31"
+],
+[
+"Air Guilin",
+"2016-01-01",
+"",
+730
+]
+],
+"GU": [
+[
+"Aviateca",
+"",
+"",
+240
+]
+],
+"GV": [
+[
+"Grant Aviation",
+"1993-01-01"
+],
+[
+"Aero Flight",
+"2004-01-01",
+"2005-12-31"
+],
+[
+"Sky Gabon",
+"2006-01-01",
+"2019-12-31",
+536,
+"C"
+]
+],
+"GW": [
+[
+"SkyGreece Airlines",
+"1992-01-01",
+"2012-12-11"
+],
+[
+"Costa Rica Green Airways",
+"2018-01-01"
+]
+],
+"GX": [
+[
+"Guangxi Beibu Gulf Airlines",
+"",
+"",
+872
+],
+[
+"JetX",
+"2003-01-01",
+"2007-12-31"
+],
+[
+"Primera Air",
+"2008-01-01",
+"2008-12-31",
+834
+]
+],
+"GY": [
+[
+"Sky Bishek",
+"2012-01-01",
+"2015-06-30"
+],
+[
+"Colorful Guizhou Airlines",
+"2015-07-01",
+"",
+661
+]
+],
+"GZ": [
+[
+"Air Rarotonga",
+"",
+"",
+755
+]
+],
+"H1": [
+[
+"Hahn Air Systems"
+]
+],
+"H2": [
+[
+"Sky Airline",
+"2001-12-01",
+"",
+605
+]
+],
+"H3": [
+[
+"Harbour Air",
+"1982-01-01",
+"2019-07-31"
+],
+[
+"Hermes Airlines",
+"2011-08-01",
+"2015-02-15",
+490
+],
+[
+"Harbour Air",
+"2019-07-31"
+]
+],
+"H4": [
+[
+"Heli Securite",
+"",
+"2015-01-01"
+]
+],
+"H5": [
+[
+"Magadan Airlines",
+"1993-01-01",
+"2006-07-31"
+],
+[
+"Haiti Aviation",
+"2013-01-01",
+"2013-12-31"
+],
+[
+"CM Airlines",
+"2024-01-01",
+"",
+907
+]
+],
+"H6": [
+[
+"Hageland Aviation Services",
+"1981-01-01",
+"2000-11-30"
+],
+[
+"Enkor",
+"1986-01-01",
+"2005-12-31"
+],
+[
+"Bulgarian Air Charter",
+"2000-12-14"
+]
+],
+"H7": [
+[
+"Eagle Air"
+]
+],
+"H8": [
+[
+"HESA Airlines",
+"2010-01-01",
+"2015-12-31"
+],
+[
+"Chilejet",
+"2016-05-01"
+]
+],
+"H9": [
+[
+"Helitt Líneas Aereas",
+"2011-11-01",
+"2014-10-31",
+221
+],
+[
+"Himalaya Airlines",
+"2015-04-01",
+"",
+769
+]
+],
+"HA": [
+[
+"Hawaiian Airlines",
+"1929-01-30",
+"",
+173
+]
+],
+"HB": [
+[
+"Homer Air",
+"1973-01-01",
+"2015-12-31"
+],
+[
+"Asia Atlantic Airlines",
+"2013-08-19",
+"2018-10-30",
+943
+],
+[
+"Greater Bay Airlines",
+"2022-07-23"
+]
+],
+"HC": [
+[
+"Aero-Tropics Air Services",
+"2000-02-01",
+"2008-10-31"
+],
+[
+"Holidays Czech Airlines",
+"2010-08-01",
+"2014-07-31"
+],
+[
+"Air Senegal",
+"2018-05-14",
+"",
+490
+]
+],
+"HD": [
+[
+"Air Do",
+"1998-05-12"
+]
+],
+"HE": [
+[
+"LGW Luftfahrtges Walter"
+]
+],
+"HF": [
+[
+"Air Cote D Ivoire",
+"",
+"",
+483
+]
+],
+"HG": [
+[
+"Niki",
+"2003-01-01",
+"2017-12-14"
+]
+],
+"HH": [
+[
+"Qanot Sharq",
+"",
+"",
+283
+]
+],
+"HI": [
+[
+"Papillon Airways",
+"",
+"",
+563
+]
+],
+"HJ": [
+[
+"Hellas Jet",
+"",
+"",
+681
+]
+],
+"HK": [
+[
+"Hamburg Airways",
+"2011-03-01",
+"2014-12-31",
+516
+],
+[
+"Skippers Aviation",
+"2016-01-01"
+]
+],
+"HM": [
+[
+"Air Seychelles",
+"",
+"",
+61
+]
+],
+"HN": [
+[
+"Afghan Jet International",
+"",
+"",
+714
+]
+],
+"HO": [
+[
+"Juneyao Airlines",
+"",
+"",
+18,
+"P"
+],
+[
+"Airways International",
+"1981-01-01",
+"1999-12-31"
+]
+],
+"HP": [
+[
+"Amapola Flyg",
+"",
+"2023-08-30"
+],
+[
+"PopulAir",
+"2023-08-31",
+"",
+415
+]
+],
+"HQ": [
+[
+"Thomas Cook Airlines Belgium",
+"",
+"2017-10-27",
+583,
+"P"
+]
+],
+"HR": [
+[
+"Hahn Air",
+"1994-01-01",
+"",
+169
+]
+],
+"HS": [
+[
+"Direktflyg",
+"2000-10-01",
+"2015-12-31",
+198
+],
+[
+"Heli Sécurité",
+"2014-01-01"
+]
+],
+"HT": [
+[
+"Hellenic Imperial Airways",
+"2006-05-01",
+"2015-05-01",
+570
+]
+],
+"HU": [
+[
+"Hainan Airlines",
+"1989-01-01",
+"",
+880
+]
+],
+"HV": [
+[
+"Transavia Airlines",
+"",
+"",
+979
+]
+],
+"HW": [
+[
+"North Wright Air"
+]
+],
+"HX": [
+[
+"Hong Kong Airlines",
+"",
+"",
+851
+],
+[
+"Hamburg Airlines",
+"1988-04-01",
+"1997-12-21"
+]
+],
+"HY": [
+[
+"Uzbekistan Airways",
+"",
+"",
+250
+]
+],
+"HZ": [
+[
+"Aurora Airlines",
+"2013-12-08",
+"",
+598
+]
+],
+"I1": [
+[
+"CTS Viaggi",
+"",
+"",
+489
+]
+],
+"I2": [
+[
+"Iberia Express",
+"2012-03-25",
+"",
+60
+]
+],
+"I3": [
+[
+"ATA Airlines",
+"2010-01-01",
+"",
+917
+]
+],
+"I4": [
+[
+"Scott Air"
+]
+],
+"I5": [
+[
+"Air Mali",
+"2005-01-01",
+"2012-08-01",
+261
+],
+[
+"AirAsia India",
+"2014-06-12"
+]
+],
+"I6": [
+[
+"Air Indus",
+"",
+"",
+315
+]
+],
+"I7": [
+[
+"Indonesia Air Transport",
+"1968-01-01",
+"2015-12-31"
+],
+[
+"Paramount Airways",
+"2005-10-01",
+"2010-08-31"
+],
+[
+"Int'Air Îles",
+"2007-01-01"
+]
+],
+"I8": [
+[
+"Izhavia",
+"",
+"",
+25
+]
+],
+"I9": [
+[
+"Air Italy",
+"2005-05-29",
+"2018-02-28",
+67
+]
+],
+"IA": [
+[
+"Iraqi Airways",
+"1946-01-28",
+"",
+73
+]
+],
+"IB": [
+[
+"Iberia",
+"1927-06-28",
+"",
+75
+]
+],
+"IC": [
+[
+"Nacil Indian Airline",
+"",
+"",
+58
+]
+],
+"ID": [
+[
+"Interlink",
+"1998-01-01",
+"2010-12-31",
+0,
+"P"
+],
+[
+"Batik Air",
+"2013-05-03",
+"",
+0,
+"P"
+]
+],
+"IE": [
+[
+"Solomon Airlines",
+"",
+"",
+193
+]
+],
+"IF": [
+[
+"Islas Airways",
+"2003-02-01",
+"2012-10-15"
+],
+[
+"FlyBaghdad",
+"2015-06-15"
+]
+],
+"IG": [
+[
+"Meridiana",
+"1964-01-01",
+"2018-02-28",
+191
+],
+[
+"Air Italy",
+"2018-03-01",
+"",
+191
+]
+],
+"IH": [
+[
+"Jsc Irtysh Air"
+]
+],
+"II": [
+[
+"IBC Airways",
+"1991-01-01",
+"",
+175
+]
+],
+"IJ": [
+[
+"Spring Airlines Japan"
+]
+],
+"IK": [
+[
+"Kaya Airlines",
+"1991-01-01",
+"2015-12-31"
+],
+[
+"Pegas Fly",
+"1993-06-15",
+"1995-03-31",
+770
+],
+[
+"Imair Airlines",
+"1994-01-01",
+"2009-11-23"
+],
+[
+"Air Kiribati",
+"1995-04-01"
+]
+],
+"IL": [
+[
+"Trigana Air Service",
+"2014-01-01"
+]
+],
+"IM": [
+[
+"Mint Líneas Aéreas"
+]
+],
+"IN": [
+[
+"MAT Macedonian Airlines",
+"1994-01-01",
+"2009-09-01"
+],
+[
+"NAM Air",
+"2013-12-11",
+"",
+274
+]
+],
+"IO": [
+[
+"IrAero",
+"1999-01-01",
+"",
+154
+]
+],
+"IP": [
+[
+"Iberworld Airlines",
+"1998-04-11",
+"2013-05-05",
+560
+]
+],
+"IQ": [
+[
+"Augsburg Airways",
+"1980-01-01",
+"2013-12-31",
+614
+],
+[
+"Qazaq Air",
+"2015-07-20"
+]
+],
+"IR": [
+[
+"Iran Air",
+"1961-01-01",
+"",
+96
+]
+],
+"IS": [
+[
+"Island Airlines",
+"1930-01-01",
+"2015-12-11"
+],
+[
+"AIS Airlines",
+"2009-01-01"
+]
+],
+"IT": [
+[
+"Kingfisher Airlines",
+"2004-01-01",
+"2012-10-20"
+],
+[
+"Tigerair Taiwan",
+"2014-09-26",
+"",
+608
+]
+],
+"IU": [
+[
+"Hevilift",
+"1994-01-01",
+"2021-08-05"
+],
+[
+"Super Air Jet",
+"2021-08-06",
+"",
+920
+]
+],
+"IV": [
+[
+"Air Djibouti",
+"1963-01-01",
+"2002-12-31"
+],
+[
+"Caspian Airlines",
+"1993-01-01",
+"2015-12-31",
+864
+],
+[
+"InvestAvia",
+"2007-01-01",
+"2015-06-30"
+],
+[
+"Air Djibouti",
+"2015-01-01"
+],
+[
+"VVB Aviation Malta",
+"2015-01-01",
+"2015-12-31"
+]
+],
+"IW": [
+[
+"Wings Air",
+"2003-01-01",
+"",
+513
+]
+],
+"IX": [
+[
+"Air India Express",
+"2005-04-29"
+]
+],
+"IY": [
+[
+"Yemen Airways",
+"",
+"",
+635
+]
+],
+"IZ": [
+[
+"Arkia",
+"",
+"",
+238
+]
+],
+"J0": [
+[
+"Jetlink Express",
+"",
+"",
+402
+]
+],
+"J1": [
+[
+"OntJet",
+"2015-04-06",
+"",
+528
+]
+],
+"J2": [
+[
+"Azerbaijan Airlines",
+"",
+"",
+771
+]
+],
+"J3": [
+[
+"Northwestern Air Lease"
+]
+],
+"J4": [
+[
+"Buffalo Airways",
+"1978-05-13",
+"2015-11-30"
+],
+[
+"Badr Airlines",
+"1997-01-01",
+"2004-06-30"
+],
+[
+"Badr Airlines",
+"2004-07-01"
+]
+],
+"J5": [
+[
+"Alaska Seaplane Service"
+]
+],
+"J6": [
+[
+"Jet-Ops",
+"2005-01-01"
+]
+],
+"J7": [
+[
+"Denim Air",
+"1996-01-01",
+"2009-12-31"
+],
+[
+"Centre-Avia",
+"2000-01-01",
+"2010-12-31"
+],
+[
+"Afrijet Business Service",
+"2016-04-01"
+]
+],
+"J8": [
+[
+"Berjaya Air",
+"1989-01-01",
+"",
+801
+]
+],
+"J9": [
+[
+"Jazeera Airways",
+"",
+"",
+486
+]
+],
+"JA": [
+[
+"B&H Airlines",
+"1994-01-01",
+"2015-07-02",
+995
+],
+[
+"Jetsmart Chile",
+"2017-07-25"
+]
+],
+"JB": [
+[
+"Helijet International",
+"",
+"",
+613
+]
+],
+"JC": [
+[
+"Japan Air Commuter",
+"1983-07-01"
+],
+[
+"JAL Express",
+"1998-07-01",
+"2014-09-30"
+]
+],
+"JD": [
+[
+"Deer Jet Airlines",
+"2006-01-01",
+"2010-05-03"
+],
+[
+"Beijing Capital Airlines",
+"2010-05-04",
+"",
+898
+]
+],
+"JE": [
+[
+"Mango",
+"2006-01-01"
+]
+],
+"JF": [
+[
+"Jet Asia Airways",
+"2009-02-01",
+"",
+884
+]
+],
+"JG": [
+[
+"Jetgo Australia"
+]
+],
+"JH": [
+[
+"Fuji Dream Airlines"
+]
+],
+"JI": [
+[
+"Eastern Caribbean Airlines"
+]
+],
+"JJ": [
+[
+"LATAM Brasil",
+"1976-07-12",
+"",
+957
+]
+],
+"JK": [
+[
+"Spanair",
+"1988-03-01",
+"2012-01-27",
+680
+]
+],
+"JL": [
+[
+"Japan Airlines",
+"1951-10-25",
+"",
+131
+]
+],
+"JM": [
+[
+"Jambojet",
+"2014-04-01",
+"",
+702
+]
+],
+"JN": [
+[
+"Alaska Air Transit"
+],
+[
+"New Livingston",
+"2012-01-01",
+"2014-10-07",
+401
+]
+],
+"JO": [
+[
+"Jet Time",
+"2006-09-01"
+]
+],
+"JP": [
+[
+"Adria Airways",
+"1961-03-14",
+"2019-09-30",
+165
+]
+],
+"JQ": [
+[
+"Jetstar",
+"2003-01-01",
+"",
+41
+]
+],
+"JR": [
+[
+"Aero California",
+"1960-01-01",
+"2008-07-23"
+],
+[
+"Joy Air",
+"2009-06-01",
+"",
+929
+]
+],
+"JS": [
+[
+"Air Koryo",
+"",
+"",
+120
+]
+],
+"JT": [
+[
+"Lion Air",
+"2000-06-30",
+"",
+990
+]
+],
+"JU": [
+[
+"JAT Airways",
+"2003-08-08",
+"2013-10-25"
+],
+[
+"Air Serbia",
+"2013-10-26",
+"",
+115
+]
+],
+"JV": [
+[
+"Bearskin Airlines",
+"1963-07-17",
+"",
+632
+]
+],
+"JW": [
+[
+"Skippers Aviation",
+"2009-01-01",
+"2012-04-30"
+],
+[
+"Vanilla Air",
+"2012-08-01",
+"",
+842
+]
+],
+"JX": [
+[
+"Nice Helicopteres",
+"",
+"2014-12-31",
+179
+],
+[
+"DAC East Africa",
+"2011-01-01",
+"2019-10-31",
+704
+],
+[
+"STARLUX Airlines",
+"2019-11-01"
+]
+],
+"JY": [
+[
+"InterCaribbean Airways",
+"1992-01-01",
+"",
+653
+]
+],
+"JZ": [
+[
+"Skyways",
+"1993-01-01",
+"2012-05-22",
+752
+],
+[
+"Jatayu Airlines",
+"2014-01-25",
+"2016-12-31"
+],
+[
+"Jetsmart Peru",
+"2021-02-17"
+]
+],
+"K2": [
+[
+"Eurolot",
+"1996-01-01",
+"2015-03-31",
+78
+]
+],
+"K3": [
+[
+"Taquan Air Services"
+]
+],
+"K4": [
+[
+"ALS"
+]
+],
+"K5": [
+[
+"SeaPort",
+"2008-06-05",
+"",
+609,
+"P"
+]
+],
+"K6": [
+[
+"Cambodia Angkor Air",
+"2009-01-01",
+"",
+188
+]
+],
+"K7": [
+[
+"Air KBZ",
+"2011-04-02",
+"",
+314
+]
+],
+"K8": [
+[
+"Zambia Skyways",
+"1999-01-01",
+"2010-12-31",
+241
+],
+[
+"World Atlantic Airlines",
+"2002-01-01",
+"2015-12-31"
+],
+[
+"Kan Air",
+"2010-01-01"
+]
+],
+"K9": [
+[
+"Kalitta Charters",
+"2001-12-01"
+],
+[
+"TonleSap Airlines",
+"2011-01-21",
+"2013-08-31",
+443
+]
+],
+"KA": [
+[
+"Cathay Dragon",
+"1985-07-01",
+"",
+43
+]
+],
+"KB": [
+[
+"Druk Air",
+"1983-02-11",
+"",
+787
+]
+],
+"KC": [
+[
+"Air Astana",
+"2002-05-15",
+"",
+465
+]
+],
+"KD": [
+[
+"KD Avia",
+"1945-10-08",
+"2009-09-08"
+],
+[
+"Kalstar Aviation",
+"2008-09-22",
+"2017-09-30"
+],
+[
+"Western Global Airlines",
+"2013-03-06",
+"",
+904
+]
+],
+"KE": [
+[
+"Korean Air",
+"1969-03-01",
+"",
+180
+]
+],
+"KF": [
+[
+"Blue1",
+"1988-01-01",
+"2016-12-31",
+142
+],
+[
+"Air Belgium",
+"2018-06-01",
+"",
+142
+]
+],
+"KG": [
+[
+"Aerogaviota",
+"",
+"",
+854
+]
+],
+"KH": [
+[
+"Aloha Air Cargo",
+"2008-05-15",
+"",
+687
+]
+],
+"KI": [
+[
+"KrasAvia",
+"1992-01-01"
+]
+],
+"KJ": [
+[
+"British Mediterranean Airways",
+"1994-01-01",
+"2007-12-31",
+994
+],
+[
+"Air Incheon",
+"2013-01-01",
+"",
+994
+]
+],
+"KK": [
+[
+"AtlasGlobal",
+"2001-06-01",
+"",
+610
+]
+],
+"KL": [
+[
+"KLM",
+"1919-10-07",
+"",
+74
+]
+],
+"KM": [
+[
+"Air Malta",
+"",
+"2024-03-30",
+643
+],
+[
+"KM Malta Airlines",
+"2024-03-31",
+"",
+643
+]
+],
+"KN": [
+[
+"China United Airlines",
+"",
+"",
+822
+]
+],
+"KO": [
+[
+"Khors Air",
+"1990-01-01",
+"2016-06-30",
+354
+],
+[
+"Komiaviatrans",
+"2016-07-01"
+]
+],
+"KP": [
+[
+"ASKY Airlines",
+"2010-01-01",
+"",
+32
+]
+],
+"KQ": [
+[
+"Kenya Airways",
+"1977-02-04",
+"",
+706
+]
+],
+"KR": [
+[
+"Kyrgyz Airways",
+"2010-05-01",
+"2011-03-31",
+265
+],
+[
+"Air Bishkek",
+"2011-04-01",
+"2016-07-07",
+265
+],
+[
+"Cambodia Airways",
+"2017-09-11",
+"",
+265
+]
+],
+"KS": [
+[
+"Penair",
+"",
+"",
+339
+]
+],
+"KT": [
+[
+"Katmai Air",
+"",
+"2015-12-31"
+],
+[
+"SiAvia",
+"2012-01-01",
+"2015-12-31"
+],
+[
+"Fly Kiss",
+"2016-01-01"
+]
+],
+"KU": [
+[
+"Kuwait Airways",
+"",
+"",
+229
+]
+],
+"KV": [
+[
+"Asian Express Airline",
+"2011-01-01",
+"2015-12-31",
+360
+],
+[
+"Sky Regional Airlines",
+"2016-05-01"
+]
+],
+"KW": [
+[
+"Kharkiv Airlines",
+"",
+"",
+711
+],
+[
+"Wataniya Airways",
+"2009-01-01",
+"2011-03-17",
+100
+]
+],
+"KX": [
+[
+"Cayman Airways",
+"",
+"",
+378
+]
+],
+"KY": [
+[
+"Kunming Airlines",
+"",
+"",
+833
+]
+],
+"KZ": [
+[
+"Nippon Cargo Airlines",
+"1985-01-01",
+"",
+933
+]
+],
+"L1": [
+[
+"E Savtravel"
+]
+],
+"L3": [
+[
+"Lynx Aviation"
+]
+],
+"L4": [
+[
+"Air Service Liege (ASL)"
+],
+[
+"Línea Turística Aereotuy (LTA)",
+"1982-01-01",
+"2015-06-30",
+445
+]
+],
+"L5": [
+[
+"Atlantique Air Assistance",
+"1989-01-01",
+"",
+402
+],
+[
+"Línea Aerea Cuencana",
+"2012-01-01",
+"2015-01-01"
+]
+],
+"L6": [
+[
+"Mauritanian Airlines Int",
+"",
+"",
+495
+]
+],
+"L7": [
+[
+"Lugansk Airlines"
+]
+],
+"L8": [
+[
+"Air Luxor",
+"1988-01-01",
+"2006-09-30"
+],
+[
+"Afric Aviation",
+"2011-01-01",
+"",
+348
+]
+],
+"L9": [
+[
+"Belle Air Europe",
+"",
+"",
+812
+]
+],
+"LA": [
+[
+"LATAM Chile",
+"1929-03-05",
+"",
+45
+]
+],
+"LB": [
+[
+"Air Costa",
+"2013-10-15"
+]
+],
+"LC": [
+[
+"ECAir",
+"2011-09-24",
+"",
+753
+]
+],
+"LE": [
+[
+"Norwegian Air Sweden AB"
+]
+],
+"LF": [
+[
+"Lao Central",
+"2010-01-01",
+"2014-12-31",
+971
+],
+[
+"Contour Airlines",
+"2016-01-01",
+"",
+522
+]
+],
+"LG": [
+[
+"Luxair",
+"",
+"",
+149
+]
+],
+"LH": [
+[
+"Lufthansa",
+"1955-01-01",
+"",
+220,
+"P"
+],
+[
+"Lufthansa Cargo",
+"1977-01-01",
+"",
+20,
+"C"
+]
+],
+"LI": [
+[
+"LIAT",
+"1974-01-01",
+"",
+140
+]
+],
+"LJ": [
+[
+"Jin Air",
+"",
+"",
+718
+]
+],
+"LK": [
+[
+"Lao Air",
+"2002-01-01",
+"2013-12-31"
+],
+[
+"Kyrgyz Airlines",
+"2013-01-01",
+"2013-01-31",
+915
+],
+[
+"Lao Skyway",
+"2014-01-01"
+]
+],
+"LL": [
+[
+"Miami Air International",
+"1991-10-01",
+"2020-05-01"
+],
+[
+"Level",
+"2020-05-01",
+"",
+0,
+"P"
+]
+],
+"LM": [
+[
+"Loganair",
+"",
+"",
+682
+]
+],
+"LN": [
+[
+"Libyan Airlines",
+"1965-01-01",
+"",
+148
+]
+],
+"LO": [
+[
+"LOT Polish Airlines",
+"1929-01-01",
+"",
+80
+]
+],
+"LP": [
+[
+"LATAM Perú",
+"1998-01-01",
+"",
+544
+]
+],
+"LQ": [
+[
+"Skynet Asia Airways",
+"1997-01-01",
+"2014-02-28"
+],
+[
+"Air Guinea",
+"2004-01-01",
+"2005-12-31"
+],
+[
+"Lanmei Airlines",
+"2017-09-15",
+"",
+961
+]
+],
+"LR": [
+[
+"Avianca Costa Rica",
+"",
+"",
+133
+]
+],
+"LS": [
+[
+"Jet2.com",
+"2003-02-12",
+"",
+949
+]
+],
+"LT": [
+[
+"Air Lituanica",
+"2013-05-01",
+"2015-05-22",
+431
+],
+[
+"Longjiang Airlines",
+"2016-08-01",
+"",
+867
+]
+],
+"LU": [
+[
+"LAN Express",
+"1998-01-01",
+"",
+972
+]
+],
+"LV": [
+[
+"OpenSkies",
+"2008-03-01",
+"2020-07-31",
+284
+],
+[
+"Mega Maldives",
+"2010-12-23",
+"2017-05-02",
+400,
+"P"
+],
+[
+"Level",
+"2017-06-01",
+"",
+0,
+"P"
+]
+],
+"LW": [
+[
+"Pacific Wings",
+"",
+"",
+568
+]
+],
+"LX": [
+[
+"Swiss International Air Lines",
+"2002-01-01",
+"",
+724
+]
+],
+"LY": [
+[
+"El Al",
+"1948-01-01",
+"",
+114
+]
+],
+"LZ": [
+[
+"Belle Air",
+"2005-01-01",
+"2013-11-24",
+379
+],
+[
+"Swiss Global Air Lines",
+"2005-01-01",
+"2018-04-19"
+]
+],
+"M0": [
+[
+"Aero Mongolia",
+"",
+"",
+719
+]
+],
+"M2": [
+[
+"MHS Aviation"
+]
+],
+"M3": [
+[
+"LATAM Cargo Brasil",
+"1995-01-01"
+],
+[
+"Air Norway",
+"2003-01-01",
+"2017-10-31"
+]
+],
+"M4": [
+[
+"Mistral Air",
+"1981-01-01",
+"",
+334
+],
+[
+"Nayzak Air",
+"2006-01-01",
+"2009-12-31"
+],
+[
+"Smart Aviation",
+"2007-05-03",
+"2015-12-31",
+334
+]
+],
+"M5": [
+[
+"Kenmore Air",
+"",
+"",
+763
+]
+],
+"M6": [
+[
+"Amerijet International",
+"1974-01-01",
+"",
+810
+]
+],
+"M7": [
+[
+"Marsland Aviation",
+"",
+"2013-11-30",
+293
+]
+],
+"M8": [
+[
+"SKYJET Airlines",
+"2012-12-14"
+]
+],
+"M9": [
+[
+"Motor Sich Jsc",
+"",
+"",
+11
+]
+],
+"MA": [
+[
+"MALÉV Hungarian Airlines",
+"1956-11-25",
+"2012-02-03",
+182
+]
+],
+"MB": [
+[
+"Mng Airlines Cargo",
+"",
+"",
+716,
+"C"
+]
+],
+"MC": [
+[
+"Air Mobility Command"
+],
+[
+"Macedonian Airlines",
+"1992-01-01",
+"2003-12-31"
+]
+],
+"MD": [
+[
+"Air Madagascar",
+"",
+"",
+258
+]
+],
+"ME": [
+[
+"Middle East Airlines",
+"",
+"",
+76
+]
+],
+"MF": [
+[
+"XiamenAir",
+"1984-07-25",
+"",
+731
+]
+],
+"MG": [
+[
+"Miami Air Lease",
+"1971-01-01",
+"",
+424
+],
+[
+"Champion Air",
+"1995-07-01",
+"2008-05-31"
+]
+],
+"MH": [
+[
+"Malaysia Airlines",
+"1972-10-01",
+"",
+232
+]
+],
+"MI": [
+[
+"SilkAir",
+"1992-01-01",
+"",
+629
+]
+],
+"MJ": [
+[
+"Mihin Lanka",
+"",
+"",
+817
+]
+],
+"MK": [
+[
+"Air Mauritius",
+"",
+"",
+239
+]
+],
+"ML": [
+[
+"Sky Mali"
+],
+[
+"Air Mediterranee",
+"1995-01-01",
+"2016-02-15",
+853
+]
+],
+"MM": [
+[
+"Peach Aviation"
+]
+],
+"MN": [
+[
+"Comair",
+"1943-01-01",
+"",
+161
+]
+],
+"MO": [
+[
+"Calm Air International",
+"",
+"",
+622
+]
+],
+"MP": [
+[
+"Martinair",
+"",
+"",
+129
+]
+],
+"MQ": [
+[
+"Envoy Air",
+"1998-01-01",
+"",
+93
+]
+],
+"MR": [
+[
+"Hunnu Air",
+"",
+"",
+861
+]
+],
+"MS": [
+[
+"EgyptAir",
+"1933-07-01",
+"",
+77
+]
+],
+"MT": [
+[
+"Thomas Cook Airlines",
+"",
+"",
+727
+]
+],
+"MU": [
+[
+"China Eastern Airlines",
+"1988-06-25",
+"",
+781
+]
+],
+"MV": [
+[
+"Air Mediterranean"
+],
+[
+"Armenian International Airways",
+"2002-07-12",
+"2004-12-31"
+]
+],
+"MW": [
+[
+"Mokulele Airlines",
+"1994-01-01",
+"",
+415
+]
+],
+"MX": [
+[
+"Mexicana de Aviación",
+"1923-01-01",
+"2010-12-31",
+132
+],
+[
+"Breeze Airways",
+"2021-05-27"
+]
+],
+"MY": [
+[
+"Maya Island Air",
+"1962-01-01",
+"2016-08-31",
+391
+],
+[
+"MAXjet Airways",
+"2003-01-01",
+"2007-12-24"
+],
+[
+"MASwings",
+"2007-10-01",
+"",
+819
+]
+],
+"MZ": [
+[
+"Merpati Nusantara Airlines",
+"1962-09-06",
+"2014-02-15",
+532
+],
+[
+"SAEREO",
+"1994-01-01",
+"2013-12-31"
+],
+[
+"Amakusa Airlines",
+"2000-03-23"
+]
+],
+"N0": [
+[
+"Norse Atlantic Airways"
+]
+],
+"N2": [
+[
+"Dagestan Airlines"
+]
+],
+"N3": [
+[
+"Aerolineas Mas",
+"",
+"",
+877
+]
+],
+"N4": [
+[
+"Nord Wind"
+]
+],
+"N5": [
+[
+"Nolinor Aviation",
+"1997-01-01"
+],
+[
+"Norfolk Air",
+"2006-05-01",
+"2012-02-26"
+]
+],
+"N6": [
+[
+"Nomad Aviation"
+]
+],
+"N7": [
+[
+"LagunAir",
+"2003-09-29",
+"2008-12-31"
+],
+[
+"Nordic Regional Airlines",
+"2011-10-20"
+]
+],
+"N8": [
+[
+"National Airlines",
+"",
+"",
+416
+]
+],
+"N9": [
+[
+"Novair",
+"1997-11-01"
+]
+],
+"NA": [
+[
+"North American Airlines",
+"1989-01-01",
+"2014-06-09",
+455
+],
+[
+"Nesma Airlines",
+"2016-08-01",
+"",
+646
+]
+],
+"NB": [
+[
+"Sterling Airlines",
+"1962-01-01",
+"2008-10-29",
+373
+],
+[
+"Skypower Express Airways",
+"1985-01-01",
+"",
+0,
+"P"
+]
+],
+"NC": [
+[
+"National Jet Systems",
+"1990-07-01",
+"2009-02-28"
+],
+[
+"Cobham Aviation Services Australia",
+"2009-03-01"
+]
+],
+"ND": [
+[
+"Airlink (Papua New Guinea)",
+"1990-06-01",
+"2007-07-30"
+],
+[
+"Sky Wings Airlines",
+"2006-06-01",
+"2012-12-31",
+171
+],
+[
+"FMI Air",
+"2012-09-01"
+]
+],
+"NE": [
+[
+"Nesma Airlines",
+"2010-07-18",
+"",
+477
+]
+],
+"NF": [
+[
+"Air Vanuatu",
+"1981-01-01",
+"",
+218
+]
+],
+"NG": [
+[
+"NovAir"
+],
+[
+"Aero Contractors",
+"1959-01-01",
+"2016-03-31",
+708
+],
+[
+"Al Naser Wings Airlines",
+"2018-07-01",
+"2019-04-30",
+708
+]
+],
+"NH": [
+[
+"All Nippon Airways",
+"1952-12-27",
+"",
+205
+]
+],
+"NI": [
+[
+"Portugalia",
+"1988-01-01",
+"",
+685
+]
+],
+"NJ": [
+[
+"Nordic Global Airlines",
+"2011-04-01",
+"2015-05-31",
+0,
+"C"
+],
+[
+"Niger Airways",
+"2016-08-01"
+]
+],
+"NK": [
+[
+"Spirit Airlines",
+"1980-01-01",
+"",
+487
+]
+],
+"NL": [
+[
+"Shaheen Air",
+"",
+"2018-10-08",
+740
+],
+[
+"Aero4M",
+"2015-01-01",
+"2021-12-31"
+],
+[
+"Amelia International",
+"2022-01-01"
+]
+],
+"NM": [
+[
+"Manx"
+]
+],
+"NN": [
+[
+"Vim Airlines",
+"2000-01-01",
+"",
+823
+]
+],
+"NO": [
+[
+"Neos",
+"2002-03-08",
+"",
+703
+]
+],
+"NP": [
+[
+"Nile Air",
+"",
+"",
+325
+]
+],
+"NQ": [
+[
+"Air Japan",
+"1990-06-29"
+]
+],
+"NR": [
+[
+"Al Naser Wings Airlines",
+"2015-04-01",
+"2018-06-30"
+],
+[
+"Manta Air",
+"2019-02-01"
+]
+],
+"NS": [
+[
+"Hebei Airlines",
+"",
+"",
+836
+]
+],
+"NT": [
+[
+"Binter Canarias",
+"1989-03-26",
+"",
+474
+]
+],
+"NU": [
+[
+"Japan Transocean Air",
+"",
+"",
+353
+]
+],
+"NV": [
+[
+"Iranian Naft Airline",
+"1992-01-01",
+"",
+346
+]
+],
+"NW": [
+[
+"Northwest Airlines",
+"",
+"2010-01-31"
+]
+],
+"NX": [
+[
+"Air Macau",
+"1995-11-09",
+"",
+675
+]
+],
+"NY": [
+[
+"Air Iceland",
+"1997-01-01",
+"",
+882
+]
+],
+"NZ": [
+[
+"National Airways Corporation",
+"1945-01-01",
+"1978-12-31"
+],
+[
+"Air New Zealand",
+"1965-04-01",
+"",
+86
+]
+],
+"O2": [
+[
+"Hopscotch Air, Inc"
+]
+],
+"O4": [
+[
+"Antrak Air",
+"2003-01-01",
+"2012-12-31",
+916
+],
+[
+"Andes Líneas Aéreas",
+"2006-06-20",
+"",
+650
+],
+[
+"Orange2fly",
+"2015-09-01",
+"2021-09-30"
+]
+],
+"O5": [
+[
+"Comores Aviation International",
+"",
+"",
+174
+]
+],
+"O6": [
+[
+"Avianca Brasil",
+"1998-01-01",
+"2019-06-24",
+247
+]
+],
+"O7": [
+[
+"Orenburg Region Airlines"
+]
+],
+"O8": [
+[
+"Axis International Lines",
+"2005-01-01",
+"2006-01-01"
+],
+[
+"Siam Air",
+"2014-01-01",
+"2016-09-30",
+874
+]
+],
+"O9": [
+[
+"Nova Airways",
+"2000-01-01",
+"",
+948
+]
+],
+"OA": [
+[
+"Olympic Air",
+"2009-09-29",
+"",
+50
+]
+],
+"OB": [
+[
+"Boliviana de Aviación (BoA)",
+"2007-10-24",
+"",
+930
+]
+],
+"OC": [
+[
+"Oriental Air Bridge"
+]
+],
+"OD": [
+[
+"Batik Air Malaysia",
+"2013-03-22",
+"",
+816
+]
+],
+"OE": [
+[
+"Cairo Aviation",
+"1998-01-01",
+"2017-12-31",
+207
+],
+[
+"Amira Air",
+"2004-01-01",
+"2018-03-17"
+],
+[
+"Lauda",
+"2018-03-18"
+]
+],
+"OF": [
+[
+"Air Finland",
+"2003-01-01",
+"2012-06-26",
+442
+],
+[
+"Overland Airways",
+"2016-01-01",
+"",
+0,
+"C"
+]
+],
+"OG": [
+[
+"Air Freight NZ",
+"1989-07-01",
+"2016-07-01"
+],
+[
+"Air Onix",
+"2012-04-28",
+"2013-12-31",
+130
+],
+[
+"Fly Play",
+"2021-06-24",
+"",
+224
+]
+],
+"OH": [
+[
+"Comair",
+"1977-01-01",
+"2012-09-29"
+],
+[
+"PSA Airlines",
+"1995-01-01",
+"",
+320
+]
+],
+"OI": [
+[
+"Hinterland Aviation"
+]
+],
+"OJ": [
+[
+"Overland Airways",
+"2003-11-26",
+"2015-12-31"
+],
+[
+"Fly Jamaica Airways",
+"2013-02-14",
+"",
+266
+]
+],
+"OK": [
+[
+"Czech Airlines",
+"1923-10-06",
+"",
+64
+]
+],
+"OL": [
+[
+"OLT Express Germany",
+"1958-01-01",
+"2013-01-30",
+704
+],
+[
+"Polynesian Airlines",
+"1959-01-01",
+"",
+162
+]
+],
+"OM": [
+[
+"Miat Mongolian Airlines",
+"",
+"",
+289
+]
+],
+"ON": [
+[
+"Nauru Airlines",
+"1970-02-14",
+"",
+123
+]
+],
+"OO": [
+[
+"SkyWest Airlines",
+"1972-01-01"
+]
+],
+"OP": [
+[
+"Air Pegasus",
+"2015-04-12"
+]
+],
+"OQ": [
+[
+"Chongqing Airlines",
+"",
+"",
+878
+]
+],
+"OR": [
+[
+"TUI Airlines Netherlands",
+"2004-03-01",
+"",
+178,
+"PC"
+]
+],
+"OS": [
+[
+"Austrian Airlines",
+"1957-09-30",
+"",
+257
+]
+],
+"OT": [
+[
+"Tchadia Airlines"
+],
+[
+"Aeropelican Air Services",
+"1971-07-01",
+"2013-12-31"
+]
+],
+"OU": [
+[
+"Croatia Airlines",
+"1989-08-20",
+"",
+831
+]
+],
+"OV": [
+[
+"SalamAir"
+],
+[
+"Estonian Air",
+"1991-01-01",
+"2015-11-08",
+960
+]
+],
+"OW": [
+[
+"Nicon Airways",
+"1993-01-01",
+"2006-07-31",
+92
+],
+[
+"Executive Airlines",
+"2004-01-01",
+"2013-04-01",
+92
+],
+[
+"Nicon Airways",
+"2007-08-01",
+"2007-12-31",
+92
+],
+[
+"Skyward Express",
+"2016-08-01"
+]
+],
+"OX": [
+[
+"Orient Thai Airlines",
+"1995-01-01",
+"",
+578
+]
+],
+"OY": [
+[
+"Omni Air International",
+"1993-01-01"
+]
+],
+"OZ": [
+[
+"Asiana Airlines",
+"1988-02-17",
+"",
+988
+]
+],
+"P0": [
+[
+"Proflight Commuter",
+"",
+"",
+659
+]
+],
+"P1": [
+[
+"Publiccharters Com",
+"",
+"",
+351
+]
+],
+"P2": [
+[
+"Airkenya Express",
+"1987-01-01"
+],
+[
+"Small Planet Airlines",
+"2010-01-01",
+"2014-01-31"
+]
+],
+"P3": [
+[
+"CargoLogicAir",
+"",
+"",
+560
+]
+],
+"P4": [
+[
+"Aerolineas Sosa",
+"",
+"2012-12-31"
+],
+[
+"Air Peace",
+"2013-01-01",
+"",
+710
+]
+],
+"P5": [
+[
+"Copa Airlines Colombia",
+"2010-10-06",
+"",
+845
+]
+],
+"P6": [
+[
+"Pascan Aviation"
+]
+],
+"P7": [
+[
+"Small Planet Airline",
+"2009-11-25",
+"2018-11-09"
+]
+],
+"P8": [
+[
+"SprintAir",
+"2008-01-01"
+],
+[
+"Air Mekong",
+"2009-01-01",
+"2013-12-31",
+819
+]
+],
+"P9": [
+[
+"Peruvian Airlines",
+"2008-10-29",
+"",
+602
+]
+],
+"PA": [
+[
+"Florida Coastal Airlines",
+"1995-01-01",
+"2014-06-06",
+0,
+"P"
+],
+[
+"Airblue",
+"2004-06-18",
+"",
+84,
+"P"
+]
+],
+"PB": [
+[
+"Provincial Airlines",
+"",
+"",
+967
+]
+],
+"PC": [
+[
+"Pegasus Airlines",
+"1990-01-01",
+"",
+624
+]
+],
+"PD": [
+[
+"Porter Airlines",
+"2006-10-23",
+"",
+451
+]
+],
+"PE": [
+[
+"Peoples Viennaline",
+"",
+"",
+335
+]
+],
+"PF": [
+[
+"Primera Air Scandinavia",
+"2009-01-01"
+]
+],
+"PG": [
+[
+"Bangkok Airways",
+"1968-01-01",
+"",
+829
+]
+],
+"PH": [
+[
+"Transavia Denmark"
+]
+],
+"PI": [
+[
+"Polar Airlines",
+"1997-01-01",
+"",
+545,
+"P"
+]
+],
+"PJ": [
+[
+"Air Saint Pierre",
+"",
+"",
+638
+]
+],
+"PK": [
+[
+"Pakistan International Airlines (PIA)",
+"1955-01-10",
+"",
+214
+]
+],
+"PL": [
+[
+"Southern Air Charter",
+"1998-10-01"
+]
+],
+"PM": [
+[
+"Canaryfly",
+"2010-01-01",
+"",
+496
+]
+],
+"PN": [
+[
+"China West Air",
+"",
+"",
+847
+]
+],
+"PO": [
+[
+"Polar Air Cargo",
+"1993-01-01",
+"",
+403
+]
+],
+"PP": [
+[
+"Jet Aviation Business"
+]
+],
+"PQ": [
+[
+"AirAsia Philippines",
+"2010-12-01",
+"",
+62
+],
+[
+"SkyUp Airlines",
+"2018-05-21"
+]
+],
+"PR": [
+[
+"Philippine Airlines",
+"1941-03-15",
+"",
+79
+]
+],
+"PS": [
+[
+"Ukraine International Airlines",
+"1992-10-01",
+"",
+566
+]
+],
+"PT": [
+[
+"Piedmont Airlines",
+"1955-01-01",
+"",
+531
+],
+[
+"West Air Sweden",
+"1955-01-01",
+"2015-04-01"
+]
+],
+"PU": [
+[
+"Plus Ultra Líneas Aéreas",
+"",
+"",
+663
+],
+[
+"PLUNA",
+"1936-09-01",
+"2012-07-05",
+286
+]
+],
+"PV": [
+[
+"Saint Barth Commuter"
+]
+],
+"PW": [
+[
+"Precision Air",
+"1993-01-01",
+"",
+31
+]
+],
+"PX": [
+[
+"Air Niugini",
+"",
+"",
+656
+]
+],
+"PY": [
+[
+"Surinam Airways",
+"",
+"",
+192
+]
+],
+"PZ": [
+[
+"LATAM Paraguay",
+"1962-01-01",
+"",
+692
+]
+],
+"Q0": [
+[
+"Quebecair Express"
+]
+],
+"Q1": [
+[
+"Sqiva Sistem"
+]
+],
+"Q2": [
+[
+"Maldivian",
+"2003-05-01",
+"",
+986
+]
+],
+"Q3": [
+[
+"Anguilla Air Services"
+],
+[
+"Zambian Airways",
+"1948-01-01",
+"2009-12-31"
+]
+],
+"Q4": [
+[
+"Aviation Starlink"
+]
+],
+"Q5": [
+[
+"Forty Mile Air"
+]
+],
+"Q6": [
+[
+"Volaris CostaRica",
+"2016-11-01"
+]
+],
+"Q7": [
+[
+"Sky Bahamas Airlines"
+]
+],
+"Q8": [
+[
+"Trans Air Congo",
+"",
+"",
+223
+]
+],
+"Q9": [
+[
+"Airliaison"
+],
+[
+"Afrinat International Airlines",
+"2004-01-01",
+"2004-01-01"
+]
+],
+"QA": [
+[
+"Cimber",
+"2012-05-16",
+"2017-01-31"
+]
+],
+"QB": [
+[
+"Qeshm Air",
+"",
+"",
+237
+]
+],
+"QC": [
+[
+"Camair-Co",
+"2011-03-28",
+"",
+40
+]
+],
+"QD": [
+[
+"Dobrolet Airlines",
+"2013-01-01"
+]
+],
+"QE": [
+[
+"Fars Qeshm Airlines",
+"",
+"",
+721
+]
+],
+"QF": [
+[
+"Qantas",
+"1921-03-01",
+"",
+81
+]
+],
+"QG": [
+[
+"Prima Air",
+"1996-01-01",
+"1996-12-31"
+],
+[
+"Citilink Indonesia",
+"2001-01-01"
+]
+],
+"QH": [
+[
+"Air Kyrgyzstan",
+"2001-01-01",
+"2019-01-01",
+138
+],
+[
+"Air Bamboo",
+"2017-05-31",
+"",
+138
+]
+],
+"QI": [
+[
+"Cimber Sterling",
+"1950-01-01",
+"2012-12-31",
+647
+]
+],
+"QJ": [
+[
+"Latpass Airlines"
+]
+],
+"QK": [
+[
+"Jazz Aviation",
+"",
+"",
+983
+]
+],
+"QL": [
+[
+"Linea Aerea De Servicio",
+"",
+"",
+782
+]
+],
+"QM": [
+[
+"Air Malawi",
+"1964-03-01",
+"2013-02-28",
+167
+],
+[
+"Monacair",
+"1988-01-01"
+]
+],
+"QN": [
+[
+"Skytrans Regional",
+"",
+"",
+0,
+"P"
+],
+[
+"Air Armenia",
+"2003-01-01",
+"2014-10-31",
+907
+]
+],
+"QO": [
+[
+"Quantum Air",
+"",
+"",
+263
+]
+],
+"QP": [
+[
+"Akasa Air",
+"2021-12-22"
+]
+],
+"QQ": [
+[
+"Alliance Airlines",
+"",
+"",
+0,
+"PT"
+]
+],
+"QR": [
+[
+"Qatar Airways",
+"1994-01-20",
+"",
+157
+]
+],
+"QS": [
+[
+"Smartwings",
+"2008-01-01",
+"",
+797
+]
+],
+"QT": [
+[
+"Tampa Cargo",
+"",
+"",
+0,
+"C"
+]
+],
+"QU": [
+[
+"Uganda Airlines",
+"1977-01-01",
+"2001-05-31"
+],
+[
+"UTair Ukraine",
+"2008-09-01",
+"",
+761
+]
+],
+"QV": [
+[
+"Lao Airlines",
+"",
+"",
+627
+]
+],
+"QW": [
+[
+"Qingdao Airlines",
+"",
+"",
+912
+]
+],
+"QX": [
+[
+"Horizon Air",
+"1981-09-01",
+"",
+481
+]
+],
+"QY": [
+[
+"European Air Transport"
+]
+],
+"QZ": [
+[
+"Indonesia AirAsia",
+"2000-06-22",
+"",
+975
+]
+],
+"R0": [
+[
+"MS Royal Airlines",
+"",
+"",
+333
+]
+],
+"R2": [
+[
+"Transair"
+],
+[
+"Orenburg Airlines",
+"1992-01-01",
+"2016-06-30",
+291
+]
+],
+"R3": [
+[
+"Yakutia Airlines",
+"2002-01-01",
+"",
+849
+]
+],
+"R4": [
+[
+"Reliable Unique Services",
+"",
+"2017-06-30",
+827
+],
+[
+"Real Tonga",
+"2019-09-30",
+"",
+448
+]
+],
+"R5": [
+[
+"Jordan Aviation",
+"2000-10-01",
+"",
+151
+]
+],
+"R6": [
+[
+"DOT LT"
+]
+],
+"R7": [
+[
+"Aserca",
+"",
+"",
+717
+]
+],
+"R8": [
+[
+"Kyrgyzstan Airlines"
+]
+],
+"R9": [
+[
+"TAF Linhas Aereas",
+"",
+"",
+418
+]
+],
+"RA": [
+[
+"Nepal Airlines",
+"1958-01-01",
+"",
+285
+]
+],
+"RB": [
+[
+"Syrian Arab Airlines",
+"",
+"",
+70
+]
+],
+"RC": [
+[
+"Atlantic Airways",
+"1987-01-01",
+"",
+767
+]
+],
+"RD": [
+[
+"Ryan International Airlines",
+"1972-01-01",
+"2013-01-31"
+],
+[
+"Small Planet Airlines",
+"2017-11-01",
+"2018-11-09"
+]
+],
+"RE": [
+[
+"Stobart Air",
+"1970-01-01",
+"",
+743
+]
+],
+"RF": [
+[
+"Ord Air Charter",
+"",
+"1998-12-31"
+],
+[
+"Aero K",
+"2021-04-15",
+"",
+711
+]
+],
+"RG": [
+[
+"Varig Linhas",
+"1927-05-07",
+"2008-10-19"
+],
+[
+"Rotana Jet",
+"2011-04-18",
+"",
+482
+]
+],
+"RH": [
+[
+"Robin Hood Aviation"
+]
+],
+"RI": [
+[
+"Tigerair Mandala",
+"1969-01-01",
+"2014-12-31",
+488
+],
+[
+"Air Costa Rica",
+"2014-01-01",
+"",
+370
+]
+],
+"RJ": [
+[
+"Royal Jordanian",
+"1963-12-09",
+"",
+512
+]
+],
+"RK": [
+[
+"Region Airline",
+"",
+"2011-01-01"
+],
+[
+"Ryanair UK"
+]
+],
+"RL": [
+[
+"Royal Falcon",
+"",
+"2014-07-10",
+372
+],
+[
+"Royal Flight",
+"2014-07-11"
+]
+],
+"RM": [
+[
+"Aircompany Armenia",
+"2016-05-01",
+"",
+437
+]
+],
+"RN": [
+[
+"Air Horizons",
+"1962-01-01",
+"2005-11-30"
+],
+[
+"Euralair",
+"1964-01-01",
+"2003-11-30"
+],
+[
+"Rayani Air",
+"2015-12-20",
+"",
+639
+]
+],
+"RO": [
+[
+"TAROM",
+"1946-02-01",
+"",
+281
+]
+],
+"RP": [
+[
+"Chautauqua Airlines",
+"",
+"",
+363
+]
+],
+"RQ": [
+[
+"Kam Air",
+"2003-11-08",
+"",
+384
+]
+],
+"RR": [
+[
+"Buzz"
+],
+[
+"Royal Air Force",
+"",
+"2018-01-01"
+]
+],
+"RS": [
+[
+"Malta Air Charter",
+"1990-01-01",
+"2004-11-01"
+],
+[
+"Sky Regional Airlines",
+"2011-05-01",
+"2016-04-30"
+],
+[
+"Air Seoul",
+"2016-07-11",
+"",
+820
+]
+],
+"RT": [
+[
+"RAK Airways",
+"2007-01-01",
+"2014-01-01"
+],
+[
+"Rainbow Airlines",
+"2015-11-01"
+]
+],
+"RU": [
+[
+"Air Bridge Cargo",
+"",
+"",
+0,
+"C"
+]
+],
+"RV": [
+[
+"Air Canada Rouge"
+]
+],
+"RW": [
+[
+"Royal Air Charter Service",
+"2002-08-22"
+]
+],
+"RX": [
+[
+"Regent Airways",
+"2010-11-10",
+"2020-03-01",
+652
+]
+],
+"RY": [
+[
+"Royal Wings",
+"1996-01-01",
+"2015-12-01",
+561
+],
+[
+"European Executive Express",
+"1997-01-01",
+"2005-12-31"
+],
+[
+"Jiangxi Air",
+"2016-01-27",
+"",
+989
+]
+],
+"RZ": [
+[
+"SANSA Airlines",
+"1978-01-01",
+"",
+684
+]
+],
+"S0": [
+[
+"Slok Air International",
+"1996-09-01",
+"2008-10-31",
+503
+],
+[
+"Aerolineas Sosa",
+"2013-01-01"
+]
+],
+"S1": [
+[
+"Lufthansa Systems",
+"",
+"",
+0,
+"G"
+]
+],
+"S2": [
+[
+"Jet Lite",
+"",
+"",
+705
+]
+],
+"S3": [
+[
+"SBA Airlines",
+"1995-11-01",
+"",
+249
+]
+],
+"S4": [
+[
+"SATA International",
+"1991-01-01",
+"",
+331
+]
+],
+"S5": [
+[
+"Shuttle America",
+"1995-01-01"
+],
+[
+"Small Planet Airlines",
+"2008-01-01",
+"2018-11-28"
+]
+],
+"S6": [
+[
+"Sunrise Airways"
+]
+],
+"S7": [
+[
+"Siberia Airlines",
+"1992-05-01",
+"",
+421
+]
+],
+"S8": [
+[
+"Sounds Air",
+"1986-01-01"
+],
+[
+"SkyAir",
+"2010-01-26",
+"2016-09-30"
+]
+],
+"S9": [
+[
+"Starbow",
+"",
+"",
+759
+]
+],
+"SA": [
+[
+"South African Airways",
+"1934-02-01",
+"",
+83
+]
+],
+"SB": [
+[
+"Aircalin",
+"1983-01-01",
+"",
+63
+]
+],
+"SC": [
+[
+"Shandong Airlines",
+"1994-01-01",
+"",
+324
+]
+],
+"SD": [
+[
+"Sudan Airways",
+"",
+"",
+200
+]
+],
+"SE": [
+[
+"XL Airways France",
+"1995-12-22",
+"2019-09-23",
+473
+]
+],
+"SF": [
+[
+"Tassili Airlines",
+"1999-04-08",
+"",
+515
+]
+],
+"SG": [
+[
+"SpiceJet",
+"2005-05-18",
+"",
+775
+]
+],
+"SH": [
+[
+"Sharp Aviation"
+]
+],
+"SI": [
+[
+"Blue Islands",
+"1999-01-01",
+"",
+821
+]
+],
+"SJ": [
+[
+"Sriwijaya Air",
+"2003-11-10",
+"",
+977
+]
+],
+"SK": [
+[
+"Scandinavian Airlines",
+"1946-08-01",
+"",
+117
+]
+],
+"SL": [
+[
+"Rio Sul",
+"1979-01-01",
+"2002-12-31",
+310
+],
+[
+"Thai Lion Air",
+"2013-12-04",
+"",
+310
+]
+],
+"SM": [
+[
+"Air Cairo",
+"2003-01-01",
+"",
+381
+],
+[
+"Spirit of Manila Airlines",
+"2011-10-01",
+"2012-01-31"
+]
+],
+"SN": [
+[
+"Brussels Airlines",
+"2007-03-25",
+"",
+82
+]
+],
+"SO": [
+[
+"Salsa d'Haiti",
+"2008-01-01",
+"2015-04-01",
+340
+],
+[
+"Apex Airline",
+"2015-04-01",
+"2018-08-31"
+]
+],
+"SP": [
+[
+"SATA Air Açores",
+"1947-06-15",
+"1990-12-31",
+737
+]
+],
+"SQ": [
+[
+"Singapore Airlines",
+"1947-05-01",
+"",
+618
+]
+],
+"SR": [
+[
+"SundAir"
+]
+],
+"SS": [
+[
+"Corsair",
+"1981-05-17",
+"",
+923
+]
+],
+"ST": [
+[
+"Germania",
+"1978-01-01",
+"",
+246
+]
+],
+"SU": [
+[
+"Aeroflot",
+"1923-07-15",
+"",
+555
+]
+],
+"SV": [
+[
+"Saudia",
+"1945-01-01",
+"",
+65
+]
+],
+"SW": [
+[
+"Air Namibia",
+"",
+"",
+186
+]
+],
+"SX": [
+[
+"SkyWork Airlines",
+"1983-01-01",
+"",
+772
+]
+],
+"SY": [
+[
+"Sun Country",
+"",
+"",
+337
+]
+],
+"SZ": [
+[
+"Somon Air",
+"2008-02-01",
+"",
+413,
+"P"
+]
+],
+"T0": [
+[
+"Avianca Perú",
+"1999-07-01",
+"2020-05-10",
+530
+]
+],
+"T1": [
+[
+"Tik Systems"
+]
+],
+"T2": [
+[
+"Nakina Air Service",
+"1973-01-01",
+"2015-12-31"
+],
+[
+"TABA – Transportes Aéreos da Bacia Amazônica",
+"1976-01-01",
+"2002-12-31"
+],
+[
+"Fly Art",
+"2016-07-01"
+]
+],
+"T3": [
+[
+"Eastern Airways",
+"1997-01-01",
+"",
+467
+]
+],
+"T4": [
+[
+"Trip",
+"",
+"",
+661
+]
+],
+"T5": [
+[
+"Turkmenistan Airlines",
+"1992-01-01",
+"",
+542
+]
+],
+"T6": [
+[
+"Tavrey Airlines",
+"1995-01-01",
+"2008-12-31"
+],
+[
+"ITI Air",
+"2002-01-01"
+]
+],
+"T7": [
+[
+"Twin Jet",
+"2002-03-01",
+"",
+294
+]
+],
+"T9": [
+[
+"Aviator Aviation"
+]
+],
+"TA": [
+[
+"Avianca El Salvador",
+"1931-01-01",
+"",
+202
+]
+],
+"TB": [
+[
+"TUIfly Belgium",
+"2005-11-23",
+"",
+612
+]
+],
+"TC": [
+[
+"Air Tanzania",
+"",
+"",
+197
+]
+],
+"TD": [
+[
+"Atlantis European Airways",
+"",
+"",
+432
+]
+],
+"TE": [
+[
+"Sky Taxi",
+"2000-01-01"
+]
+],
+"TF": [
+[
+"Braathens Regional Aviation",
+"1981-01-01",
+"2020-12-31",
+215,
+"P"
+],
+[
+"Malmö Aviation",
+"1981-01-01",
+"2016-02-29",
+276
+],
+[
+"BRA",
+"2016-03-01",
+"",
+276,
+"P"
+]
+],
+"TG": [
+[
+"Thai Airways",
+"1960-01-01",
+"",
+217
+]
+],
+"TH": [
+[
+"Raya Airways",
+"1993-01-01"
+]
+],
+"TI": [
+[
+"Tailwind Hava Yollari As"
+]
+],
+"TJ": [
+[
+"Tradewind Aviation",
+"2001-01-01",
+"",
+492
+]
+],
+"TK": [
+[
+"Turkish Airlines",
+"1933-05-20",
+"",
+235
+]
+],
+"TL": [
+[
+"Airnorth",
+"1978-01-01",
+"",
+935
+]
+],
+"TM": [
+[
+"Lam Mozambique",
+"",
+"",
+68
+]
+],
+"TN": [
+[
+"Air Tahiti Nui",
+"1998-11-20",
+"",
+244
+]
+],
+"TO": [
+[
+"Transavia France"
+]
+],
+"TP": [
+[
+"TAP Portugal",
+"1946-09-19",
+"",
+47
+]
+],
+"TQ": [
+[
+"Tandem Aero",
+"1998-01-01",
+"",
+38
+]
+],
+"TR": [
+[
+"Tigerair",
+"2003-12-12",
+"2007-11-22",
+388
+],
+[
+"Scoot",
+"2012-06-04",
+"",
+668
+]
+],
+"TS": [
+[
+"Air Transat",
+"1987-11-14",
+"",
+649
+]
+],
+"TT": [
+[
+"Air Lithuania",
+"1991-09-13",
+"2005-11-23"
+],
+[
+"Tigerair Australia",
+"2007-11-23",
+"2012-06-04"
+]
+],
+"TU": [
+[
+"Tunisair",
+"",
+"",
+199
+]
+],
+"TV": [
+[
+"Tibet Airlines",
+"2010-03-01",
+"2013-12-31",
+88
+],
+[
+"Tibet Airlines",
+"2014-02-02",
+"",
+88
+]
+],
+"TW": [
+[
+"T'way Air",
+"2010-09-01",
+"",
+722
+]
+],
+"TX": [
+[
+"Air Caraibes",
+"2000-07-01",
+"",
+427
+]
+],
+"TY": [
+[
+"Air Caledonie",
+"",
+"",
+190
+]
+],
+"TZ": [
+[
+"ATA Airlines",
+"1973-01-01",
+"2008-04-03"
+]
+],
+"U0": [
+[
+"Ultra Air",
+"2022-02-23",
+"2023-03-30"
+]
+],
+"U1": [
+[
+"Videcom International"
+]
+],
+"U2": [
+[
+"easyJet",
+"1995-01-01",
+"",
+888
+]
+],
+"U3": [
+[
+"Avies",
+"1991-12-01",
+"2016-04-01"
+]
+],
+"U4": [
+[
+"Buddha Air",
+"1997-01-01"
+],
+[
+"PMTair",
+"2003-01-14",
+"2008-12-31"
+]
+],
+"U5": [
+[
+"Karinou Airlines"
+]
+],
+"U6": [
+[
+"Ural Airlines",
+"",
+"",
+262
+]
+],
+"U7": [
+[
+"Air Uganda",
+"",
+"",
+926
+]
+],
+"U8": [
+[
+"Armavia",
+"1996-01-01",
+"2013-04-01",
+669
+],
+[
+"Tus Airways",
+"2016-02-14"
+]
+],
+"U9": [
+[
+"Tatarstan Air",
+"",
+"",
+966
+]
+],
+"UA": [
+[
+"United Airlines",
+"1931-03-28",
+"",
+16
+]
+],
+"UB": [
+[
+"Myanmar National Airlines",
+"1948-09-15",
+"",
+665
+]
+],
+"UC": [
+[
+"LAN Cargo",
+"1929-01-01",
+"",
+0,
+"C"
+]
+],
+"UD": [
+[
+"Hex Air",
+"",
+"",
+848
+]
+],
+"UE": [
+[
+"Nasair",
+"",
+"",
+770
+]
+],
+"UF": [
+[
+"Um Air",
+"",
+"",
+828
+]
+],
+"UG": [
+[
+"Tunisair Express",
+"",
+"",
+150
+]
+],
+"UH": [
+[
+"AtlasJet Ukraine",
+"",
+"",
+500
+]
+],
+"UI": [
+[
+"Eurocypria Airlines",
+"1992-06-12",
+"2010-11-04"
+],
+[
+"Auric Air Services",
+"2001-01-01"
+]
+],
+"UJ": [
+[
+"USA Jet Airlines",
+"1994-01-01",
+"2007-12-31"
+],
+[
+"AlMasria Universal Airlines",
+"2008-01-01",
+"",
+110
+]
+],
+"UK": [
+[
+"Vistara",
+"2014-01-01"
+]
+],
+"UL": [
+[
+"SriLankan Airlines",
+"1979-09-01",
+"",
+603
+]
+],
+"UM": [
+[
+"Air Zimbabwe",
+"1980-04-02",
+"",
+168
+]
+],
+"UN": [
+[
+"Transaero Airlines",
+"1990-01-01",
+"2015-10-26",
+670
+],
+[
+"United Nigeria Airlines Company Ltd",
+"2021-02-01",
+"",
+570
+]
+],
+"UO": [
+[
+"Hong Kong Express Airways",
+"2005-09-03",
+"",
+128
+]
+],
+"UP": [
+[
+"Bahamasair",
+"",
+"",
+111
+]
+],
+"UQ": [
+[
+"Business Aviation Centre"
+]
+],
+"UR": [
+[
+"UTair Express",
+"2006-12-01",
+"2015-06-10"
+],
+[
+"Uganda Airlines",
+"2019-08-01",
+"",
+109
+]
+],
+"US": [
+[
+"US Airways",
+"1939-01-01",
+"",
+37
+]
+],
+"UT": [
+[
+"UTair Aviation",
+"1967-01-01",
+"",
+298
+]
+],
+"UU": [
+[
+"Air Austral",
+"1975-01-01",
+"",
+760
+]
+],
+"UV": [
+[
+"Helicopteros Del Sureste",
+"",
+"",
+662
+]
+],
+"UW": [
+[
+"Universal Airlines",
+"2001-01-01",
+"2005-12-31",
+751
+],
+[
+"Uni-Top Airlines",
+"2009-01-01",
+"2019-11-30"
+]
+],
+"UX": [
+[
+"Air Europa",
+"1986-01-01",
+"",
+996
+]
+],
+"UY": [
+[
+"Sky Prime Charter",
+"",
+"",
+532
+],
+[
+"Air Caucasus",
+"2013-01-01",
+"2014-12-31",
+49
+]
+],
+"UZ": [
+[
+"Buraq Air",
+"2001-01-01",
+"",
+928
+]
+],
+"V0": [
+[
+"Conviasa",
+"",
+"",
+308
+]
+],
+"V1": [
+[
+"IBS Software Services Americas",
+"",
+"",
+0,
+"G"
+]
+],
+"V2": [
+[
+"Vision Airlines"
+]
+],
+"V3": [
+[
+"Carpatair",
+"1999-02-01",
+"",
+21
+]
+],
+"V4": [
+[
+"Vieques Air Link",
+"1965-01-01"
+]
+],
+"V5": [
+[
+"Aerovias DAP"
+],
+[
+"Danube Wings",
+"2000-05-23",
+"2013-11-20"
+]
+],
+"V6": [
+[
+"Air Link"
+]
+],
+"V7": [
+[
+"Volotea",
+"2012-03-01",
+"",
+712
+]
+],
+"V8": [
+[
+"Iliamna Air"
+]
+],
+"V9": [
+[
+"Van Air Europe"
+]
+],
+"VA": [
+[
+"Virgin Australia International",
+"2009-02-27",
+"2011-12-07",
+795
+],
+[
+"Virgin Australia",
+"2013-01-01",
+"",
+856
+]
+],
+"VB": [
+[
+"Aeroenlaces Nacionales",
+"",
+"2025-09-30"
+],
+[
+"Viva Aerobus",
+"2025-10-01"
+]
+],
+"VC": [
+[
+"Charter Air Transport",
+"1997-01-01",
+"2014-12-31"
+],
+[
+"Strategic Airlines",
+"2008-01-01",
+"2012-02-17",
+471
+],
+[
+"ViaAir",
+"2014-01-01",
+"",
+359
+]
+],
+"VD": [
+[
+"Hennan Airlines",
+"",
+"",
+981
+]
+],
+"VE": [
+[
+"CAI Second",
+"",
+"2009-01-12"
+],
+[
+"EasyFly",
+"2007-01-01"
+]
+],
+"VF": [
+[
+"Valuair",
+"2004-01-01",
+"2014-10-26",
+896
+],
+[
+"Fly Armenia Airways",
+"2020-11-26",
+"2022-01-05"
+],
+[
+"AJet",
+"2024-03-12"
+]
+],
+"VG": [
+[
+"VLM Airlines",
+"2017-10-01"
+]
+],
+"VH": [
+[
+"Aeropostal Alas de Venezuela",
+"1929-07-03",
+"2017-09-24",
+152
+],
+[
+"Viva Air Colombia",
+"2018-01-01",
+"",
+641
+]
+],
+"VI": [
+[
+"Volga Dnepr Airline",
+"",
+"",
+412
+]
+],
+"VJ": [
+[
+"Royal Air Cambodge",
+"1994-01-01",
+"2001-10-16"
+],
+[
+"VietJet Air",
+"2011-12-25",
+"",
+978
+]
+],
+"VK": [
+[
+"Air Nigeria",
+"2005-06-28",
+"2012-09-10",
+786
+],
+[
+"Anisec Luftfahrt",
+"2018-07-17"
+]
+],
+"VL": [
+[
+"Air VIA",
+"1990-01-01",
+"2016-01-01"
+],
+[
+"Med-View Airline",
+"2007-01-01",
+"1989-12-31",
+429
+],
+[
+"Lufthansa City Airlines GmbH",
+"2022-01-01"
+]
+],
+"VM": [
+[
+"Macair Jet",
+"",
+"2014-12-31"
+],
+[
+"Max Air"
+],
+[
+"Viaggio Air",
+"2003-02-27",
+"2007-12-31"
+],
+[
+"Max Air",
+"2008-01-01",
+"2015-04-01"
+]
+],
+"VN": [
+[
+"Vietnam Airlines",
+"1956-01-01",
+"",
+738
+]
+],
+"VO": [
+[
+"Tyrolean Airways",
+"1978-01-01",
+"2015-03-31",
+734
+],
+[
+"VLM Airlines Slovenia",
+"2017-07-01",
+"",
+333
+]
+],
+"VP": [
+[
+"Villa Air"
+]
+],
+"VQ": [
+[
+"Novoair",
+"",
+"",
+855,
+"P"
+]
+],
+"VR": [
+[
+"Tacv Cabo Verde Airlines",
+"",
+"",
+696
+]
+],
+"VS": [
+[
+"Virgin Atlantic",
+"1984-06-22",
+"",
+932
+]
+],
+"VT": [
+[
+"Air Tahiti",
+"1987-01-01",
+"",
+135
+]
+],
+"VU": [
+[
+"Vuelos Economicos"
+],
+[
+"Air Ivoire",
+"1960-01-01",
+"2011-12-31",
+943
+]
+],
+"VV": [
+[
+"AeroSvit Airlines",
+"1994-04-01",
+"2013-01-31",
+870
+],
+[
+"Viva Airlines Peru",
+"2017-05-09",
+"",
+343
+]
+],
+"VW": [
+[
+"Aeromar",
+"1987-01-01",
+"",
+942
+]
+],
+"VX": [
+[
+"Virgin America",
+"2007-08-08",
+"2018-04-24",
+984
+]
+],
+"VY": [
+[
+"Vueling",
+"2004-01-01",
+"",
+30
+]
+],
+"VZ": [
+[
+"Velvet Sky",
+"2011-03-22",
+"2012-02-27"
+],
+[
+"Thai Vietjet Air",
+"2015-03-29"
+]
+],
+"W1": [
+[
+"WorldTicket",
+"",
+"",
+0,
+"G"
+],
+[
+"WorldTicket",
+"2002-01-01"
+]
+],
+"W2": [
+[
+"Flexflight",
+"",
+"",
+365
+]
+],
+"W3": [
+[
+"Arik Air",
+"2006-10-30",
+"",
+725
+]
+],
+"W4": [
+[
+"LC Perú",
+"1993-01-01",
+"2018-12-31",
+107
+],
+[
+"LC Péru",
+"1993-01-01",
+"2018-12-12"
+],
+[
+"Wizz Air Malta",
+"2003-09-01"
+]
+],
+"W5": [
+[
+"Mahan Airlines",
+"",
+"",
+537
+]
+],
+"W6": [
+[
+"Wizz Air",
+"2003-09-01"
+]
+],
+"W7": [
+[
+"Sayakhat Airlines",
+"",
+"",
+271
+]
+],
+"W8": [
+[
+"Caribbean Winds Airlines"
+]
+],
+"W9": [
+[
+"Wizz Air",
+"2017-09-26",
+"",
+17
+]
+],
+"WA": [
+[
+"KLM Cityhopper",
+"1991-04-01"
+]
+],
+"WB": [
+[
+"Rwandair",
+"2003-04-27",
+"",
+459
+]
+],
+"WC": [
+[
+"Islena Airlines",
+"",
+"",
+506
+]
+],
+"WD": [
+[
+"Amsterdam Airlines Bv",
+"",
+"",
+562
+]
+],
+"WE": [
+[
+"Rheintal flug",
+"",
+"2013-12-31"
+],
+[
+"Thai Smile Airways",
+"2012-07-07",
+"",
+909
+]
+],
+"WF": [
+[
+"Widerøe",
+"1934-02-19",
+"",
+701
+]
+],
+"WG": [
+[
+"Sunwing Airlines",
+"",
+"",
+292
+]
+],
+"WH": [
+[
+"West African Airlines",
+"",
+"",
+764
+]
+],
+"WI": [
+[
+"White Airways",
+"2005-01-01",
+"",
+97
+]
+],
+"WJ": [
+[
+"Air Labrador",
+"1948-01-01",
+"",
+927
+]
+],
+"WK": [
+[
+"Edelweiss Air",
+"1995-10-19"
+]
+],
+"WL": [
+[
+"Aeroperlas",
+"1970-01-01",
+"2012-02-29",
+54
+],
+[
+"European Coastal Airlines",
+"2014-08-27"
+]
+],
+"WM": [
+[
+"Windward Island Airways",
+"",
+"",
+295
+]
+],
+"WN": [
+[
+"Southwest Airlines",
+"1971-06-18",
+"",
+526,
+"P"
+]
+],
+"WO": [
+[
+"World Airways",
+"",
+"",
+468
+]
+],
+"WP": [
+[
+"Island Air",
+"1980-01-01",
+"",
+347
+]
+],
+"WQ": [
+[
+"Romavia"
+]
+],
+"WR": [
+[
+"Aviaprad",
+"1996-01-01",
+"2008-02-05"
+],
+[
+"WestJet Encore",
+"2013-06-24",
+"",
+838
+]
+],
+"WS": [
+[
+"WestJet",
+"1996-02-29",
+"",
+838
+]
+],
+"WT": [
+[
+"Nigeria Airways",
+"1958-10-01",
+"2003-12-31"
+],
+[
+"Swiftair",
+"1986-01-01",
+"",
+221
+],
+[
+"Wasaya Airways",
+"1989-01-01",
+"2014-08-31"
+]
+],
+"WU": [
+[
+"Tikal Jets Airlines"
+],
+[
+"Wizz Air Ukraine",
+"2008-01-01",
+"2015-04-20"
+]
+],
+"WV": [
+[
+"Swe Fly",
+"1994-01-01",
+"2005-09-30",
+857
+],
+[
+"Aero VIP",
+"2014-01-01"
+]
+],
+"WW": [
+[
+"Wow Air",
+"",
+"",
+0,
+"P"
+]
+],
+"WX": [
+[
+"CityJet",
+"",
+"",
+689
+]
+],
+"WY": [
+[
+"Oman Air",
+"1993-01-01",
+"",
+910
+]
+],
+"WZ": [
+[
+"Red Wings Airlines",
+"",
+"",
+309
+]
+],
+"X1": [
+[
+"Hahn Air Technologies"
+]
+],
+"X3": [
+[
+"TUIfly",
+"2007-01-01",
+"",
+617
+]
+],
+"X4": [
+[
+"Air Excursions"
+]
+],
+"X5": [
+[
+"Ten Airways",
+"2009-01-01",
+"2015-01-19"
+]
+],
+"X6": [
+[
+"Airlines Reporting Corp",
+"",
+"",
+889
+]
+],
+"X7": [
+[
+"Exec Air",
+"",
+"2017-12-31"
+],
+[
+"Challenge Aero",
+"2018-01-01",
+"",
+0,
+"T"
+]
+],
+"X8": [
+[
+"Airmax",
+"",
+"2015-05-01"
+]
+],
+"X9": [
+[
+"Avion Express"
+]
+],
+"XB": [
+[
+"IATA",
+"",
+"",
+0,
+"G"
+]
+],
+"XC": [
+[
+"KD Air",
+"1990-01-01",
+"2013-09-30"
+],
+[
+"Corendon Airlines",
+"2005-04-01"
+]
+],
+"XD": [
+[
+"Scheduled Airlines Traffic Offices"
+]
+],
+"XE": [
+[
+"Delux Public Charter",
+"2015-01-01"
+]
+],
+"XF": [
+[
+"Vladivostok Air",
+"",
+"",
+277
+]
+],
+"XG": [
+[
+"Sun Express Germany"
+]
+],
+"XH": [
+[
+"Non Iata Codeshare Carrier"
+]
+],
+"XJ": [
+[
+"Thai AirAsia X",
+"2014-06-17"
+]
+],
+"XK": [
+[
+"Air Corsica",
+"2010-01-01",
+"",
+146
+]
+],
+"XL": [
+[
+"LATAM Ecuador",
+"2002-01-01",
+"",
+462
+]
+],
+"XM": [
+[
+"Zimex Aviation"
+],
+[
+"CAI First",
+"1997-10-01",
+"2009-01-13"
+]
+],
+"XN": [
+[
+"XpressAir",
+"2003-01-01"
+]
+],
+"XO": [
+[
+"Seair"
+]
+],
+"XP": [
+[
+"Xtra Airways"
+]
+],
+"XQ": [
+[
+"SunExpress",
+"1989-01-01",
+"",
+564
+]
+],
+"XR": [
+[
+"Corendon Airlines Europe"
+]
+],
+"XS": [
+[
+"SITA",
+"",
+"",
+950,
+"G"
+]
+],
+"XT": [
+[
+"Air Exel",
+"1991-04-26",
+"2005-01-31"
+],
+[
+"SkyStar Airways",
+"2007-06-16",
+"2009-01-03"
+],
+[
+"Indonesia AirAsia X",
+"2014-12-26"
+]
+],
+"XU": [
+[
+"African Express Airways",
+"",
+"",
+0,
+"P"
+]
+],
+"XV": [
+[
+"BVI Airways",
+"2010-05-05",
+"2014-09-30"
+]
+],
+"XW": [
+[
+"China Xinhua Airlines",
+"1992-01-01",
+"2007-11-29"
+],
+[
+"Sky Express",
+"2007-01-29",
+"2011-10-29"
+],
+[
+"NokScoot",
+"2015-05-20",
+"",
+478
+]
+],
+"XY": [
+[
+"Flynas",
+"2007-02-01",
+"",
+593
+]
+],
+"XZ": [
+[
+"South African Express",
+"1994-04-24",
+"2020-04-28",
+29
+],
+[
+"Aeroitalia",
+"2022-01-01"
+]
+],
+"Y0": [
+[
+"Yellow Airtaxi"
+]
+],
+"Y1": [
+[
+"Travel Technology Interactive",
+"",
+"",
+392
+]
+],
+"Y2": [
+[
+"Ygnus Air",
+"",
+"2022-11-14",
+571
+],
+[
+"Air Century, S.A.",
+"2022-11-15"
+]
+],
+"Y3": [
+[
+"Gryphon Airlines",
+"2007-03-01",
+"2012-12-31"
+]
+],
+"Y4": [
+[
+"Volaris",
+"2005-01-01",
+"",
+36
+]
+],
+"Y5": [
+[
+"Golden Myanmar Airlines",
+"",
+"",
+509
+]
+],
+"Y6": [
+[
+"Batavia Air",
+"2002-01-01",
+"2013-01-31"
+],
+[
+"AB Aviation",
+"2013-01-01"
+],
+[
+"Cambodia Airlines",
+"2013-01-01",
+"2014-12-31"
+]
+],
+"Y7": [
+[
+"NordStar",
+"2009-01-01",
+"",
+476
+]
+],
+"Y8": [
+[
+"Yangtze River Express",
+"2003-01-15",
+"",
+871
+]
+],
+"Y9": [
+[
+"Kish Airlines",
+"",
+"",
+780
+]
+],
+"YA": [
+[
+"Nego Airline One"
+]
+],
+"YB": [
+[
+"Harbour Air Seaplanes"
+]
+],
+"YC": [
+[
+"Yamal Airlines",
+"",
+"",
+664
+]
+],
+"YD": [
+[
+"Mauritania Airways"
+]
+],
+"YE": [
+[
+"Yan Air",
+"",
+"",
+206,
+"P"
+]
+],
+"YG": [
+[
+"South Airlines",
+"1999-04-19",
+"",
+233
+]
+],
+"YH": [
+[
+"Yangon Airways"
+]
+],
+"YI": [
+[
+"Yunnan Yingan Airline",
+"",
+"",
+852
+],
+[
+"Air Sunshine",
+"1982-01-01",
+"2015-06-30"
+]
+],
+"YJ": [
+[
+"Asian Wings Airways",
+"2011-01-27",
+"",
+601
+]
+],
+"YK": [
+[
+"Avia Traffic Company",
+"",
+"",
+511
+]
+],
+"YL": [
+[
+"Crystal Thai Airlines",
+"2011-02-01",
+"2011-12-31"
+],
+[
+"Libyan Wings",
+"2015-04-01"
+]
+],
+"YM": [
+[
+"Montenegro Airlines",
+"",
+"",
+409
+]
+],
+"YN": [
+[
+"Air Creebec",
+"",
+"",
+219
+]
+],
+"YO": [
+[
+"Heli Air Monaco",
+"1976-01-01",
+"",
+747
+]
+],
+"YP": [
+[
+"Air Premia",
+"2017-07-17"
+]
+],
+"YQ": [
+[
+"Polet Airlines",
+"1988-01-01",
+"2014-11-24",
+342
+],
+[
+"TAR Aerolíneas",
+"2014-01-14"
+]
+],
+"YR": [
+[
+"Scenic Airlines",
+"",
+"",
+398
+]
+],
+"YS": [
+[
+"Regional",
+"2001-01-01"
+]
+],
+"YT": [
+[
+"Yeti Airlines",
+"1998-08-17"
+]
+],
+"YU": [
+[
+"Euroatlantic Airways",
+"1993-08-25",
+"",
+551
+]
+],
+"YV": [
+[
+"Mesa Airlines",
+"1980-10-12",
+"",
+533
+]
+],
+"YW": [
+[
+"Air Nostrum",
+"1994-05-23",
+"",
+694
+]
+],
+"YX": [
+[
+"Midwest Airlines",
+"1948-01-01",
+"2011-12-31"
+],
+[
+"Republic Airline",
+"1998-01-01",
+"",
+453
+]
+],
+"YZ": [
+[
+"Zimbabwe Airlink",
+"1995-01-01",
+"2003-12-12",
+0,
+"P"
+],
+[
+"Alas Uruguay",
+"2015-02-01",
+"",
+570
+]
+],
+"Z0": [
+[
+"Norse Atlantic UK",
+"2023-03-26"
+]
+],
+"Z2": [
+[
+"Philippines AirAsia",
+"",
+"",
+0,
+"P"
+],
+[
+"AirAsia Zest",
+"1995-09-01",
+"2015-12-06",
+457,
+"P"
+]
+],
+"Z3": [
+[
+"PM Air",
+"",
+"",
+0,
+"P"
+]
+],
+"Z4": [
+[
+"Zagrosjet",
+"2005-10-01",
+"",
+541
+]
+],
+"Z5": [
+[
+"GMG Airlines",
+"1998-04-06",
+"",
+9
+]
+],
+"Z6": [
+[
+"Dniproavia",
+"1996-01-01",
+"",
+181
+]
+],
+"Z7": [
+[
+"Freshair",
+"",
+"2013-12-31"
+],
+[
+"Zimbabwe flyafrica.com",
+"2014-07-17",
+"2015-10-31"
+],
+[
+"Amaszonas Uruguay",
+"2015-01-01",
+"",
+455
+]
+],
+"Z8": [
+[
+"Línea Aérea Amaszonas",
+"1998-10-01",
+"",
+464
+]
+],
+"Z9": [
+[
+"Jsc Bek Air",
+"",
+"",
+183
+]
+],
+"ZA": [
+[
+"Sky Angkor Airlines",
+"2011-06-13",
+"",
+969
+]
+],
+"ZB": [
+[
+"Monarch Airlines",
+"1968-04-05",
+"2017-10-02",
+974
+],
+[
+"Air Albania",
+"2018-05-16"
+]
+],
+"ZC": [
+[
+"Fly Africa Zimbabwe"
+],
+[
+"Korongo Airlines",
+"2012-01-01",
+"2015-09-04",
+557
+]
+],
+"ZD": [
+[
+"Ewa Air",
+"",
+"",
+732
+]
+],
+"ZE": [
+[
+"Eastar Jet",
+"",
+"",
+839
+]
+],
+"ZF": [
+[
+"Azur Air",
+"1995-05-01"
+],
+[
+"Athens Airways",
+"2008-01-01",
+"2010-12-31"
+]
+],
+"ZG": [
+[
+"Groznyy Avia",
+"",
+"",
+24
+]
+],
+"ZH": [
+[
+"Shenzhen Airlines",
+"1993-09-17",
+"",
+479
+]
+],
+"ZI": [
+[
+"Aigle Azur",
+"1946-01-01",
+"",
+439
+]
+],
+"ZJ": [
+[
+"Zambezi Airlines",
+"",
+"",
+707
+]
+],
+"ZK": [
+[
+"Great Lakes Airlines",
+"1977-04-05",
+"",
+846
+]
+],
+"ZL": [
+[
+"Regional Express",
+"2002-01-01",
+"",
+899
+]
+],
+"ZM": [
+[
+"Pegasus Asia",
+"2006-01-01",
+"",
+887
+]
+],
+"ZN": [
+[
+"Zambia Airways",
+"1964-04-01"
+],
+[
+"Naysa",
+"1969-05-07",
+"2018-01-01",
+595
+]
+],
+"ZO": [
+[
+"Central Air Transport Services",
+"2008-01-01",
+"2015-12-31"
+]
+],
+"ZP": [
+[
+"Silk Way Airlines",
+"2001-01-01",
+"2015-08-28",
+463
+],
+[
+"Paranair",
+"2015-09-23",
+"",
+445
+]
+],
+"ZQ": [
+[
+"Azman Air"
+],
+[
+"JetAmerica",
+"2007-01-01",
+"2008-12-31"
+]
+],
+"ZR": [
+[
+"Punto Azul"
+]
+],
+"ZS": [
+[
+"Kazaviaspas"
+]
+],
+"ZT": [
+[
+"Titan Airways"
+]
+],
+"ZU": [
+[
+"Sunair",
+"2006-01-01"
+],
+[
+"Air Bashkortostan",
+"2006-04-10",
+"2013-10-09",
+894
+]
+],
+"ZV": [
+[
+"Midwest Airlines",
+"1967-04-01",
+"2008-06-30"
+],
+[
+"Zagros Airlines",
+"2005-01-01",
+"2014-11-30"
+],
+[
+"V Air",
+"2014-12-17",
+"",
+189
+]
+],
+"ZW": [
+[
+"Air Wisconsin",
+"1965-08-23",
+"",
+303
+]
+],
+"ZX": [
+[
+"Air Georgian",
+"1994-01-01"
+]
+],
+"ZY": [
+[
+"China Air Cargo",
+"",
+"",
+662
+],
+[
+"Sky Airlines",
+"2001-01-01",
+"2013-06-04",
+438
+]
+],
+"ZZ": [
+[
+"Airline Service"
+]
+]
 }
 }

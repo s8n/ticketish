@@ -15,7 +15,9 @@
 	import { fmtDate } from '../tickets/format.ts';
 	import RouteLine from './RouteLine.svelte';
 	import {
+		airlineByAccountingCode,
 		airlineLabel,
+		airlineName,
 		airportName,
 		airportPlace,
 		loadAirlines,
@@ -43,11 +45,43 @@
 			? `${leg.airlineNumericCode} ${leg.documentSerial}`
 			: (leg.documentSerial ?? null);
 
-	/** The airline behind a designator, or the designator where there is none. */
-	const named = (code: string | null) => (code ? airlineLabel(airlines, code) : null);
+	/**
+	 * The airline behind a designator, or the designator where there is none.
+	 *
+	 * Every one of these is asked as of the flight, not as of today. IATA
+	 * reassigns two letter codes, so a pass out of a drawer has to be read
+	 * against the day it was flown or it gets its successor's name.
+	 */
+	const named = (code: string | null, on: string | null) =>
+		code ? airlineLabel(airlines, code, on) : null;
+
+	/**
+	 * The same, with the designator kept beside it. For the two rows where the
+	 * code appears nowhere else on the card, since the code is the part the
+	 * pass actually says and the name is this app's reading of it.
+	 */
+	const namedWithCode = (code: string | null, on: string | null) => {
+		if (!code) return null;
+		const name = airlineName(airlines, code, on);
+		return name ? `${name} (${code})` : code;
+	};
 
 	const frequentFlyer = (leg: BcbpLeg) =>
-		[named(leg.frequentFlyerAirline), leg.frequentFlyerNumber].filter(Boolean).join(' ') || null;
+		[named(leg.frequentFlyerAirline, leg.flightDate), leg.frequentFlyerNumber]
+			.filter(Boolean)
+			.join(' ') || null;
+
+	/**
+	 * Whose stock the ticket was written on, where that is not the airline
+	 * flying it. Item 142 is the accounting code the ticket bills under, which
+	 * is a different numbering from the designator and does not change hands
+	 * the way one does, so it is worth saying when the two disagree.
+	 */
+	const issuedOn = (leg: BcbpLeg) => {
+		const billed = airlineByAccountingCode(airlines, leg.airlineNumericCode, leg.flightDate);
+		const flying = airlineName(airlines, leg.operatingCarrier, leg.flightDate);
+		return billed && billed !== flying ? billed : null;
+	};
 
 	const legRows = (leg: BcbpLeg): [string, string | null | undefined][] => [
 		['Flight date', leg.flightDate ? fmtDate(leg.flightDate) : null],
@@ -66,12 +100,13 @@
 		['Sequence', leg.sequence],
 		['Status', leg.passengerStatusLabel ?? leg.passengerStatus],
 		['Ticket number', ticketNumber(leg)],
+		['Ticket issued on', issuedOn(leg)],
 		// Only worth a row where the ticket was sold under someone else's code.
 		[
 			'Marketed by',
 			leg.marketingCarrier === leg.operatingCarrier
 				? null
-				: named(leg.marketingCarrier)
+				: namedWithCode(leg.marketingCarrier, leg.flightDate)
 		],
 		['Frequent flyer', frequentFlyer(leg)],
 		['Baggage allowance', leg.freeBaggageAllowanceLabel],
@@ -97,7 +132,7 @@
 		['Electronic ticket', yesNo(ticket.electronicTicket)],
 		['Checked in via', ticket.sourceOfCheckInLabel ?? ticket.sourceOfCheckIn],
 		['Pass issued via', ticket.sourceOfIssuanceLabel ?? ticket.sourceOfIssuance],
-		['Issued by', named(ticket.issuerDesignator)],
+		['Issued by', namedWithCode(ticket.issuerDesignator, ticket.legs[0]?.flightDate ?? null)],
 		['Issued', ticket.issueDate ? fmtDate(ticket.issueDate) : null],
 		['Bag tags', bags.join(', ') || null],
 		['Standard', ticket.version === null ? null : `Resolution 792 version ${ticket.version}`],
@@ -115,7 +150,7 @@
 			<header>
 				<span class="product">{leg.operatingCarrier} {leg.flightNumber ?? ''}</span>
 				<span class="soft">
-					{airlineLabel(airlines, leg.operatingCarrier)}{#if ticket.legs.length > 1}
+					{airlineLabel(airlines, leg.operatingCarrier, leg.flightDate)}{#if ticket.legs.length > 1}
 						· leg {i + 1} of {ticket.legs.length}{/if}
 				</span>
 			</header>

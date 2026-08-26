@@ -14,7 +14,7 @@ import airportsJson from '../src/lib/tickets/data/airports.json' with { type: 'j
 import airlinesJson from '../src/lib/tickets/data/airlines.json' with { type: 'json' };
 
 const airports = airportsJson.airports as Record<string, string[]>;
-const airlines = airlinesJson.airlines as Record<string, string>;
+const airlines = airlinesJson.airlines as unknown as Record<string, (string | number)[][]>;
 
 describe('airports.json', () => {
 	it('keeps the attribution note beside the data', () => {
@@ -43,26 +43,38 @@ describe('airports.json', () => {
 });
 
 describe('airlines.json', () => {
-	it('carries the share-alike terms it was built under', () => {
-		// this one binds: OpenFlights publishes under ODbL, so the table does too
-		expect(airlinesJson._note).toMatch(/openflights/i);
-		expect(airlinesJson._note).toMatch(/Open Database License/i);
-		expect(airlinesJson._note).toMatch(/derived database/i);
+	it('carries the attribution it was built under', () => {
+		expect(airlinesJson._note).toMatch(/opentraveldata/i);
+		expect(airlinesJson._note).toMatch(/Creative Commons Attribution 4\.0/i);
 		expect(airlinesJson._note).toMatch(/build-airlines\.py/);
 	});
 
-	it('is keyed by two character IATA designators with a name apiece', () => {
+	it('is keyed by two character IATA designators, each with its holders', () => {
 		const entries = Object.entries(airlines);
-		expect(entries.length).toBeGreaterThan(700);
-		for (const [code, name] of entries) {
+		expect(entries.length).toBeGreaterThan(900);
+		for (const [code, holders] of entries) {
 			expect(code, `key ${code}`).toMatch(/^[A-Z0-9]{2}$/);
-			expect(name.trim(), `name for ${code}`).not.toBe('');
+			expect(holders.length, `holders of ${code}`).toBeGreaterThan(0);
+			for (const holder of holders) {
+				expect(String(holder[0]).trim(), `name for ${code}`).not.toBe('');
+				expect(holder.length, `entry for ${code}`).toBeLessThanOrEqual(5);
+			}
+		}
+	});
+
+	it('dates every holding as an ISO date or an open end', () => {
+		for (const [code, holders] of Object.entries(airlines)) {
+			for (const holder of holders) {
+				for (const at of [1, 2]) {
+					const value = holder[at];
+					if (value === undefined || value === '') continue;
+					expect(String(value), `date on ${code}`).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+				}
+			}
 		}
 	});
 
 	it("keeps the source's placeholder designators out", () => {
-		// OpenFlights carries "..", "^^" and a few Cyrillic domestic codes, none
-		// of which can appear in a record that is printable ASCII throughout
 		// toHaveProperty reads a dot as a path separator, so ".." would not be
 		// looking for the key it says it is
 		const codes = Object.keys(airlines);
@@ -71,16 +83,28 @@ describe('airlines.json', () => {
 		}
 	});
 
-	it("carries no leftover escaping from the source's own CSV import", () => {
-		for (const [code, name] of Object.entries(airlines)) {
-			expect(name, `name for ${code}`).not.toMatch(/\\/);
-		}
+	it('records the handover that a single name per code cannot express', () => {
+		// the case that sent us to a dated source in the first place
+		const az = airlines.AZ.map((h) => h[0]);
+		expect(az).toContain('Alitalia');
+		expect(az).toContain('ITA Airways');
 	});
 
-	it('leaves out the designators two live airlines share', () => {
-		// the build script will not choose between a carrier and its cargo arm,
-		// so those answers come from the OVERRIDES map beside the loader
-		expect(airlines).not.toHaveProperty('LH');
-		expect(airlines).not.toHaveProperty('SQ');
+	it('tells the two airlines that share LH apart by what they carry', () => {
+		const lh = airlines.LH;
+		expect(lh.length).toBe(2);
+		expect(lh.find((h) => h[0] === 'Lufthansa')?.[4]).toBe('P');
+		expect(lh.find((h) => h[0] === 'Lufthansa Cargo')?.[4]).toBe('C');
+	});
+
+	it('carries the accounting codes that boarding passes bill under', () => {
+		// item 142, checked against what the sample passes actually contain
+		const num = (code: string, name: string) =>
+			airlines[code].find((h) => h[0] === name)?.[3];
+		expect(num('BA', 'British Airways')).toBe(125);
+		expect(num('TK', 'Turkish Airlines')).toBe(235);
+		expect(num('AY', 'Finnair')).toBe(105);
+		expect(num('LG', 'Luxair')).toBe(149);
+		expect(num('KC', 'Air Astana')).toBe(465);
 	});
 });

@@ -150,20 +150,25 @@ They agree on most stations and disagree on 237, mostly German, so the wrong
 one names the wrong station in the place a correct answer would go.
 
 **IATA airline designators** in `src/lib/tickets/data/airlines.json` come from
-[npow/airline-codes](https://github.com/npow/airline-codes), which republishes
-the [OpenFlights](https://openflights.org/data.php) airline database, built by
-`scripts/build-airlines.py` and refreshed monthly with no credentials. **The
-ISC licence on that package covers its code, not the data.** OpenFlights
-publishes under the **Open Data Commons Open Database License (ODbL) 1.0**,
-with the contents under the Database Contents License, and asks that you
-acknowledge the source and license public derived works freely. This table is
-a derived database, so both go with it: keep the `_note` and keep it under
-ODbL if you redistribute it.
+[OpenTravelData](https://github.com/opentraveldata/opentraveldata)
+(`opentraveldata/optd_airlines.csv`), built by `scripts/build-airlines.py` and
+refreshed monthly with no credentials. OPTD publishes what it curates under the
+**Creative Commons Attribution 4.0** licence, so the attribution in the file's
+`_note` is the whole obligation. Note that the `data` directory of that
+repository is a different matter, holding snapshots from other producers on
+their own terms; only OPTD's own curated file is read here.
 
-Designators get reused, so only the ones held by exactly one airline
-OpenFlights marks as active are here. Two live airlines share LH and SQ with
-their cargo arms; the script declines to choose and `bcbp/codes.ts` names them
-in its `OVERRIDES` map instead.
+IATA reassigns two letter designators, so a code alone does not name an
+airline: AZ is Alitalia on a pass from 2019 and ITA Airways on one from 2023.
+The table keeps every holder with the dates it held the code, and the lookup
+answers against the flight date the pass carries. It also keeps `num_code`,
+the three digit accounting code that a pass carries in item 142, and the type
+that tells Lufthansa apart from Lufthansa Cargo where both hold LH today.
+
+A previous version of this table came from OpenFlights by way of
+npow/airline-codes, under ODbL. It was replaced because OpenFlights dates
+nothing: it records whether an airline is active, that flag is years behind,
+and there is no way to ask it who held a code on a given day.
 
 **IATA airport codes** in `src/lib/tickets/data/airports.json` come from
 [datasets/airport-codes](https://github.com/datasets/airport-codes), which

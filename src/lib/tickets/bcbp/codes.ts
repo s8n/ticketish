@@ -18,13 +18,36 @@
  * code, which is a different numbering that neither source records; and the
  * metropolitan area codes such as LON and NYC, which stand for a city rather
  * than an airport and are in no airport catalogue.
+ *
+ * A designator outlives the airline that held it: IATA reassigns them, so AZ
+ * is Alitalia on a pass from 2019 and ITA Airways on one from 2023. The
+ * airline table therefore keeps every holder a code has had with the dates it
+ * had it, and a lookup takes the flight date the pass already carries. Ask
+ * without one and the answer is whoever holds the code now, which is right
+ * for a pass being scanned at a gate and wrong for one out of a drawer.
  */
 import { isoAlpha2CountryName } from '../countries.ts';
 
 /** Airport name, then the town it serves and its country where those are known. */
 export type AirportEntry = [name: string, municipality?: string, country?: string];
 export type AirportTable = Record<string, AirportEntry>;
-export type AirlineTable = Record<string, string>;
+
+/**
+ * One airline's holding of one designator: its name, the dates it held the
+ * code between, the three digit accounting code it bills under, and what it
+ * carries. A blank date is an open end rather than an unknown one, and the
+ * build script drops the fields that trail off blank.
+ */
+export type AirlineEntry = [
+	name: string,
+	from?: string,
+	to?: string,
+	accountingCode?: number,
+	type?: string
+];
+
+/** Every holder each designator has had, oldest first. */
+export type AirlineTable = Record<string, AirlineEntry[]>;
 
 interface AirlineOverride {
 	name: string;
@@ -33,23 +56,21 @@ interface AirlineOverride {
 }
 
 /**
- * The designators the build script will not choose for, plus anywhere this
- * repo has a better answer. Corrections go here rather than into the JSON, so
- * that regenerating stays a clean copy.
+ * Anywhere this repo has a better answer than the table. Corrections go here
+ * rather than into the JSON, so that regenerating stays a clean copy.
  *
- * Both entries below are a passenger airline and its cargo arm holding one
- * designator. A boarding pass is a passenger document, so the cargo operation
- * is not what a pass carrying LH or SQ means, but that is a fact about
- * boarding passes rather than one in the table, which is why the script
- * declines to guess and this map answers instead.
+ * Empty, and worth keeping empty. The three entries this map used to hold
+ * were all the source failing to say when a designator changed hands, and a
+ * dated source answers them itself: AZ from its validity dates, LH from the
+ * passenger type that tells it apart from Lufthansa Cargo, SQ because there
+ * was never more than one holder to choose between.
+ *
+ * An override answers for every date at once, so it belongs to a fact the
+ * source has plainly wrong, never to a reassignment. Those are the table's
+ * job, and putting one here would break the older passes that the previous
+ * holder is the right answer for.
  */
-const AIRLINE_OVERRIDES: Record<string, AirlineOverride> = {
-	LH: { name: 'Lufthansa', source: 'Lufthansa Cargo shares the designator and flies no passengers' },
-	SQ: {
-		name: 'Singapore Airlines',
-		source: 'Singapore Airlines Cargo shares the designator and flies no passengers'
-	}
-};
+const AIRLINE_OVERRIDES: Record<string, AirlineOverride> = {};
 
 let airportCache: AirportTable | null = null;
 let airportPending: Promise<AirportTable> | null = null;
@@ -71,7 +92,9 @@ let airlinePending: Promise<AirlineTable> | null = null;
 export async function loadAirlines(): Promise<AirlineTable> {
 	if (airlineCache) return airlineCache;
 	airlinePending ??= import('../data/airlines.json').then((m) => {
-		airlineCache = (m.default as { airlines: AirlineTable }).airlines;
+		// Widened the same way the airport rows are, and for the same reason:
+		// the tuple is what the build script writes, not what JSON can say.
+		airlineCache = (m.default as unknown as { airlines: AirlineTable }).airlines;
 		return airlineCache;
 	});
 	return airlinePending;
@@ -99,13 +122,72 @@ export function airportPlace(airports: AirportTable | null, code: string): strin
 	return [municipality, country ? isoAlpha2CountryName(country) : null].filter(Boolean).join(', ') || null;
 }
 
-/** The airline behind a designator, or null while the table loads or for a code it lacks. */
-export function airlineName(airlines: AirlineTable | null, code: string | null): string | null {
+/**
+ * Whether a holding covers a date. The source writes a handover as one
+ * airline's `to` and the next one's `from` on the same day, so the day itself
+ * belongs to the airline taking over: Alitalia stopped flying on 14 October
+ * 2021 and ITA Airways started on the 15th, which is the date both records
+ * carry.
+ */
+function holdsOn(entry: AirlineEntry, on: string | null): boolean {
+	const [, from = '', to = ''] = entry;
+	// Without a date the question is who holds the code now, so anything with
+	// an end has already answered no.
+	if (!on) return !to;
+	return (!from || from <= on) && (!to || on < to);
+}
+
+/**
+ * The holder to answer with. Where the dates leave more than one, a passenger
+ * airline beats anything else: Lufthansa and Lufthansa Cargo both hold LH
+ * today, and a boarding pass is a passenger document. Failing that the oldest
+ * holding wins, which is arbitrary but at least the same answer every time;
+ * the build script names the handful of codes this happens to.
+ */
+function holder(entries: AirlineEntry[], on: string | null): AirlineEntry | null {
+	const valid = entries.filter((e) => holdsOn(e, on));
+	return valid.find((e) => (e[4] ?? '').includes('P')) ?? valid[0] ?? null;
+}
+
+/**
+ * The airline behind a designator on a given date, or null while the table
+ * loads and for the codes it does not cover. `on` is an ISO date, normally
+ * the leg's flight date; without one the answer is the current holder.
+ */
+export function airlineName(
+	airlines: AirlineTable | null,
+	code: string | null,
+	on: string | null = null
+): string | null {
 	if (!code) return null;
 	const key = code.toUpperCase();
-	return AIRLINE_OVERRIDES[key]?.name ?? airlines?.[key] ?? null;
+	return AIRLINE_OVERRIDES[key]?.name ?? holder(airlines?.[key] ?? [], on)?.[0] ?? null;
 }
 
 /** The airline where it is known, and the designator where it is not. */
-export const airlineLabel = (airlines: AirlineTable | null, code: string): string =>
-	airlineName(airlines, code) ?? code;
+export const airlineLabel = (
+	airlines: AirlineTable | null,
+	code: string,
+	on: string | null = null
+): string => airlineName(airlines, code, on) ?? code;
+
+/**
+ * The airline behind item 142, the three digit accounting code, which is a
+ * different numbering from the designator and the only other identification a
+ * pass carries. Worth having because it answers where a designator does not:
+ * the code the pass bills under does not change hands the way a two letter
+ * one does.
+ */
+export function airlineByAccountingCode(
+	airlines: AirlineTable | null,
+	code: string | null,
+	on: string | null = null
+): string | null {
+	if (!airlines || !code || !/^\d{1,3}$/.test(code.trim())) return null;
+	const num = Number(code);
+	if (!num) return null;
+	const matches = Object.values(airlines)
+		.flat()
+		.filter((e) => e[3] === num);
+	return holder(matches, on)?.[0] ?? matches[0]?.[0] ?? null;
+}
