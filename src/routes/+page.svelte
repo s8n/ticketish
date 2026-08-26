@@ -162,7 +162,7 @@
 				</li>
 				<li>
 					<span class="format">IATA BCBP</span>
-					✈️ Airline boarding passes, every leg of the itinerary
+					✈️ Airline boarding passes
 				</li>
 				<li>
 					<span class="format">Custom formats</span>
