@@ -1,6 +1,6 @@
 {
 "_note": "Organisation Codes from the Organisation Code Register (OCR) published by the European Union Agency for Railways at https://teleref.era.europa.eu/. Reproduction is authorised provided the source is acknowledged, per ERA's copyright notice at https://www.era.europa.eu/content/disclaimer-and-copyright-notice, so keep this credit wherever the table goes: source, European Union Agency for Railways. Modified from the original: of the fifteen columns ERA publishes only the code, the organisation name, the acronym and the country are kept, the country as a two letter code, the address, contact and role columns are dropped, second codes are listed as further keys for the same organisation, and codes from the revoked sheet are included with their revocation date. Use is subject to ERA's Terms of Use, https://teleref.era.europa.eu/termsOfUsage-OCR-v1.0.pdf. Rebuilt by scripts/build-era-orgs.py; do not edit by hand, put corrections in the OVERRIDES map in src/lib/tickets/uic/era-orgs.ts.",
-"_edition": "2026-08-12",
+"_edition": "2026-09-07",
 "orgs": {
 "0006": {
 "n": "Stena Line Holland BV",
@@ -12,8 +12,9 @@
 "c": "FI"
 },
 "0012": {
-"n": "Transfesa Logistics SA",
-"revoked": "2026-06-26"
+"n": "DB CARGO IBERIA RAIL LOGISTICS SA",
+"a": "DB CARGO IBERIA / DBCI",
+"c": "ES"
 },
 "0013": {
 "n": "OSJD",
@@ -599,9 +600,8 @@
 "c": "DE"
 },
 "1012": {
-"n": "DB CARGO IBERIA RAIL LOGISTICS SA",
-"a": "DB CARGO IBERIA / DBCIB",
-"c": "ES"
+"n": "Transfesa Logistics SA",
+"revoked": "2026-08-28"
 },
 "1021": {
 "n": "Bahnbetriebswerk Glauchau GmbH",
@@ -933,6 +933,10 @@
 "a": "EVR CZ",
 "c": "CZ"
 },
+"1849": {
+"n": "Energostar Sp. z o.o.",
+"c": "PL"
+},
 "1892": {
 "n": "Havelländische Eisenbahn AG - Infrastruktur",
 "a": "HVLEI",
@@ -957,6 +961,10 @@
 "n": "SKPL Cargo",
 "a": "SKPL",
 "c": "PL"
+},
+"1976": {
+"n": "INFRABEL S.A./N.V.",
+"revoked": "2026-08-13"
 },
 "1978": {
 "n": "DB RegioNetz Infrastruktur GmbH",
@@ -1188,6 +1196,11 @@
 "1TEW": {
 "n": "Willke Technics GmbH & Co. KG",
 "c": "DE"
+},
+"1TXK": {
+"n": "Spolek Vlárské Dráhy",
+"a": "SVLD",
+"c": "CZ"
 },
 "1U15": {
 "n": "TTL Ltd.",
@@ -1703,6 +1716,15 @@
 },
 "2816": {
 "n": "Gemeinde Dornum",
+"c": "DE"
+},
+"2844": {
+"n": "Perium, s.r.o.",
+"c": "SK"
+},
+"2877": {
+"n": "Rheinbahn AG",
+"a": "Rheinbahn",
 "c": "DE"
 },
 "28Z1": {
@@ -3903,7 +3925,7 @@
 },
 "3440": {
 "n": "Eisenbahnen und Verkehrsbetriebe Elbe-Weser GmbH-Infrastruktur",
-"a": "evb Infrastruktur",
+"a": "EVB - Infrastruktur",
 "c": "DE"
 },
 "3441": {
@@ -4670,8 +4692,8 @@
 "c": "HU"
 },
 "3611": {
-"n": "Havenbedrijf Antwerpen NV van publiek recht",
-"a": "Port of Antwerp",
+"n": "Havenbedrijf Antwerpen NV - Antwerp Port Authority NV",
+"a": "PoAB",
 "c": "BE"
 },
 "3612": {
@@ -7624,6 +7646,7 @@
 },
 "4216": {
 "n": "VTG Rail Europe GmbH",
+"a": "VTG",
 "c": "DE"
 },
 "4217": {
@@ -7843,8 +7866,7 @@
 },
 "4262": {
 "n": "Pichenot - Goupe Eiffage",
-"a": "PIB",
-"c": "FR"
+"revoked": "2026-08-24"
 },
 "4263": {
 "n": "Rdt13",
@@ -8690,7 +8712,7 @@
 "c": "DE"
 },
 "4PHO": {
-"n": "TENVAGON s.r.o.",
+"n": "TENVAGON a.s.",
 "c": "CZ"
 },
 "4PTQ": {
@@ -8820,6 +8842,11 @@
 "n": "Verkehrsverbund Rhein-Neckar GmbH",
 "a": "VRN",
 "c": "DE"
+},
+"500R": {
+"n": "SNCF Voyageurs Rives Ouest Ile-de-France",
+"a": "RiO",
+"c": "FR"
 },
 "5010": {
 "n": "Anhaltinisch-Brandenburgische Eisenbahngesellschaft mbH",
@@ -10909,6 +10936,7 @@
 },
 "5455": {
 "n": "Hans Kaiser GmbH & Co. KG",
+"a": "HK",
 "c": "DE"
 },
 "5456": {
@@ -12526,6 +12554,11 @@
 "n": "UAB \"European Trader\"",
 "c": "LT"
 },
+"5IV2": {
+"n": "T-Railer GmbH",
+"a": "T-Railer",
+"c": "DE"
+},
 "5JB4": {
 "n": "Acciona Construcción S.A.",
 "a": "ACCIONA",
@@ -12662,6 +12695,11 @@
 "n": "Altmark-Rail GmbH",
 "revoked": "2026-04-08"
 },
+"5WQ9": {
+"n": "KVG Stade GmbH & Co.KG",
+"a": "KVG Stade",
+"c": "DE"
+},
 "5WQQ": {
 "n": "FERROVIAL RAILWAY, S. A.",
 "c": "ES"
@@ -12746,6 +12784,11 @@
 "6142": {
 "n": "Mel testing 7000",
 "revoked": "2026-07-08"
+},
+"61CR": {
+"n": "\"NEOMET\" Sp. z o.o.",
+"a": "NEOMET",
+"c": "PL"
 },
 "61T7": {
 "n": "GLOBALFER s.p.a.",
@@ -12990,6 +13033,11 @@
 "a": "SF",
 "c": "RO"
 },
+"6NNU": {
+"n": "Duferco Wallonie SA",
+"a": "DWAL",
+"c": "BE"
+},
 "6ONA": {
 "n": "ZPUH \"ASORMET\"",
 "c": "PL"
@@ -13025,6 +13073,10 @@
 "6TAK": {
 "n": "Bardos a.s.",
 "c": "CZ"
+},
+"6TF6": {
+"n": "Railway Approvals Germany GmbH",
+"c": "DE"
 },
 "6TKB": {
 "n": "WAGONS MAINTENANCE srl",
@@ -13130,8 +13182,7 @@
 },
 "71VJ": {
 "n": "RAIL & TRUCK STRAIT UNION",
-"a": "RAIL&TRUCK",
-"c": "ES"
+"revoked": "2026-08-26"
 },
 "7207": {
 "n": "United Multimodal Services Sp. z o.o.",
@@ -13342,6 +13393,10 @@
 "7FNR": {
 "n": "LokRoll3 AG",
 "c": "CH"
+},
+"7FO3": {
+"n": "FFM Rail GmbH",
+"c": "DE"
 },
 "7FYF": {
 "n": "Muzeum Technických Zajímavostí z. s.",
@@ -13814,6 +13869,11 @@
 "a": "Inspiron",
 "c": "SK"
 },
+"8G0S": {
+"n": "Train Cargo SRL",
+"a": "TCRo",
+"c": "RO"
+},
 "8G6O": {
 "n": "Associação Portuguesa para a Normalização e Certificação Ferroviária",
 "a": "APNCF",
@@ -14045,6 +14105,11 @@
 "a": "RALLIANSS",
 "c": "FR"
 },
+"9053": {
+"n": "MZNT Maciej Fijak",
+"a": "MZNT",
+"c": "PL"
+},
 "90CR": {
 "n": "Osoblažská úzkorozchodná dráha o.p.s.",
 "a": "OÚD",
@@ -14097,6 +14162,11 @@
 "n": "SDD Betrieb UG (haftungsbeschränkt)",
 "a": "SDD Betrieb UG",
 "c": "DE"
+},
+"9442": {
+"n": "PSP Cargo Hungária Kft.",
+"a": "PSPCHU",
+"c": "HU"
 },
 "9536": {
 "n": "Bernd Lühring e.K.",
@@ -14155,6 +14225,11 @@
 },
 "9871": {
 "n": "VBG Gleisbau GmbH",
+"c": "DE"
+},
+"9899": {
+"n": "KAPRION Technologies GmbH",
+"a": "KT",
 "c": "DE"
 },
 "9901": {
@@ -14238,6 +14313,11 @@
 "n": "RailTrans Poland Sp. z o.o. sp. k.",
 "a": "RailTrans Poland Sp. z o.o. sp",
 "c": "PL"
+},
+"9DS5": {
+"n": "SZABÓ Csaba Individual Entrepreneur EV57238469",
+"a": "SZABÓ Csaba e. v.",
+"c": "HU"
 },
 "9DW6": {
 "n": "Amovanza Vermietungsgesellschaft mbH & Co. Mobilien KG",
@@ -15072,8 +15152,7 @@
 },
 "BJK6": {
 "n": "Eiffage Infra-Rail GmbH",
-"a": "ERD",
-"c": "DE"
+"revoked": "2026-08-13"
 },
 "BK0F": {
 "n": "Roste Trade s.r.o.",
@@ -15404,6 +15483,10 @@
 "a": "GWTR",
 "c": "CZ"
 },
+"C81I": {
+"n": "Karel Mikolášek",
+"c": "CZ"
+},
 "C85A": {
 "n": "Peter Cramer Anlagen oHG",
 "c": "DE"
@@ -15545,6 +15628,10 @@
 "CJNP": {
 "n": "Landesnahverkehrsgesellschaft Niedersachsen mbH",
 "revoked": "2025-12-17"
+},
+"CJZT": {
+"n": "PaSS spol. s r.o.",
+"c": "SK"
 },
 "CKKP": {
 "n": "Junker Gleisbauservice GmbH",
@@ -16097,6 +16184,10 @@
 "n": "European Union Agency for Railways",
 "a": "ERA",
 "c": "FR"
+},
+"EUHQ": {
+"n": "MEREX, s.r.o.",
+"c": "CZ"
 },
 "EUQ0": {
 "n": "Railwai Safety Authority of Albania",
@@ -17786,6 +17877,10 @@
 "a": "REG",
 "c": "DE"
 },
+"J99B": {
+"n": "DIGIRAIL",
+"c": "FR"
+},
 "JAM2": {
 "n": "voestalpine Signaling Poland Sp. z o.o.",
 "c": "PL"
@@ -18323,6 +18418,11 @@
 "n": "Höyrykalustoyhtiö Tenderi Oy",
 "c": "FI"
 },
+"KMBI": {
+"n": "Alstom Transport SA - ATRO",
+"a": "ATRO",
+"c": "RO"
+},
 "KMJS": {
 "n": "Amolare Vermietungsgesellschaft mbH",
 "a": "Amolare",
@@ -18477,6 +18577,10 @@
 "n": "KOLSTAV - KRALUPY s.r.o.",
 "a": "KK",
 "c": "CZ"
+},
+"KZZY": {
+"n": "Michael Stoll",
+"c": "DE"
 },
 "L0PC": {
 "n": "LAMOTI Verwaltung GmbH",
@@ -19525,6 +19629,11 @@
 "a": "MEDMR",
 "c": "PT"
 },
+"NOM7": {
+"n": "Atrium 308 European VV SE",
+"a": "Atrium",
+"c": "DE"
+},
 "NOZL": {
 "n": "KMBS Kampfmittelbeseitigung & Service GmbH",
 "a": "KMBS",
@@ -19556,6 +19665,10 @@
 "NRKL": {
 "n": "Rund ums Gleis GmbH",
 "revoked": "2025-06-17"
+},
+"NRZ1": {
+"n": "LEITNER s.r.o.",
+"c": "CZ"
 },
 "NSR6": {
 "n": "CRRC QINGDAO SIFANG CO., LTD.",
@@ -20372,6 +20485,7 @@
 },
 "P024": {
 "n": "Pomorska Kolej Metropolitalna S.A.",
+"a": "PKM SA",
 "c": "PL"
 },
 "P025": {
@@ -21837,7 +21951,7 @@
 },
 "P0D4": {
 "n": "Hans Kaiser GmbH & Co. KG",
-"c": "DE"
+"revoked": "2026-08-13"
 },
 "P0D5": {
 "n": "Zweckverband Verkehrsverband Wieslauftalbahn",
@@ -22230,8 +22344,7 @@
 },
 "P0FS": {
 "n": "Rail Power Systems GmbH",
-"a": "RPS",
-"c": "DE"
+"revoked": "2026-09-02"
 },
 "P0FT": {
 "n": "Rive Rail Leasing 4 Limited",
@@ -23223,8 +23336,7 @@
 },
 "QEW0": {
 "n": "BEHALA - Berliner Hafen- und Lagerhausgesellschaft mbH",
-"a": "BEHALA",
-"c": "DE"
+"revoked": "2026-08-25"
 },
 "QFDX": {
 "n": "4MADE s.r.o.",
@@ -24057,7 +24169,7 @@
 "c": "NL"
 },
 "SGZG": {
-"n": "MARUB SA Brasov",
+"n": "MARUB BRASOV SRL",
 "a": "MRB",
 "c": "RO"
 },
@@ -24510,6 +24622,10 @@
 "a": "PBV",
 "c": "AT"
 },
+"TG7I": {
+"n": "KORPORACJA VENIR POLSKA SP. Z O.O.",
+"c": "PL"
+},
 "TGQ7": {
 "n": "INT Rail GmbH",
 "c": "DE"
@@ -24580,6 +24696,10 @@
 "n": "Piotr Mieczkowski-Autoryzowana Stacja Obsługi Serwis Pojazdów Szynowych",
 "a": "ASO",
 "c": "PL"
+},
+"TNE9": {
+"n": "Reinhold Napoleon Pagnin",
+"c": "AT"
 },
 "TNEB": {
 "n": "Klaus Nußbaum",
@@ -25014,6 +25134,11 @@
 "a": "SPM",
 "c": "NL"
 },
+"W2ZX": {
+"n": "Cer Cargo Holding SE",
+"a": "CCH",
+"c": "HU"
+},
 "W36R": {
 "n": "Škoda Group Austria GmbH",
 "a": "SGA",
@@ -25429,6 +25554,11 @@
 "n": "SIMEF, ACE",
 "a": "SIMEF",
 "c": "PT"
+},
+"X342": {
+"n": "SRL Fabrice Debaisieux",
+"a": "FD",
+"c": "BE"
 },
 "X9RJ": {
 "n": "RailHub sp. z o. o.",

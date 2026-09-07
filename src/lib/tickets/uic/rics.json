@@ -1,6 +1,6 @@
 {
 "_note": "RICS codes to the organisations that hold them. The register above marks each row as an Organisation Code or a RICS Code; these are the RICS ones, which UIC allocates and ERA mirrors, split out so that the two halves of the numbering answer separately. Same source and same terms as era-orgs.json: from the European Union Agency for Railways at https://teleref.era.europa.eu/, reproduction authorised provided the source is acknowledged, so keep the credit wherever the table goes: source, European Union Agency for Railways. Rebuilt by scripts/build-era-orgs.py with scripts/rics-era-overrides.json applied on top; do not edit by hand, put corrections in that file.",
-"_edition": "2026-08-12",
+"_edition": "2026-09-07",
 "orgs": {
 "0000": {
 "n": "Unspecified (RICS 0)"
@@ -1207,6 +1207,16 @@
 "n": "Mongolian Trans Logistic LLC",
 "a": "LLC MTL",
 "c": "MN"
+},
+"6114": {
+"n": "Eleda Rail Norge AS",
+"a": "Eleda Rail Norge",
+"c": "NO"
+},
+"6115": {
+"n": "Fjord Line AS",
+"a": "Fjord Line",
+"c": "NO"
 },
 "7085": {
 "n": "Chemoil Logistics AG",
