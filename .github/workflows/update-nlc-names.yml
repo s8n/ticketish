@@ -11,7 +11,7 @@ name: Update UK NLC station names
 # and nothing is committed.
 on:
   schedule:
-    - cron: '43 4 2 * *' # 04:43 UTC on the 2nd of each month
+    - cron: '43 4 2,16 * *' # 04:43 UTC on the 2nd and 16th of each month
   workflow_dispatch:
 
 permissions:

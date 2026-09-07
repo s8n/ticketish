@@ -44,7 +44,7 @@ moving. Several of them are written down nowhere else.
   product names are vendored from zuegli's tariff data (see
   `scripts/vdv-products/`) and merged by `scripts/build-vdv-products.py`.
 - UK station names come from the RDG/National Rail fares feed via
-  `scripts/build-nlc-names.py`, also refreshed monthly. That feed needs a free
+  `scripts/build-nlc-names.py`, refreshed twice a month. That feed needs a free
   National Rail Open Data account; the workflow reads the `NR_USERNAME` and
   `NR_PASSWORD` repository secrets and skips cleanly when they are absent.
 - Turkish station names come from the list TCDD's own e-ticket site reads, via
