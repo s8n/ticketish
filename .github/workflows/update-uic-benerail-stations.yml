@@ -3,7 +3,7 @@
 
 name: Update UIC and Benerail station names
 
-# UIC location codes and SNCF mnemonics both come from trainline-eu/stations,
+# UIC location codes and Benerail mnemonics both come from trainline-eu/stations,
 # a single ODbL 1.0 CSV that needs no credentials. See
 # scripts/build-uic-benerail-from-trainline.py for the attribution the tables carry.
 on:
@@ -29,7 +29,7 @@ jobs:
 
       - name: Commit and push if changed
         run: |
-          paths="src/lib/tickets/data/uic-stations.json src/lib/tickets/data/sncf-stations.json"
+          paths="src/lib/tickets/data/uic-stations.json src/lib/tickets/data/benerail-stations.json"
           if git diff --quiet -- $paths; then
             echo "No changes to the station name tables."
             exit 0

@@ -46,7 +46,7 @@ them under EUPL-1.2.
 ## Data with a known licence
 
 - `src/lib/tickets/data/uic-stations.json` and
-  `src/lib/tickets/data/sncf-stations.json` are derived from
+  `src/lib/tickets/data/benerail-stations.json` are derived from
   [trainline-eu/stations](https://github.com/trainline-eu/stations), which is
   published under the Open Database License (ODbL) 1.0. They are derived
   databases: keep the attribution and keep them under ODbL.
