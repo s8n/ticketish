@@ -607,7 +607,7 @@
 "a": "SGH"
 },
 "182": {
-"n": "Bielersee",
+"n": "Bielersee-Schifffahrts-Gesellschaft AG",
 "a": "BSG"
 },
 "183": {
@@ -2325,6 +2325,14 @@
 "623": {
 "n": "GEM'BUS (TPAL PROXY GEM)",
 "a": "GEMBUS"
+},
+"624": {
+"n": "Finanz Infra AG",
+"a": "FINIAG"
+},
+"625": {
+"n": "Château Gütsch AG",
+"a": "CGAG"
 },
 "626": {
 "n": "TPF - Automatisches Ticketing FAIRTIQ",
@@ -5311,6 +5319,9 @@
 "5087": {
 "n": "Transsicura AG",
 "a": "SBB Trans"
+},
+"5088": {
+"n": "TPG62"
 },
 "5998": {
 "n": "Aufgehobene KTU",
