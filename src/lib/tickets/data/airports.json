@@ -4316,11 +4316,6 @@
 "Burns",
 "US"
 ],
-"BNP": [
-"Bannu",
-"Bannu",
-"PK"
-],
 "BNR": [
 "Banfora",
 "Banfora",
@@ -12417,7 +12412,7 @@
 "PG"
 ],
 "GBG": [
-"Galesburg Municipal",
+"Galesburg Regional HW Timmons",
 "Galesburg",
 "US"
 ],
@@ -13523,7 +13518,7 @@
 ],
 "GRF": [
 "Gray Army Air Field",
-"Fort Lewis/Tacoma",
+"Joint Base Lewis McChord",
 "US"
 ],
 "GRG": [
@@ -13936,6 +13931,11 @@
 "Greenville",
 "US"
 ],
+"GVX": [
+"Gävle–Sandviken",
+"Sandviken",
+"SE"
+],
 "GWA": [
 "Gwa",
 "Gwa",
@@ -13962,7 +13962,7 @@
 "US"
 ],
 "GWS": [
-"Glenwood Springs Municipal",
+"Sumers Airpark",
 "Glenwood Springs",
 "US"
 ],
@@ -24947,7 +24947,7 @@
 "VC"
 ],
 "MQT": [
-"Marquette/Sawyer International",
+"Marquette Sawyer Regional",
 "Gwinn",
 "US"
 ],
@@ -28493,7 +28493,7 @@
 ],
 "ONO": [
 "Ontario Municipal",
-"Oregon",
+"Ontario",
 "US"
 ],
 "ONP": [
@@ -38536,6 +38536,11 @@
 "Britton",
 "US"
 ],
+"TTQ": [
+"Tortuguero",
+"Tortuguero",
+"CR"
+],
 "TTR": [
 "Pongtiku",
 "Makale",
@@ -39190,6 +39195,11 @@
 "Ugashik",
 "Ugashik",
 "US"
+],
+"UGT": [
+"Bulagtai Resort",
+"Khankhongor",
+"MN"
 ],
 "UGU": [
 "Bilorai",
@@ -43300,11 +43310,6 @@
 "Samjiyŏn",
 "Samjiyŏn",
 "KP"
-],
-"YJT": [
-"Stephenville Dymond International",
-"Stephenville",
-"CA"
 ],
 "YKA": [
 "Kamloops John Moose Fulton Field Regional",
