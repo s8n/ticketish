@@ -273,9 +273,11 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 	},
 	'kbv-eau': {
 		label: () => 'KBV eAU (Muster 1)',
-		// No issuer line: the barcode names nobody. The practice is a BSNR and
-		// the doctor a LANR, both of which the view shows as the numbers they
-		// are, and the name is printed in the stamp beside the symbol.
+		// The practice that issued it, by the only name the barcode has for it.
+		// The one printed in the stamp beside the symbol is not in the data, and
+		// an entry without an issuer at all reads as an unrecognised payload.
+		issuer: (c) =>
+			c.certificate.bsnr ? `Practice ${c.certificate.bsnr}` : 'Medical practice',
 		view: EauView,
 		props: (c) => ({ certificate: c.certificate })
 	},
