@@ -173,6 +173,11 @@
 					<span class="format">Partly supported</span>
 					NSB (🇳🇴) and EAV (🇮🇹)
 				</li>
+				<li>
+					<span class="format">Bonus</span>
+					🇩🇪 Not a ticket at all: the barcode on the Krankenkasse copy of a German
+					Arbeitsunfähigkeitsbescheinigung (eAU)
+				</li>
 			</ul>
 			<p class="fine">
 				Decoding happens entirely in this browser tab. Ticket data is kept in memory only and

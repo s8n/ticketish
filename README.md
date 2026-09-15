@@ -116,6 +116,18 @@ Formats without a public specification were reverse engineered by comparing
 barcodes against the printed tickets they came from. Where fields remain
 unknown, the UI says so rather than guessing.
 
+### Bonus
+
+- **KBV eAU (Muster 1)** - not a ticket. The PDF417 on the Krankenkasse copy of
+  a German Arbeitsunfähigkeitsbescheinigung, the sick note a practice prints and
+  posts when sending the eAU to the insurer electronically fails. Twenty-eight
+  TAB separated fields in ISO 8859-15 per table 17 of the KBV technical annex:
+  the two dates the absence runs between, when it was assessed, the tick boxes
+  for work accidents and rehabilitation, the practice's BSNR and the doctor's
+  LANR, and the ICD-10-GM diagnoses with their Diagnosesicherheit and
+  Seitenlokalisation. The employer's copy of the same sick note prints no
+  diagnosis; this barcode carries it, which is the point of reading it
+
 ## Development
 
 ```sh

@@ -64,6 +64,7 @@ export type TicketContainer =
 	| { kind: 'bob'; ticket: import('./bob/bob.ts').BobTicket }
 	| { kind: 'uz'; ticket: import('./uz/uz.ts').UzTicket }
 	| { kind: 'sncf-eticket'; ticket: import('./sncf/eticket.ts').SncfETicket }
+	| { kind: 'kbv-eau'; certificate: import('./kbv/eau.ts').EauCertificate }
 	| { kind: 'text'; text: string }
 	| { kind: 'unknown' };
 

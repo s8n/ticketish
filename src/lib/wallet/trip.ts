@@ -694,6 +694,9 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 	nsb: null,
 	uz: null,
 	'sncf-eticket': null,
+	// An eAU is not a journey: no traveller, no operator, nowhere to be and
+	// nothing an inspector would ask for. It is in the app to be read.
+	'kbv-eau': null,
 	text: null,
 	unknown: null
 };

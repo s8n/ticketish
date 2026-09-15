@@ -25,6 +25,7 @@ import { isCdLegacy, parseCdLegacy } from './cd/legacy.ts';
 import { isNsb, parseNsb } from './nsb/nsb.ts';
 import { isBob, parseBob } from './bob/bob.ts';
 import { isSncfETicket, parseSncfETicket } from './sncf/eticket.ts';
+import { isEau, parseEau } from './kbv/eau.ts';
 
 // Record parsers register themselves on import.
 import './records/uhead.ts';
@@ -60,6 +61,10 @@ const DETECTORS: Detector[] = [
 	{ matches: isUic9183, parse: (d) => ({ kind: 'uic9183', envelope: parseUic9183(d) }), certain: true },
 	{ matches: isRsp6, parse: (d) => ({ kind: 'rsp6', ticket: parseRsp6(d) }), certain: true },
 	{ matches: isVdv, parse: (d) => ({ kind: 'vdv', barcode: parseVdv(d) }) },
+	// Ahead of SSB, which reads a version out of the first byte's top nibble
+	// and so claims anything long enough that starts with "0". An eAU starts
+	// with "01", and its own test is the whole constant head plus a date.
+	{ matches: isEau, parse: (d) => ({ kind: 'kbv-eau', certificate: parseEau(d) }) },
 	{ matches: isSsb, parse: (d) => ({ kind: 'ssb', envelope: parseSsb(d) }) },
 	{ matches: isSsb1, parse: (d) => ({ kind: 'ssb1', ticket: parseSsb1(d) }) },
 	{ matches: isTrenitalia, parse: (d) => ({ kind: 'trenitalia', ticket: parseTrenitalia(d) }) },

@@ -40,6 +40,7 @@ import NsbView from './NsbView.svelte';
 import UzView from './UzView.svelte';
 import SncfETicketView from './SncfETicketView.svelte';
 import BobView from './BobView.svelte';
+import EauView from './EauView.svelte';
 
 type Kind = TicketContainer['kind'];
 type Of<K extends Kind> = Extract<TicketContainer, { kind: K }>;
@@ -269,6 +270,14 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 			({ IV: 'Eurostar', IZ: 'Eurostar', DV: 'SNCF' })[c.ticket.ticketCode] ?? 'ELB ticket',
 		view: ElbView,
 		props: (c) => ({ ticket: c.ticket })
+	},
+	'kbv-eau': {
+		label: () => 'KBV eAU (Muster 1)',
+		// No issuer line: the barcode names nobody. The practice is a BSNR and
+		// the doctor a LANR, both of which the view shows as the numbers they
+		// are, and the name is printed in the stamp beside the symbol.
+		view: EauView,
+		props: (c) => ({ certificate: c.certificate })
 	},
 	text: {
 		label: () => 'Plain text',

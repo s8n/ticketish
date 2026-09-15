@@ -240,6 +240,13 @@ fine to use and are committed.
   and "U" gender codes in item 15. Anything a table leaves to a later version
   or to another body, such as the selectee value the guide hands to the TSA,
   is shown as issued rather than labelled from a guess.
+- **KBV Technische Anlage zur eAU** (`KBV_ITA_VGEX_Technische_Anlage_eAU`):
+  section 7 and table 17 specify the PDF417 on the Krankenkasse copy of a
+  German Arbeitsunfähigkeitsbescheinigung, which `src/lib/tickets/kbv/` reads,
+  and table 18 in section 8 gives the field semantics the table numbers leave
+  out. Keep a copy in `standards/` (gitignored, so fetch it from kbv.de). The
+  codes for Versichertenart, besondere Personengruppe and DMP are handed to KBV
+  code systems the annex does not reproduce, so they stay unlabelled here.
 - [trainticket.wiki](https://trainticket.wiki/ticket-standards/) and
   [train-barcode-kaitai-spec](https://github.com/NeoRail/train-barcode-kaitai-spec)
   (MIT, Kaitai files CC0): the reference for the national formats nobody

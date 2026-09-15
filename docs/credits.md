@@ -34,6 +34,10 @@ moving. Several of them are written down nowhere else.
 - The MÁV layout follows the same project's `mav/mav.ksy` (CC0), plus the
   ticket medium enum and version dependent validity width from Volker Krause's
   branch of it. The VIA Rail layout follows its `viarail/viarail.ksy`.
+- The eAU barcode is specified in the **Technische Anlage zur eAU**
+  (KBV_ITA_VGEX), published by the Kassenärztliche Bundesvereinigung. Table 17
+  gives the field order and table 18 what each field means. Nothing from it is
+  bundled here; the parser is written from the tables.
 
 ## Keys and lookup tables
 
