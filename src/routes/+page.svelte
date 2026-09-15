@@ -175,7 +175,7 @@
 				</li>
 				<li>
 					<span class="format">Bonus</span>
-					🇩🇪 Not a ticket at all: the barcode on the Krankenkasse copy of a German
+					🇩🇪 German
 					Arbeitsunfähigkeitsbescheinigung (eAU)
 				</li>
 			</ul>
