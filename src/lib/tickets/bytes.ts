@@ -44,6 +44,13 @@ export function startsWith(data: Uint8Array, prefix: string | readonly number[])
 	return data.length >= bytes.length && bytes.every((b, i) => data[i] === b);
 }
 
+/** Bytes `start` to `end` as an unsigned big-endian integer. */
+export function beUint(d: Uint8Array, start: number, end: number): number {
+	let v = 0;
+	for (let i = start; i < end; i++) v = v * 256 + d[i];
+	return v;
+}
+
 /** Standard base64, padded. */
 export const toBase64 = (bytes: Uint8Array) => btoa(byteString(bytes));
 

@@ -167,3 +167,15 @@ function* splitTlv(data: Uint8Array) {
 		i += length;
 	}
 }
+
+describe('BER-TLV framing', () => {
+	it('refuses a first TLV cut off inside its tag or length', async () => {
+		const { parseFirstTlv } = await import('../src/lib/tickets/vdv/tlv.ts');
+		expect(() => parseFirstTlv(new Uint8Array([]))).toThrow(/truncated TLV tag/);
+		expect(() => parseFirstTlv(new Uint8Array([0x5f]))).toThrow(/truncated TLV tag/);
+		expect(() => parseFirstTlv(new Uint8Array([0x5f, 0x37]))).toThrow(/truncated TLV length/);
+		// a long form length whose bytes are not there
+		expect(() => parseFirstTlv(new Uint8Array([0x9e, 0x82, 0x01]))).toThrow(/unsupported TLV length/);
+		expect(parseFirstTlv(new Uint8Array([0x9e, 0x01, 0xaa, 0xff])).end).toBe(3);
+	});
+});

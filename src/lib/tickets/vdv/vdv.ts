@@ -20,7 +20,7 @@ import { parseFirstTlv, parseTlv, tlvMap } from './tlv.ts';
 import { sha1 } from './sha1.ts';
 import { vdvDateTime } from './datetime.ts';
 import { bigIntToBytes, bytesToBigInt, modPow } from '../bigint.ts';
-import { ascii, hex, isPrintableAscii } from '../bytes.ts';
+import { ascii, beUint, hex, isPrintableAscii } from '../bytes.ts';
 import { pad } from '../dates.ts';
 
 export interface CaKey {
@@ -122,7 +122,6 @@ function recover(
 }
 
 function caReferenceString(data: Uint8Array): string {
-	const unBcd = (byte: number) => (byte >> 4) * 10 + (byte & 0x0f);
 	return [
 		ascii(data.subarray(0, 2)),
 		ascii(data.subarray(2, 5)),
@@ -174,11 +173,7 @@ function versionNumber(d: Uint8Array): string {
 	return `${major}.${minor}.${revision}`;
 }
 
-const int = (d: Uint8Array, start: number, end: number) => {
-	let v = 0;
-	for (let i = start; i < end; i++) v = v * 256 + d[i];
-	return v;
-};
+const int = beUint;
 
 const PRODUCT_ELEMENT_NAMES: Record<number, string> = {
 	0xda: 'Basic data',

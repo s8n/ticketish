@@ -8,7 +8,7 @@
  */
 import { registerRecordParser } from '../registry.ts';
 import type { RawRecord } from '../types.ts';
-import { hex } from '../bytes.ts';
+import { beUint, hex } from '../bytes.ts';
 import { vdvDateTime } from '../vdv/datetime.ts';
 
 export interface DbVuProduct {
@@ -28,11 +28,7 @@ export interface DbVuData {
 	products: DbVuProduct[];
 }
 
-function u(d: Uint8Array, off: number, len: number): number {
-	let v = 0;
-	for (let i = 0; i < len; i++) v = v * 256 + d[off + i];
-	return v;
-}
+const u = (d: Uint8Array, off: number, len: number) => beUint(d, off, off + len);
 
 function parseDbVu(record: RawRecord): DbVuData {
 	if (record.version !== 1) throw new Error(`unsupported 0080VU version ${record.version}`);
