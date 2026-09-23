@@ -11,8 +11,6 @@
  * throwaway key, like every other VDV test.
  */
 import { describe, expect, it } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { makeTicket } from '../src/lib/tickets/parse.ts';
 import { parseVdv } from '../src/lib/tickets/vdv/vdv.ts';
@@ -25,16 +23,14 @@ import {
 } from '../src/lib/wallet/time.ts';
 import type { ParsedTicket } from '../src/lib/tickets/types.ts';
 import { concat, tlv } from './helpers/build.ts';
+import { publicFixture } from './helpers/fixtures.ts';
 import { ascii, renfeAztec, renfeBlockB } from './helpers/renfe.ts';
 import { buildVdv, vdvDateTime, vdvHeader } from './helpers/vdv.ts';
 import { msg, signedTicket, str, time, uint } from './helpers/swisspass.ts';
 
-const dir = fileURLToPath(new URL('./fixtures/public', import.meta.url));
 
-function muster(name: string): ParsedTicket | null {
-	const path = join(dir, name);
-	if (!existsSync(path)) return null;
-	return makeTicket(new Uint8Array(readFileSync(path)), { kind: 'raw', fileName: name });
+function muster(name: string): ParsedTicket {
+	return makeTicket(publicFixture(name), { kind: 'raw', fileName: name });
 }
 
 describe('which formats are exported at all', () => {
@@ -58,7 +54,6 @@ describe('which formats are exported at all', () => {
 describe('a DB ticket with a train binding', () => {
 	it('becomes a journey with the train, the route and the departure', async () => {
 		const ticket = muster('muster-918-9-fv-supersparpreis.bin');
-		if (!ticket) return;
 		const trip = (await tripFor(ticket))!;
 
 		expect(trip.shape).toBe('journey');
@@ -126,7 +121,6 @@ describe('an FCB reservation that leaves out the departure time', () => {
 describe('a flexible ticket with a route but no train', () => {
 	it('is still a journey, because the route is the point of it', async () => {
 		const ticket = muster('muster-918-9-normalpreis.bin');
-		if (!ticket) return;
 		const trip = (await tripFor(ticket))!;
 
 		expect(trip.shape).toBe('journey');
@@ -140,7 +134,6 @@ describe('a flexible ticket with a route but no train', () => {
 describe('a ticket that is an area and a date range', () => {
 	it('becomes a period pass rather than a route with two blanks', async () => {
 		const ticket = muster('muster-918-9-deutschland-ticket.bin');
-		if (!ticket) return;
 		const trip = (await tripFor(ticket))!;
 
 		expect(trip.shape).toBe('period');
@@ -155,7 +148,6 @@ describe('a ticket that is an area and a date range', () => {
 describe('a 918.3 ticket read out of its 0080BL block', () => {
 	it('takes the product, the fare and the head count from DB own record', async () => {
 		const ticket = muster('muster-918-3-quer-durchs-land-ticket.bin');
-		if (!ticket) return;
 		const trip = (await tripFor(ticket))!;
 
 		expect(trip.product).toBe('Quer-Durchs-Land-Ticket');
@@ -468,7 +460,6 @@ describe('a Renfe ticket', () => {
 describe('what the reader is shown before exporting', () => {
 	it('names the operator, which is what comes off the ticket', async () => {
 		const ticket = muster('muster-918-9-fv-supersparpreis.bin');
-		if (!ticket) return;
 		const rows = previewFields((await tripFor(ticket))!);
 		expect(rows[0]).toEqual({ label: 'Operator', value: 'DB AG' });
 	});
@@ -545,7 +536,6 @@ describe('reading the local times these formats carry', () => {
 
 	it('takes the offset off a real ticket', async () => {
 		const ticket = muster('muster-918-9-fv-supersparpreis.bin');
-		if (!ticket) return;
 		// a German departure in April: summer time, UTC+2
 		const trip = (await tripFor(ticket))!;
 		expect(trip.startUtcOffset).toBe(120);

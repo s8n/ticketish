@@ -8,7 +8,7 @@
  * the bundled table itself, never off a real ticket.
  */
 import { describe, expect, it } from 'vitest';
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -29,6 +29,7 @@ import uicJson from '../src/lib/tickets/data/uic-stations.json' with { type: 'js
 import benerailJson from '../src/lib/tickets/data/benerail-stations.json' with { type: 'json' };
 import renfeJson from '../src/lib/tickets/renfe/stations.json' with { type: 'json' };
 import plcJson from '../src/lib/tickets/data/plc-stations.json' with { type: 'json' };
+import { publicFixtureNames } from './helpers/fixtures.ts';
 
 describe('the bundled tables', () => {
 	it('keep the attribution note beside the data', () => {
@@ -288,9 +289,8 @@ describe('against the DB Muster specimens', () => {
 
 	/** Every UIC station code the published specimens carry. */
 	function fixtureCodes(): string[] {
-		if (!existsSync(dir)) return [];
 		const codes = new Set<string>();
-		for (const f of readdirSync(dir)) {
+		for (const f of publicFixtureNames()) {
 			if (!f.endsWith('.expected.json')) continue;
 			const text = readFileSync(join(dir, f), 'utf8');
 			for (const m of text.matchAll(/"(?:from|to)Station(?:Num|Uic)":\s*"?(\d{7,8})"?/g)) {
@@ -302,7 +302,6 @@ describe('against the DB Muster specimens', () => {
 
 	it('names every station they reference', async () => {
 		const codes = fixtureCodes();
-		if (!codes.length) return; // fixtures not present
 		expect(codes.length).toBeGreaterThan(5);
 		const names = await loadUicStations();
 		const unresolved = codes.filter((c) => uicStationName(names, c) === null);

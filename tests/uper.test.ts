@@ -7,7 +7,7 @@
  * Only the published DB specimen tickets are used, never personal ones.
  */
 import { describe, expect, it } from 'vitest';
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { decodeUper, type AsnSchema } from '../src/lib/tickets/asn1/uper.ts';
@@ -16,6 +16,7 @@ import fcb2 from '../src/lib/tickets/asn1/schemas/fcb2.json' with { type: 'json'
 import fcb3 from '../src/lib/tickets/asn1/schemas/fcb3.json' with { type: 'json' };
 import header1 from '../src/lib/tickets/asn1/schemas/header1.json' with { type: 'json' };
 import header2 from '../src/lib/tickets/asn1/schemas/header2.json' with { type: 'json' };
+import { publicFixtureNames } from './helpers/fixtures.ts';
 
 const FIXTURES = fileURLToPath(new URL('./fixtures', import.meta.url));
 
@@ -67,8 +68,7 @@ function loadCases(): { name: string; expected: Expected; payload: Uint8Array }[
 	// Only the published DB specimen tickets: real tickets never go in tests.
 	for (const sub of ['public']) {
 		const dir = join(FIXTURES, sub);
-		if (!existsSync(dir)) continue;
-		for (const f of readdirSync(dir)) {
+		for (const f of publicFixtureNames()) {
 			if (!f.endsWith('.expected.json')) continue;
 			const expected = JSON.parse(readFileSync(join(dir, f), 'utf8')) as Expected;
 			const payload = new Uint8Array(readFileSync(join(dir, f.replace('.expected.json', '.bin'))));

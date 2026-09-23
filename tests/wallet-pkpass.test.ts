@@ -412,10 +412,8 @@ describe('the signature', () => {
 		expect(tampered.verify(cert.publicKeyPem, Buffer.from(signatureValue.content))).toBe(false);
 	});
 
-	it('is a signature openssl also accepts', async () => {
-		const openssl = hasOpenssl();
-		if (!openssl) return;
-
+	// skipped, and reported as skipped, where there is no openssl to ask
+	it.skipIf(!hasOpenssl())('is a signature openssl also accepts', async () => {
 		const { cert, identity: id } = await identity();
 		const pass = await buildPkpass({
 			trip,

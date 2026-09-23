@@ -3,12 +3,13 @@
 
 /** End-to-end envelope parsing over all fixture payloads. */
 import { describe, expect, it } from 'vitest';
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { summarizeFcb, zugbindung, type FcbTicket } from '../src/lib/tickets/model.ts';
 import type { FlexData } from '../src/lib/tickets/records/uflex.ts';
+import { publicFixtureNames } from './helpers/fixtures.ts';
 
 const FIXTURES = fileURLToPath(new URL('./fixtures', import.meta.url));
 
@@ -17,8 +18,7 @@ function loadCases() {
 	// Only the published DB specimen tickets: real tickets never go in tests.
 	for (const sub of ['public']) {
 		const dir = join(FIXTURES, sub);
-		if (!existsSync(dir)) continue;
-		for (const f of readdirSync(dir)) {
+		for (const f of publicFixtureNames()) {
 			if (!f.endsWith('.bin')) continue;
 			const expected = JSON.parse(
 				readFileSync(join(dir, f.replace('.bin', '.expected.json')), 'utf8')
@@ -70,7 +70,7 @@ describe('envelope parsing', () => {
 
 	it('deciphers the Zugbindung of the Super Sparpreis sample', () => {
 		const c = cases.find((c) => c.name === 'muster-918-9-fv-supersparpreis');
-		if (!c) return; // fixture not present
+		if (!c) throw new Error('the Super Sparpreis specimen is missing');
 		const container = parsePayload(c.payload);
 		expect(container.kind).toBe('uic9183');
 		if (container.kind !== 'uic9183') return;

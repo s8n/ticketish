@@ -10,20 +10,15 @@
  */
 import { describe, expect, it } from 'vitest';
 import { render } from 'svelte/server';
-import { existsSync, readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { join } from 'node:path';
 import TicketCard from '../src/lib/components/TicketCard.svelte';
 import WalletExport from '../src/lib/components/WalletExport.svelte';
 import { makeTicket } from '../src/lib/tickets/parse.ts';
+import { publicFixture } from './helpers/fixtures.ts';
 
-const dir = fileURLToPath(new URL('./fixtures/public', import.meta.url));
 
 describe('the wallet section', () => {
 	it('offers itself for a UIC ticket', () => {
-		const path = join(dir, 'muster-918-9-fv-supersparpreis.bin');
-		if (!existsSync(path)) return;
-		const ticket = makeTicket(new Uint8Array(readFileSync(path)), { kind: 'raw' });
+		const ticket = makeTicket(publicFixture('muster-918-9-fv-supersparpreis.bin'), { kind: 'raw' });
 		const { body } = render(WalletExport, { props: { ticket } });
 		expect(body).toContain('Add to a phone wallet');
 	});
@@ -38,10 +33,8 @@ describe('the wallet section', () => {
 	});
 
 	it('lives under the barcode tab, not at the foot of the card', () => {
-		const path = join(dir, 'muster-918-9-fv-supersparpreis.bin');
-		if (!existsSync(path)) return;
 		const ticket = makeTicket(
-			new Uint8Array(readFileSync(path)),
+			publicFixture('muster-918-9-fv-supersparpreis.bin'),
 			{ kind: 'raw', fileName: 'muster.bin' },
 			{ format: 'Aztec', size: { width: 47, height: 47 } }
 		);

@@ -7,14 +7,11 @@
  * the text on a pass stays readable on whatever background the operator has.
  */
 import { describe, expect, it } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { join } from 'node:path';
 import { colouredOperatorName, paletteFor, passColors } from '../src/lib/wallet/colors.ts';
 import { makeTicket } from '../src/lib/tickets/parse.ts';
 import { tripFor } from '../src/lib/wallet/trip.ts';
+import { publicFixture } from './helpers/fixtures.ts';
 
-const dir = fileURLToPath(new URL('./fixtures/public', import.meta.url));
 
 describe('matching an operator', () => {
 	it('knows DB by every code it issues under', () => {
@@ -91,9 +88,7 @@ describe('the palette a background implies', () => {
 
 describe('against a real ticket', () => {
 	it('takes DB red from the envelope issuer code', async () => {
-		const path = join(dir, 'muster-918-9-fv-supersparpreis.bin');
-		if (!existsSync(path)) return;
-		const ticket = makeTicket(new Uint8Array(readFileSync(path)), { kind: 'raw' });
+		const ticket = makeTicket(publicFixture('muster-918-9-fv-supersparpreis.bin'), { kind: 'raw' });
 		const trip = (await tripFor(ticket))!;
 		expect(trip.operator).toEqual({ scheme: 'rics', code: 1080 });
 		expect(passColors(trip.operator).hex).toBe('#ee0020');

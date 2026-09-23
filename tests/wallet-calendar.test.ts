@@ -8,13 +8,11 @@
  * long lines, and a time zone only where the ticket named one.
  */
 import { describe, expect, it } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { join } from 'node:path';
 import { buildIcs, calendarProblem, icsFileName } from '../src/lib/wallet/calendar.ts';
 import { makeTicket } from '../src/lib/tickets/parse.ts';
 import { tripFor } from '../src/lib/wallet/trip.ts';
 import type { TripSummary } from '../src/lib/wallet/trip.ts';
+import { publicFixture } from './helpers/fixtures.ts';
 
 const NOW = new Date('2026-08-03T10:00:00Z');
 
@@ -218,9 +216,8 @@ describe('what cannot become an event', () => {
 
 describe('against a real ticket', () => {
 	it('turns a DB journey into the event it describes', async () => {
-		const path = join(fileURLToPath(new URL('./fixtures/public', import.meta.url)), 'muster-918-9-fv-supersparpreis.bin');
-		if (!existsSync(path)) return;
-		const trip = (await tripFor(makeTicket(new Uint8Array(readFileSync(path)), { kind: 'raw' })))!;
+		const payload = publicFixture('muster-918-9-fv-supersparpreis.bin');
+		const trip = (await tripFor(makeTicket(payload, { kind: 'raw' })))!;
 		const text = buildIcs({ trip, uid: 'test@ticketish', now: NOW });
 		// the ticket carried departureUTCOffset -8, which is UTC+2
 		expect(text).toContain('DTSTART;TZID=Etc/GMT-2:20220422T115900');
