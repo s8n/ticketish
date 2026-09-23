@@ -158,8 +158,8 @@ function mix(
  */
 export function paletteFor(hex: string): PassColors {
 	const background = CHANNELS(hex);
-	const light = luminance(hex) < 0.45;
-	const foreground: [number, number, number] = light ? [255, 255, 255] : [26, 26, 26];
+	const dark = luminance(hex) < 0.45;
+	const foreground: [number, number, number] = dark ? [255, 255, 255] : [26, 26, 26];
 	return {
 		hex,
 		background: rgb(background),
