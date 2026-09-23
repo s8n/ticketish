@@ -71,7 +71,7 @@ function decodeBase64(data: Uint8Array): Uint8Array | null {
 }
 
 /** Minutes since midnight as HH:MM, or null when it is not a time of day. */
-function departureOrNull(minutes: number): string | null {
+function timeOrNull(minutes: number): string | null {
 	return minutes < 1440 ? timeOfDay(minutes) : null;
 }
 
@@ -88,8 +88,8 @@ export function parseNsb(data: Uint8Array): NsbTicket {
 	if (!body || !hasMagic(body)) throw new Error('not an NSB ticket');
 	const d = new Bits(body);
 	return {
-		departure: departureOrNull(d.int(DEPARTURE_BIT, DEPARTURE_BIT + TIME_BITS)),
-		arrival: departureOrNull(d.int(ARRIVAL_BIT, ARRIVAL_BIT + TIME_BITS)),
+		departure: timeOrNull(d.int(DEPARTURE_BIT, DEPARTURE_BIT + TIME_BITS)),
+		arrival: timeOrNull(d.int(ARRIVAL_BIT, ARRIVAL_BIT + TIME_BITS)),
 		byteLength: body.length,
 		bodyHex: hex(body)
 	};
