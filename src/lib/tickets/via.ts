@@ -93,6 +93,22 @@ export function parseDbVia(via: string, names: IssuerTables | null = null): ViaC
 		pointText = '';
 	};
 
+	/**
+	 * Close whatever groups are still open, the way `)` would. A string cut
+	 * off inside an alternative would otherwise leave everything before the
+	 * group on the stack and only the last choice in hand.
+	 */
+	const closeOpenGroups = () => {
+		while (slashStack.length) {
+			if (!slashStack.pop()) continue;
+			flushPoint();
+			const options = optionsStack.pop()!;
+			options.choices.push(items);
+			items = itemStack.pop()!;
+			items.push(options);
+		}
+	};
+
 	while (!eof()) {
 		const c = data[pos++];
 		if (state === 'start') {
@@ -153,6 +169,7 @@ export function parseDbVia(via: string, names: IssuerTables | null = null): ViaC
 					pointText += ')';
 				}
 			} else if (c === '<') {
+				closeOpenGroups();
 				items.push(point(pointText));
 				if (carrierNum || hasContent(items))
 					route.push(carrierOf(carrierNum, cleanup(items), names));
@@ -169,6 +186,7 @@ export function parseDbVia(via: string, names: IssuerTables | null = null): ViaC
 		}
 	}
 
+	closeOpenGroups();
 	if (pointText) flushPoint();
 	if (carrierNum || hasContent(items)) route.push(carrierOf(carrierNum, cleanup(items), names));
 

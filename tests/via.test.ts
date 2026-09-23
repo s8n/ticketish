@@ -65,6 +65,17 @@ describe('DB via route parser', () => {
 		expect(codes(route[1].items)).toEqual(['HB']);
 	});
 
+	it('keeps what came before an alternative the string never closes', () => {
+		const route = parseDbVia('Via: <1080>AAA*BBB*(CCC/DDD')!;
+		expect(codes(route[0].items)).toEqual(['AAA', 'BBB', [['CCC'], ['DDD']]]);
+	});
+
+	it('closes an open alternative where the next carrier starts', () => {
+		const route = parseDbVia('Via: <1080>AAA*(CCC/DDD<0800>HB')!;
+		expect(codes(route[0].items)).toEqual(['AAA', [['CCC'], ['DDD']]]);
+		expect(codes(route[1].items)).toEqual(['HB']);
+	});
+
 	it('returns null for non-via text', () => {
 		expect(parseDbVia('just some text')).toBeNull();
 		expect(parseDbVia('')).toBeNull();
