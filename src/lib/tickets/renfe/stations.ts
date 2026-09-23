@@ -25,6 +25,7 @@
  * source. Anything added by hand goes there rather than into the JSON, so
  * regenerating stays a clean copy.
  */
+import { lazyTable } from '../lazy.ts';
 
 interface StationEntry {
 	name: string;
@@ -45,17 +46,9 @@ interface StationFile {
 	default: { stations: RenfeStationTable };
 }
 
-let cache: RenfeStationTable | null = null;
-let pending: Promise<RenfeStationTable> | null = null;
-
-export async function loadRenfeStations(): Promise<RenfeStationTable> {
-	if (cache) return cache;
-	pending ??= import('./stations.json').then((m) => {
-		cache = (m as unknown as StationFile).default.stations;
-		return cache;
-	});
-	return pending;
-}
+export const loadRenfeStations = lazyTable(() =>
+	import('./stations.json').then((m) => (m as unknown as StationFile).default.stations)
+);
 
 /** Codes are five digits; a barcode pads them and the parser strips that. */
 /** Codes are five digits and the leading zero counts: 04040 is Zaragoza. */

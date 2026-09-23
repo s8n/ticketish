@@ -13,6 +13,7 @@
  * the retired api-yebsp backend, which no longer serves a list. The few names
  * known for it are kept below.
  */
+import { lazyTable } from '../lazy.ts';
 
 /** Retired 9 digit id space, as used by the older barcode layout. */
 const LEGACY: Record<string, string> = {
@@ -20,17 +21,9 @@ const LEGACY: Record<string, string> = {
 	'234516104': 'İstanbul (Pendik)'
 };
 
-let cache: Record<string, string> | null = null;
-let pending: Promise<Record<string, string>> | null = null;
-
-export async function loadTcddStations(): Promise<Record<string, string>> {
-	if (cache) return cache;
-	pending ??= import('./stations.json').then((m) => {
-		cache = m.default as Record<string, string>;
-		return cache;
-	});
-	return pending;
-}
+export const loadTcddStations = lazyTable(() =>
+	import('./stations.json').then((m) => m.default as Record<string, string>)
+);
 
 /** Display label for a station id, falling back to the raw code. */
 export function tcddStationName(names: Record<string, string> | null, code: string): string {

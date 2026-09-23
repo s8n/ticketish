@@ -29,6 +29,7 @@
  * source. Anything added by hand goes there rather than into the JSON, so
  * regenerating stays a clean copy.
  */
+import { lazyTable } from './lazy.ts';
 
 interface StationEntry {
 	name: string;
@@ -60,9 +61,6 @@ interface StationFile {
 	default: { stations: StationTable };
 }
 
-let uicCache: StationTable | null = null;
-let uicPending: Promise<StationTable> | null = null;
-
 /**
  * Both UIC tables, as one. They are merged rather than consulted in turn
  * because the register only holds codes the catalogue does not, so there is
@@ -70,32 +68,20 @@ let uicPending: Promise<StationTable> | null = null;
  * against a future export overlapping it. The files stay separate on disk,
  * where their notes and their differing terms are.
  */
-export async function loadUicStations(): Promise<StationTable> {
-	if (uicCache) return uicCache;
-	uicPending ??= Promise.all([
-		import('./data/plc-stations.json'),
-		import('./data/uic-stations.json')
-	]).then(([plc, catalogue]) => {
-		uicCache = {
+export const loadUicStations = lazyTable(() =>
+	Promise.all([import('./data/plc-stations.json'), import('./data/uic-stations.json')]).then(
+		([plc, catalogue]): StationTable => ({
 			...(plc as unknown as StationFile).default.stations,
 			...(catalogue as unknown as StationFile).default.stations
-		};
-		return uicCache;
-	});
-	return uicPending;
-}
+		})
+	)
+);
 
-let benerailCache: StationTable | null = null;
-let benerailPending: Promise<StationTable> | null = null;
-
-export async function loadBenerailStations(): Promise<StationTable> {
-	if (benerailCache) return benerailCache;
-	benerailPending ??= import('./data/benerail-stations.json').then((m) => {
-		benerailCache = (m as unknown as StationFile).default.stations;
-		return benerailCache;
-	});
-	return benerailPending;
-}
+export const loadBenerailStations = lazyTable(() =>
+	import('./data/benerail-stations.json').then(
+		(m) => (m as unknown as StationFile).default.stations
+	)
+);
 
 /**
  * The table is keyed by the seven digit code. Tickets also carry the eight

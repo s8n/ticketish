@@ -21,6 +21,7 @@
  * regenerating stays a clean copy.
  */
 import { codeLabel, type OrgEntry } from '../orglabel.ts';
+import { lazyTable } from '../lazy.ts';
 
 /**
  * One organisation, in the short keys the generated JSON uses. `until` is the
@@ -38,17 +39,9 @@ interface OverrideEntry extends NovaOrg {
 /** Empty: the register is the sector's own and corrections need a source. */
 const OVERRIDES: Record<string, OverrideEntry> = {};
 
-let cache: NovaOrgTable | null = null;
-let pending: Promise<NovaOrgTable> | null = null;
-
-export async function loadNovaOrgs(): Promise<NovaOrgTable> {
-	if (cache) return cache;
-	pending ??= import('./orgs.json').then((m) => {
-		cache = (m.default as { orgs: NovaOrgTable }).orgs;
-		return cache;
-	});
-	return pending;
-}
+export const loadNovaOrgs = lazyTable(() =>
+	import('./orgs.json').then((m) => (m.default as { orgs: NovaOrgTable }).orgs)
+);
 
 /**
  * A number in the form the register keys on: decimal, without the padding a

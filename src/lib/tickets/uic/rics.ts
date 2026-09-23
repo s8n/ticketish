@@ -28,6 +28,7 @@
  */
 import { eraCode, eraOrgLabel, loadEraOrgs, type EraOrgTable } from './era-orgs.ts';
 import { codeLabel, type OrgEntry } from '../orglabel.ts';
+import { lazyTable } from '../lazy.ts';
 
 /**
  * RICS codes to the organisations that hold them, keyed by the decimal code as
@@ -44,17 +45,9 @@ export interface IssuerTables {
 	rics: RicsTable | null;
 }
 
-let cache: RicsTable | null = null;
-let pending: Promise<RicsTable> | null = null;
-
-export async function loadRicsNames(): Promise<RicsTable> {
-	if (cache) return cache;
-	pending ??= import('./rics.json').then((m) => {
-		cache = (m.default as { orgs: RicsTable }).orgs;
-		return cache;
-	});
-	return pending;
-}
+export const loadRicsNames = lazyTable(() =>
+	import('./rics.json').then((m) => (m.default as { orgs: RicsTable }).orgs)
+);
 
 /** Both tables, for the callers that name an issuer by its code. */
 export async function loadIssuerNames(): Promise<IssuerTables> {

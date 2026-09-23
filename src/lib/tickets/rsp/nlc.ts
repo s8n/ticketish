@@ -6,6 +6,7 @@
  * scripts/build-nlc-names.py. The table is a few hundred KiB, so it is
  * loaded on demand the first time an RSP6 ticket is displayed.
  */
+import { lazyTable } from '../lazy.ts';
 
 export interface NlcEntry {
 	/** Station or group name */
@@ -14,17 +15,9 @@ export interface NlcEntry {
 	c?: string;
 }
 
-let cache: Record<string, NlcEntry> | null = null;
-let pending: Promise<Record<string, NlcEntry>> | null = null;
-
-export async function loadNlcNames(): Promise<Record<string, NlcEntry>> {
-	if (cache) return cache;
-	pending ??= import('./nlc.json').then((m) => {
-		cache = m.default as Record<string, NlcEntry>;
-		return cache;
-	});
-	return pending;
-}
+export const loadNlcNames = lazyTable(() =>
+	import('./nlc.json').then((m) => m.default as Record<string, NlcEntry>)
+);
 
 /** Look up a code in an already-loaded table. NLCs are zero-padded to 4. */
 export function nlcEntry(

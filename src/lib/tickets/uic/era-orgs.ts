@@ -35,6 +35,7 @@
  */
 
 import { codeLabel, type OrgEntry } from '../orglabel.ts';
+import { lazyTable } from '../lazy.ts';
 
 /** One organisation, in the short keys the generated JSON uses. */
 export interface EraOrg extends OrgEntry {
@@ -55,20 +56,15 @@ interface OverrideEntry extends EraOrg {
 /** Empty: the register is ERA's own and corrections need a better source. */
 const OVERRIDES: Record<string, OverrideEntry> = {};
 
-let cache: EraOrgTable | null = null;
-let pending: Promise<EraOrgTable> | null = null;
 let edition: string | null = null;
 
-export async function loadEraOrgs(): Promise<EraOrgTable> {
-	if (cache) return cache;
-	pending ??= import('./era-orgs.json').then((m) => {
+export const loadEraOrgs = lazyTable(() =>
+	import('./era-orgs.json').then((m) => {
 		const file = m.default as { _edition: string; orgs: EraOrgTable };
 		edition = file._edition;
-		cache = file.orgs;
-		return cache;
-	});
-	return pending;
-}
+		return file.orgs;
+	})
+);
 
 /** Which day's export the loaded table came from, once it has loaded. */
 export function eraEdition(): string | null {

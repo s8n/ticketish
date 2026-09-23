@@ -18,6 +18,7 @@
  * until it arrives the numeric ID is shown, which is what happened for every
  * organisation before the table existed.
  */
+import { lazyTable } from '../lazy.ts';
 
 interface OrgEntry {
 	name: string;
@@ -36,17 +37,9 @@ const OVERRIDES: Record<number, OrgEntry> = {
 	6292: { name: 'Münchner Verkehrsgesellschaft (MVG)', source: 'MVG ticket samples' }
 };
 
-let cache: Record<string, string> | null = null;
-let pending: Promise<Record<string, string>> | null = null;
-
-export async function loadVdvOrgs(): Promise<Record<string, string>> {
-	if (cache) return cache;
-	pending ??= import('./orgs.json').then((m) => {
-		cache = (m.default as { orgs: Record<string, string> }).orgs;
-		return cache;
-	});
-	return pending;
-}
+export const loadVdvOrgs = lazyTable(() =>
+	import('./orgs.json').then((m) => (m.default as { orgs: Record<string, string> }).orgs)
+);
 
 export function vdvOrgName(
 	orgs: Record<string, string> | null,

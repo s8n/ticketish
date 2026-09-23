@@ -27,6 +27,7 @@
  * for a pass being scanned at a gate and wrong for one out of a drawer.
  */
 import { isoAlpha2CountryName } from '../countries.ts';
+import { lazyTable } from '../lazy.ts';
 
 /** Airport name, then the town it serves and its country where those are known. */
 export type AirportEntry = [name: string, municipality?: string, country?: string];
@@ -72,33 +73,21 @@ interface AirlineOverride {
  */
 const AIRLINE_OVERRIDES: Record<string, AirlineOverride> = {};
 
-let airportCache: AirportTable | null = null;
-let airportPending: Promise<AirportTable> | null = null;
-
-export async function loadAirports(): Promise<AirportTable> {
-	if (airportCache) return airportCache;
-	airportPending ??= import('../data/airports.json').then((m) => {
+export const loadAirports = lazyTable(() =>
+	import('../data/airports.json').then(
 		// A JSON import widens every row to string[]. The build script writes
 		// the name first and drops trailing blanks, which is what the tuple says.
-		airportCache = (m.default as unknown as { airports: AirportTable }).airports;
-		return airportCache;
-	});
-	return airportPending;
-}
+		(m) => (m.default as unknown as { airports: AirportTable }).airports
+	)
+);
 
-let airlineCache: AirlineTable | null = null;
-let airlinePending: Promise<AirlineTable> | null = null;
-
-export async function loadAirlines(): Promise<AirlineTable> {
-	if (airlineCache) return airlineCache;
-	airlinePending ??= import('../data/airlines.json').then((m) => {
+export const loadAirlines = lazyTable(() =>
+	import('../data/airlines.json').then(
 		// Widened the same way the airport rows are, and for the same reason:
 		// the tuple is what the build script writes, not what JSON can say.
-		airlineCache = (m.default as unknown as { airlines: AirlineTable }).airlines;
-		return airlineCache;
-	});
-	return airlinePending;
-}
+		(m) => (m.default as unknown as { airlines: AirlineTable }).airlines
+	)
+);
 
 const entry = (airports: AirportTable | null, code: string): AirportEntry | undefined =>
 	code ? airports?.[code.toUpperCase()] : undefined;

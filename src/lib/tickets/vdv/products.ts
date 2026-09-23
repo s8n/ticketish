@@ -6,18 +6,11 @@
  * scripts/build-vdv-products.py. Loaded on demand so the table stays out of
  * the main bundle.
  */
+import { lazyTable } from '../lazy.ts';
 
-let cache: Record<string, string> | null = null;
-let pending: Promise<Record<string, string>> | null = null;
-
-export async function loadVdvProducts(): Promise<Record<string, string>> {
-	if (cache) return cache;
-	pending ??= import('./products.json').then((m) => {
-		cache = m.default as Record<string, string>;
-		return cache;
-	});
-	return pending;
-}
+export const loadVdvProducts = lazyTable(() =>
+	import('./products.json').then((m) => m.default as Record<string, string>)
+);
 
 /** Product name for an organisation/product pair, if the table knows it. */
 export function vdvProductName(
