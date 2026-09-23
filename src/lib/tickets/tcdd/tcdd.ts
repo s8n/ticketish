@@ -43,11 +43,16 @@ export interface TcddTicket {
 	extraFields: string[];
 }
 
-/** yyyymmddHHMMSS or yyyymmddHHMM to an ISO local string. */
-function toIso(value: string): string | null {
+/**
+ * yyyymmddHHMMSS or yyyymmddHHMM to an ISO local string. `zeroIsNoTime` is
+ * for the one field that writes a zeroed time to mean it has none, the newer
+ * layout's departure; anywhere else 00:00 is a time like any other.
+ */
+function toIso(value: string, zeroIsNoTime = false): string | null {
 	const m = value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})?$/);
 	if (!m) return null;
-	const time = m[4] === '00' && m[5] === '00' && (m[6] ?? '00') === '00' ? '' : `T${m[4]}:${m[5]}`;
+	const zeroed = m[4] === '00' && m[5] === '00' && (m[6] ?? '00') === '00';
+	const time = zeroIsNoTime && zeroed ? '' : `T${m[4]}:${m[5]}`;
 	return `${m[1]}-${m[2]}-${m[3]}${time}`;
 }
 
@@ -100,7 +105,7 @@ export function parseTcdd(data: Uint8Array): TcddTicket {
 		variant,
 		ticketNumber: f(2),
 		pnr: f(3),
-		departure: toIso(f(4)),
+		departure: toIso(f(4), true),
 		purchased: toIso(f(15)),
 		// the train and its date share a field, as on the printed ticket
 		trainNumber: trainOf(f(8)),

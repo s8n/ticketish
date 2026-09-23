@@ -81,6 +81,15 @@ describe('TCDD tickets', () => {
 		expect(c.ticket.departure).toBe('2024-05-19');
 	});
 
+	it('keeps a midnight departure in the older layout, which never zeroes it', () => {
+		const midnight = [...classic];
+		midnight[6] = '20240519000000';
+		const c = parsePayload(ascii(midnight.join('$')));
+		expect(c.kind).toBe('tcdd');
+		if (c.kind !== 'tcdd') return;
+		expect(c.ticket.departure).toBe('2024-05-19T00:00');
+	});
+
 	it('leaves fields it cannot place in the newer layout unclaimed', () => {
 		const c = parsePayload(ascii(modern.join('$')));
 		if (c.kind !== 'tcdd') return;
