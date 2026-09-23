@@ -27,7 +27,7 @@ const BASIC_DATA = (() => {
 	d[7] = 2; // second class
 	d[8] = 0x00;
 	d[9] = 0x13;
-	d[10] = 0x22; // price base 49.—
+	d[10] = 0x22; // price base 0x001322 cents, which is 48.98
 	d[12] = 7; // VAT rate
 	return d;
 })();
