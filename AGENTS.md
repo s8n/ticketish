@@ -85,6 +85,12 @@ None of the generated tables is edited by hand. Corrections go in the
 `OVERRIDES` map beside the loader, with a source, so that regenerating stays a
 clean copy.
 
+`scripts/rics-era-overrides.json` looks like a second place for corrections
+and is not one. It is a second source: entries from UIC's RICS register that
+the build merges into ERA's export, including codes ERA does not carry at all.
+Add to it what the RICS register says; a correction of our own still goes in
+`OVERRIDES`.
+
 The traps that are invisible at the point of the mistake:
 
 - `benerail_id` is the mnemonic space SNCF e-billets and ELB barcodes carry.
