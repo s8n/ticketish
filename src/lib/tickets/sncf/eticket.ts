@@ -34,7 +34,7 @@
  * here, so it is read as zuegli reads it but has never been observed
  * populated.
  */
-import { isLatin1Text } from '../bytes.ts';
+import { isLatin1Text, latin1 } from '../bytes.ts';
 import { meaningful } from '../format.ts';
 import { calendarDate } from '../dates.ts';
 
@@ -79,7 +79,8 @@ const LENGTH = 131;
 /** The constant that sits between the ticket number and the date of birth. */
 const MARKER = '1211';
 
-const decode = (data: Uint8Array) => new TextDecoder('iso-8859-1').decode(data);
+// isLatin1Text keeps C1 out, so this is the accented names and nothing else
+const decode = latin1;
 
 export function isSncfETicket(data: Uint8Array): boolean {
 	if (data.length !== LENGTH) return false;

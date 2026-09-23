@@ -5,9 +5,8 @@
 import { unzlibSync } from 'fflate';
 import type { RawRecord, Uic9183Envelope } from '../types.ts';
 import { parseRecord } from '../registry.ts';
-import { ascii } from '../bytes.ts';
+import { ascii, utf8OrNull } from '../bytes.ts';
 
-const utf8Strict = new TextDecoder('utf-8', { fatal: true });
 
 export function isUic9183(data: Uint8Array): boolean {
 	return data.length >= 3 && data[0] === 0x23 && data[1] === 0x55 && data[2] === 0x54; // "#UT"
@@ -35,11 +34,7 @@ function splitRecords(raw: Uint8Array): RawRecord[] {
 		}
 		let utf8Length = false;
 		let decoded = '';
-		try {
-			decoded = [...utf8Strict.decode(chunk.subarray(12))].slice(0, length).join('');
-		} catch {
-			decoded = '';
-		}
+		decoded = [...(utf8OrNull(chunk.subarray(12)) ?? '')].slice(0, length).join('');
 		const decodedByteLen = new TextEncoder().encode(decoded).length;
 		if (chunk.length < length) {
 			if (decoded.length + 12 < length) throw new Error('UIC record data too short');

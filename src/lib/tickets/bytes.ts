@@ -48,3 +48,33 @@ export function fromBase64(text: string): Uint8Array {
 	for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
 	return out;
 }
+
+/**
+ * ISO 8859-1 as it is defined: byte n is U+00nn. Not TextDecoder's
+ * "iso-8859-1", which the WHATWG encoding standard maps to windows-1252 and
+ * so turns 0x80 to 0x9f into quotes and dashes.
+ */
+export const latin1 = byteString;
+
+const utf8Strict = new TextDecoder('utf-8', { fatal: true });
+
+/** The bytes as UTF-8, or null where they are not valid UTF-8. */
+export function utf8OrNull(data: Uint8Array): string | null {
+	try {
+		return utf8Strict.decode(data);
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * A plain text payload as its lines: UTF-8 or nothing, split on LF or CRLF,
+ * each trimmed, and the empty lines a trailing newline leaves dropped.
+ */
+export function textLines(data: Uint8Array): string[] | null {
+	const text = utf8OrNull(data);
+	if (text === null) return null;
+	const lines = text.split(/\r?\n/).map((l) => l.trim());
+	while (lines.length && lines[lines.length - 1] === '') lines.pop();
+	return lines;
+}

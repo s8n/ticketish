@@ -19,6 +19,7 @@
  * ticket. Those are kept as-is rather than guessed at. The values shown here
  * are invented.
  */
+import { textLines } from '../bytes.ts';
 
 export interface EavTicket {
 	ticketType: string;
@@ -37,21 +38,9 @@ const LOCAL_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/;
 const ZONED_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/;
 const HEX = /^[0-9a-f]{16,}$/i;
 
-function lines(data: Uint8Array): string[] | null {
-	let text: string;
-	try {
-		text = new TextDecoder('utf-8', { fatal: true }).decode(data);
-	} catch {
-		return null;
-	}
-	const parts = text.split('\n').map((l) => l.trim());
-	// a trailing newline is normal, so drop only empty entries at the end
-	while (parts.length && parts[parts.length - 1] === '') parts.pop();
-	return parts;
-}
 
 export function isEav(data: Uint8Array): boolean {
-	const parts = lines(data);
+	const parts = textLines(data);
 	return !!parts && isEavLines(parts);
 }
 
@@ -66,7 +55,7 @@ function isEavLines(parts: string[]): boolean {
 }
 
 export function parseEav(data: Uint8Array): EavTicket {
-	const parts = lines(data);
+	const parts = textLines(data);
 	if (!parts || !isEavLines(parts)) throw new Error('not an EAV ticket');
 
 	const rest = parts.slice(5);

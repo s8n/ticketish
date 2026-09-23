@@ -164,7 +164,12 @@ export type HzppTicket = HzppEncrypted | HzppPlain;
 /** Fields in the plaintext form, which is rejected at any other count. */
 const B1_PARTS = 33;
 
-const decode = (data: Uint8Array) => new TextDecoder('iso-8859-1').decode(data);
+/**
+ * windows-1252 rather than Latin-1 proper: it puts Š, š, Ž and ž in the 0x80
+ * to 0x9f range, where Latin-1 has only control codes, and those are letters
+ * a Croatian name carries.
+ */
+const decode = (data: Uint8Array) => new TextDecoder('windows-1252').decode(data);
 
 function isHex(value: string): boolean {
 	return value.length > 0 && /^[0-9a-fA-F]+$/.test(value);

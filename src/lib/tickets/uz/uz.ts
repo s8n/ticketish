@@ -28,6 +28,7 @@
  * bare 32 hex digits are distinctive enough to find wherever they sit.
  * Anything left over is kept in `extra` rather than dropped.
  */
+import { textLines } from '../bytes.ts';
 
 /** Station lines carry a seven digit code in brackets, then the name. */
 const STATION = /^\((\d{7})\)\s*(.+)$/;
@@ -79,14 +80,6 @@ export interface UzTicket {
 	extra: string[];
 }
 
-function lines(data: Uint8Array): string[] | null {
-	try {
-		const text = new TextDecoder('utf-8', { fatal: true }).decode(data);
-		return text.split(/\r?\n/).map((l) => l.trim());
-	} catch {
-		return null;
-	}
-}
 
 function dateTime(m: RegExpMatchArray): UzDateTime | null {
 	const day = Number(m[1]);
@@ -99,7 +92,7 @@ function dateTime(m: RegExpMatchArray): UzDateTime | null {
 }
 
 export function isUz(data: Uint8Array): boolean {
-	const ls = lines(data);
+	const ls = textLines(data);
 	return !!ls && isUzLines(ls);
 }
 
@@ -111,7 +104,7 @@ function isUzLines(ls: string[]): boolean {
 }
 
 export function parseUz(data: Uint8Array): UzTicket {
-	const ls = lines(data);
+	const ls = textLines(data);
 	if (!ls || !isUzLines(ls)) throw new Error('not a UZ boarding document');
 
 	const stations: UzStation[] = [];

@@ -3,7 +3,7 @@
 
 /** Entry point: classify and parse a scanned barcode payload. */
 import type { BarcodeSymbology, ParsedTicket, TicketContainer, TicketSource } from './types.ts';
-import { isPrintableAsciiByte } from './bytes.ts';
+import { isPrintableAsciiByte, latin1, utf8OrNull } from './bytes.ts';
 import { isUic9183, parseUic9183 } from './uic/envelope9183.ts';
 import { parseDosipas } from './uic/dosipas.ts';
 import { isRsp6, parseRsp6 } from './rsp/rsp6.ts';
@@ -132,18 +132,18 @@ function tryText(data: Uint8Array): string | null {
 
 	// UTF-8 first, since it rejects anything that is not, and most text
 	// barcodes are written in it.
-	try {
-		const s = new TextDecoder('utf-8', { fatal: true }).decode(data);
+	const s = utf8OrNull(data);
+	if (s !== null) {
 		const printable = [...s].filter((c) => c >= ' ' || c === '\n' || c === '\r' || c === '\t');
 		if (printable.length / [...s].length > 0.95) return s;
-	} catch {
-		// not UTF-8, so try the other encoding a text barcode is written in
 	}
+	// not UTF-8, or not text in it, so try the other encoding a text barcode
+	// is written in
 
 	let printable = 0;
 	for (const b of data) if (isTextByte(b)) printable++;
 	if (printable / data.length <= 0.95) return null;
-	return new TextDecoder('iso-8859-1').decode(data);
+	return latin1(data);
 }
 
 let counter = 0;
