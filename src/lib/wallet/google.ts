@@ -53,7 +53,7 @@ import {
 	UNOFFICIAL_NOTE,
 	type TripSummary
 } from './trip.ts';
-import { asUtcInstant, localParts, utcOffsetLabel } from './time.ts';
+import { asUtcInstant, localDateTime, localParts, utcOffsetLabel } from './time.ts';
 import { latin1Message, serialForPayload } from './pkpass.ts';
 import { passColors } from './colors.ts';
 
@@ -256,9 +256,16 @@ function validTimeInterval(trip: TripSummary): Record<string, unknown> | undefin
 function isoLocal(value: string | undefined, offsetMinutes?: number): string | undefined {
 	const parts = localParts(value);
 	if (!parts) return undefined;
-	const local = `${parts.date}T${parts.time ?? '00:00'}:00`;
+	const local = localDateTime(parts);
 	return offsetMinutes === undefined ? local : local + utcOffsetLabel(offsetMinutes);
 }
+
+/**
+ * The object's id: the issuer's, then the payload's digest, so saving the same
+ * ticket again updates the pass rather than adding a second one.
+ */
+const objectId = (issuerId: string, payload: Uint8Array) =>
+	`${issuerId}.${serialForPayload(payload)}`;
 
 /** The generic object Google renders, built from the trip. */
 export function buildGenericObject(
@@ -268,7 +275,7 @@ export function buildGenericObject(
 	issuerId: string
 ): Record<string, unknown> {
 	const object: Record<string, unknown> = {
-		id: `${issuerId}.${serialForPayload(payload)}`,
+		id: objectId(issuerId, payload),
 		classId: `${issuerId}.${GENERIC_CLASS}`,
 		state: 'ACTIVE',
 		cardTitle: text(APP_NAME),
@@ -321,7 +328,7 @@ export function buildTransitObject(
 	// what the leg already shows does not need a row of its own as well
 	const covered = new Set(['train', 'departs', 'class', 'coach', 'seat']);
 	const object: Record<string, unknown> = {
-		id: `${issuerId}.${serialForPayload(payload)}`,
+		id: objectId(issuerId, payload),
 		classId: transitClassId(issuerId),
 		state: 'ACTIVE',
 		tripType: 'ONE_WAY',

@@ -41,6 +41,10 @@ export function localParts(
 	return m ? { date: m[1], time: m[2] ?? null } : null;
 }
 
+/** The parts as a full local date-time, midnight where there is no time. */
+export const localDateTime = (parts: { date: string; time: string | null }) =>
+	`${parts.date}T${parts.time ?? '00:00'}:00`;
+
 /**
  * The same value as an ISO 8601 instant.
  *
@@ -55,7 +59,7 @@ export function localParts(
 export function asUtcInstant(value: string | undefined, offsetMinutes?: number): string | null {
 	const parts = localParts(value);
 	if (!parts) return null;
-	const local = `${parts.date}T${parts.time ?? '00:00'}:00`;
+	const local = localDateTime(parts);
 	if (offsetMinutes === undefined) return `${local}Z`;
 	const instant = Date.parse(`${local}Z`) - offsetMinutes * 60_000;
 	return new Date(instant).toISOString().replace(/\.\d+Z$/, 'Z');
