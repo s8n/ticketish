@@ -71,9 +71,14 @@
 			If you have the .p12 that Keychain exports, split it first:
 		</p>
 		<pre><code
-				>openssl pkcs12 -legacy -in Certificates.p12 -clcerts -nokeys -out cert.pem
-openssl pkcs12 -legacy -in Certificates.p12 -nocerts -nodes -out key.pem</code
+				>openssl pkcs12 -in Certificates.p12 -clcerts -nokeys -out cert.pem
+openssl pkcs12 -in Certificates.p12 -nocerts -nodes -out key.pem</code
 			></pre>
+		<p class="note">
+			On OpenSSL 3, add <code>-legacy</code> after <code>pkcs12</code> if it reports an unsupported
+			algorithm: Keychain still encrypts with one OpenSSL 3 keeps behind that flag. The openssl on
+			macOS is LibreSSL, which reads the file as it is and does not know the flag.
+		</p>
 		<label>
 			Certificate (cert.pem)
 			<input type="file" accept=".pem,.cer,.crt" onchange={async (e) => (certText = await readFile(e))} />
