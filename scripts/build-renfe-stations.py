@@ -37,10 +37,10 @@ Usage:
 """
 import csv
 import io
-import json
 import pathlib
 import sys
-import urllib.request
+
+from tablegen import fetch, write_table
 
 REPO = pathlib.Path(__file__).parent.parent
 OUT = REPO / "src" / "lib" / "tickets" / "renfe" / "stations.json"
@@ -63,10 +63,8 @@ ENCODING = "latin-1"
 
 
 def main() -> int:
-    req = urllib.request.Request(URL, headers={"User-Agent": "ticketish-build"})
     try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
-            body = resp.read().decode(ENCODING)
+        body = fetch(URL, timeout=120).decode(ENCODING)
     except Exception as exc:  # noqa: BLE001 - the workflow reports and moves on
         print(f"could not fetch the station list: {exc}", file=sys.stderr)
         return 1
@@ -94,7 +92,7 @@ def main() -> int:
         return 1
 
     table = {"_note": NOTE, "stations": {k: names[k] for k in sorted(names)}}
-    OUT.write_text(json.dumps(table, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
+    write_table(OUT, table)
     print(f"wrote {OUT.relative_to(REPO)} with {len(names)} stations")
     return 0
 

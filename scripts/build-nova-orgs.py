@@ -54,7 +54,8 @@ import io
 import json
 import pathlib
 import sys
-import urllib.request
+
+from tablegen import fetch, write_table, clean, has_letters
 
 REPO = pathlib.Path(__file__).parent.parent
 OUT = REPO / "src" / "lib" / "tickets" / "swisspass" / "orgs.json"
@@ -82,12 +83,6 @@ NOTE = (
 )
 
 
-def get(url: str) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": "ticketish-build"})
-    with urllib.request.urlopen(req, timeout=180) as resp:
-        return resp.read()
-
-
 def titles(node: dict) -> list[str]:
     """A DCAT title, which is one object per language."""
     title = node.get("dct:title")
@@ -113,18 +108,10 @@ def resource_url(meta: bytes, filename: str) -> str:
     raise SystemExit(f"no distribution named {filename} in {DATASET}")
 
 
-def clean(text: str) -> str:
-    return " ".join(text.split())
-
-
-def has_letters(text: str) -> bool:
-    return any(ch.isalnum() for ch in text)
-
-
 def main() -> int:
     try:
-        url = resource_url(get(META), FILE)
-        body = get(url).decode("utf-8-sig")
+        url = resource_url(fetch(META), FILE)
+        body = fetch(url).decode("utf-8-sig")
     except SystemExit as exc:
         print(exc, file=sys.stderr)
         return 1
@@ -173,7 +160,7 @@ def main() -> int:
         return 1
 
     table = {"_note": NOTE, "orgs": {k: orgs[k] for k in sorted(orgs, key=int)}}
-    OUT.write_text(json.dumps(table, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
+    write_table(OUT, table)
     expired = sum(1 for e in orgs.values() if "until" in e)
     print(f"wrote {OUT.relative_to(REPO)} with {len(orgs)} organisations ({expired} expired)")
     return 0

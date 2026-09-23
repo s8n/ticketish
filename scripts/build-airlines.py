@@ -38,11 +38,11 @@ Usage:
 import collections
 import csv
 import io
-import json
 import pathlib
 import re
 import sys
-import urllib.request
+
+from tablegen import fetch, write_table
 
 REPO = pathlib.Path(__file__).parent.parent
 OUT = REPO / "src" / "lib" / "tickets" / "data" / "airlines.json"
@@ -88,10 +88,8 @@ def overlaps(a: list, b: list) -> bool:
 
 
 def main() -> int:
-    req = urllib.request.Request(URL, headers={"User-Agent": "ticketish-build"})
     try:
-        with urllib.request.urlopen(req, timeout=180) as resp:
-            body = resp.read().decode("utf-8")
+        body = fetch(URL).decode("utf-8")
     except Exception as exc:  # noqa: BLE001 - the workflow reports and moves on
         print(f"could not fetch the airline list: {exc}", file=sys.stderr)
         return 1
@@ -145,10 +143,7 @@ def main() -> int:
                 row.pop()
 
     ordered = {code: holders[code] for code in sorted(holders)}
-    OUT.write_text(
-        json.dumps({"_note": NOTE, "airlines": ordered}, ensure_ascii=False, indent=0) + "\n",
-        encoding="utf-8",
-    )
+    write_table(OUT, {"_note": NOTE, "airlines": ordered})
     rows = sum(len(v) for v in ordered.values())
     print(f"wrote {OUT.relative_to(REPO)} with {len(ordered)} designators over {rows} holdings")
     for code, names in unsettled:

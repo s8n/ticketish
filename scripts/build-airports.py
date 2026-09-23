@@ -28,10 +28,10 @@ Usage:
 """
 import csv
 import io
-import json
 import pathlib
 import sys
-import urllib.request
+
+from tablegen import fetch, write_table
 
 REPO = pathlib.Path(__file__).parent.parent
 OUT = REPO / "src" / "lib" / "tickets" / "data" / "airports.json"
@@ -62,10 +62,8 @@ def tidy(name: str) -> str:
 
 
 def main() -> int:
-    req = urllib.request.Request(URL, headers={"User-Agent": "ticketish-build"})
     try:
-        with urllib.request.urlopen(req, timeout=180) as resp:
-            body = resp.read().decode("utf-8")
+        body = fetch(URL).decode("utf-8")
     except Exception as exc:  # noqa: BLE001 - the workflow reports and moves on
         print(f"could not fetch the airport catalogue: {exc}", file=sys.stderr)
         return 1
@@ -99,10 +97,7 @@ def main() -> int:
             entry.pop()
 
     ordered = {code: airports[code] for code in sorted(airports)}
-    OUT.write_text(
-        json.dumps({"_note": NOTE, "airports": ordered}, ensure_ascii=False, indent=0) + "\n",
-        encoding="utf-8",
-    )
+    write_table(OUT, {"_note": NOTE, "airports": ordered})
     print(f"wrote {OUT.relative_to(REPO)} with {len(ordered)} airports")
     if clashed:
         print(f"dropped {len(clashed)} codes the catalogue gives to more than one airport")

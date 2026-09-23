@@ -50,7 +50,8 @@ import io
 import json
 import pathlib
 import sys
-import urllib.request
+
+from tablegen import fetch, write_table
 
 REPO = pathlib.Path(__file__).parent.parent
 DATA = REPO / "src" / "lib" / "tickets" / "data"
@@ -72,16 +73,10 @@ MIN_UIC = 20000
 MIN_BENERAIL = 9000
 
 
-def fetch() -> str:
-    req = urllib.request.Request(URL, headers={"User-Agent": "ticketish-build"})
-    with urllib.request.urlopen(req, timeout=300) as resp:
-        return resp.read().decode("utf-8")
-
-
 def write(path: pathlib.Path, stations: dict[str, str], key) -> None:
     ordered = {k: stations[k] for k in sorted(stations, key=key)}
     payload = {"_note": NOTE, "stations": ordered}
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
+    write_table(path, payload)
     print(f"{path.relative_to(REPO)}: {len(ordered)} entries")
 
 
@@ -104,13 +99,13 @@ def keep_register_apart(catalogue: dict[str, str]) -> None:
         return
     for code in covered:
         del stations[code]
-    path.write_text(json.dumps(table, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
+    write_table(path, table)
     print(f"{path.relative_to(REPO)}: dropped {len(covered)} codes the catalogue now covers")
 
 
 def main() -> int:
     try:
-        text = fetch()
+        text = fetch(URL, timeout=300).decode("utf-8")
     except Exception as exc:  # noqa: BLE001 - the workflow reports and moves on
         print(f"could not fetch the station list: {exc}", file=sys.stderr)
         return 1

@@ -69,9 +69,10 @@ import json
 import pathlib
 import re
 import sys
-import urllib.request
 import xml.etree.ElementTree as ET
 import zipfile
+
+from tablegen import fetch, write_table, clean, has_letters
 
 REPO = pathlib.Path(__file__).parent.parent
 OUT = REPO / "src" / "lib" / "tickets" / "uic" / "era-orgs.json"
@@ -161,12 +162,6 @@ EXCEL_EPOCH = datetime.date(1899, 12, 30)
 SHEET_DATE = re.compile(r"^(\d{2})-(\d{2})-(\d{4})")
 
 
-def fetch(url: str) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": "ticketish-build"})
-    with urllib.request.urlopen(req, timeout=180) as resp:
-        return resp.read()
-
-
 def shared_strings(zf: zipfile.ZipFile) -> list[str]:
     """The workbook's string pool, which is where all the text actually lives."""
     try:
@@ -218,16 +213,6 @@ def rows(zf: zipfile.ZipFile, path: str, strings: list[str]):
                 text = ""
             cells[column.group()] = text
         yield cells
-
-
-def clean(text: str) -> str:
-    """Collapse the stray double spaces the register is full of."""
-    return " ".join(text.split())
-
-
-def has_letters(text: str) -> bool:
-    """Whether there is anything in here to read, in any script."""
-    return any(ch.isalnum() for ch in text)
 
 
 def country_code(name: str) -> str:
@@ -424,7 +409,7 @@ def main() -> int:
         "_edition": edition,
         "orgs": {code: orgs[code] for code in sorted(orgs)},
     }
-    OUT.write_text(json.dumps(table, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
+    write_table(OUT, table)
     print(
         f"wrote {OUT.relative_to(REPO)} with {len(orgs)} organisations "
         f"({withdrawn} of them revoked codes, {edition})"
@@ -435,9 +420,7 @@ def main() -> int:
         "_edition": edition,
         "orgs": {code: rics[code] for code in sorted(rics)},
     }
-    OUT_RICS.write_text(
-        json.dumps(rics_table, ensure_ascii=False, indent=0) + "\n", encoding="utf-8"
-    )
+    write_table(OUT_RICS, rics_table)
     print(f"wrote {OUT_RICS.relative_to(REPO)} with {len(rics)} RICS codes")
     if unplaced:
         print(f"no country code for: {', '.join(sorted(unplaced))}", file=sys.stderr)

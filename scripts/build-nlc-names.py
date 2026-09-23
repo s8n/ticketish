@@ -24,6 +24,8 @@ import urllib.parse
 import urllib.request
 import zipfile
 
+from tablegen import write_table
+
 REPO = pathlib.Path(__file__).parent.parent
 OUT = REPO / "src" / "lib" / "tickets" / "rsp" / "nlc.json"
 
@@ -124,8 +126,7 @@ def main():
 def write(entries: dict) -> None:
     """The table with its note, compact since it is large and never read by eye."""
     table = {"_note": NOTE, "names": {k: entries[k] for k in sorted(entries)}}
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(table, separators=(",", ":"), ensure_ascii=False) + "\n", encoding="utf-8")
+    write_table(OUT, table, compact=True)
 
 
 if __name__ == "__main__":

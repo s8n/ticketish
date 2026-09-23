@@ -15,6 +15,8 @@ scripts/vdv-products/.
 import json
 import pathlib
 
+from tablegen import write_table
+
 REPO = pathlib.Path(__file__).parent.parent
 SRC = REPO / "scripts" / "vdv-products"
 OUT = REPO / "src" / "lib" / "tickets" / "vdv" / "products.json"
@@ -56,8 +58,7 @@ def main():
         print(f"note: {key} redefined in {where}: {old!r} -> {new!r}")
 
     table = {"_note": NOTE, "products": {k: products[k] for k in sorted(products)}}
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(table, separators=(",", ":"), ensure_ascii=False) + "\n", encoding="utf-8")
+    write_table(OUT, table, compact=True)
     orgs = {k.split("_")[0] for k in products}
     print(f"wrote {len(products)} products across {len(orgs)} organisations "
           f"to {OUT} ({OUT.stat().st_size / 1024:.0f} KiB)")

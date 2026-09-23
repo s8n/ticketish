@@ -38,14 +38,14 @@ correctly where a generic text extractor runs the columns together.
 Usage:
     python scripts/build-db-leitpunkte.py
 """
-import json
 import pathlib
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
-import urllib.request
+
+from tablegen import fetch, write_table
 
 REPO = pathlib.Path(__file__).parent.parent
 OUT = REPO / "src" / "lib" / "tickets" / "data" / "db-leitpunkte.json"
@@ -73,12 +73,6 @@ NOTE = (
     "the name only, which is a fact about an abbreviation. Rebuilt by "
     "scripts/build-db-leitpunkte.py; do not edit by hand."
 )
-
-
-def fetch(url: str) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": "ticketish-build"})
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        return resp.read()
 
 
 def main() -> int:
@@ -153,7 +147,7 @@ def main() -> int:
         "_edition": edition or "unknown",
         "points": {k: points[k] for k in sorted(points)},
     }
-    OUT.write_text(json.dumps(table, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
+    write_table(OUT, table)
     print(f"wrote {OUT.relative_to(REPO)} with {len(points)} points, edition {edition}")
     return 0
 

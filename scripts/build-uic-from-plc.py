@@ -61,6 +61,8 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 
+from tablegen import write_table
+
 REPO = pathlib.Path(__file__).parent.parent
 DATA = REPO / "src" / "lib" / "tickets" / "data"
 OUT = DATA / "plc-stations.json"
@@ -158,7 +160,7 @@ def main() -> int:
         "_export": exported,
         "stations": {k: stations[k] for k in sorted(stations, key=int)},
     }
-    OUT.write_text(json.dumps(table, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
+    write_table(OUT, table)
     print(f"wrote {OUT.relative_to(REPO)} with {len(stations)} names from the {exported} export")
     print(f"  {', '.join(taken)}")
     return 0
