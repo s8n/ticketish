@@ -24,8 +24,12 @@ def main():
     products: dict[str, str] = {}
     conflicts = []
 
-    # our own file goes last so it can fill gaps without being overwritten
-    files = sorted(SRC.glob("productids_*.json"), key=lambda p: p.name == "productids_ticketish.json")
+    # Our own file goes last so nothing overwrites it; the rest go by name, so
+    # which of two disagreeing files wins does not depend on the file system.
+    files = sorted(
+        SRC.glob("productids_*.json"),
+        key=lambda p: (p.name == "productids_ticketish.json", p.name),
+    )
 
     for path in files:
         data = json.loads(path.read_text())
