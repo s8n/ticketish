@@ -109,7 +109,10 @@ describe('the bundled Apple intermediate', () => {
 		expect(ours.teamIdentifier).toBe('G4');
 	});
 
-	it('has not expired, which a build has to stay ahead of', () => {
-		expect(readCertificate(der).notAfter!.getTime()).toBeGreaterThan(Date.now());
+	it('has half a year left, so the build warns before a pass is refused', () => {
+		// Passes signed after it expires are refused, and replacing it means
+		// finding what Apple moved to. Failing six months out leaves time.
+		const halfYear = 183 * 24 * 60 * 60 * 1000;
+		expect(readCertificate(der).notAfter!.getTime()).toBeGreaterThan(Date.now() + halfYear);
 	});
 });
