@@ -335,9 +335,12 @@ def main() -> int:
             aliases.append((second, entry, target))
 
     # A second code belongs to the organisation that lists it, but where one is
-    # also somebody's primary code the primary allocation is the firmer fact.
+    # also somebody's primary code the primary allocation is the firmer fact,
+    # in either table: a code may not sit in both, since the loader reads the
+    # RICS table only for codes the ERA one lacks.
     for code, entry, target in aliases:
-        target.setdefault(code, entry)
+        if code not in orgs and code not in rics:
+            target[code] = entry
 
     revoked = rows(zf, revoked_path, strings)
     revoked_header = next(revoked, {})

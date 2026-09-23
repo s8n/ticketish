@@ -20,6 +20,7 @@ import {
 	type EraOrg
 } from '../src/lib/tickets/uic/era-orgs.ts';
 import eraJson from '../src/lib/tickets/uic/era-orgs.json' with { type: 'json' };
+import ricsJson from '../src/lib/tickets/uic/rics.json' with { type: 'json' };
 
 // the import types every entry as its own literal shape, which is 5,881 of
 // them and not the point; the file is one table of one type
@@ -90,6 +91,15 @@ describe('era-orgs.json', () => {
 		// the revoked sheet has no country column, so those entries have none
 		const revoked = Object.values(table).filter((o) => o.n.includes('(Revoked '));
 		expect(revoked.every((o) => o.c === undefined)).toBe(true);
+	});
+});
+
+describe('the two organisation tables', () => {
+	it('never hold the same code', () => {
+		// the loader answers from rics.json only for codes era-orgs.json lacks,
+		// so a code in both would have one of its answers never read
+		const era = new Set(Object.keys(eraJson.orgs));
+		expect(Object.keys(ricsJson.orgs).filter((code) => era.has(code))).toEqual([]);
 	});
 });
 
