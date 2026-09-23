@@ -10,32 +10,12 @@ import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { loadTcddStations, tcddStationName } from '../src/lib/tickets/tcdd/stations.ts';
 import { parseTcdd } from '../src/lib/tickets/tcdd/tcdd.ts';
+import { tcddClassic as classic, tcddModern as modern } from './helpers/tcdd.ts';
 import { parseSsb1 } from '../src/lib/tickets/ssb/ssb1.ts';
 import { parseTrenitalia } from '../src/lib/tickets/trenitalia/trenitalia.ts';
 import { BitWriter, ascii } from './helpers/build.ts';
 
 describe('TCDD tickets', () => {
-	// Older layout: magic first, then a version digit.
-	const classic = [
-		'TCDD_B', '6', '3', '0',
-		'240010TESTTKT1', 'TESTPNR01', '20240519103000',
-		'11111111111', '49549', '1', '2',
-		'12345-19052024', '111111111', '222222222', '99999999999',
-		'7', '12b', '1', '150.00', '200.00', '20240501121500',
-		'null', 'null', '0', '', '250', 'a'.repeat(40)
-	];
-
-	// Newer layout: opens with the separator, then the magic and a product
-	// name where the older one has a version digit.
-	const modern = [
-		'', 'TCDD_B', 'tcddprod',
-		'T24TESTPNR000000000001', '24TESTPN', '20240519000000',
-		'40000', 'AH', '2', '54321-19052024',
-		// station ids in the current backend's numbering
-		'5', '345', '2', '6', '21', '999.0', '20240501153142',
-		'190000', '60', 'b'.repeat(40)
-	];
-
 	it('parses the older layout', () => {
 		const c = parsePayload(ascii(classic.join('$')));
 		expect(c.kind).toBe('tcdd');

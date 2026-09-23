@@ -9,6 +9,7 @@ mapping can be written out as a wallet pass:
 - Renfe
 - UK RSP6 tickets (not railcards)
 - ELB (SNCF card stock and Eurostar)
+- TCDD
 
 It sits with the barcode because a pass is the same payload in another
 container rather than a reading of it. Passes are built and signed in the
