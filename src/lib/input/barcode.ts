@@ -15,23 +15,10 @@
  * patterned security paper that version 2 could not decode in any
  * configuration, so a stale pin costs real scans.
  */
-import { prepareZXingModule, readBarcodes, type ReaderOptions, type ReadResult } from 'zxing-wasm/reader';
-import wasmUrl from 'zxing-wasm/reader/zxing_reader.wasm?url';
+import type { ReaderOptions, ReadResult } from 'zxing-wasm/reader';
+import { readBarcodes } from './zxing-reader.ts';
 import type { BarcodeSymbology } from '../tickets/types.ts';
 import { symbologyOf } from './render.ts';
-
-let prepared = false;
-
-function prepare() {
-	if (prepared) return;
-	prepared = true;
-	prepareZXingModule({
-		overrides: {
-			locateFile: (path: string, prefix: string) =>
-				path.endsWith('.wasm') ? wasmUrl : prefix + path
-		}
-	});
-}
 
 /**
  * A decoded symbol, carrying enough of how it was encoded to re-create it
@@ -64,7 +51,6 @@ function toHits(results: ReadResult[]): BarcodeHit[] {
 type Source = Blob | ImageData;
 
 async function read(source: Source, options: ReaderOptions): Promise<BarcodeHit[]> {
-	prepare();
 	return toHits(await readBarcodes(source as Blob, options));
 }
 

@@ -64,7 +64,7 @@
  * module pattern: it means the same bytes in the same symbology at the same
  * size, which is a barcode that scans wherever the original did.
  */
-import { readBarcodes } from 'zxing-wasm/reader';
+import { readBarcodes } from './zxing-reader.ts';
 import type { BarcodeSymbol } from 'zxing-wasm/writer';
 import writerWasmUrl from 'zxing-wasm/writer/zxing_writer.wasm?url';
 import type { BarcodeSymbology } from '../tickets/types.ts';
