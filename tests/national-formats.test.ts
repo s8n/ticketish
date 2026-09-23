@@ -11,6 +11,7 @@ import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { loadTcddStations, tcddStationName } from '../src/lib/tickets/tcdd/stations.ts';
 import { parseTcdd } from '../src/lib/tickets/tcdd/tcdd.ts';
 import { tcddClassic as classic, tcddModern as modern } from './helpers/tcdd.ts';
+import { buildSsb1 as ssb1 } from './helpers/ssb1.ts';
 import { parseSsb1 } from '../src/lib/tickets/ssb/ssb1.ts';
 import { parseTrenitalia } from '../src/lib/tickets/trenitalia/trenitalia.ts';
 import { BitWriter, ascii } from './helpers/build.ts';
@@ -122,51 +123,6 @@ describe('TCDD tickets', () => {
 });
 
 describe('VR tickets (SSB1)', () => {
-	/** 107 bytes, bit-packed, with no separate signature block. */
-	function ssb1({
-		rics = 10,
-		adults = 1,
-		children = 0,
-		validFromDay = 106,
-		validUntilDay = 106,
-		departureStation = 'AAA',
-		arrivalStation = 'BBB',
-		departureSlot = 29,
-		train = 42,
-		reservation = 100000000001,
-		travelClass = '2',
-		coach = 2,
-		seatNumber = 24,
-		pnr = '000006'
-	} = {}) {
-		const w = new BitWriter();
-		w.int(2, 4).int(rics, 14);
-		w.bool(false); // return included
-		w.int(0, 6); // number of tickets
-		w.int(adults, 7).int(children, 7);
-		w.int(validFromDay, 9).int(validUntilDay, 9);
-		w.bool(true); // individual frequent traveller id follows
-		w.int(0, 47);
-		w.bool(false); // departure station is a name, not a number
-		w.strAlpha(departureStation, 5); // bits 106..136
-		w.bool(false);
-		w.strAlpha(arrivalStation, 5); // bits 137..167
-		w.int(departureSlot, 6);
-		w.int(train, 17);
-		// reservation reference is 40 bits, beyond a safe integer shift
-		const reservationBits = reservation.toString(2).padStart(40, '0');
-		for (const bit of reservationBits) w.int(Number(bit), 1);
-		w.strAlpha(travelClass, 1);
-		w.int(coach, 10);
-		w.int(seatNumber, 7);
-		w.strAlpha('', 1);
-		w.bool(false); // overbooked
-		w.strAlpha(pnr, 7); // bits 260..302
-		w.int(0, 4); // ticket type
-		w.bool(true); // not a specimen
-		return w.padTo(107 * 8).bytes(107);
-	}
-
 	const REFERENCE = new Date('2026-05-01T00:00:00Z');
 
 	it('reads the journey', () => {

@@ -40,6 +40,7 @@ import { renfeTrip } from './extract/renfe.ts';
 import { rsp6Trip } from './extract/rsp6.ts';
 import { elbTrip } from './extract/elb.ts';
 import { tcddTrip } from './extract/tcdd.ts';
+import { ssb1Trip } from './extract/ssb1.ts';
 
 export type { TripField, TripSummary } from './summary.ts';
 
@@ -86,6 +87,10 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 		needs: ['tcddStations'],
 		map: (c, tables) => tcddTrip(c.ticket, tables)
 	},
+	ssb1: {
+		needs: ['stations', 'issuerNames'],
+		map: (c, tables) => ssb1Trip(c.ticket, tables)
+	},
 	bob: null,
 	// Everything below reads fine in the app but has no wallet mapping yet.
 	// Adding one is a matter of writing the extractor above and pointing the
@@ -96,7 +101,6 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 	// has both and issues the pass that boards the flight.
 	bcbp: null,
 	ssb: null,
-	ssb1: null,
 	trenitalia: null,
 	eav: null,
 	mav: null,
