@@ -18,9 +18,10 @@
 import caKeys from './ca-keys.json' with { type: 'json' };
 import { parseFirstTlv, parseTlv, tlvMap } from './tlv.ts';
 import { sha1 } from './sha1.ts';
+import { vdvDateTime } from './datetime.ts';
 import { bigIntToBytes, bytesToBigInt, modPow } from '../bigint.ts';
 import { ascii, hex, isPrintableAscii } from '../bytes.ts';
-import { isoDate, pad } from '../dates.ts';
+import { pad } from '../dates.ts';
 
 export interface CaKey {
 	name: string;
@@ -158,21 +159,6 @@ function certificateKey(content: Uint8Array): CertKey {
 		modulusHex: hex(content.subarray(offset, offset + modulusLen)),
 		exponentHex: hex(content.subarray(offset + modulusLen)) || '03'
 	};
-}
-
-/** VDV compact date-time (4 bytes) as an ISO local string (Europe/Berlin). */
-function vdvDateTime(d: Uint8Array): string | null {
-	if (d.every((b) => b === 0)) return null;
-	const year = (d[0] >> 1) + 1990;
-	const month = ((d[0] & 0x01) << 3) | ((d[1] & 0xe0) >> 5);
-	const day = d[1] & 0x1f;
-	const hour = (d[2] & 0xf8) >> 3;
-	const minute = ((d[2] & 0x07) << 3) | ((d[3] & 0xe0) >> 5);
-	const second = (d[3] & 0x1f) * 2;
-	// hour can exceed 23 to mean "next day"
-	const extraDays = Math.floor(hour / 24);
-	const date = new Date(Date.UTC(year, month - 1, day + extraDays));
-	return `${isoDate(date)}T${pad(hour % 24)}:${pad(minute)}:${pad(second)}`;
 }
 
 function versionNumber(d: Uint8Array): string {

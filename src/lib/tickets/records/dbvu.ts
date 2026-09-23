@@ -9,15 +9,15 @@
 import { registerRecordParser } from '../registry.ts';
 import type { RawRecord } from '../types.ts';
 import { hex } from '../bytes.ts';
-import { pad } from '../dates.ts';
+import { vdvDateTime } from '../vdv/datetime.ts';
 
 export interface DbVuProduct {
 	authorizationNumber: number;
 	kvpOrgId: number;
 	productNumber: number;
 	pvOrgId: number;
-	validFrom: string;
-	validTo: string;
+	validFrom: string | null;
+	validTo: string | null;
 	price: number | null; // euro cents
 	sequenceNumber: number | null;
 	dataHex: string;
@@ -26,17 +26,6 @@ export interface DbVuProduct {
 export interface DbVuData {
 	travellerCount: number;
 	products: DbVuProduct[];
-}
-
-// VDV compact datetime: yyyyyyym mmmddddd hhhhhmmm mmmsssss (year from 1990)
-function compactDateTime(v: number): string {
-	const second = v & 0x1f;
-	const minute = (v >>> 5) & 0x3f;
-	const hour = (v >>> 11) & 0x1f;
-	const day = (v >>> 16) & 0x1f;
-	const month = (v >>> 21) & 0xf;
-	const year = 1990 + ((v >>> 25) & 0x7f);
-	return `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:${pad(second)}`;
 }
 
 function u(d: Uint8Array, off: number, len: number): number {
@@ -57,8 +46,8 @@ function parseDbVu(record: RawRecord): DbVuData {
 		const kvpOrgId = u(d, off + 4, 2);
 		const productNumber = u(d, off + 6, 2);
 		const pvOrgId = u(d, off + 8, 2);
-		const validFrom = compactDateTime(u(d, off + 10, 4));
-		const validTo = compactDateTime(u(d, off + 14, 4));
+		const validFrom = vdvDateTime(d.subarray(off + 10, off + 14));
+		const validTo = vdvDateTime(d.subarray(off + 14, off + 18));
 		off += 18;
 		let price: number | null = null;
 		let sequenceNumber: number | null = null;
