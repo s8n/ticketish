@@ -205,16 +205,18 @@ export function buildPassJson(input: PassJsonInput): Record<string, unknown> {
 	const expires = asUtcInstant(trip.validUntil ?? trip.arrival, trip.endUtcOffset);
 	if (expires) pass.expirationDate = expires;
 
-	const semantics: Record<string, unknown> = {};
-	if (trip.issuer) semantics.transitProvider = trip.issuer;
+	// Apple's transit tags describe a journey, which is what the system reads
+	// them for. A period pass has none of them to give, and the provider on
+	// its own says nothing the front of the pass does not.
 	if (journey) {
+		const semantics: Record<string, unknown> = { transitProvider: trip.issuer };
 		if (trip.from) semantics.departureStationName = trip.from;
 		if (trip.to) semantics.destinationStationName = trip.to;
 		if (trip.train) semantics.vehicleNumber = trip.train;
 		const departureInstant = asUtcInstant(trip.departure, trip.startUtcOffset);
 		if (departureInstant) semantics.originalDepartureDate = departureInstant;
+		pass.semantics = semantics;
 	}
-	if (Object.keys(semantics).length > 1) pass.semantics = semantics;
 
 	return pass;
 }

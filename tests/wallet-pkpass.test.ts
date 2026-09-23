@@ -198,6 +198,10 @@ describe('pass structure', () => {
 		expect(period.generic).toBeDefined();
 		expect(period.boardingPass).toBeUndefined();
 		expect(period.expirationDate).toBe('2026-09-30T23:59:00Z');
+		// the transit tags are for journeys, so a period pass carries none
+		expect(period.semantics).toBeUndefined();
+		expect(journey.semantics.transitProvider).toBe('Test Railways');
+		expect(journey.semantics.departureStationName).toBe('Alpha Hbf');
 	});
 
 	it('dates each end of the validity by its own offset', async () => {
