@@ -22,8 +22,7 @@ import {
 	type AirlineTable,
 	type AirportTable
 } from '../src/lib/tickets/bcbp/codes.ts';
-
-const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
+import { ascii } from './helpers/build.ts';
 
 /** The record writes its own lengths as two ASCII hex digits. */
 const size = (s: string) => s.length.toString(16).toUpperCase().padStart(2, '0');

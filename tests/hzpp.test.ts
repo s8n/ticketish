@@ -11,8 +11,7 @@
 import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { isHzpp, parseHzpp } from '../src/lib/tickets/hzpp/hzpp.ts';
-
-const latin1 = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
+import { latin1 } from './helpers/build.ts';
 
 /** Minutes from the 2003 epoch to an instant, which is what the record stores. */
 const minutes = (iso: string) =>

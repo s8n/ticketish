@@ -28,11 +28,10 @@ import {
 } from '../src/lib/wallet/google.ts';
 import type { TripSummary } from '../src/lib/wallet/trip.ts';
 import type { BarcodeSymbology } from '../src/lib/tickets/types.ts';
+import { ascii } from './helpers/build.ts';
 
 const AZTEC: BarcodeSymbology = { format: 'Aztec' };
 const QR: BarcodeSymbology = { format: 'QRCode' };
-
-const ascii = (text: string) => new TextEncoder().encode(text);
 
 const trip: TripSummary = {
 	shape: 'journey',

@@ -14,8 +14,7 @@ import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { isElb } from '../src/lib/tickets/elb/elb.ts';
 import { isSncfETicket, parseSncfETicket } from '../src/lib/tickets/sncf/eticket.ts';
 import { buildElb } from './helpers/elb.ts';
-
-const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
+import { ascii } from './helpers/build.ts';
 
 interface EParts {
 	magic?: string;

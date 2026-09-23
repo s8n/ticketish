@@ -11,7 +11,9 @@
  * signature over anything.
  */
 
-export const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
+import { ascii } from './build.ts';
+
+export { ascii };
 
 export interface RenfeParts {
 	ticketNumber?: string;

@@ -20,8 +20,7 @@ import {
 	writerOptions,
 	type BarcodeModules
 } from '../src/lib/input/render.ts';
-
-const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
+import { ascii } from './helpers/build.ts';
 
 /** A payload the length of a real ticket, with no valid UTF-8 in it. */
 const binary = new Uint8Array(114).map((_, i) => (i * 37 + 0x31) & 0xff);

@@ -13,8 +13,7 @@ import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { isElb, parseElb } from '../src/lib/tickets/elb/elb.ts';
 import { dayOfYearDate, lastDigitYear } from '../src/lib/tickets/dates.ts';
 import { buildElb, elbSegment } from './helpers/elb.ts';
-
-const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
+import { ascii } from './helpers/build.ts';
 
 /** Fixed so the single year digit resolves the same way on every run. */
 const NOW = new Date('2026-08-03T00:00:00Z');

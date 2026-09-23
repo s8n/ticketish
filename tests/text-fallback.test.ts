@@ -12,11 +12,10 @@
  */
 import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
+import { latin1 } from './helpers/build.ts';
 
 const utf8 = (s: string) => new TextEncoder().encode(s);
 /** One byte per code point, which is what Latin-1 is. */
-const latin1 = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
-
 const asText = (data: Uint8Array) => {
 	const c = parsePayload(data);
 	return c.kind === 'text' ? c.text : null;

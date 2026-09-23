@@ -12,9 +12,7 @@ import { loadTcddStations, tcddStationName } from '../src/lib/tickets/tcdd/stati
 import { parseTcdd } from '../src/lib/tickets/tcdd/tcdd.ts';
 import { parseSsb1 } from '../src/lib/tickets/ssb/ssb1.ts';
 import { parseTrenitalia } from '../src/lib/tickets/trenitalia/trenitalia.ts';
-import { BitWriter } from './helpers/build.ts';
-
-const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
+import { BitWriter, ascii } from './helpers/build.ts';
 
 describe('TCDD tickets', () => {
 	// Older layout: magic first, then a version digit.

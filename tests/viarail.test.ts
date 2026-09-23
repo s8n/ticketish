@@ -11,8 +11,7 @@
 import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { isViaRail, parseViaRail } from '../src/lib/tickets/viarail/viarail.ts';
-
-const ascii = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
+import { ascii } from './helpers/build.ts';
 
 interface Parts {
 	ticketNumber?: string;

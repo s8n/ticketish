@@ -98,6 +98,15 @@ export function signIso9796(message: Uint8Array, key: TestKey) {
 	};
 }
 
+/**
+ * A string as one byte per character, which is the payload for the ASCII
+ * formats and, past 0x7f, for the ones written in Latin-1.
+ */
+export const latin1 = (s: string) => new Uint8Array([...s].map((c) => c.charCodeAt(0)));
+
+/** The same, named for the formats that are ASCII throughout. */
+export const ascii = latin1;
+
 // --------------------------------------------------------- UIC 918.3 -----
 
 /** Frame a record: 6 char id, 2 digit version, 4 digit total length. */
