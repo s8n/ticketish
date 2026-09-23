@@ -9,6 +9,7 @@
 import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { loadTcddStations, tcddStationName } from '../src/lib/tickets/tcdd/stations.ts';
+import { parseTcdd } from '../src/lib/tickets/tcdd/tcdd.ts';
 import { parseSsb1 } from '../src/lib/tickets/ssb/ssb1.ts';
 import { parseTrenitalia } from '../src/lib/tickets/trenitalia/trenitalia.ts';
 import { BitWriter } from './helpers/build.ts';
@@ -88,6 +89,12 @@ describe('TCDD tickets', () => {
 		expect(c.kind).toBe('tcdd');
 		if (c.kind !== 'tcdd') return;
 		expect(c.ticket.departure).toBeNull();
+	});
+
+	it('refuses to parse a record that is not one, the way the detector would', () => {
+		expect(() => parseTcdd(ascii('NOT_TCDD$1$2$3$4$5$6$7$8$9$10$11$12$13$14$15$16$17$18$19$20'))).toThrow(
+			/not a TCDD record/
+		);
 	});
 
 	it('keeps a midnight departure in the older layout, which never zeroes it', () => {

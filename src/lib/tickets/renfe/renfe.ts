@@ -12,7 +12,7 @@
  * printed contents, so treat unlabelled regions as unknown rather than
  * assuming they are empty.
  */
-import { isPrintableAscii } from '../bytes.ts';
+import { ascii, isPrintableAscii } from '../bytes.ts';
 import { calendarDate } from '../dates.ts';
 
 export interface RenfeTicket {
@@ -66,17 +66,19 @@ function parseBlockB(b: string): Omit<RenfeTicket, 'variant'> | null {
 	};
 }
 
+/** The long form's head: a 13-digit ticket number, then a dd/mm/yyyy date. */
+const isLongForm = (s: string) =>
+	s.length >= 156 && DIGITS.test(s.slice(0, 13)) && /^\d{2}\/\d{2}\/\d{4}$/.test(s.slice(23, 33));
+
 export function isRenfe(data: Uint8Array): boolean {
 	if (!isPrintableAscii(data)) return false;
-	const s = new TextDecoder().decode(data);
-	if (s.length === 56) return parseBlockB(s) !== null;
-	if (s.length < 156) return false;
-	// long form: 13-digit ticket number, then a dd/mm/yyyy date at a fixed offset
-	return DIGITS.test(s.slice(0, 13)) && /^\d{2}\/\d{2}\/\d{4}$/.test(s.slice(23, 33));
+	const s = ascii(data);
+	return s.length === 56 ? parseBlockB(s) !== null : isLongForm(s);
 }
 
 export function parseRenfe(data: Uint8Array): RenfeTicket {
-	const s = new TextDecoder().decode(data);
+	if (!isPrintableAscii(data)) throw new Error('not a Renfe barcode');
+	const s = ascii(data);
 
 	if (s.length === 56) {
 		const block = parseBlockB(s);
@@ -85,7 +87,7 @@ export function parseRenfe(data: Uint8Array): RenfeTicket {
 	}
 
 	const core = s.replace(/~+$/, '');
-	const date = toIsoDate(s.slice(23, 33));
+	const date = isLongForm(s) ? toIsoDate(s.slice(23, 33)) : null;
 	if (!date) throw new Error('not a Renfe barcode');
 	const block = parseBlockB(s.slice(100, 156));
 

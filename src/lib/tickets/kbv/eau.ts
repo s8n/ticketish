@@ -181,7 +181,11 @@ function diagnoses(value: string): EauDiagnosis[] {
 
 export function isEau(data: Uint8Array): boolean {
 	const fields = split(data);
-	if (!fields) return false;
+	return !!fields && hasHead(fields);
+}
+
+/** The constant head, a barcode version from the eAU on, and an issue date. */
+function hasHead(fields: string[]): boolean {
 	return (
 		fields[0] === FORM_CODE &&
 		fields[1] === FORM_SUFFIX &&
@@ -193,7 +197,7 @@ export function isEau(data: Uint8Array): boolean {
 
 export function parseEau(data: Uint8Array): EauCertificate {
 	const fields = split(data);
-	if (!fields || !isEau(data)) throw new Error('not an eAU barcode');
+	if (!fields || !hasHead(fields)) throw new Error('not an eAU barcode');
 
 	/** Table 17 numbers its fields from one. */
 	const at = (n: number) => (fields[n - 1] ?? '').trim();

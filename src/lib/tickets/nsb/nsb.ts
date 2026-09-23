@@ -75,15 +75,17 @@ function departureOrNull(minutes: number): string | null {
 	return minutes < 1440 ? timeOfDay(minutes) : null;
 }
 
+const hasMagic = (body: Uint8Array) =>
+	body.length >= MIN_BYTES && MAGIC.every((b, i) => body[i] === b);
+
 export function isNsb(data: Uint8Array): boolean {
 	const body = decodeBase64(data);
-	if (!body || body.length < MIN_BYTES) return false;
-	return MAGIC.every((b, i) => body[i] === b);
+	return !!body && hasMagic(body);
 }
 
 export function parseNsb(data: Uint8Array): NsbTicket {
 	const body = decodeBase64(data);
-	if (!body || !isNsb(data)) throw new Error('not an NSB ticket');
+	if (!body || !hasMagic(body)) throw new Error('not an NSB ticket');
 	const d = new Bits(body);
 	return {
 		departure: departureOrNull(d.int(DEPARTURE_BIT, DEPARTURE_BIT + TIME_BITS)),

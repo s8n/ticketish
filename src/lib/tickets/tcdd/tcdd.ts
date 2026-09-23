@@ -19,7 +19,7 @@
  * 9 digit ids of the retired api-yebsp backend, the newer one the small ids
  * of the current one. See stations.ts.
  */
-import { isPrintableAscii } from '../bytes.ts';
+import { ascii, isPrintableAscii } from '../bytes.ts';
 import { calendarDate } from '../dates.ts';
 
 export type TcddVariant = 'classic' | 'tcddprod';
@@ -64,15 +64,20 @@ const money = (v: string | undefined) => (v && /^\d+(\.\d+)?$/.test(v) ? v : nul
 /** Both layouts print the train as "<number>-<DDMMYYYY>". */
 const trainOf = (value: string | undefined) => (value ?? '').split('-')[0] ?? '';
 
-export function isTcdd(data: Uint8Array): boolean {
-	if (data.length < 20 || !isPrintableAscii(data)) return false;
-	const fields = new TextDecoder().decode(data).split('$');
+/** The record's fields, or null when it is not a TCDD record at all. */
+function fieldsOf(data: Uint8Array): string[] | null {
+	if (data.length < 20 || !isPrintableAscii(data)) return null;
+	const fields = ascii(data).split('$');
 	// the newer layout opens with the separator, so the magic can be second
-	return fields[0].startsWith('TCDD_') || fields[1]?.startsWith('TCDD_') === true;
+	const magic = fields[0].startsWith('TCDD_') || fields[1]?.startsWith('TCDD_') === true;
+	return magic ? fields : null;
 }
 
+export const isTcdd = (data: Uint8Array) => fieldsOf(data) !== null;
+
 export function parseTcdd(data: Uint8Array): TcddTicket {
-	const fields = new TextDecoder().decode(data).split('$');
+	const fields = fieldsOf(data);
+	if (!fields) throw new Error('not a TCDD record');
 	const magic = fields[0].startsWith('TCDD_') ? 0 : 1;
 	const f = (i: number) => fields[magic + i] ?? '';
 	const last = fields[fields.length - 1];

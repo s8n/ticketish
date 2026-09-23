@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { isSsb } from '../src/lib/tickets/ssb/ssb.ts';
 import { ascii, renfeAztec as aztec, renfeBlockB as blockB } from './helpers/renfe.ts';
+import { parseRenfe } from '../src/lib/tickets/renfe/renfe.ts';
 
 describe('Renfe tickets', () => {
 	it('parses the long Aztec form', () => {
@@ -34,6 +35,12 @@ describe('Renfe tickets', () => {
 		// one already is, so 30 February is a reason to look elsewhere
 		expect(parsePayload(aztec({ date: '30/02/2024' })).kind).not.toBe('renfe');
 		expect(parsePayload(ascii(blockB({ date: '30/02/2024' }))).kind).not.toBe('renfe');
+	});
+
+	it('refuses to parse what the detector would not claim', () => {
+		// long enough, but no ticket number and date where the long form has them
+		expect(() => parseRenfe(ascii('X'.repeat(160)))).toThrow(/not a Renfe barcode/);
+		expect(() => parseRenfe(new Uint8Array([0x01, 0x02]))).toThrow(/not a Renfe barcode/);
 	});
 
 	it('parses the short QR form on its own', () => {

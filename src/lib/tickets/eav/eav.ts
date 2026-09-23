@@ -52,7 +52,11 @@ function lines(data: Uint8Array): string[] | null {
 
 export function isEav(data: Uint8Array): boolean {
 	const parts = lines(data);
-	if (!parts || parts.length < 9) return false;
+	return !!parts && isEavLines(parts);
+}
+
+function isEavLines(parts: string[]): boolean {
+	if (parts.length < 9) return false;
 	return (
 		parts[1] === 'EAV' &&
 		LOCAL_DATE_TIME.test(parts[2]) &&
@@ -63,7 +67,7 @@ export function isEav(data: Uint8Array): boolean {
 
 export function parseEav(data: Uint8Array): EavTicket {
 	const parts = lines(data);
-	if (!parts || !isEav(data)) throw new Error('not an EAV ticket');
+	if (!parts || !isEavLines(parts)) throw new Error('not an EAV ticket');
 
 	const rest = parts.slice(5);
 	const soldAt = rest.find((p) => ZONED_DATE_TIME.test(p)) ?? null;

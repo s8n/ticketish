@@ -100,7 +100,10 @@ function dateTime(m: RegExpMatchArray): UzDateTime | null {
 
 export function isUz(data: Uint8Array): boolean {
 	const ls = lines(data);
-	if (!ls) return false;
+	return !!ls && isUzLines(ls);
+}
+
+function isUzLines(ls: string[]): boolean {
 	// two station lines and a time is the shape nothing else here has
 	const stations = ls.filter((l) => STATION.test(l)).length;
 	const times = ls.filter((l) => DATE_TIME.test(l)).length;
@@ -109,7 +112,7 @@ export function isUz(data: Uint8Array): boolean {
 
 export function parseUz(data: Uint8Array): UzTicket {
 	const ls = lines(data);
-	if (!ls || !isUz(data)) throw new Error('not a UZ boarding document');
+	if (!ls || !isUzLines(ls)) throw new Error('not a UZ boarding document');
 
 	const stations: UzStation[] = [];
 	const times: UzDateTime[] = [];
