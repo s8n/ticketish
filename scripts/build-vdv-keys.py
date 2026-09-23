@@ -10,6 +10,11 @@ content is embedded in an ISO 9796-2 signature are recovered by walking the
 chain from certificates with plain content (the roots). The output maps each
 CA's certificate holder reference to its RSA public key.
 
+The store only grows. Tickets signed under a CA stay in circulation after
+the directory stops listing it, so a key already in the file is kept, and
+the keys in it also seed the chain walk. A directory that answers with no
+certificates at all is an error rather than an empty store.
+
 Usage:
     venv/bin/pip install ldap3
     venv/bin/python scripts/build-vdv-keys.py [cert-cache-dir]
@@ -143,7 +148,12 @@ def main():
         parts = cert_parts(f.read_bytes())
         certs.append({"file": f.name, "parts": parts})
 
-    keys = {}  # chr -> key info
+    if not certs:
+        sys.exit("no CV certificates found; refusing to rebuild the key store from nothing")
+
+    # chr -> key info, starting from the store as committed
+    keys = json.loads(OUT.read_text()) if OUT.exists() else {}
+    before = len(keys)
     resolved = True
     while resolved:
         resolved = False
@@ -179,7 +189,7 @@ def main():
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(keys, indent=0))
-    print(f"wrote {len(keys)} CA keys to {OUT}")
+    print(f"wrote {len(keys)} CA keys to {OUT}, {len(keys) - before} of them new")
 
 
 if __name__ == "__main__":
