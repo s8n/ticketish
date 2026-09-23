@@ -65,6 +65,12 @@ const DETECTORS: Detector[] = [
 	// and so claims anything long enough that starts with "0". An eAU starts
 	// with "01", and its own test is the whole constant head plus a date.
 	{ matches: isEau, parse: (d) => ({ kind: 'kbv-eau', certificate: parseEau(d) }) },
+	// SSB is certain in all but name: its parser reads bits and never fails,
+	// so any binary payload of its length whose first byte has a version in
+	// the top nibble is SSB from here on, and a binary format after this line
+	// does not get it by falling through. A new one that can look like that
+	// goes above, with a test that the dispatcher reaches it, as every format
+	// below has.
 	{ matches: isSsb, parse: (d) => ({ kind: 'ssb', envelope: parseSsb(d) }) },
 	{ matches: isSsb1, parse: (d) => ({ kind: 'ssb1', ticket: parseSsb1(d) }) },
 	{ matches: isTrenitalia, parse: (d) => ({ kind: 'trenitalia', ticket: parseTrenitalia(d) }) },
