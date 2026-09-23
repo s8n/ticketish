@@ -60,6 +60,7 @@ describe('Renfe tickets', () => {
 
 	it('finds the signature after the zero padding, not inside it', () => {
 		const c = parsePayload(aztec());
+		expect(c.kind).toBe('renfe');
 		if (c.kind !== 'renfe') return;
 		// a naive search would start matching in the run of "0" padding
 		expect(c.ticket.signature?.startsWith('MCwCFE')).toBe(true);

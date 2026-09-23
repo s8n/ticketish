@@ -20,6 +20,7 @@ describe('U_HEAD flags', () => {
 	it('reads the flag digit into named booleans', () => {
 		// "1" is international, "4" is specimen, "6" is both agent and specimen
 		const c = parsePayload(uicEnvelope(1080, head(1080, '1')));
+		expect(c.kind).toBe('uic9183');
 		if (c.kind !== 'uic9183') return;
 		const data = c.envelope.records[0].data as HeadData;
 		expect(data.flags.internationalTicket).toBe(true);
@@ -30,6 +31,7 @@ describe('U_HEAD flags', () => {
 
 	it('trusts the specimen bit for a normal issuer', () => {
 		const c = parsePayload(uicEnvelope(1080, head(1080, '4')));
+		expect(c.kind).toBe('uic9183');
 		if (c.kind !== 'uic9183') return;
 		const data = c.envelope.records[0].data as HeadData;
 		expect(data.flags.specimen).toBe(true);
@@ -41,6 +43,7 @@ describe('U_HEAD flags', () => {
 		// specimen bit alone must not mark them as specimens
 		for (const rics of [1084, 1184]) {
 			const c = parsePayload(uicEnvelope(rics, head(rics, '6')));
+			expect(c.kind).toBe('uic9183');
 			if (c.kind !== 'uic9183') return;
 			const data = c.envelope.records[0].data as HeadData;
 			expect(data.flags.specimen).toBe(true);
@@ -78,6 +81,7 @@ describe('U_TLAY printed layout', () => {
 		// DSB writes "RTC2" rather than "RCT2"; the tag is shown as found
 		const odd = 'RTC2' + layout.slice(4);
 		const c = parsePayload(uicEnvelope(1186, uicRecord('U_TLAY', 1, odd)));
+		expect(c.kind).toBe('uic9183');
 		if (c.kind !== 'uic9183') return;
 		const data = c.envelope.records.find((r) => r.kind === 'layout')?.data as LayoutData;
 		expect(data.standard).toBe('RTC2');
@@ -118,6 +122,7 @@ describe('918.3 envelope', () => {
 
 	it('keeps unknown records as raw bytes instead of failing', () => {
 		const c = parsePayload(uicEnvelope(1080, uicRecord('XXXXXX', 1, 'whatever')));
+		expect(c.kind).toBe('uic9183');
 		if (c.kind !== 'uic9183') return;
 		expect(c.envelope.records[0].kind).toBe('unknown');
 		expect(c.envelope.records[0].raw).toHaveLength(8);

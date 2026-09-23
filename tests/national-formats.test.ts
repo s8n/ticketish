@@ -78,6 +78,7 @@ describe('TCDD tickets', () => {
 
 	it('drops a zeroed departure time rather than claiming midnight', () => {
 		const c = parsePayload(ascii(modern.join('$')));
+		expect(c.kind).toBe('tcdd');
 		if (c.kind !== 'tcdd') return;
 		expect(c.ticket.departure).toBe('2024-05-19');
 	});
@@ -108,6 +109,7 @@ describe('TCDD tickets', () => {
 
 	it('leaves fields it cannot place in the newer layout unclaimed', () => {
 		const c = parsePayload(ascii(modern.join('$')));
+		expect(c.kind).toBe('tcdd');
 		if (c.kind !== 'tcdd') return;
 		// no field in this layout matches the printed car
 		expect(c.ticket.coach).toBe('');
@@ -121,6 +123,7 @@ describe('TCDD tickets', () => {
 	it('names the stations of the newer layout from the built-in table', async () => {
 		const names = await loadTcddStations();
 		const c = parsePayload(ascii(modern.join('$')));
+		expect(c.kind).toBe('tcdd');
 		if (c.kind !== 'tcdd') return;
 		expect(tcddStationName(names, c.ticket.originCode)).toBe('ARİFİYE');
 		expect(tcddStationName(names, c.ticket.destinationCode)).toBe('KIRKAĞAÇ');

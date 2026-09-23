@@ -46,6 +46,7 @@ describe('OeBB validity record', () => {
 	});
 
 	it('reads von and bis as UTC timestamps', () => {
+		expect(container.kind).toBe('uic9183');
 		if (container.kind !== 'uic9183') return;
 		const parsed = container.envelope.records.find((r) => r.kind === 'oebb');
 		expect(parsed?.error).toBeUndefined();
@@ -59,6 +60,7 @@ describe('OeBB validity record', () => {
 		const withExtra = parsePayload(
 			envelope(1181, record('118199', 1, '{"V":"2405110730","B":"2405120730","X":"7"}'))
 		);
+		expect(withExtra.kind).toBe('uic9183');
 		if (withExtra.kind !== 'uic9183') return;
 		const data = withExtra.envelope.records.find((r) => r.kind === 'oebb')?.data as OebbRecord;
 		expect(data.extra).toEqual({ X: '7' });
@@ -66,6 +68,7 @@ describe('OeBB validity record', () => {
 
 	it('parses a bare "{}" as an empty record rather than failing', () => {
 		const bare = parsePayload(envelope(1181, record('118199', 1, '{}')));
+		expect(bare.kind).toBe('uic9183');
 		if (bare.kind !== 'uic9183') return;
 		const parsed = bare.envelope.records.find((r) => r.kind === 'oebb');
 		expect(parsed?.error).toBeUndefined();
