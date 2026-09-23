@@ -3,24 +3,22 @@
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
 	import type { HeadData } from '../../tickets/records/uhead.ts';
-	import { loadIssuerNames, ricsName, type IssuerTables } from '../../tickets/uic/rics.ts';
+	import { loadIssuerNames, ricsName } from '../../tickets/uic/rics.ts';
 	import { fmtDate } from '../../tickets/format.ts';
+	import { table } from '../table.svelte.ts';
 
 	let { data }: { data: HeadData } = $props();
 
 	// The distributor is a company code, so it gets the same tables the card
 	// header resolves its issuer against; the code shows until they land.
-	let issuerNames = $state<IssuerTables | null>(null);
-	$effect(() => {
-		loadIssuerNames().then((n) => (issuerNames = n));
-	});
+	const issuerNames = table(loadIssuerNames);
 </script>
 
 <dl class="fields">
 	<dt>Ticket ID</dt>
 	<dd><code>{data.ticketId}</code></dd>
 	<dt>Distributor</dt>
-	<dd>{ricsName(data.distributingRics, issuerNames) ?? `RICS ${data.distributingRics}`}</dd>
+	<dd>{ricsName(data.distributingRics, issuerNames.value) ?? `RICS ${data.distributingRics}`}</dd>
 	<dt>Issued</dt>
 	<dd>{fmtDate(data.issuedAt)}</dd>
 	<dt>Language</dt>

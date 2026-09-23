@@ -5,19 +5,16 @@
 	import type { RenfeTicket } from '../tickets/renfe/renfe.ts';
 	import {
 		loadRenfeStations,
-		renfeStationLabel,
-		type RenfeStationTable
+		renfeStationLabel
 	} from '../tickets/renfe/stations.ts';
 	import { fmtDate } from '../tickets/format.ts';
 	import RouteLine from './RouteLine.svelte';
+	import { table } from './table.svelte.ts';
 
 	let { ticket }: { ticket: RenfeTicket } = $props();
 
 	// a thousand names, so they only come along when a Spanish ticket is shown
-	let stations = $state<RenfeStationTable | null>(null);
-	$effect(() => {
-		loadRenfeStations().then((names) => (stations = names));
-	});
+	const stations = table(loadRenfeStations);
 </script>
 
 <div class="renfe">
@@ -28,8 +25,8 @@
 
 	{#if ticket.originCode || ticket.destinationCode}
 		<RouteLine
-			from={renfeStationLabel(stations, ticket.originCode)}
-			to={renfeStationLabel(stations, ticket.destinationCode)}
+			from={renfeStationLabel(stations.value, ticket.originCode)}
+			to={renfeStationLabel(stations.value, ticket.destinationCode)}
 			fromTitle={ticket.originCode ? `code ${ticket.originCode}` : null}
 			toTitle={ticket.destinationCode ? `code ${ticket.destinationCode}` : null}
 			size="sm"

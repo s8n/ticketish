@@ -2,22 +2,19 @@
 	// SPDX-FileCopyrightText: 2026 ave
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
-	import { onMount } from 'svelte';
 	import type { Rsp6Ticket, Rsp6TicketData, Rsp6RailcardData } from '../tickets/rsp/rsp6.ts';
 	import { fmtDate } from '../tickets/format.ts';
-	import { loadNlcNames, nlcEntry, nlcLabel, type NlcEntry } from '../tickets/rsp/nlc.ts';
+	import { loadNlcNames, nlcEntry, nlcLabel } from '../tickets/rsp/nlc.ts';
 	import RouteLine from './RouteLine.svelte';
+	import { table } from './table.svelte.ts';
 
 	let { ticket }: { ticket: Rsp6Ticket } = $props();
 
 	// The NLC table is large, so it loads only once an RSP ticket is on screen.
-	let nlcNames = $state<Record<string, NlcEntry> | null>(null);
-	onMount(async () => {
-		nlcNames = await loadNlcNames();
-	});
+	const nlcNames = table(loadNlcNames);
 
-	const station = (code: string) => nlcLabel(nlcNames, code);
-	const crs = (code: string) => nlcEntry(nlcNames, code)?.c;
+	const station = (code: string) => nlcLabel(nlcNames.value, code);
+	const crs = (code: string) => nlcEntry(nlcNames.value, code)?.c;
 
 	const data = $derived(ticket.data);
 	const t = $derived(data?.kind === 'ticket' ? (data as Rsp6TicketData) : null);

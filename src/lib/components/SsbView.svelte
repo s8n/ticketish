@@ -4,27 +4,22 @@
 
 	import type { SsbEnvelope, SsbOneTicketFlags, SsbStation } from '../tickets/ssb/ssb.ts';
 	import { fmtDate } from '../tickets/format.ts';
-	import { loadIssuerNames, ricsName, type IssuerTables } from '../tickets/uic/rics.ts';
+	import { loadIssuerNames, ricsName } from '../tickets/uic/rics.ts';
 	import { uicCountryName } from '../tickets/countries.ts';
-	import { loadUicStations, uicStationName, type StationTable } from '../tickets/stations.ts';
+	import { loadUicStations, uicStationName } from '../tickets/stations.ts';
 	import RouteLine from './RouteLine.svelte';
+	import { table } from './table.svelte.ts';
 
 	let { envelope }: { envelope: SsbEnvelope } = $props();
 
 	// Only some records number their stations by UIC; the table loads on demand
 	// and the raw code shows until it lands.
-	let stations = $state<StationTable | null>(null);
-	$effect(() => {
-		loadUicStations().then((s) => (stations = s));
-	});
+	const stations = table(loadUicStations);
 
 	// The issuer is a company code, and the card header resolves the same one:
 	// without the tables here the two would disagree on one ticket, which reads
 	// as a parsing bug rather than as a table that had not loaded.
-	let issuerNames = $state<IssuerTables | null>(null);
-	$effect(() => {
-		loadIssuerNames().then((n) => (issuerNames = n));
-	});
+	const issuerNames = table(loadIssuerNames);
 
 	const r = $derived(envelope.data);
 	const travelClass = $derived(
@@ -38,7 +33,7 @@
 	);
 
 	function stationLabel(s: SsbStation): string {
-		if (s.type === 'uic') return uicStationName(stations, s.value) ?? `UIC ${s.value}`;
+		if (s.type === 'uic') return uicStationName(stations.value, s.value) ?? `UIC ${s.value}`;
 		if (s.type === 'benerail') return `${s.value} (Benerail)`;
 		if (s.type === 'other') return `code ${s.value}`;
 		return s.value;
@@ -105,7 +100,7 @@
 				{#if r.numTravelDays}<dt>Travel days</dt>
 					<dd>{r.numTravelDays}</dd>{/if}
 				{#if r.stationUic}<dt>Station</dt>
-					<dd>{uicStationName(stations, r.stationUic) ?? `UIC ${r.stationUic}`}</dd>{/if}
+					<dd>{uicStationName(stations.value, r.stationUic) ?? `UIC ${r.stationUic}`}</dd>{/if}
 			{:else}
 				{#if r.kind === 'reservation'}
 					<dt>Departure</dt>
@@ -177,7 +172,7 @@
 		<dt>Ticket type</dt>
 		<dd>{envelope.ticketTypeName} <span class="soft">({envelope.ticketType})</span></dd>
 		<dt>Issuer</dt>
-		<dd>{ricsName(envelope.issuerRics, issuerNames) ?? `RICS ${envelope.issuerRics}`}</dd>
+		<dd>{ricsName(envelope.issuerRics, issuerNames.value) ?? `RICS ${envelope.issuerRics}`}</dd>
 	</dl>
 </div>
 

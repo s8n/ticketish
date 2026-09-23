@@ -5,22 +5,20 @@
 	import type { ElbSegment, ElbTicket } from '../tickets/elb/elb.ts';
 	import { fmtDate } from '../tickets/format.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
-	import { loadBenerailStations, benerailStationLabel, type StationTable } from '../tickets/stations.ts';
+	import { loadBenerailStations, benerailStationLabel } from '../tickets/stations.ts';
+	import { table } from './table.svelte.ts';
 
 	let { ticket }: { ticket: ElbTicket } = $props();
 
 	// Loads on demand: until it lands the mnemonics show, the way they did
 	// before the table existed.
-	let stations = $state<StationTable | null>(null);
-	$effect(() => {
-		loadBenerailStations().then((s) => (stations = s));
-	});
+	const stations = table(loadBenerailStations);
 
 	const outward = $derived(ticket.segments[0]);
 	const inward = $derived(ticket.segments[1] ?? null);
 
-	const origin = $derived(benerailStationLabel(stations, outward.departureStation));
-	const destination = $derived(benerailStationLabel(stations, outward.arrivalStation));
+	const origin = $derived(benerailStationLabel(stations.value, outward.departureStation));
+	const destination = $derived(benerailStationLabel(stations.value, outward.arrivalStation));
 	// The mnemonics are what is actually in the barcode, so keep them visible
 	// once the route line has been replaced by names.
 	const codes = $derived(
@@ -59,7 +57,7 @@
 	const returnLeg = $derived(
 		inward
 			? [
-					`${benerailStationLabel(stations, inward.departureStation)} - ${benerailStationLabel(stations, inward.arrivalStation)}`,
+					`${benerailStationLabel(stations.value, inward.departureStation)} - ${benerailStationLabel(stations.value, inward.arrivalStation)}`,
 					inward.trainNumber ? `train ${inward.trainNumber}` : null,
 					inward.departureDate ? fmtDate(inward.departureDate) : null,
 					place(inward) || null,

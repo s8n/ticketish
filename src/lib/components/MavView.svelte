@@ -5,27 +5,22 @@
 	import type { MavTicket } from '../tickets/mav/mav.ts';
 	import { mavStationLabel } from '../tickets/mav/mav.ts';
 	import { fmtDate, fmtPrice, fmtZoned } from '../tickets/format.ts';
-	import { loadIssuerNames, ricsName, type IssuerTables } from '../tickets/uic/rics.ts';
+	import { loadIssuerNames, ricsName } from '../tickets/uic/rics.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
-	import { loadUicStations, type StationTable } from '../tickets/stations.ts';
+	import { loadUicStations } from '../tickets/stations.ts';
+	import { table } from './table.svelte.ts';
 
 	let { ticket }: { ticket: MavTicket } = $props();
 
 	// Only the UIC numbering, which versions up to 4 use, can be named. Loads
 	// on demand, so the raw codes show until it lands.
-	let stations = $state<StationTable | null>(null);
-	$effect(() => {
-		if (ticket.stationNumbering === 'uic') loadUicStations().then((s) => (stations = s));
-	});
+	const stations = table(loadUicStations, () => ticket.stationNumbering === 'uic');
 
 	// The operator of each leg is a company code, so it needs the same tables
 	// the card header resolves its issuer against.
-	let issuerNames = $state<IssuerTables | null>(null);
-	$effect(() => {
-		loadIssuerNames().then((n) => (issuerNames = n));
-	});
+	const issuerNames = table(loadIssuerNames);
 
-	const station = (id: number) => mavStationLabel(ticket, stations, id);
+	const station = (id: number) => mavStationLabel(ticket, stations.value, id);
 
 	const trip = $derived(ticket.trip);
 
@@ -104,7 +99,7 @@
 			{#if r.seats.length}<dt>Seat{r.seats.length > 1 ? 's' : ''}</dt>
 				<dd>{r.seats.join(', ')}</dd>{/if}
 			{#if r.operatorRics}<dt>Operator</dt>
-				<dd>{ricsName(r.operatorRics, issuerNames) ?? `RICS ${r.operatorRics}`}</dd>{/if}
+				<dd>{ricsName(r.operatorRics, issuerNames.value) ?? `RICS ${r.operatorRics}`}</dd>{/if}
 		</dl>
 	</section>
 {/each}

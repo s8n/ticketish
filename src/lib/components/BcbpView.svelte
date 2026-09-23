@@ -21,21 +21,16 @@
 		airportName,
 		airportPlace,
 		loadAirlines,
-		loadAirports,
-		type AirlineTable,
-		type AirportTable
+		loadAirports
 	} from '../tickets/bcbp/codes.ts';
+	import { table } from './table.svelte.ts';
 
 	let { ticket }: { ticket: BcbpTicket } = $props();
 
 	// Both load on demand: until they land the codes show, which is what the
 	// pass itself prints and what this view showed before the tables existed.
-	let airports = $state<AirportTable | null>(null);
-	let airlines = $state<AirlineTable | null>(null);
-	$effect(() => {
-		loadAirports().then((a) => (airports = a));
-		loadAirlines().then((a) => (airlines = a));
-	});
+	const airports = table(loadAirports);
+	const airlines = table(loadAirlines);
 
 	const yesNo = (value: boolean | null) => (value === null ? null : value ? 'Yes' : 'No');
 
@@ -53,7 +48,7 @@
 	 * against the day it was flown or it gets its successor's name.
 	 */
 	const named = (code: string | null, on: string | null) =>
-		code ? airlineLabel(airlines, code, on) : null;
+		code ? airlineLabel(airlines.value, code, on) : null;
 
 	/**
 	 * The same, with the designator kept beside it. For the two rows where the
@@ -62,7 +57,7 @@
 	 */
 	const namedWithCode = (code: string | null, on: string | null) => {
 		if (!code) return null;
-		const name = airlineName(airlines, code, on);
+		const name = airlineName(airlines.value, code, on);
 		return name ? `${name} (${code})` : code;
 	};
 
@@ -78,8 +73,8 @@
 	 * the way one does, so it is worth saying when the two disagree.
 	 */
 	const issuedOn = (leg: BcbpLeg) => {
-		const billed = airlineByAccountingCode(airlines, leg.airlineNumericCode, leg.flightDate);
-		const flying = airlineName(airlines, leg.operatingCarrier, leg.flightDate);
+		const billed = airlineByAccountingCode(airlines.value, leg.airlineNumericCode, leg.flightDate);
+		const flying = airlineName(airlines.value, leg.operatingCarrier, leg.flightDate);
 		return billed && billed !== flying ? billed : null;
 	};
 
@@ -89,8 +84,8 @@
 		// came from should still be somewhere on the card.
 		[
 			'Airport codes',
-			airportName(airports, leg.fromAirport) === leg.fromAirport &&
-			airportName(airports, leg.toAirport) === leg.toAirport
+			airportName(airports.value, leg.fromAirport) === leg.fromAirport &&
+			airportName(airports.value, leg.toAirport) === leg.toAirport
 				? null
 				: `${leg.fromAirport} → ${leg.toAirport}`
 		],
@@ -150,19 +145,19 @@
 			<header>
 				<span class="product">{leg.operatingCarrier} {leg.flightNumber ?? ''}</span>
 				<span class="soft">
-					{airlineLabel(airlines, leg.operatingCarrier, leg.flightDate)}{#if ticket.legs.length > 1}
+					{airlineLabel(airlines.value, leg.operatingCarrier, leg.flightDate)}{#if ticket.legs.length > 1}
 						· leg {i + 1} of {ticket.legs.length}{/if}
 				</span>
 			</header>
 			<!-- The codes stay in reach as hover text, since they are what the
 			     pass prints and what a gate agent reads back. -->
 			<RouteLine
-				from={airportName(airports, leg.fromAirport)}
-				to={airportName(airports, leg.toAirport)}
-				fromTitle={[leg.fromAirport, airportPlace(airports, leg.fromAirport)]
+				from={airportName(airports.value, leg.fromAirport)}
+				to={airportName(airports.value, leg.toAirport)}
+				fromTitle={[leg.fromAirport, airportPlace(airports.value, leg.fromAirport)]
 					.filter(Boolean)
 					.join(' · ')}
-				toTitle={[leg.toAirport, airportPlace(airports, leg.toAirport)]
+				toTitle={[leg.toAirport, airportPlace(airports.value, leg.toAirport)]
 					.filter(Boolean)
 					.join(' · ')}
 				size="sm"

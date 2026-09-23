@@ -5,19 +5,19 @@
 	import type { FlexData } from '../../tickets/records/uflex.ts';
 	import { summarizeFcb, type FcbTicket, type Traveler } from '../../tickets/model.ts';
 	import { docTypeLabel, fmtClass, fmtDate, fmtPrice } from '../../tickets/format.ts';
-	import { loadIssuerNames, ricsName, type IssuerTables } from '../../tickets/uic/rics.ts';
+	import { loadIssuerNames, ricsName } from '../../tickets/uic/rics.ts';
 	import { parseDbVia } from '../../tickets/via.ts';
 	import { uicCountryName, isoNumericCountryName } from '../../tickets/countries.ts';
 	import {
 		isUicCodeTable,
 		loadUicStations,
-		uicStationLabel,
-		type StationTable
+		uicStationLabel
 	} from '../../tickets/stations.ts';
 	import ZugbindungStrip from '../ZugbindungStrip.svelte';
 	import RouteLine from '../RouteLine.svelte';
 	import ViaRoute from '../ViaRoute.svelte';
 	import JsonTree from '../JsonTree.svelte';
+	import { table } from '../table.svelte.ts';
 
 	let { data }: { data: FlexData } = $props();
 
@@ -26,19 +26,13 @@
 
 	// Loads on demand: until it lands the numeric codes show, the way they did
 	// before the table existed.
-	let uicStations = $state<StationTable | null>(null);
-	$effect(() => {
-		loadUicStations().then((s) => (uicStations = s));
-	});
+	const uicStations = table(loadUicStations);
 
 	// Issuer, carriers and the via route are all company codes. Same deal as
 	// the stations above: the code shows until the tables land.
-	let issuerNames = $state<IssuerTables | null>(null);
-	$effect(() => {
-		loadIssuerNames().then((n) => (issuerNames = n));
-	});
+	const issuerNames = table(loadIssuerNames);
 
-	const docs = $derived(summarizeFcb(ticket, uicStations));
+	const docs = $derived(summarizeFcb(ticket, uicStations.value));
 	const travelers = $derived((ticket.travelerDetail?.traveler ?? []) as Traveler[]);
 	const control = $derived(ticket.controlDetail as Record<string, unknown> | undefined);
 	const currency = $derived((issuing.currency as string) ?? 'EUR');
@@ -82,7 +76,7 @@
 		// numbering would resolve to the wrong station.
 		const uic = isUicCodeTable(d.stationCodeTable as string | undefined);
 		const named = (num: unknown) =>
-			uic ? (uicStationLabel(uicStations, num as number) ?? undefined) : undefined;
+			uic ? (uicStationLabel(uicStations.value, num as number) ?? undefined) : undefined;
 		return {
 			from:
 				(d.fromStationNameUTF8 as string) ??
@@ -150,7 +144,7 @@
 		const nums = (d.includedCarrierNum as number[]) ?? [];
 		const ia5 = (d.includedCarrierIA5 as string[]) ?? [];
 		return [
-			...nums.map((n) => ricsName(n, issuerNames) ?? `RICS ${n}`),
+			...nums.map((n) => ricsName(n, issuerNames.value) ?? `RICS ${n}`),
 			...ia5
 		];
 	}
@@ -169,7 +163,7 @@
 <div class="flex-view">
 	{#each docs as doc, i (i)}
 		{@const st = stations(doc.data)}
-		{@const via = parseDbVia((doc.data.validRegionDesc as string) ?? '', issuerNames)}
+		{@const via = parseDbVia((doc.data.validRegionDesc as string) ?? '', issuerNames.value)}
 		{@const activated = activatedDays(doc.data, doc.validFrom)}
 		{@const carriers = carrierList(doc.data)}
 		<section class="doc">
@@ -300,7 +294,7 @@
 		<dt>Issuer</dt>
 		<dd>
 			{issuing.issuerName ??
-				ricsName(issuing.issuerNum ?? issuing.securityProviderNum, issuerNames) ??
+				ricsName(issuing.issuerNum ?? issuing.securityProviderNum, issuerNames.value) ??
 				issuing.issuerNum ??
 				'unknown'}
 		</dd>

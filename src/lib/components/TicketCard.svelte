@@ -10,14 +10,15 @@
 	import RawView from './records/RawView.svelte';
 	import { containerInfo } from './containers.ts';
 	import { loadVdvOrgs } from '../tickets/vdv/orgs.ts';
-	import { loadIssuerNames, type IssuerTables } from '../tickets/uic/rics.ts';
-	import { loadNovaOrgs, type NovaOrgTable } from '../tickets/swisspass/orgs.ts';
-	import { loadAirlines, type AirlineTable } from '../tickets/bcbp/codes.ts';
+	import { loadIssuerNames } from '../tickets/uic/rics.ts';
+	import { loadNovaOrgs } from '../tickets/swisspass/orgs.ts';
+	import { loadAirlines } from '../tickets/bcbp/codes.ts';
 	import { store } from '../state/tickets.svelte.ts';
 	import { canRender } from '../input/render.ts';
 	import { tabModel } from './tabs.ts';
 	import BarcodeView from './BarcodeView.svelte';
 	import WalletExport from './WalletExport.svelte';
+	import { table } from './table.svelte.ts';
 
 	let { ticket }: { ticket: ParsedTicket } = $props();
 
@@ -27,38 +28,26 @@
 	);
 
 	// Only fetched for VDV tickets, and only to name the issuer in the header.
-	let vdvOrgs = $state<Record<string, string> | null>(null);
-	$effect(() => {
-		if (container.kind === 'vdv') loadVdvOrgs().then((o) => (vdvOrgs = o));
-	});
+	const vdvOrgs = table(loadVdvOrgs, () => container.kind === 'vdv');
 
 	const info = $derived(containerInfo(container));
 
 	// The same for the formats that name their issuer by company code: the
 	// header shows "RICS 2480" for as long as the tables take to arrive.
-	let issuerNames = $state<IssuerTables | null>(null);
-	$effect(() => {
-		if (info.needsIssuerNames) loadIssuerNames().then((n) => (issuerNames = n));
-	});
+	const issuerNames = table(loadIssuerNames, () => info.needsIssuerNames);
 
 	// Swiss tickets name their seller by organisation number instead.
-	let novaOrgs = $state<NovaOrgTable | null>(null);
-	$effect(() => {
-		if (info.needsNovaOrgs) loadNovaOrgs().then((o) => (novaOrgs = o));
-	});
+	const novaOrgs = table(loadNovaOrgs, () => info.needsNovaOrgs);
 
 	// A boarding pass names its issuer by IATA designator.
-	let airlines = $state<AirlineTable | null>(null);
-	$effect(() => {
-		if (info.needsAirlines) loadAirlines().then((a) => (airlines = a));
-	});
+	const airlines = table(loadAirlines, () => info.needsAirlines);
 
 	const issuer = $derived(
 		info.issuer?.(container, {
-			vdvOrgs,
-			issuerNames,
-			novaOrgs,
-			airlines,
+			vdvOrgs: vdvOrgs.value,
+			issuerNames: issuerNames.value,
+			novaOrgs: novaOrgs.value,
+			airlines: airlines.value,
 			passInfo: ticket.source.passInfo
 		}) ?? null
 	);

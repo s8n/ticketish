@@ -6,17 +6,15 @@
 	import { loadTcddStations, tcddStationName } from '../tickets/tcdd/stations.ts';
 	import { fmtDate } from '../tickets/format.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
+	import { table } from './table.svelte.ts';
 
 	let { ticket }: { ticket: TcddTicket } = $props();
 
 	// a few hundred names, so they only come along when a Turkish ticket is shown
-	let stations = $state<Record<string, string> | null>(null);
-	$effect(() => {
-		loadTcddStations().then((names) => (stations = names));
-	});
+	const stations = table(loadTcddStations);
 
 	const hasRoute = $derived(!!(ticket.originCode || ticket.destinationCode));
-	const station = (code: string) => tcddStationName(stations, code);
+	const station = (code: string) => tcddStationName(stations.value, code);
 
 	const rows = $derived<[string, string | null | undefined][]>([
 		['Departure', ticket.departure ? fmtDate(ticket.departure) : null],

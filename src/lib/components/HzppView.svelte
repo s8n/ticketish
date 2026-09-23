@@ -6,17 +6,15 @@
 	import { fmtPrice, fmtZoned } from '../tickets/format.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
 	import RouteLine from './RouteLine.svelte';
-	import { loadUicStations, uicStationLabel, type StationTable } from '../tickets/stations.ts';
+	import { loadUicStations, uicStationLabel } from '../tickets/stations.ts';
+	import { table } from './table.svelte.ts';
 
 	let { ticket }: { ticket: HzppTicket } = $props();
 
 	// The station ids are UIC codes, so the bundled table names the larger ones.
-	let stations = $state<StationTable | null>(null);
-	$effect(() => {
-		if (!ticket.encrypted) loadUicStations().then((s) => (stations = s));
-	});
+	const stations = table(loadUicStations, () => !ticket.encrypted);
 
-	const station = (id: number) => uicStationLabel(stations, id);
+	const station = (id: number) => uicStationLabel(stations.value, id);
 
 	const outward = $derived(ticket.encrypted ? null : (ticket.segments[0] ?? null));
 	const inward = $derived(ticket.encrypted ? null : (ticket.segments[1] ?? null));

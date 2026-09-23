@@ -4,20 +4,18 @@
 
 	import type { DbBlData } from '../../tickets/records/dbbl.ts';
 	import { fmtDate } from '../../tickets/format.ts';
-	import { loadUicStations, uicStationLabel, type StationTable } from '../../tickets/stations.ts';
+	import { loadUicStations, uicStationLabel } from '../../tickets/stations.ts';
 	import RouteLine from '../RouteLine.svelte';
+	import { table } from '../table.svelte.ts';
 
 	let { data }: { data: DbBlData } = $props();
 
 	// The S-blocks usually print the station names themselves. The UIC codes in
 	// S035/S036 are the fallback for the tickets that leave them out.
-	let uicStations = $state<StationTable | null>(null);
-	$effect(() => {
-		loadUicStations().then((s) => (uicStations = s));
-	});
+	const uicStations = table(loadUicStations);
 
-	const from = $derived(data.fromStationName ?? uicStationLabel(uicStations, data.fromStationUic));
-	const to = $derived(data.toStationName ?? uicStationLabel(uicStations, data.toStationUic));
+	const from = $derived(data.fromStationName ?? uicStationLabel(uicStations.value, data.fromStationUic));
+	const to = $derived(data.toStationName ?? uicStationLabel(uicStations.value, data.toStationUic));
 
 	const passengers = $derived(
 		[

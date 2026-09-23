@@ -2,24 +2,21 @@
 	// SPDX-FileCopyrightText: 2026 ave
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
-	import { onMount } from 'svelte';
 	import type { VdvBarcode } from '../tickets/vdv/vdv.ts';
 	import { fmtDate } from '../tickets/format.ts';
 	import { loadVdvProducts, vdvProductName } from '../tickets/vdv/products.ts';
 	import { loadVdvOrgs, vdvOrgLabel, vdvOrgName } from '../tickets/vdv/orgs.ts';
+	import { table } from './table.svelte.ts';
 
 	let { barcode }: { barcode: VdvBarcode } = $props();
 
 	// Both tables are a few dozen KiB, so they load only for VDV tickets.
-	let products = $state<Record<string, string> | null>(null);
-	let orgs = $state<Record<string, string> | null>(null);
-	onMount(async () => {
-		[products, orgs] = await Promise.all([loadVdvProducts(), loadVdvOrgs()]);
-	});
+	const products = table(loadVdvProducts);
+	const orgs = table(loadVdvOrgs);
 
 	const productName = (orgId: number, number: number) =>
-		vdvProductName(products, orgId, number);
-	const orgLabel = (code: number | undefined | null) => vdvOrgLabel(orgs, code);
+		vdvProductName(products.value, orgId, number);
+	const orgLabel = (code: number | undefined | null) => vdvOrgLabel(orgs.value, code);
 </script>
 
 <div class="vdv">
@@ -122,7 +119,7 @@
 			<dd>MOTICS copy protection{barcode.containerIdentifier ? ` (${barcode.containerIdentifier})` : ''}</dd>
 		{/if}
 	</dl>
-	{#if orgs && !vdvOrgName(orgs, barcode.tickets[0]?.productOrgId)}
+	{#if orgs.value && !vdvOrgName(orgs.value, barcode.tickets[0]?.productOrgId)}
 		<p class="note">This organisation is not in our list; numeric IDs are shown as-is.</p>
 	{/if}
 </div>

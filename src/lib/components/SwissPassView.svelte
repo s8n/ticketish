@@ -4,19 +4,17 @@
 
 	import type { SwissPassTicket } from '../tickets/swisspass/swisspass.ts';
 	import { fmtZurich } from '../tickets/swisspass/swisspass.ts';
-	import { loadNovaOrgs, novaOrgLabel, type NovaOrgTable } from '../tickets/swisspass/orgs.ts';
+	import { loadNovaOrgs, novaOrgLabel } from '../tickets/swisspass/orgs.ts';
 	import RouteLine from './RouteLine.svelte';
+	import { table } from './table.svelte.ts';
 
 	let { ticket }: { ticket: SwissPassTicket } = $props();
 
 	// The zones and the seller are organisation numbers; the table loads on
 	// demand and the number shows on its own until it lands.
-	let orgs = $state<NovaOrgTable | null>(null);
-	$effect(() => {
-		loadNovaOrgs().then((o) => (orgs = o));
-	});
+	const orgs = table(loadNovaOrgs);
 
-	const orgName = (code: number | undefined) => novaOrgLabel(orgs, code);
+	const orgName = (code: number | undefined) => novaOrgLabel(orgs.value, code);
 
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	const data = $derived(ticket.ticketData as any);
