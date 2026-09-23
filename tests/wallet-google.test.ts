@@ -154,13 +154,12 @@ describe('which shape of pass a trip becomes', () => {
 describe('the transit pass', () => {
 	/** A journey with everything a leg can hold. */
 	const seated: TripSummary = { ...trip, passenger: 'A Traveller', coach: '7', seat: '41' };
-	const object = () =>
-		buildTransitObject(seated, ascii('TICKET'), AZTEC, '333') as Record<string, unknown>;
+	const object = () => buildTransitObject(seated, ascii('TICKET'), AZTEC, '333');
 	const localized = (value: unknown) =>
 		(value as { defaultValue: { value: string } }).defaultValue.value;
 
 	it('puts the journey in the leg, where Google renders it as a journey', () => {
-		const leg = object().ticketLeg as Record<string, unknown>;
+		const leg = object().ticketLeg;
 		expect(localized(leg.originName)).toBe('Alpha');
 		expect(localized(leg.destinationName)).toBe('Beta');
 		expect(localized(leg.transitOperatorName)).toBe('Test Railways');
@@ -172,7 +171,7 @@ describe('the transit pass', () => {
 	});
 
 	it('does not repeat in the rows what the leg already shows', () => {
-		const ids = (object().textModulesData as { id: string }[]).map((r) => r.id);
+		const ids = object().textModulesData.map((r) => r.id);
 		for (const covered of ['train', 'departs', 'class', 'coach', 'seat']) {
 			expect(ids).not.toContain(covered);
 		}
@@ -211,7 +210,8 @@ describe('the transit pass', () => {
 
 	it('declares one class for every operator, past draft so an object can exist', () => {
 		const payload = buildPassPayload(seated, ascii('TICKET'), AZTEC, '333', ORIGIN);
-		const [cls] = payload.transitClasses as Record<string, unknown>[];
+		if (!('transitClasses' in payload)) throw new Error('expected a transit pass');
+		const [cls] = payload.transitClasses;
 		expect(cls.id).toBe('333.ticketish_rail_v4');
 		// one class for every operator means this cannot name one, so it names
 		// the app; the operator is on the leg, in the colour and in the rows
@@ -220,14 +220,14 @@ describe('the transit pass', () => {
 		expect(cls.reviewStatus).toBe('UNDER_REVIEW');
 		expect(cls.transitType).toBe('RAIL');
 		expect(cls.logo).toEqual({ sourceUri: { uri: `${ORIGIN}/icons/icon-192.png` } });
-		const [obj] = payload.transitObjects as Record<string, unknown>[];
+		const [obj] = payload.transitObjects;
 		expect(obj.classId).toBe(cls.id);
 	});
 
 	it('falls back to a generic pass with no origin to host a logo', () => {
 		const payload = buildPassPayload(seated, ascii('TICKET'), AZTEC, '333', undefined);
-		expect(payload.genericObjects).toBeDefined();
-		expect(payload.transitObjects).toBeUndefined();
+		expect('genericObjects' in payload).toBe(true);
+		expect('transitObjects' in payload).toBe(false);
 	});
 });
 

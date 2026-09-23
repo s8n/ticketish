@@ -132,14 +132,96 @@ function base64url(bytes: Uint8Array): string {
 
 const jsonPart = (value: unknown) => base64url(encoder.encode(JSON.stringify(value)));
 
+/*
+ * The parts of Google's Wallet object schema this app writes, named and
+ * shaped as the REST reference has them. Only what is filled in here is
+ * listed, so a misspelt field is a type error rather than a field Google
+ * ignores without a word.
+ */
+
 interface TextModule {
 	header: string;
 	body: string;
 	id: string;
 }
 
+/** LocalizedString, in the one language this app writes. */
+interface LocalizedString {
+	defaultValue: { language: string; value: string };
+}
+
+interface Barcode {
+	type: string;
+	value: string;
+	alternateText?: string;
+}
+
+interface TimeInterval {
+	start?: { date: string };
+	end?: { date: string };
+}
+
+export interface GenericObject {
+	id: string;
+	classId: string;
+	state: 'ACTIVE';
+	cardTitle: LocalizedString;
+	header: LocalizedString;
+	subheader: LocalizedString;
+	hexBackgroundColor: string;
+	barcode: Barcode;
+	textModulesData: TextModule[];
+	validTimeInterval?: TimeInterval;
+}
+
+interface TicketSeat {
+	coach?: string;
+	seat?: string;
+	customFareClass?: LocalizedString;
+}
+
+interface TicketLeg {
+	originName: LocalizedString;
+	destinationName: LocalizedString;
+	transitOperatorName: LocalizedString;
+	departureDateTime?: string;
+	arrivalDateTime?: string;
+	carriage?: string;
+	fareName?: LocalizedString;
+	ticketSeat?: TicketSeat;
+}
+
+export interface TransitObject {
+	id: string;
+	classId: string;
+	state: 'ACTIVE';
+	tripType: 'ONE_WAY';
+	hexBackgroundColor: string;
+	barcode: Barcode;
+	ticketLeg: TicketLeg;
+	textModulesData: TextModule[];
+	ticketNumber?: string;
+	passengerNames?: string;
+	passengerType?: 'SINGLE_PASSENGER';
+	ticketRestrictions?: { routeRestrictions: LocalizedString };
+	validTimeInterval?: TimeInterval;
+}
+
+interface TransitClass {
+	id: string;
+	issuerName: string;
+	reviewStatus: 'UNDER_REVIEW';
+	transitType: 'RAIL';
+	logo: { sourceUri: { uri: string | null } };
+}
+
+/** What the save JWT's payload carries: one class and one object. */
+export type PassPayload =
+	| { transitClasses: TransitClass[]; transitObjects: TransitObject[] }
+	| { genericClasses: { id: string }[]; genericObjects: GenericObject[] };
+
 /** Google labels every visible string with a language, even a station name. */
-const text = (value: string) => ({ defaultValue: { language: 'en', value } });
+const text = (value: string): LocalizedString => ({ defaultValue: { language: 'en', value } });
 
 /** One class covers every generic pass: they are all the same shape. */
 const GENERIC_CLASS = 'ticketish_generic';
@@ -227,7 +309,7 @@ function textModules(trip: TripSummary, exclude: Set<string>): TextModule[] {
 }
 
 /** The barcode object, which is the same either way. */
-function barcodeOf(trip: TripSummary, payload: Uint8Array, symbology: BarcodeSymbology) {
+function barcodeOf(trip: TripSummary, payload: Uint8Array, symbology: BarcodeSymbology): Barcode {
 	return {
 		type: BARCODE_TYPES[symbology.format],
 		// one character per byte: ASCII passes through as itself, and a
@@ -237,7 +319,7 @@ function barcodeOf(trip: TripSummary, payload: Uint8Array, symbology: BarcodeSym
 	};
 }
 
-function validTimeInterval(trip: TripSummary): Record<string, unknown> | undefined {
+function validTimeInterval(trip: TripSummary): TimeInterval | undefined {
 	const start = asUtcInstant(trip.validFrom ?? trip.departure, trip.startUtcOffset);
 	const end = asUtcInstant(trip.validUntil ?? trip.arrival, trip.endUtcOffset);
 	if (!start && !end) return undefined;
@@ -273,8 +355,8 @@ export function buildGenericObject(
 	payload: Uint8Array,
 	symbology: BarcodeSymbology,
 	issuerId: string
-): Record<string, unknown> {
-	const object: Record<string, unknown> = {
+): GenericObject {
+	const object: GenericObject = {
 		id: objectId(issuerId, payload),
 		classId: `${issuerId}.${GENERIC_CLASS}`,
 		state: 'ACTIVE',
@@ -306,13 +388,13 @@ export function buildTransitObject(
 	payload: Uint8Array,
 	symbology: BarcodeSymbology,
 	issuerId: string
-): Record<string, unknown> {
-	const seat: Record<string, unknown> = {};
+): TransitObject {
+	const seat: TicketSeat = {};
 	if (trip.coach) seat.coach = trip.coach;
 	if (trip.seat) seat.seat = trip.seat;
 	if (trip.travelClass) seat.customFareClass = text(trip.travelClass);
 
-	const leg: Record<string, unknown> = {
+	const leg: TicketLeg = {
 		originName: text(trip.from!),
 		destinationName: text(trip.to!),
 		transitOperatorName: text(trip.issuer)
@@ -327,7 +409,7 @@ export function buildTransitObject(
 
 	// what the leg already shows does not need a row of its own as well
 	const covered = new Set(['train', 'departs', 'class', 'coach', 'seat']);
-	const object: Record<string, unknown> = {
+	const object: TransitObject = {
 		id: objectId(issuerId, payload),
 		classId: transitClassId(issuerId),
 		state: 'ACTIVE',
@@ -366,7 +448,7 @@ export function buildPassPayload(
 	symbology: BarcodeSymbology,
 	issuerId: string,
 	origin: string | undefined
-): Record<string, unknown> {
+): PassPayload {
 	const logo = transitLogoUri(origin);
 	if (googlePassKind(trip, origin) === 'transit') {
 		return {
