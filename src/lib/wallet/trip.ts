@@ -20,8 +20,8 @@
  * showing a barcode over the wrong stations is worse than no pass, because a
  * ticket inspector reads the pass.
  *
- * Only UIC 918.3 / DOSIPAS, VDV-KA, SwissPass and Renfe are mapped so far. All
- * are read from what the parsers already produce; nothing is re-parsed here.
+ * Every mapping reads what the parsers already produce; nothing is re-parsed
+ * here.
  */
 import type { ParsedTicket, TicketContainer } from '../tickets/types.ts';
 import { loadNovaOrgs } from '../tickets/swisspass/orgs.ts';
@@ -37,6 +37,7 @@ import { uicTrip } from './extract/uic.ts';
 import { vdvTrip } from './extract/vdv.ts';
 import { swissTrip } from './extract/swisspass.ts';
 import { renfeTrip } from './extract/renfe.ts';
+import { rsp6Trip } from './extract/rsp6.ts';
 
 export type { TripField, TripSummary } from './summary.ts';
 
@@ -71,6 +72,10 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 	// pass holding a copy of the symbol is refused however well its fields are
 	// filled in. A pass that fails at the barcode is worse than no pass, and
 	// nothing this app can put in one would change that.
+	rsp6: {
+		needs: ['nlcNames'],
+		map: (c, tables) => rsp6Trip(c.ticket, tables)
+	},
 	bob: null,
 	// Everything below reads fine in the app but has no wallet mapping yet.
 	// Adding one is a matter of writing the extractor above and pointing the
@@ -80,7 +85,6 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 	// twice over: once for the year, once for the hour. The airline's own app
 	// has both and issues the pass that boards the flight.
 	bcbp: null,
-	rsp6: null,
 	ssb: null,
 	ssb1: null,
 	tcdd: null,

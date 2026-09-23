@@ -93,6 +93,8 @@ export interface Rsp6Fields {
 	startDay: number;
 	startMinutes: number;
 	specVersion: number;
+	/** 0 not set, 1 valid after, 2 specific departure, 3 suggested departure. */
+	departTimeFlag?: number;
 }
 
 /** Pack the 108 byte ticket record the parser reads. */
@@ -119,7 +121,7 @@ export function rsp6TicketBody(f: Rsp6Fields): Uint8Array {
 	w.int(f.routeCode, 17);
 	w.int(f.startDay, 14);
 	w.int(f.startMinutes, 11);
-	w.int(0, 2); // depart time flag
+	w.int(f.departTimeFlag ?? 0, 2); // depart time flag
 	w.int(0, 17); // passenger id
 	w.str6('', 12); // parent reference, bits 255..327
 	w.int(0, 2); // gender

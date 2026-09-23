@@ -45,7 +45,7 @@ describe('which formats are exported at all', () => {
 	it('stays out of the way of the formats that do not', () => {
 		// a pass built from a format nobody mapped would be a guess, and the
 		// guess is read by a ticket inspector
-		for (const kind of ['rsp6', 'mav', 'elb', 'text', 'unknown']) {
+		for (const kind of ['bob', 'bcbp', 'nsb', 'mav', 'text', 'unknown']) {
 			expect(hasMapping({ kind } as never)).toBe(false);
 		}
 	});

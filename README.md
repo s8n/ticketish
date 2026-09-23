@@ -14,10 +14,10 @@ so many fields wrong.
 - **Diverse input options**: images, PDFs (rendered with pdf.js and scanned),
   Apple Wallet `.pkpass` files, the live camera, raw payload files.
 - **Wallet passes**: tickets in the formats that have an intentional mapping
-  (UIC 918.3 / 918.9, VDV-KA, SwissPass and Renfe so far) can be written out as an Apple or
-  Google wallet pass, built and signed in the browser with credentials you
-  supply, none are supplied by default (see "What's not here" below).
-  [docs/wallet.md](docs/wallet.md) has details on how to obtain relevant keys.
+  can be written out as an Apple or Google wallet pass, built and signed in
+  the browser with credentials you supply, none are supplied by default (see
+  "What's not here" below). [docs/wallet.md](docs/wallet.md) lists the formats
+  and has details on how to obtain relevant keys.
 - **Deciphered DB Zugbindung**: the train binding and via fields in DB tickets
   get visualized nicely, so you know what trains you can take.
 - **Add to calendar**: an `.ics` that you can add to your calendar for
