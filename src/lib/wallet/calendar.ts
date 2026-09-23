@@ -20,14 +20,8 @@
  * adding the same ticket twice updates one entry rather than making two.
  */
 import { isoDate, plusDays } from '../tickets/dates.ts';
-import {
-	localParts,
-	tripTitle,
-	utcOffsetLabel,
-	APP_NAME,
-	UNOFFICIAL_NOTE,
-	type TripSummary
-} from './trip.ts';
+import { tripTitle, APP_NAME, UNOFFICIAL_NOTE, type TripSummary } from './trip.ts';
+import { localParts, utcOffsetLabel } from './time.ts';
 
 /**
  * A fixed-offset time zone for the calendar to hang the times on.

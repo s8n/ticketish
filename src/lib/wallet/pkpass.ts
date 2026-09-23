@@ -31,13 +31,12 @@ import { passColors } from './colors.ts';
 import type { SigningIdentity } from './identity.ts';
 import {
 	APP_NAME,
-	asUtcInstant,
-	localParts,
 	tripTitle,
 	UNOFFICIAL_LABEL,
 	UNOFFICIAL_NOTE,
 	type TripSummary
 } from './trip.ts';
+import { asUtcInstant, localParts } from './time.ts';
 
 /** zxing format name to the constant Apple uses for the same symbology. */
 const BARCODE_FORMATS: Record<string, string> = {

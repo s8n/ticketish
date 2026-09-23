@@ -16,16 +16,13 @@ import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { makeTicket } from '../src/lib/tickets/parse.ts';
 import { parseVdv } from '../src/lib/tickets/vdv/vdv.ts';
+import { hasMapping, previewFields, tripFor, tripTitle } from '../src/lib/wallet/trip.ts';
 import {
-	hasMapping,
-	previewFields,
-	tripFor,
-	tripTitle,
 	asUtcInstant,
 	fcbUtcOffset,
 	localParts,
 	utcOffsetLabel
-} from '../src/lib/wallet/trip.ts';
+} from '../src/lib/wallet/time.ts';
 import type { ParsedTicket } from '../src/lib/tickets/types.ts';
 import { concat, tlv } from './helpers/build.ts';
 import { ascii, renfeAztec, renfeBlockB } from './helpers/renfe.ts';

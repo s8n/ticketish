@@ -47,14 +47,12 @@ import type { BarcodeSymbology } from '../tickets/types.ts';
 import { importPrivateKey } from './identity.ts';
 import {
 	APP_NAME,
-	localParts,
-	asUtcInstant,
 	tripTitle,
-	utcOffsetLabel,
 	UNOFFICIAL_LABEL,
 	UNOFFICIAL_NOTE,
 	type TripSummary
 } from './trip.ts';
+import { asUtcInstant, localParts, utcOffsetLabel } from './time.ts';
 import { latin1Message, serialForPayload } from './pkpass.ts';
 import { passColors } from './colors.ts';
 
