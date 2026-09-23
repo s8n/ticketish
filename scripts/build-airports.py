@@ -71,17 +71,20 @@ def main() -> int:
         return 1
 
     airports: dict[str, list[str]] = {}
-    clashes = 0
+    clashed: set[str] = set()
     for row in csv.DictReader(io.StringIO(body)):
         code = (row.get("iata_code") or "").strip().upper()
         name = (row.get("name") or "").strip()
         if len(code) != 3 or not code.isalpha() or not name:
             continue
+        if code in clashed:
+            continue
         if code in airports:
             # Two airports claiming one code means the catalogue disagrees with
-            # itself, and neither answer can be trusted over the other.
-            clashes += 1
-            airports.pop(code, None)
+            # itself, and neither answer can be trusted over the other. The
+            # code stays out however many more rows claim it.
+            clashed.add(code)
+            airports.pop(code)
             continue
         airports[code] = [tidy(name), (row.get("municipality") or "").strip(),
                           (row.get("iso_country") or "").strip().upper()]
@@ -101,8 +104,8 @@ def main() -> int:
         encoding="utf-8",
     )
     print(f"wrote {OUT.relative_to(REPO)} with {len(ordered)} airports")
-    if clashes:
-        print(f"dropped {clashes} codes the catalogue gives to more than one airport")
+    if clashed:
+        print(f"dropped {len(clashed)} codes the catalogue gives to more than one airport")
     return 0
 
 
