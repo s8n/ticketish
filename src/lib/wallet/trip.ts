@@ -378,8 +378,8 @@ function vdvTrip(barcode: VdvBarcode, tables: Tables): TripSummary | null {
 		? [passengerElement.forename, passengerElement.surname].filter(Boolean).join(' ')
 		: undefined;
 
+	// the ticket number goes in ticketId, which every writer already shows
 	const details: TripField[] = [
-		{ label: 'Ticket number', value: String(ticket.ticketId) },
 		{ label: 'Issuing organisation', value: String(ticket.ticketOrgId) }
 	];
 	if (passengerElement?.abbreviated) {

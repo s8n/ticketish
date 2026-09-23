@@ -151,6 +151,12 @@ describe('a VDV ticket', () => {
 		expect(trip.ticketId).toBe('12345678');
 	});
 
+	it('shows each field once', async () => {
+		const labels = previewFields((await tripFor(ticket))!).map((f) => f.label);
+		expect(labels.filter((l) => l === 'Ticket number')).toHaveLength(1);
+		expect(new Set(labels).size).toBe(labels.length);
+	});
+
 	it('does not invent a route, because the barcode has none', async () => {
 		const trip = (await tripFor(ticket))!;
 		expect(trip.from).toBeUndefined();
