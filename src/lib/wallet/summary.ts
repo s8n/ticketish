@@ -124,3 +124,8 @@ export function ricsOperator(issuerRics: number | string | null): OperatorCode |
 		? { scheme: 'rics', code }
 		: undefined;
 }
+
+/** A name from its parts, whichever the format filled in, or undefined. */
+export function fullName(...parts: (string | null | undefined)[]): string | undefined {
+	return parts.filter(Boolean).join(' ') || undefined;
+}

@@ -5,7 +5,7 @@
 import type { VdvBarcode, VdvTicket } from '../../tickets/vdv/vdv.ts';
 import { vdvOrgName } from '../../tickets/vdv/orgs.ts';
 import { vdvProductName } from '../../tickets/vdv/products.ts';
-import type { TripField, TripSummary, Tables } from '../summary.ts';
+import { fullName, type TripField, type TripSummary, type Tables } from '../summary.ts';
 
 /**
  * VDV tickets are area passes: a product valid in a region for a period, with
@@ -24,9 +24,7 @@ export function vdvTrip(barcode: VdvBarcode, tables: Tables): TripSummary | null
 		`Product ${ticket.productNumber}`;
 
 	const passengerElement = ticket.productData.find((e) => e.passenger)?.passenger;
-	const passenger = passengerElement
-		? [passengerElement.forename, passengerElement.surname].filter(Boolean).join(' ')
-		: undefined;
+	const passenger = fullName(passengerElement?.forename, passengerElement?.surname);
 
 	// the ticket number goes in ticketId, which every writer already shows
 	const details: TripField[] = [

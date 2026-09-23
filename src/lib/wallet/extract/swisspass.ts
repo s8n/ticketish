@@ -7,7 +7,7 @@ import { novaOrgLabel } from '../../tickets/swisspass/orgs.ts';
 import { localInZone } from '../../tickets/format.ts';
 import { ricsName } from '../../tickets/uic/rics.ts';
 import type { OperatorCode } from '../colors.ts';
-import { type TripField, type TripSummary, type Tables, travelClass, ricsOperator } from '../summary.ts';
+import { type TripField, type TripSummary, type Tables, travelClass, ricsOperator, fullName } from '../summary.ts';
 
 /**
  * NOVA timestamps are Swiss local time, which is the one zone the format
@@ -58,8 +58,7 @@ export function swissTrip(ticket: SwissPassTicket, tables: Tables): TripSummary 
 	// Nothing to put on a pass but a barcode: better to offer no pass at all.
 	if (!from && !product && !validFrom) return null;
 
-	const passenger =
-		[data.traveler?.forename, data.traveler?.surname].filter(Boolean).join(' ') || undefined;
+	const passenger = fullName(data.traveler?.forename, data.traveler?.surname);
 	const leg = data.transport?.[0];
 	const zones = (tariff.zones ?? []).filter((z) => z.zoneId !== undefined);
 

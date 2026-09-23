@@ -15,7 +15,7 @@ import {
 } from '../../tickets/model.ts';
 import { ricsName } from '../../tickets/uic/rics.ts';
 import { uicStationName, isUicCodeTable } from '../../tickets/stations.ts';
-import { type TripField, type TripSummary, type Tables, travelClass, ricsOperator } from '../summary.ts';
+import { type TripField, type TripSummary, type Tables, travelClass, ricsOperator, fullName } from '../summary.ts';
 import { fcbUtcOffset } from '../time.ts';
 
 /** FCB prices are minor units, with the fraction digits set on the issuer. */
@@ -26,11 +26,8 @@ function money(amount: unknown, currency: string | undefined, fract: unknown): s
 	return currency ? `${scaled} ${currency}` : scaled;
 }
 
-function travellerName(t: Traveler | undefined): string | undefined {
-	if (!t) return undefined;
-	const parts = [t.firstName, t.secondName, t.lastName].filter(Boolean);
-	return parts.length ? parts.join(' ') : undefined;
-}
+const travellerName = (t: Traveler | undefined) =>
+	t ? fullName(t.firstName, t.secondName, t.lastName) : undefined;
 
 const record = (records: ParsedRecord[], kind: string): ParsedRecord | undefined =>
 	records.find((r) => r.kind === kind && !r.error);
@@ -136,10 +133,8 @@ function fromDbBl(bl: DbBlData): Partial<TripSummary> {
 	if (bl.route) out.via = bl.route;
 	if (bl.validityStart) out.validFrom = bl.validityStart;
 	if (bl.validityEnd) out.validUntil = bl.validityEnd;
-	if (bl.serviceClass) out.travelClass = bl.serviceClass === 'first' ? '1st class' : '2nd class';
-	const name =
-		bl.travellerFullName ??
-		[bl.travellerForename, bl.travellerSurname].filter(Boolean).join(' ');
+	if (bl.serviceClass) out.travelClass = travelClass(bl.serviceClass);
+	const name = bl.travellerFullName ?? fullName(bl.travellerForename, bl.travellerSurname);
 	if (name) out.passenger = name;
 	return out;
 }
