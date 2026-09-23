@@ -7,7 +7,7 @@
 	import RawInput from '$lib/components/RawInput.svelte';
 	import TicketCard from '$lib/components/TicketCard.svelte';
 	import { store } from '../lib/state/tickets.svelte.ts';
-	import { makeTicket } from '../lib/tickets/parse.ts';
+	import { errorMessage, makeTicket } from '../lib/tickets/parse.ts';
 	import { pickTagline } from '../lib/taglines.ts';
 	import { version } from '$app/environment';
 	import { updates } from '../lib/state/updates.svelte.ts';
@@ -30,10 +30,14 @@
 
 	async function loadSamples(files?: { file: string; name: string }[]) {
 		for (const s of files ?? SAMPLES) {
-			const res = await fetch(`/samples/${s.file}`);
-			if (!res.ok) continue;
-			const bytes = new Uint8Array(await res.arrayBuffer());
-			store.add(makeTicket(bytes, { kind: 'raw', fileName: s.name }));
+			try {
+				const res = await fetch(`/samples/${s.file}`);
+				if (!res.ok) continue;
+				const bytes = new Uint8Array(await res.arrayBuffer());
+				store.add(makeTicket(bytes, { kind: 'raw', fileName: s.name }));
+			} catch (e) {
+				store.addErrors([`${s.name}: ${errorMessage(e)}`]);
+			}
 		}
 	}
 

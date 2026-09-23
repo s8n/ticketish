@@ -4,7 +4,7 @@
 
 	import { onMount } from 'svelte';
 	import { scanImageData, BINARIZERS } from '../input/barcode.ts';
-	import { makeTicket } from '../tickets/parse.ts';
+	import { errorMessage, makeTicket } from '../tickets/parse.ts';
 	import { store } from '../state/tickets.svelte.ts';
 
 	let { onclose }: { onclose: () => void } = $props();
@@ -32,7 +32,15 @@
 		const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		const hits = await scanImageData(image, BINARIZERS[binarizerIndex % BINARIZERS.length]);
 		if (!hits.length) return false;
-		for (const hit of hits) store.add(makeTicket(hit.bytes, { kind: 'camera' }, hit));
+		// A barcode that scans but will not decode is still found: scanning it
+		// again gives the same bytes, so say why and stop rather than retrying.
+		for (const hit of hits) {
+			try {
+				store.add(makeTicket(hit.bytes, { kind: 'camera' }, hit));
+			} catch (e) {
+				store.addErrors([`Scanned a barcode that could not be decoded: ${errorMessage(e)}`]);
+			}
+		}
 		return true;
 	}
 

@@ -142,6 +142,16 @@ function tryText(data: Uint8Array): string | null {
 
 let counter = 0;
 
+/** A thrown value as a sentence for the error list. */
+export function errorMessage(e: unknown): string {
+	return e instanceof Error ? e.message : String(e);
+}
+
+/**
+ * Throws where a certain detector matched and its parser failed, since that
+ * payload is broken rather than unrecognised. Every caller reports that to
+ * the reader rather than letting it escape.
+ */
 export function makeTicket(
 	data: Uint8Array,
 	source: TicketSource,

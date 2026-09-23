@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT OR EUPL-1.2
 
 /** File ingestion: sniff type, extract barcode payload(s), parse tickets. */
-import { makeTicket } from '../tickets/parse.ts';
+import { errorMessage, makeTicket } from '../tickets/parse.ts';
 import type { ParsedTicket, TicketSource } from '../tickets/types.ts';
 import { scanBlob, type BarcodeHit } from './barcode.ts';
 import { readPkpass } from './pkpass.ts';
@@ -29,8 +29,16 @@ export async function ingestFile(file: File): Promise<IngestResult> {
 	const errors: string[] = [];
 	const tickets: ParsedTicket[] = [];
 
+	// one broken barcode is reported on its own, and the rest of a PDF or
+	// pass with several still gets read
 	const add = (hits: BarcodeHit[], source: TicketSource) => {
-		for (const hit of hits) tickets.push(makeTicket(hit.bytes, source, hit));
+		for (const hit of hits) {
+			try {
+				tickets.push(makeTicket(hit.bytes, source, hit));
+			} catch (e) {
+				errors.push(`${file.name}: ${errorMessage(e)}`);
+			}
+		}
 	};
 
 	try {
@@ -52,7 +60,7 @@ export async function ingestFile(file: File): Promise<IngestResult> {
 			tickets.push(makeTicket(bytes, { kind: 'raw', fileName: file.name }));
 		}
 	} catch (e) {
-		errors.push(`${file.name}: ${e instanceof Error ? e.message : String(e)}`);
+		errors.push(`${file.name}: ${errorMessage(e)}`);
 	}
 
 	return { tickets, errors };

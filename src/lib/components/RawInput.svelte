@@ -11,7 +11,7 @@
 	 * is the difference between a decode and a coincidence.
 	 */
 	import { readPasted, type Reading } from '../input/pasted.ts';
-	import { makeTicket } from '../tickets/parse.ts';
+	import { errorMessage, makeTicket } from '../tickets/parse.ts';
 	import { store } from '../state/tickets.svelte.ts';
 
 	let { onclose }: { onclose: () => void } = $props();
@@ -32,9 +32,15 @@
 			note = 'Nothing to read yet.';
 			return;
 		}
-		store.add(
-			makeTicket(payload.bytes, { kind: 'pasted', fileName: READINGS[payload.reading] })
-		);
+		try {
+			store.add(
+				makeTicket(payload.bytes, { kind: 'pasted', fileName: READINGS[payload.reading] })
+			);
+		} catch (e) {
+			// the text stays in the box, so it can be corrected and read again
+			note = `Read ${READINGS[payload.reading]}, but it could not be decoded: ${errorMessage(e)}`;
+			return;
+		}
 		note = payload.kind
 			? `Read ${payload.bytes.length} bytes ${READINGS[payload.reading]}.`
 			: `No format recognised this, so it is shown ${READINGS[payload.reading]} as it stands.`;
