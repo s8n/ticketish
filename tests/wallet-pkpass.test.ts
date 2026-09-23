@@ -21,10 +21,10 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createVerify, X509Certificate } from 'node:crypto';
+import { createPublicKey, createVerify, generateKeyPairSync, X509Certificate } from 'node:crypto';
 import { unzipSync, zipSync, strFromU8, strToU8 } from 'fflate';
 import { children, oidString, readNode, TAG, tlv } from '../src/lib/wallet/der.ts';
-import { identityProblem, loadIdentity } from '../src/lib/wallet/identity.ts';
+import { identityProblem, importPrivateKey, loadIdentity } from '../src/lib/wallet/identity.ts';
 import {
 	barcodeProblem,
 	buildPkpass,
@@ -118,6 +118,20 @@ describe('signing identity', () => {
 		const cert = testCertificate();
 		const encrypted = '-----BEGIN ENCRYPTED PRIVATE KEY-----\nAAAA\n-----END ENCRYPTED PRIVATE KEY-----';
 		await expect(loadIdentity(cert.certificatePem, encrypted)).rejects.toThrow(/passphrase/);
+	});
+
+	it('reads an unencrypted key in the older PKCS#1 form', async () => {
+		const { publicKey, privateKey } = generateKeyPairSync('rsa', {
+			modulusLength: 1024,
+			privateKeyEncoding: { type: 'pkcs1', format: 'pem' },
+			publicKeyEncoding: { type: 'spki', format: 'der' }
+		});
+		expect(privateKey).toMatch(/BEGIN RSA PRIVATE KEY/);
+		const { modulus } = await importPrivateKey(privateKey);
+		// the modulus it reports is the key's own, so the PKCS#8 wrapping held
+		const n = createPublicKey({ key: publicKey, format: 'der', type: 'spki' }).export({ format: 'jwk' }).n!;
+		const unpadded = modulus[0] === 0 ? modulus.subarray(1) : modulus;
+		expect(Buffer.from(unpadded).equals(Buffer.from(n, 'base64url'))).toBe(true);
 	});
 
 	it('names it for the older PKCS#1 form too, which says so in a header', async () => {

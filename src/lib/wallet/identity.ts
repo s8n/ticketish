@@ -19,12 +19,12 @@
  * disagree.
  */
 import {
+	algorithmIdentifier,
 	children,
 	derString,
 	derTime,
-	nullValue,
+	integer,
 	octetString,
-	oid,
 	oidString,
 	readNode,
 	sequence,
@@ -153,11 +153,7 @@ function rsaModulus(spki: DerNode): Uint8Array {
  * cheaper than telling someone their key is the wrong shape of the same key.
  */
 function pkcs1ToPkcs8(pkcs1: Uint8Array): Uint8Array {
-	return sequence(
-		new Uint8Array([TAG.integer, 0x01, 0x00]),
-		sequence(oid('1.2.840.113549.1.1.1'), nullValue()),
-		octetString(pkcs1)
-	);
+	return sequence(integer(0), algorithmIdentifier('1.2.840.113549.1.1.1'), octetString(pkcs1));
 }
 
 const KEY_ALGORITHM = { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' } as const;

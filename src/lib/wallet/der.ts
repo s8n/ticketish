@@ -105,6 +105,9 @@ export function integer(value: number | bigint): Uint8Array {
 	return tlv(TAG.integer, new Uint8Array(bytes));
 }
 
+/** AlgorithmIdentifier as SEQUENCE { OID, NULL }, the shape RSA and SHA-256 take. */
+export const algorithmIdentifier = (id: string) => sequence(oid(id), nullValue());
+
 /** An integer whose content bytes are already known, as a certificate's is. */
 export const integerBytes = (content: Uint8Array) => tlv(TAG.integer, content);
 

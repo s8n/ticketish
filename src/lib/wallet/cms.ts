@@ -23,12 +23,12 @@
  * one sorted list rather than assembled twice.
  */
 import {
+	algorithmIdentifier,
 	concat,
 	explicit,
 	implicitConstructed,
 	integer,
 	integerBytes,
-	nullValue,
 	octetString,
 	oid,
 	sequence,
@@ -48,8 +48,7 @@ const OID = {
 	signingTime: '1.2.840.113549.1.9.5'
 } as const;
 
-/** SEQUENCE { OID, NULL }, the shape both algorithms are named with here. */
-const algorithm = (id: string) => sequence(oid(id), nullValue());
+const algorithm = algorithmIdentifier;
 
 /** Attribute ::= SEQUENCE { attrType OID, attrValues SET OF ANY } */
 const attribute = (type: string, value: Uint8Array) => sequence(oid(type), tlv(TAG.set, value));
