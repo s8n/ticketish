@@ -187,6 +187,33 @@ describe('pass structure', () => {
 		expect(period.expirationDate).toBe('2026-09-30T23:59:00Z');
 	});
 
+	it('dates each end of the validity by its own offset', async () => {
+		// from a winter day at UTC+1 to a summer midnight at UTC+2
+		const { identity: id } = await identity();
+		const across: TripSummary = {
+			...periodTrip,
+			validFrom: '2026-03-01T00:00',
+			validUntil: '2026-06-01T00:00',
+			startUtcOffset: 60,
+			endUtcOffset: 120
+		};
+		const pass = JSON.parse(
+			strFromU8(
+				files(
+					await buildPkpass({
+						trip: across,
+						payload: binaryPayload(),
+						symbology: AZTEC,
+						identity: id,
+						assets
+					})
+				)['pass.json']
+			)
+		);
+		expect(pass.relevantDate).toBe('2026-02-28T23:00:00Z');
+		expect(pass.expirationDate).toBe('2026-05-31T22:00:00Z');
+	});
+
 	it('takes the operator colour, and the app palette without one', async () => {
 		const { identity: id } = await identity();
 		const colored = { ...trip, operator: { scheme: 'rics' as const, code: 1080 } };

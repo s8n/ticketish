@@ -9,12 +9,12 @@
  * and it is the one export that survives having no wallet, no developer
  * account and no phone in particular.
  *
- * Times are written as RFC 5545 floating date-times: no Z, no TZID. That is
- * not a shortcut, it is the honest encoding of what these formats carry.
- * None of them says which zone its wall clock is in, and a floating time is
- * defined to mean the same wall clock wherever it is read, which is exactly
- * the claim the ticket makes. Pinning it to UTC would show a German
- * departure an hour or two out to the person holding it.
+ * Times are written as RFC 5545 floating date-times, with no Z and no TZID,
+ * unless the ticket says which zone its wall clock is in. Most formats do not,
+ * and a floating time is defined to mean the same wall clock wherever it is
+ * read, which is exactly the claim the ticket makes. Pinning it to UTC would
+ * show a German departure an hour or two out to the person holding it. FCB
+ * and SwissPass do carry an offset, and those times get a zone for each end.
  *
  * The UID is derived from the payload, the way the pass serial number is, so
  * adding the same ticket twice updates one entry rather than making two.
@@ -151,11 +151,16 @@ export function buildIcs({ trip, uid, now = new Date() }: IcsInput): string {
 	const start = stamp(from)!;
 	const end = stamp(to);
 
-	// FCB is the one format that says which zone its clock is in, so a ticket
-	// that says it gets a real time zone and one that does not stays floating,
-	// which is defined as the same wall clock wherever it is read.
-	const zone = trip.utcOffset === undefined ? null : timeZone(trip.utcOffset);
-	const at = zone ? `;TZID=${zone.id}` : '';
+	// A ticket that says which zone its clock is in gets a real time zone, one
+	// for each end, and one that does not stays floating, which is defined as
+	// the same wall clock wherever it is read.
+	const startZone = trip.startUtcOffset === undefined ? null : timeZone(trip.startUtcOffset);
+	const endZone = trip.endUtcOffset === undefined ? startZone : timeZone(trip.endUtcOffset);
+	const zones = [startZone, endZone].filter(
+		(z, i, all): z is NonNullable<typeof z> => !!z && all.findIndex((y) => y?.id === z.id) === i
+	);
+	const startAt = startZone ? `;TZID=${startZone.id}` : '';
+	const endAt = endZone ? `;TZID=${endZone.id}` : '';
 
 	const lines: string[] = [
 		'BEGIN:VCALENDAR',
@@ -163,18 +168,18 @@ export function buildIcs({ trip, uid, now = new Date() }: IcsInput): string {
 		`PRODID:-//${APP_NAME}//rail ticket//EN`,
 		'CALSCALE:GREGORIAN',
 		'METHOD:PUBLISH',
-		...(zone?.lines ?? []),
+		...zones.flatMap((z) => z.lines),
 		'BEGIN:VEVENT',
 		`UID:${escape(uid)}`,
 		`DTSTAMP:${utcStamp(now)}`
 	];
 
 	if (start.floating) {
-		lines.push(`DTSTART${at}:${start.floating}`);
+		lines.push(`DTSTART${startAt}:${start.floating}`);
 		// an end before the start is not an event, so it is left out rather
 		// than written backwards
 		if (end?.floating && end.floating >= start.floating) {
-			lines.push(`DTEND${at}:${end.floating}`);
+			lines.push(`DTEND${endAt}:${end.floating}`);
 		}
 	} else {
 		lines.push(`DTSTART;VALUE=DATE:${start.date}`);

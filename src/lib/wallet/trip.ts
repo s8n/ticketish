@@ -71,11 +71,18 @@ export interface TripSummary {
 	 */
 	operator?: OperatorCode;
 	/**
-	 * Minutes east of UTC for the times below, where the format says. FCB
-	 * carries it and nothing else here does, so it is usually absent and the
-	 * times are then a wall clock with no zone attached to it.
+	 * Minutes east of UTC for the departure and the start of validity, where
+	 * the format says. FCB and SwissPass carry it and nothing else here does,
+	 * so it is usually absent and the times are then a wall clock with no zone
+	 * attached to it.
 	 */
-	utcOffset?: number;
+	startUtcOffset?: number;
+	/**
+	 * The same for the arrival and the end of validity. It is its own field
+	 * because the two ends can fall either side of a change to or from summer
+	 * time, or in different zones.
+	 */
+	endUtcOffset?: number;
 	product?: string;
 	travelClass?: string;
 	passenger?: string;
@@ -197,9 +204,15 @@ function fromFcb(flex: FlexData, tables: Tables): Partial<TripSummary> {
 	const doc = leadDocument(docs);
 	const out: Partial<TripSummary> = {};
 
-	out.utcOffset = fcbUtcOffset(
-		(doc?.data.departureUTCOffset ?? doc?.data.validFromUTCOffset) as number | undefined
-	);
+	// FCB leaves out the end's offset where it is the same as the start's
+	const startOffset = (doc?.data.departureUTCOffset ?? doc?.data.validFromUTCOffset) as
+		| number
+		| undefined;
+	const endOffset = (doc?.data.arrivalUTCOffset ?? doc?.data.validUntilUTCOffset) as
+		| number
+		| undefined;
+	out.startUtcOffset = fcbUtcOffset(startOffset);
+	out.endUtcOffset = fcbUtcOffset(endOffset ?? startOffset);
 	out.passenger = travellerName(ticket.travelerDetail?.traveler?.[0]);
 	if (issuing.issuerPNR) out.reference = issuing.issuerPNR;
 	if (issuing.issuerName) out.issuer = issuing.issuerName;
@@ -530,7 +543,8 @@ function swissTrip(ticket: SwissPassTicket, tables: Tables): TripSummary | null 
 			ricsName(ticket.keyMeta?.rics, tables.issuerNames) ??
 			'SwissPass',
 		operator: novaOperator(data, ticket.keyMeta?.rics),
-		utcOffset: validFrom?.utcOffset,
+		startUtcOffset: validFrom?.utcOffset,
+		endUtcOffset: validUntil?.utcOffset,
 		product,
 		travelClass: travelClass(tariff.travelClass),
 		passenger,

@@ -226,7 +226,8 @@ describe('a SwissPass ticket', () => {
 		// 03:00 UTC on a July day is 05:00 in Zurich, at UTC+2
 		expect(trip.validFrom).toBe('2026-07-03T05:00');
 		expect(trip.validUntil).toBe('2026-07-03T23:59');
-		expect(trip.utcOffset).toBe(120);
+		expect(trip.startUtcOffset).toBe(120);
+		expect(trip.endUtcOffset).toBe(120);
 		// a validity window is not a departure, so the pass claims no train time
 		expect(trip.departure).toBeUndefined();
 	});
@@ -240,7 +241,21 @@ describe('a SwissPass ticket', () => {
 		];
 		const trip = (await tripFor(nova({ tariff: winter })))!;
 		expect(trip.validFrom).toBe('2026-01-09T07:30');
-		expect(trip.utcOffset).toBe(60);
+		expect(trip.startUtcOffset).toBe(60);
+	});
+
+	it('gives each end of a window across a clock change its own offset', async () => {
+		// valid from a March day in winter time until a June day in summer time
+		const across = [
+			msg(1, uint(1, 1), str(2, 'Halbtax')),
+			time(8, Date.UTC(2026, 2, 1, 7, 0)),
+			time(9, Date.UTC(2026, 4, 31, 22, 0))
+		];
+		const trip = (await tripFor(nova({ tariff: across })))!;
+		expect(trip.validFrom).toBe('2026-03-01T08:00');
+		expect(trip.validUntil).toBe('2026-06-01T00:00');
+		expect(trip.startUtcOffset).toBe(60);
+		expect(trip.endUtcOffset).toBe(120);
 	});
 
 	it('takes the seat off the first leg and names the rest on the back', async () => {
@@ -477,6 +492,9 @@ describe('reading the local times these formats carry', () => {
 		const ticket = muster('muster-918-9-fv-supersparpreis.bin');
 		if (!ticket) return;
 		// a German departure in April: summer time, UTC+2
-		expect((await tripFor(ticket))!.utcOffset).toBe(120);
+		const trip = (await tripFor(ticket))!;
+		expect(trip.startUtcOffset).toBe(120);
+		// FCB leaves the end's offset out where it is the same
+		expect(trip.endUtcOffset).toBe(120);
 	});
 });

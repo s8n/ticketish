@@ -263,8 +263,8 @@ function barcodeOf(trip: TripSummary, payload: Uint8Array, symbology: BarcodeSym
 }
 
 function validTimeInterval(trip: TripSummary): Record<string, unknown> | undefined {
-	const start = asUtcInstant(trip.validFrom ?? trip.departure, trip.utcOffset);
-	const end = asUtcInstant(trip.validUntil ?? trip.arrival, trip.utcOffset);
+	const start = asUtcInstant(trip.validFrom ?? trip.departure, trip.startUtcOffset);
+	const end = asUtcInstant(trip.validUntil ?? trip.arrival, trip.endUtcOffset);
 	if (!start && !end) return undefined;
 	return {
 		...(start ? { start: { date: start } } : {}),
@@ -335,8 +335,8 @@ export function buildTransitObject(
 		destinationName: text(trip.to!),
 		transitOperatorName: text(trip.issuer)
 	};
-	const departure = isoLocal(trip.departure, trip.utcOffset);
-	const arrival = isoLocal(trip.arrival, trip.utcOffset);
+	const departure = isoLocal(trip.departure, trip.startUtcOffset);
+	const arrival = isoLocal(trip.arrival, trip.endUtcOffset);
 	if (departure) leg.departureDateTime = departure;
 	if (arrival) leg.arrivalDateTime = arrival;
 	if (trip.train) leg.carriage = trip.train;

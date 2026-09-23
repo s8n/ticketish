@@ -156,7 +156,8 @@ describe('the file itself', () => {
 });
 
 describe('the time zone, where the ticket carries one', () => {
-	const zoned = (offset: number) => ics({ ...journey, utcOffset: offset });
+	const zoned = (offset: number) =>
+		ics({ ...journey, startUtcOffset: offset, endUtcOffset: offset });
 
 	it('hangs the times on a zone and defines it in the file', () => {
 		const text = zoned(120);
@@ -187,6 +188,18 @@ describe('the time zone, where the ticket carries one', () => {
 		// to move it
 		expect(zoned(120)).toContain(':20260901T081500');
 		expect(zoned(-300)).toContain(':20260901T081500');
+	});
+
+	it('gives each end its own zone when the clock changes between them', () => {
+		const text = ics({ ...journey, startUtcOffset: 60, endUtcOffset: 120 });
+		expect(lines(text)).toContain('DTSTART;TZID=Etc/GMT-1:20260901T081500');
+		expect(lines(text)).toContain('DTEND;TZID=Etc/GMT-2:20260901T114200');
+		expect(lines(text)).toContain('TZID:Etc/GMT-1');
+		expect(lines(text)).toContain('TZID:Etc/GMT-2');
+	});
+
+	it('defines a zone once when both ends share it', () => {
+		expect(zoned(120).match(/BEGIN:VTIMEZONE/g)).toHaveLength(1);
 	});
 });
 
