@@ -16,7 +16,7 @@ import {
 } from '../src/lib/tickets/swisspass/orgs.ts';
 import { concat } from './helpers/build.ts';
 import orgsJson from '../src/lib/tickets/swisspass/orgs.json' with { type: 'json' };
-import { msg, signedTicket, str, time, uint } from './helpers/swisspass.ts';
+import { bytes, field, msg, signedTicket, str, time, uint } from './helpers/swisspass.ts';
 
 const VALID_FROM = Date.UTC(2024, 4, 19, 8, 0);
 const VALID_UNTIL = Date.UTC(2024, 4, 19, 12, 0);
@@ -162,5 +162,19 @@ describe('SwissPass tickets', () => {
 
 	it('does not claim unrelated binary data', () => {
 		expect(() => parseSwissPass(new Uint8Array([1, 2, 3, 4, 5]))).toThrow();
+	});
+
+	it('refuses a fixed-width field cut short rather than reading what is there', () => {
+		// field 2 as fixed64 with three of its eight bytes
+		const truncated = concat(field(2, 1), new Uint8Array([1, 2, 3]));
+		expect(() => parseSwissPass(truncated)).toThrow(/truncated fixed-width/);
+	});
+
+	it('refuses a flag written as anything but a varint', () => {
+		// the specimen flag in the extra block, sent as an empty byte string
+		const extra = msg(7, bytes(3, new Uint8Array()));
+		expect(() => parseSwissPass(signedTicket(concat(uint(1, 1), extra), '1185'))).toThrow(
+			/wire type mismatch/
+		);
 	});
 });

@@ -49,12 +49,12 @@ function readFields(d: Uint8Array): WireField[] {
 			if (end > d.length) throw new Error('truncated length-delimited field');
 			fields.push({ num, wire, value: d.subarray(p, end) });
 			pos = end;
-		} else if (wire === 1) {
-			fields.push({ num, wire, value: d.subarray(pos, pos + 8) });
-			pos += 8;
-		} else if (wire === 5) {
-			fields.push({ num, wire, value: d.subarray(pos, pos + 4) });
-			pos += 4;
+		} else if (wire === 1 || wire === 5) {
+			// fixed64 and fixed32: eight or four bytes, which have to be there
+			const width = wire === 1 ? 8 : 4;
+			if (pos + width > d.length) throw new Error('truncated fixed-width field');
+			fields.push({ num, wire, value: d.subarray(pos, pos + width) });
+			pos += width;
 		} else {
 			throw new Error(`unsupported wire type ${wire}`);
 		}
@@ -204,6 +204,7 @@ function decodeMessage(data: Uint8Array, schema: Schema): Record<string, unknown
 				value = f.value <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(f.value) : f.value.toString();
 				break;
 			case 'bool':
+				if (typeof f.value !== 'bigint') throw new Error('wire type mismatch');
 				value = f.value !== 0n;
 				break;
 			case 'enum': {
