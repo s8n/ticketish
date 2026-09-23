@@ -11,6 +11,7 @@
 import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { isNsb, parseNsb } from '../src/lib/tickets/nsb/nsb.ts';
+import { BitWriter } from './helpers/build.ts';
 
 const MAGIC = [0xe0, 0x00, 0x80, 0x01, 0x5f];
 
@@ -20,11 +21,6 @@ const minutes = (hhmm: string) => {
 	return h * 60 + m;
 };
 
-function writeBits(d: Uint8Array, start: number, width: number, value: number) {
-	for (let i = 0; i < width; i++) {
-		if ((value >> (width - 1 - i)) & 1) d[(start + i) >> 3] |= 0x80 >> ((start + i) & 7);
-	}
-}
 
 /** Base64 of a record carrying the signature and the two times. */
 function build({
@@ -33,10 +29,11 @@ function build({
 	bytes = 103,
 	magic = MAGIC
 } = {}): Uint8Array {
-	const body = new Uint8Array(bytes);
-	magic.forEach((b, i) => (body[i] = b));
-	if (departure) writeBits(body, 280, 11, minutes(departure));
-	if (arrival) writeBits(body, 305, 11, minutes(arrival));
+	const w = new BitWriter();
+	for (const b of magic) w.int(b, 8);
+	w.padTo(280).int(departure ? minutes(departure) : 0, 11);
+	w.padTo(305).int(arrival ? minutes(arrival) : 0, 11);
+	const body = w.bytes(bytes);
 	const b64 = Buffer.from(body).toString('base64').replace(/=+$/, '');
 	return new TextEncoder().encode(b64);
 }

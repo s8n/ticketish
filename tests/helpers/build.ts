@@ -61,13 +61,13 @@ export function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
 	return result;
 }
 
-const toBigInt = (b: Uint8Array) => {
+export const toBigInt = (b: Uint8Array) => {
 	let n = 0n;
 	for (const x of b) n = (n << 8n) | BigInt(x);
 	return n;
 };
 
-const toBytes = (n: bigint, length: number) => {
+export const toBytes = (n: bigint, length: number) => {
 	const out = new Uint8Array(length);
 	for (let i = length - 1; i >= 0; i--) {
 		out[i] = Number(n & 0xffn);

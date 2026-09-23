@@ -11,6 +11,7 @@
  * never has to look inside them.
  */
 import { zlibSync } from 'fflate';
+import { concat } from './build.ts';
 
 // ---------------------------------------------------------------- CBOR -----
 
@@ -22,16 +23,6 @@ type Encodable =
 	| null
 	| Encodable[]
 	| { [key: string]: Encodable };
-
-const concat = (parts: Uint8Array[]) => {
-	const out = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
-	let at = 0;
-	for (const p of parts) {
-		out.set(p, at);
-		at += p.length;
-	}
-	return out;
-};
 
 /** A head byte and its argument, in the shortest form that holds the value. */
 function head(major: number, value: number): Uint8Array {
@@ -52,13 +43,13 @@ export function encodeCbor(value: Encodable): Uint8Array {
 	}
 	if (typeof value === 'string') {
 		const bytes = new TextEncoder().encode(value);
-		return concat([head(3, bytes.length), bytes]);
+		return concat(head(3, bytes.length), bytes);
 	}
-	if (value instanceof Uint8Array) return concat([head(2, value.length), value]);
-	if (Array.isArray(value)) return concat([head(4, value.length), ...value.map(encodeCbor)]);
+	if (value instanceof Uint8Array) return concat(head(2, value.length), value);
+	if (Array.isArray(value)) return concat(head(4, value.length), ...value.map(encodeCbor));
 	const entries = Object.entries(value);
 	const pairs = entries.flatMap(([k, v]) => [encodeCbor(k), encodeCbor(v)]);
-	return concat([head(5, entries.length), ...pairs]);
+	return concat(head(5, entries.length), ...pairs);
 }
 
 // ------------------------------------------------------------- builder -----

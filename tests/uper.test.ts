@@ -27,11 +27,6 @@ const FCB: Record<number, AsnSchema> = {
 	3: fcb3 as AsnSchema
 };
 
-function hexToBytes(hex: string): Uint8Array {
-	const out = new Uint8Array(hex.length / 2);
-	for (let i = 0; i < out.length; i++) out[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
-	return out;
-}
 
 /** Convert decoder output to the JSON shape used by the ground truth files. */
 function jsonable(v: unknown): unknown {
@@ -96,7 +91,7 @@ describe('UPER decoder vs asn1tools ground truth', () => {
 		const version = record.id === 'U_FLEX' ? record.version! : parseInt(record.dataFormat!.slice(3));
 		const schema = FCB[version];
 		expect(schema, `no schema for FCB version ${version}`).toBeDefined();
-		const decoded = decodeUper(schema, hexToBytes(record.data_hex));
+		const decoded = decodeUper(schema, new Uint8Array(Buffer.from(record.data_hex, 'hex')));
 		expect(jsonable(decoded)).toEqual(record.flex);
 	});
 

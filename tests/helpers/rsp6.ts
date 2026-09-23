@@ -6,20 +6,11 @@
  * signature with message recovery, so a throwaway key signs it and the test
  * hands the matching public key to the parser.
  */
-import { BitWriter, modPow, sha256, testKey, type TestKey } from './build.ts';
+import { BitWriter, modPow, sha256, testKey, toBigInt, toBytes, type TestKey } from './build.ts';
 import type { RspKeyStore } from '../../src/lib/tickets/rsp/rsp6.ts';
 
-const toBigInt = (b: Uint8Array) => {
-	let n = 0n;
-	for (const x of b) n = (n << 8n) | BigInt(x);
-	return n;
-};
-
-const toBytes = (n: bigint) => {
-	let h = n.toString(16);
-	if (h.length % 2) h = '0' + h;
-	return new Uint8Array(Buffer.from(h, 'hex'));
-};
+/** As few bytes as hold the number, which is how the signature is written. */
+const minimalBytes = (n: bigint) => toBytes(n, Math.ceil(n.toString(16).length / 2));
 
 /** PKCS#1 v1.5 style block: 00 01 FF.. 00 || body || SHA-256(body)[0..8]. */
 function sign(body: Uint8Array, key: TestKey): bigint {
@@ -41,7 +32,7 @@ function sign(body: Uint8Array, key: TestKey): bigint {
 
 /** Inverse of the reader's base26: least significant digit first, bytes reversed. */
 function toBase26(signature: bigint): string | null {
-	const be = toBytes(signature);
+	const be = minimalBytes(signature);
 	const reversed = new Uint8Array(be).reverse();
 	// the reader drops leading zeros when it converts back, so refuse a
 	// signature whose last byte is zero rather than emit something lossy
