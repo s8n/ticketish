@@ -108,3 +108,33 @@ describe('UPER decoder vs asn1tools ground truth', () => {
 		expect(jsonable(decoded)).toEqual(expected.header);
 	});
 });
+
+describe('UPER INTEGER', () => {
+	const schema = (min: number | null): AsnSchema => ({
+		root: 'I',
+		types: { I: { kind: 'int', min, max: null } }
+	});
+	/** Length determinant, then the content octets. */
+	const encoded = (...bytes: number[]) => new Uint8Array([bytes.length, ...bytes]);
+
+	it('reads an unconstrained integer as two’s complement', () => {
+		const cases: [number[], number][] = [
+			[[0x00], 0],
+			[[0x7f], 127],
+			[[0x00, 0x80], 128],
+			[[0xff], -1],
+			[[0x80], -128],
+			[[0xff, 0x38], -200],
+			[[0xff, 0x7f], -129],
+			[[0x80, 0x00], -32768],
+			[[0xfe, 0xd4, 0x14, 0x39], -19655623]
+		];
+		for (const [bytes, value] of cases) {
+			expect(decodeUper(schema(null), encoded(...bytes)), bytes.join(',')).toBe(value);
+		}
+	});
+
+	it('reads a semi-constrained integer as an offset from its lower bound', () => {
+		expect(decodeUper(schema(-10), encoded(0xff))).toBe(245);
+	});
+});

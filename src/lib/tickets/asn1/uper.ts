@@ -293,8 +293,10 @@ export class UperDecoder {
 			for (const b of bytes) v = v * 256 + b;
 			return t.min + v;
 		}
+		// two's complement: a set top bit seeds the value with all ones, and
+		// each byte then shifts in as it stands
 		v = bytes[0] & 0x80 ? -1 : 0;
-		for (const b of bytes) v = v * 256 + (v < 0 ? b - 256 : b);
+		for (const b of bytes) v = v * 256 + b;
 		return v;
 	}
 
