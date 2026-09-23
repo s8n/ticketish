@@ -26,7 +26,9 @@
 	function onDrop(e: DragEvent) {
 		e.preventDefault();
 		dragging = false;
-		handleFiles(e.dataTransfer?.files ?? null);
+		// a drop's file list is live and empties once the event is over, which
+		// is before the async reading gets past its first file
+		handleFiles([...(e.dataTransfer?.files ?? [])]);
 	}
 
 	function onPaste(e: ClipboardEvent) {
@@ -77,7 +79,9 @@
 	multiple
 	accept="image/*,.pdf,.pkpass,.bin,application/pdf,application/vnd.apple.pkpass"
 	onchange={(e) => {
-		handleFiles(e.currentTarget.files);
+		// Clearing the input empties the FileList it handed over, in place, so
+		// copy it first: the reading is async and would find the list gone.
+		handleFiles([...(e.currentTarget.files ?? [])]);
 		e.currentTarget.value = '';
 	}}
 	hidden
