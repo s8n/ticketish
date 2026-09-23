@@ -20,7 +20,7 @@
  * country spanning six of them.
  */
 import { isPrintableAscii } from '../bytes.ts';
-import { pad } from '../dates.ts';
+import { calendarDate, pad } from '../dates.ts';
 
 /** Fields through the purchase time. Printers pad past this with spaces. */
 const LENGTH = 124;
@@ -70,10 +70,11 @@ function timestamp(value: string): string | null {
 		+value.slice(10, 12)
 	];
 	const second = value.length === 14 ? +value.slice(12, 14) : null;
-	if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+	const date = calendarDate(year, month, day);
+	if (date === null) return null;
 	if (hour > 23 || minute > 59 || (second !== null && second > 59)) return null;
 	const time = `${pad(hour)}:${pad(minute)}${second === null ? '' : `:${pad(second)}`}`;
-	return `${year}-${pad(month)}-${pad(day)}T${time}`;
+	return `${date}T${time}`;
 }
 
 export function isViaRail(data: Uint8Array): boolean {

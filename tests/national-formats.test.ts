@@ -81,6 +81,15 @@ describe('TCDD tickets', () => {
 		expect(c.ticket.departure).toBe('2024-05-19');
 	});
 
+	it('leaves out a departure that is not a date', () => {
+		const impossible = [...classic];
+		impossible[6] = '20240230103000';
+		const c = parsePayload(ascii(impossible.join('$')));
+		expect(c.kind).toBe('tcdd');
+		if (c.kind !== 'tcdd') return;
+		expect(c.ticket.departure).toBeNull();
+	});
+
 	it('keeps a midnight departure in the older layout, which never zeroes it', () => {
 		const midnight = [...classic];
 		midnight[6] = '20240519000000';

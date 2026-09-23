@@ -13,6 +13,7 @@
  * assuming they are empty.
  */
 import { isPrintableAscii } from '../bytes.ts';
+import { calendarDate } from '../dates.ts';
 
 export interface RenfeTicket {
 	/** "aztec" carries both blocks; "qr" is the short second block only. */
@@ -39,12 +40,12 @@ const DIGITS = /^\d+$/;
 
 const stripZeros = (s: string) => s.replace(/^0+/, '') || '0';
 
-/** ddmmyy or dd/mm/yyyy to ISO. */
+/** ddmmyy or dd/mm/yyyy to ISO, or null for a date that is not one. */
 function toIsoDate(value: string): string | null {
 	const slashed = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-	if (slashed) return `${slashed[3]}-${slashed[2]}-${slashed[1]}`;
+	if (slashed) return calendarDate(+slashed[3], +slashed[2], +slashed[1]);
 	const compact = value.match(/^(\d{2})(\d{2})(\d{2})$/);
-	if (compact) return `20${compact[3]}-${compact[2]}-${compact[1]}`;
+	if (compact) return calendarDate(2000 + +compact[3], +compact[2], +compact[1]);
 	return null;
 }
 

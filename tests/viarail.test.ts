@@ -133,6 +133,8 @@ describe('VIA Rail boarding passes', () => {
 		// a departure time that is not a time
 		expect(isViaRail(build({ departureTime: '202413991607' }))).toBe(false);
 		expect(isViaRail(build({ departureTime: '202406029967' }))).toBe(false);
+		// a day the month does not have
+		expect(isViaRail(build({ departureTime: '202402301607' }))).toBe(false);
 		// a purchase time that is not one
 		expect(isViaRail(build({ purchaseTime: '20240601101099' }))).toBe(false);
 		// truncated inside the record

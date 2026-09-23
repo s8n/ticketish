@@ -29,6 +29,13 @@ describe('Renfe tickets', () => {
 		expect(c.ticket.signature).toMatch(/^MC/);
 	});
 
+	it('does not take a payload whose date is not one for a Renfe ticket', () => {
+		// the date is part of how the format is recognised, the way a missing
+		// one already is, so 30 February is a reason to look elsewhere
+		expect(parsePayload(aztec({ date: '30/02/2024' })).kind).not.toBe('renfe');
+		expect(parsePayload(ascii(blockB({ date: '30/02/2024' }))).kind).not.toBe('renfe');
+	});
+
 	it('parses the short QR form on its own', () => {
 		const c = parsePayload(ascii(blockB()));
 		expect(c.kind).toBe('renfe');

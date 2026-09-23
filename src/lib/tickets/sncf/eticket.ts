@@ -36,6 +36,7 @@
  */
 import { isLatin1Text } from '../bytes.ts';
 import { meaningful } from '../format.ts';
+import { calendarDate } from '../dates.ts';
 
 export interface SncfReturnLeg {
 	travelClass: string;
@@ -93,10 +94,7 @@ function parseDob(value: string): string | null {
 	const m = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
 	if (!m) return null;
 	const [, day, month, year] = m;
-	const date = new Date(`${year}-${month}-${day}T00:00:00Z`);
-	// reject 31/02 and friends rather than letting them roll over
-	if (Number.isNaN(date.getTime()) || date.getUTCDate() !== Number(day)) return null;
-	return `${year}-${month}-${day}`;
+	return calendarDate(+year, +month, +day);
 }
 
 function parseTravelDate(value: string): { day: number; month: number } | null {
@@ -104,7 +102,8 @@ function parseTravelDate(value: string): { day: number; month: number } | null {
 	if (!m) return null;
 	const day = Number(m[1]);
 	const month = Number(m[2]);
-	if (day < 1 || day > 31 || month < 1 || month > 12) return null;
+	// no year to check against, so a leap one: 29/02 is a day, 30/02 is not
+	if (calendarDate(2000, month, day) === null) return null;
 	return { day, month };
 }
 

@@ -108,6 +108,9 @@ describe('SNCF e-billet records', () => {
 		// an unset field is not a date
 		expect(parseSncfETicket(buildE({ travelDate: '00/00' })).travelDate).toBeNull();
 		expect(parseSncfETicket(buildE({ travelDate: '99/99' })).travelDate).toBeNull();
+		// no year, so 29 February may be one and 30 February never is
+		expect(parseSncfETicket(buildE({ travelDate: '29/02' })).travelDate).toEqual({ day: 29, month: 2 });
+		expect(parseSncfETicket(buildE({ travelDate: '30/02' })).travelDate).toBeNull();
 	});
 
 	it('reads the date of birth as an ISO date and rejects impossible ones', () => {

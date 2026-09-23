@@ -33,6 +33,8 @@
  * the place to label a person's insurance from a guess.
  */
 
+import { calendarDate } from '../dates.ts';
+
 /** The constant head: Formularcode, Formularcodeergänzung, Versionsnummer. */
 const FORM_CODE = '01';
 const FORM_SUFFIX = 'a';
@@ -122,12 +124,7 @@ export interface EauCertificate {
  */
 function date(value: string): string | null {
 	if (!/^\d{8}$/.test(value)) return null;
-	const [year, month, day] = [+value.slice(0, 4), +value.slice(4, 6), +value.slice(6, 8)];
-	const d = new Date(Date.UTC(year, month - 1, day));
-	if (d.getUTCFullYear() !== year || d.getUTCMonth() !== month - 1 || d.getUTCDate() !== day) {
-		return null;
-	}
-	return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`;
+	return calendarDate(+value.slice(0, 4), +value.slice(4, 6), +value.slice(6, 8));
 }
 
 /**

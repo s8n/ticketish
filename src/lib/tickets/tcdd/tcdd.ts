@@ -20,6 +20,7 @@
  * of the current one. See stations.ts.
  */
 import { isPrintableAscii } from '../bytes.ts';
+import { calendarDate } from '../dates.ts';
 
 export type TcddVariant = 'classic' | 'tcddprod';
 
@@ -51,9 +52,11 @@ export interface TcddTicket {
 function toIso(value: string, zeroIsNoTime = false): string | null {
 	const m = value.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})?$/);
 	if (!m) return null;
+	const date = calendarDate(+m[1], +m[2], +m[3]);
+	if (date === null || +m[4] > 23 || +m[5] > 59) return null;
 	const zeroed = m[4] === '00' && m[5] === '00' && (m[6] ?? '00') === '00';
 	const time = zeroIsNoTime && zeroed ? '' : `T${m[4]}:${m[5]}`;
-	return `${m[1]}-${m[2]}-${m[3]}${time}`;
+	return `${date}${time}`;
 }
 
 const money = (v: string | undefined) => (v && /^\d+(\.\d+)?$/.test(v) ? v : null);
