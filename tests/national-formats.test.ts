@@ -185,6 +185,17 @@ describe('VR tickets (SSB1)', () => {
 		expect(t.validUntil).toBe('2026-04-17');
 	});
 
+	it('ends the validity on or after its start, across New Year', () => {
+		// 26 December to 5 January, read in July: the start is nearest in the
+		// coming December, and the end has to follow it
+		const t = parseSsb1(
+			ssb1({ validFromDay: 360, validUntilDay: 5 }),
+			new Date('2026-07-01T00:00:00Z')
+		);
+		expect(t.validFrom).toBe('2026-12-26');
+		expect(t.validUntil).toBe('2027-01-05');
+	});
+
 	it('is reached through the format dispatcher', () => {
 		expect(parsePayload(ssb1()).kind).toBe('ssb1');
 	});

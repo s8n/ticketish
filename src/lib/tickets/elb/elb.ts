@@ -33,7 +33,7 @@
  * counts, and the dates.
  */
 import { isPrintableAscii } from '../bytes.ts';
-import { dayOfYearDate, lastDigitYear } from '../dates.ts';
+import { dayOfYearDate, dayOfYearOnOrAfter, lastDigitYear } from '../dates.ts';
 import { meaningful } from '../format.ts';
 
 export interface ElbSegment {
@@ -140,7 +140,7 @@ function hasSegment(s: string, at: number): boolean {
 	return /^\d{5}/.test(block.slice(10, 16));
 }
 
-function parseSegment(s: string, at: number, year: number | null): ElbSegment {
+function parseSegment(s: string, at: number, dated: (day: number | null) => string | null): ElbSegment {
 	const departureDay = day(s.slice(at + 20, at + 23));
 	return {
 		departureStation: s.slice(at, at + 5),
@@ -148,7 +148,7 @@ function parseSegment(s: string, at: number, year: number | null): ElbSegment {
 		trainNumber: unpad(s.slice(at + 10, at + 16).trim()),
 		securityCode: meaningful(s.slice(at + 16, at + 20)),
 		departureDay,
-		departureDate: year !== null && departureDay !== null ? dayOfYearDate(year, departureDay) : null,
+		departureDate: dated(departureDay),
 		coach: unpad(s.slice(at + 23, at + 26)),
 		seat: unpad(s.slice(at + 26, at + 29)),
 		travelClass: s.slice(at + 29, at + 30),
@@ -167,15 +167,22 @@ export function parseElb(data: Uint8Array, now?: Date): ElbTicket {
 	const emissionDay = day(s.slice(40, 43));
 	const beginDay = day(s.slice(43, 46));
 	const endDay = day(s.slice(46, 49));
-	// End validity is a day of the year like the others, so a value below the
-	// start belongs to the year after it rather than being nonsense.
-	const endYear = year !== null && beginDay !== null && endDay !== null && endDay < beginDay
-		? year + 1
-		: year;
 
-	const segments: ElbSegment[] = [parseSegment(s, HEADER_SIZE, year)];
+	// The year digit dates the issue. Travel and validity are days of the year
+	// with no year of their own, and they come after the issue, so one earlier
+	// in the year than the issue belongs to the year after it; the end of
+	// validity likewise follows its start.
+	const issuedDate = year !== null && emissionDay !== null ? dayOfYearDate(year, emissionDay) : null;
+	const after = (from: string | null) => (value: number | null) => {
+		if (value === null || year === null) return null;
+		return from ? dayOfYearOnOrAfter(value, from) : dayOfYearDate(year, value);
+	};
+	const validFrom = after(issuedDate)(beginDay);
+	const validUntil = after(validFrom ?? issuedDate)(endDay);
+
+	const segments: ElbSegment[] = [parseSegment(s, HEADER_SIZE, after(issuedDate))];
 	if (hasSegment(s, HEADER_SIZE + SEGMENT_SIZE)) {
-		segments.push(parseSegment(s, HEADER_SIZE + SEGMENT_SIZE, year));
+		segments.push(parseSegment(s, HEADER_SIZE + SEGMENT_SIZE, after(issuedDate)));
 	}
 
 	// Whatever follows the segments the record actually carries.
@@ -196,9 +203,9 @@ export function parseElb(data: Uint8Array, now?: Date): ElbTicket {
 		numChildren: count(s.slice(37, 39)),
 		yearDigit,
 		year,
-		issuedDate: year !== null && emissionDay !== null ? dayOfYearDate(year, emissionDay) : null,
-		validFrom: year !== null && beginDay !== null ? dayOfYearDate(year, beginDay) : null,
-		validUntil: endYear !== null && endDay !== null ? dayOfYearDate(endYear, endDay) : null,
+		issuedDate,
+		validFrom,
+		validUntil,
 		segments,
 		seal: s.slice(sealFrom).trim() || null,
 		nonUsedDigits: meaningful(s.slice(23, 33))

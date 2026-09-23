@@ -55,11 +55,34 @@ export function resolveDayOfYear(day: number, now: Date = new Date()): string | 
 	let best: Date | null = null;
 	for (const candidate of [year - 1, year, year + 1]) {
 		const date = dayOfYearUtc(candidate, day);
+		// day 366 only exists in a leap year, and would otherwise roll over
+		// into 1 January of the next
+		if (date.getUTCFullYear() !== candidate) continue;
 		if (!best || Math.abs(date.getTime() - now.getTime()) < Math.abs(best.getTime() - now.getTime())) {
 			best = date;
 		}
 	}
 	return best ? isoDate(best) : null;
+}
+
+/**
+ * The first date that falls on a day of the year, on or after an ISO date.
+ *
+ * For a day with no year that has to come after one that has it: travel after
+ * issue, the end of validity after its start. A day earlier in the year than
+ * the one it follows belongs to the year after, which is how a ticket bought
+ * in December for January reads.
+ */
+export function dayOfYearOnOrAfter(day: number, from: string): string | null {
+	const year = Number(from.slice(0, 4));
+	if (!Number.isInteger(year)) return null;
+	// the same year or the next; day 366 of a common year is rejected rather
+	// than carried off to whichever leap year comes along
+	for (const candidate of [year, year + 1]) {
+		const date = dayOfYearDate(candidate, day);
+		if (date !== null && date >= from) return date;
+	}
+	return null;
 }
 
 /**

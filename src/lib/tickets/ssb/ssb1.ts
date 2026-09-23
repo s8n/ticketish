@@ -10,7 +10,7 @@
  * to whichever candidate lands closest to the reference date.
  */
 import { Bits } from '../bits.ts';
-import { resolveDayOfYear, timeOfDay } from '../dates.ts';
+import { dayOfYearOnOrAfter, resolveDayOfYear, timeOfDay } from '../dates.ts';
 
 export interface Ssb1Ticket {
 	version: number;
@@ -54,6 +54,13 @@ export function parseSsb1(data: Uint8Array, now: Date = new Date()): Ssb1Ticket 
 
 	const slot = d.int(167, 173);
 	const individual = d.bool(57);
+	// Neither day carries a year. The start is placed nearest today, and the
+	// end on or after the start, so the two cannot come out reversed.
+	const validFrom = resolveDayOfYear(d.int(39, 48), now);
+	const untilDay = d.int(48, 57);
+	const validUntil = validFrom
+		? dayOfYearOnOrAfter(untilDay, validFrom)
+		: resolveDayOfYear(untilDay, now);
 
 	return {
 		version: d.int(0, 4),
@@ -62,8 +69,8 @@ export function parseSsb1(data: Uint8Array, now: Date = new Date()): Ssb1Ticket 
 		numberOfTickets: d.int(19, 25),
 		numAdults: d.int(25, 32),
 		numChildren: d.int(32, 39),
-		validFrom: resolveDayOfYear(d.int(39, 48), now),
-		validUntil: resolveDayOfYear(d.int(48, 57), now),
+		validFrom,
+		validUntil,
 		frequentTravelerId: individual ? d.int(58, 105) : null,
 		corporateTravelerId: individual ? null : d.int(58, 105),
 		departureStation: stationOrName(105, 106, 126, 136),

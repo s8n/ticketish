@@ -97,6 +97,24 @@ describe('ELB records', () => {
 			expect(t.validUntil).toBe('2025-06-05');
 		});
 
+		it('puts travel after an issue late in the year into the next one', () => {
+			// issued on 15 December 2024 for a journey on 10 January
+			const t = parseElb(
+				buildElb({
+					year: '4',
+					emissionDay: '350',
+					beginDay: '010',
+					endDay: '020',
+					segment1: { departureDay: '010' }
+				}),
+				NOW
+			);
+			expect(t.issuedDate).toBe('2024-12-15');
+			expect(t.validFrom).toBe('2025-01-10');
+			expect(t.validUntil).toBe('2025-01-20');
+			expect(t.segments[0].departureDate).toBe('2025-01-10');
+		});
+
 		it('dates the departure from the segment, against the same year', () => {
 			const t = parseElb(buildElb({ year: '4', segment1: { departureDay: '266' } }), NOW);
 			expect(t.segments[0].departureDay).toBe(266);
