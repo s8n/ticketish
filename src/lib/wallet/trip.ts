@@ -189,6 +189,18 @@ export const UNOFFICIAL_LABEL = 'Unofficial pass';
 export const UNOFFICIAL_NOTE =
 	'Made by ticketish from the barcode on the original ticket. Not issued by the operator.';
 
+/**
+ * The trip title as a file name, without the extension: lower case, runs of
+ * anything else as one hyphen, "ticket" when nothing is left.
+ */
+export function tripFileStem(trip: TripSummary): string {
+	const stem = tripTitle(trip)
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-|-$/g, '');
+	return stem || 'ticket';
+}
+
 /** "Hamburg Hbf to Köln Hbf", or the product, or the issuer: a pass title. */
 export function tripTitle(trip: TripSummary): string {
 	if (trip.from && trip.to) return `${trip.from} to ${trip.to}`;

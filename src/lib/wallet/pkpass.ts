@@ -31,6 +31,7 @@ import { passColors } from './colors.ts';
 import type { SigningIdentity } from './identity.ts';
 import {
 	APP_NAME,
+	tripFileStem,
 	tripTitle,
 	UNOFFICIAL_LABEL,
 	UNOFFICIAL_NOTE,
@@ -282,9 +283,5 @@ export const PKPASS_MIME = 'application/vnd.apple.pkpass';
 
 /** A file name that says what the pass is without leaking the whole trip. */
 export function pkpassFileName(trip: TripSummary): string {
-	const base = tripTitle(trip)
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-|-$/g, '');
-	return `${base || 'ticket'}.pkpass`;
+	return `${tripFileStem(trip)}.pkpass`;
 }

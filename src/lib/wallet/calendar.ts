@@ -20,7 +20,7 @@
  * adding the same ticket twice updates one entry rather than making two.
  */
 import { isoDate, plusDays } from '../tickets/dates.ts';
-import { tripTitle, APP_NAME, UNOFFICIAL_NOTE, type TripSummary } from './trip.ts';
+import { tripFileStem, tripTitle, APP_NAME, UNOFFICIAL_NOTE, type TripSummary } from './trip.ts';
 import { localParts, utcOffsetLabel } from './time.ts';
 
 /**
@@ -227,9 +227,5 @@ export const ICS_MIME = 'text/calendar';
 
 /** A file name that says what the event is, matching the pass naming. */
 export function icsFileName(trip: TripSummary): string {
-	const base = tripTitle(trip)
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-|-$/g, '');
-	return `${base || 'ticket'}.ics`;
+	return `${tripFileStem(trip)}.ics`;
 }
