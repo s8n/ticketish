@@ -119,6 +119,19 @@ describe('signing identity', () => {
 		const encrypted = '-----BEGIN ENCRYPTED PRIVATE KEY-----\nAAAA\n-----END ENCRYPTED PRIVATE KEY-----';
 		await expect(loadIdentity(cert.certificatePem, encrypted)).rejects.toThrow(/passphrase/);
 	});
+
+	it('names it for the older PKCS#1 form too, which says so in a header', async () => {
+		const cert = testCertificate();
+		const encrypted = [
+			'-----BEGIN RSA PRIVATE KEY-----',
+			'Proc-Type: 4,ENCRYPTED',
+			'DEK-Info: AES-128-CBC,00000000000000000000000000000000',
+			'',
+			'AAAA',
+			'-----END RSA PRIVATE KEY-----'
+		].join('\n');
+		await expect(loadIdentity(cert.certificatePem, encrypted)).rejects.toThrow(/passphrase/);
+	});
 });
 
 describe('pass structure', () => {

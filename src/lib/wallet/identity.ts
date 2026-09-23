@@ -176,7 +176,9 @@ const KEY_ALGORITHM = { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' } as const;
 export async function importPrivateKey(
 	pem: string
 ): Promise<{ key: CryptoKey; modulus: Uint8Array }> {
-	if (/BEGIN ENCRYPTED PRIVATE KEY/.test(pem)) {
+	// PKCS#8 says so in its label; the older PKCS#1 form keeps its label and
+	// says so in a header line instead
+	if (/BEGIN ENCRYPTED PRIVATE KEY|Proc-Type:\s*4,\s*ENCRYPTED/.test(pem)) {
 		throw new Error(
 			'this key is passphrase protected. Decrypt it first: openssl pkcs8 -topk8 -nocrypt -in key.pem -out key-decrypted.pem'
 		);
