@@ -4,7 +4,7 @@
 
 	import type { MavTicket } from '../tickets/mav/mav.ts';
 	import { mavStationLabel } from '../tickets/mav/mav.ts';
-	import { fmtDate, fmtPrice, fmtZoned } from '../tickets/format.ts';
+	import { fmtDateOrNull, fmtPrice, fmtZoned } from '../tickets/format.ts';
 	import { loadIssuerNames, ricsName } from '../tickets/uic/rics.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
 	import { loadUicStations } from '../tickets/stations.ts';
@@ -59,7 +59,7 @@
 		['Passengers', trip && trip.numPassengers > 1 ? String(trip.numPassengers) : null],
 		['Via', via],
 		['Traveler', ticket.person?.name || null],
-		['Born', ticket.person?.dateOfBirth ? fmtDate(ticket.person.dateOfBirth) : null],
+		['Born', fmtDateOrNull(ticket.person?.dateOfBirth)],
 		['ID card', ticket.person?.idCardNumber],
 		['Ticket number', ticket.ticketNumber],
 		['Price', ticket.price ? fmtPrice(ticket.price, 'HUF', 0) : null],

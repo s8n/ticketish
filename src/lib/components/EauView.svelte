@@ -4,13 +4,13 @@
 
 	import type { EauCertificate } from '../tickets/kbv/eau.ts';
 	import { READS_VERSION } from '../tickets/kbv/eau.ts';
-	import { fmtDate } from '../tickets/format.ts';
+	import { fmtDateOrNull } from '../tickets/format.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
 
 	let { certificate }: { certificate: EauCertificate } = $props();
 
 	/** Null rather than the placeholder, so an absent date drops its row. */
-	const day = (value: string | null) => (value ? fmtDate(value) : null);
+	const day = (value: string | null) => (fmtDateOrNull(value));
 
 	/**
 	 * Erst and Folge are exclusive, and either may carry End beside it to say
@@ -49,10 +49,10 @@
 	);
 
 	const rows = $derived<[string, string | null | undefined][]>([
-		['Unfit for work since', day(certificate.unfitSince)],
-		['Expected until', day(certificate.unfitUntil)],
-		['Assessed on', day(certificate.assessedOn)],
-		['Issued', day(certificate.issuedOn)],
+		['Unfit for work since', fmtDateOrNull(certificate.unfitSince)],
+		['Expected until', fmtDateOrNull(certificate.unfitUntil)],
+		['Assessed on', fmtDateOrNull(certificate.assessedOn)],
+		['Issued', fmtDateOrNull(certificate.issuedOn)],
 		['Diagnoses', diagnoses],
 		['Note on the diagnosis', certificate.diagnosisNote],
 		['Marked', marks],
@@ -62,7 +62,7 @@
 		['Insured type', certificate.insuredType],
 		['Special person group', certificate.personGroup],
 		['DMP', certificate.dmp],
-		['Cover ends', day(certificate.coverageEnd)],
+		['Cover ends', fmtDateOrNull(certificate.coverageEnd)],
 		['Practice (BSNR)', certificate.bsnr],
 		['Doctor (LANR)', certificate.lanr],
 		['Barcode version', String(certificate.version)],

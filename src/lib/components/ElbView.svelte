@@ -3,7 +3,7 @@
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
 	import type { ElbSegment, ElbTicket } from '../tickets/elb/elb.ts';
-	import { fmtDate } from '../tickets/format.ts';
+	import { fmtDate, fmtDateOrNull } from '../tickets/format.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
 	import { loadBenerailStations, benerailStationLabel } from '../tickets/stations.ts';
 	import { table } from './table.svelte.ts';
@@ -58,7 +58,7 @@
 			? [
 					`${benerailStationLabel(stations.value, inward.departureStation)} - ${benerailStationLabel(stations.value, inward.arrivalStation)}`,
 					inward.trainNumber ? `train ${inward.trainNumber}` : null,
-					inward.departureDate ? fmtDate(inward.departureDate) : null,
+					fmtDateOrNull(inward.departureDate),
 					place(inward) || null,
 					inward.travelClass.trim() ? classLabel(inward.travelClass) : null
 				]
@@ -68,7 +68,7 @@
 	);
 
 	const rows = $derived<[string, string | null | undefined][]>([
-		['Travel date', outward.departureDate ? fmtDate(outward.departureDate) : null],
+		['Travel date', fmtDateOrNull(outward.departureDate)],
 		['Class', outward.travelClass.trim() ? classLabel(outward.travelClass) : null],
 		['Place', place(outward)],
 		['Passengers', passengers],
@@ -79,7 +79,7 @@
 		['Service', outward.classOfService],
 		['Station codes', codes],
 		['Return', returnLeg],
-		['Issued', ticket.issuedDate ? fmtDate(ticket.issuedDate) : null],
+		['Issued', fmtDateOrNull(ticket.issuedDate)],
 		[
 			'Valid',
 			ticket.validFrom || ticket.validUntil

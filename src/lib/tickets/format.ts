@@ -11,6 +11,14 @@ export function fmtDate(iso: string | null | undefined): string {
 	return time ? `${d}.${m}.${y} ${time}` : `${d}.${m}.${y}`;
 }
 
+/**
+ * The same, or null where there is no date, for the row lists that leave a
+ * row out on null. `fmtDate` shows an en dash instead, which is right in a
+ * sentence and wrong in a list of fields.
+ */
+export const fmtDateOrNull = (iso: string | null | undefined): string | null =>
+	iso ? fmtDate(iso) : null;
+
 export function fmtPrice(cents: number | undefined, currency = 'EUR', fract = 2): string | null {
 	if (cents === undefined) return null;
 	const value = cents / 10 ** fract;

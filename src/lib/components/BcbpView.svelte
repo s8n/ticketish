@@ -12,7 +12,7 @@
 	 * itself prints.
 	 */
 	import type { BcbpLeg, BcbpTicket } from '../tickets/bcbp/bcbp.ts';
-	import { fmtDate } from '../tickets/format.ts';
+	import { fmtDateOrNull } from '../tickets/format.ts';
 	import RouteLine from './RouteLine.svelte';
 	import {
 		airlineByAccountingCode,
@@ -79,7 +79,7 @@
 	};
 
 	const legRows = (leg: BcbpLeg): [string, string | null | undefined][] => [
-		['Flight date', leg.flightDate ? fmtDate(leg.flightDate) : null],
+		['Flight date', fmtDateOrNull(leg.flightDate)],
 		// ElbView does the same: once a name is on the route line, the code it
 		// came from should still be somewhere on the card.
 		[
@@ -128,7 +128,7 @@
 		['Checked in via', ticket.sourceOfCheckInLabel ?? ticket.sourceOfCheckIn],
 		['Pass issued via', ticket.sourceOfIssuanceLabel ?? ticket.sourceOfIssuance],
 		['Issued by', namedWithCode(ticket.issuerDesignator, ticket.legs[0]?.flightDate ?? null)],
-		['Issued', ticket.issueDate ? fmtDate(ticket.issueDate) : null],
+		['Issued', fmtDateOrNull(ticket.issueDate)],
 		['Bag tags', bags.join(', ') || null],
 		['Standard', ticket.version === null ? null : `Resolution 792 version ${ticket.version}`],
 		// Pegasus pads its passes past the last field the record accounts for.

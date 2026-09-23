@@ -3,7 +3,7 @@
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
 	import type { SncfETicket } from '../tickets/sncf/eticket.ts';
-	import { fmtDate } from '../tickets/format.ts';
+	import { fmtDateOrNull } from '../tickets/format.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
 	import { loadBenerailStations, benerailStationLabel } from '../tickets/stations.ts';
 	import { table } from './table.svelte.ts';
@@ -50,7 +50,7 @@
 		['Travel date', travelDate],
 		['Class', classLabel],
 		['Passenger', passenger],
-		['Date of birth', ticket.dateOfBirth ? fmtDate(ticket.dateOfBirth) : null],
+		['Date of birth', fmtDateOrNull(ticket.dateOfBirth)],
 		['PNR', ticket.pnr],
 		['Ticket number', ticket.ticketNumber],
 		['Customer reference', ticket.customerReference],

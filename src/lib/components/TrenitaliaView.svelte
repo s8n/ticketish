@@ -3,7 +3,7 @@
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
 	import type { TrenitaliaTicket } from '../tickets/trenitalia/trenitalia.ts';
-	import { fmtDate } from '../tickets/format.ts';
+	import { fmtDateOrNull } from '../tickets/format.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
 
 	let { ticket }: { ticket: TrenitaliaTicket } = $props();
@@ -15,7 +15,7 @@
 	);
 
 	const rows = $derived<[string, string | null | undefined][]>([
-		['Departure', ticket.departureDate ? fmtDate(ticket.departureDate) : null],
+		['Departure', fmtDateOrNull(ticket.departureDate)],
 		['Place', place || 'No reservation'],
 		['PNR', ticket.pnr || null],
 		['Entitlement number', String(ticket.entitlementNumber)]

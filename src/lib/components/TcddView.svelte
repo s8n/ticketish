@@ -4,7 +4,7 @@
 
 	import type { TcddTicket } from '../tickets/tcdd/tcdd.ts';
 	import { loadTcddStations, tcddStationName } from '../tickets/tcdd/stations.ts';
-	import { fmtDate } from '../tickets/format.ts';
+	import { fmtDateOrNull } from '../tickets/format.ts';
 	import SimpleTicketView from './SimpleTicketView.svelte';
 	import { table } from './table.svelte.ts';
 
@@ -17,7 +17,7 @@
 	const station = (code: string) => tcddStationName(stations.value, code);
 
 	const rows = $derived<[string, string | null | undefined][]>([
-		['Departure', ticket.departure ? fmtDate(ticket.departure) : null],
+		['Departure', fmtDateOrNull(ticket.departure)],
 		[
 			'Place',
 			ticket.coach || ticket.seat
@@ -33,7 +33,7 @@
 		],
 		['PNR', ticket.pnr],
 		['Ticket number', ticket.ticketNumber],
-		['Purchased', ticket.purchased ? fmtDate(ticket.purchased) : null]
+		['Purchased', fmtDateOrNull(ticket.purchased)]
 	]);
 </script>
 
