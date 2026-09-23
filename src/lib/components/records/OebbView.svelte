@@ -40,9 +40,7 @@
 		font-size: 0.8rem;
 	}
 	.note {
-		margin: 0.5rem 0 0;
-		font-size: 0.8rem;
-		color: var(--ink-soft);
+		margin-top: 0.5rem;
 	}
 	.empty {
 		margin: 0;

@@ -72,7 +72,7 @@
 {#if undecoded}
 	<details class="raw readout">
 		<summary>{undecoded.label} ({undecoded.hex.length / 2} bytes)</summary>
-		<code class="hex">{undecoded.hex}</code>
+		<code class="hex-block">{undecoded.hex}</code>
 	</details>
 {/if}
 
@@ -89,9 +89,6 @@
 		flex-wrap: wrap;
 	}
 	.note {
-		margin: 0;
-		font-size: 0.8rem;
-		color: var(--ink-soft);
 		border-top: 1px dashed var(--paper-edge);
 		padding-top: 0.5rem;
 	}
@@ -106,12 +103,9 @@
 		font-size: 0.78rem;
 		color: var(--ink-soft);
 	}
-	.hex {
-		display: block;
+	.hex-block {
 		margin-top: 0.4rem;
-		font-size: 0.72rem;
 		line-height: 1.5;
-		word-break: break-all;
 		color: var(--ink-soft);
 	}
 </style>

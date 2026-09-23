@@ -164,14 +164,6 @@ openssl pkcs12 -in Certificates.p12 -nocerts -nodes -out key.pem</code
 		opacity: 0.45;
 		cursor: default;
 	}
-	.note {
-		margin: 0;
-		font-size: 0.8rem;
-		color: var(--ink-soft);
-	}
-	.note.warn {
-		color: var(--signal-red);
-	}
 	pre {
 		margin: 0;
 		overflow-x: auto;

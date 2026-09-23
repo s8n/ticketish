@@ -145,9 +145,7 @@
 
 <style>
 	.note {
-		margin: 0.7rem 0 0;
-		font-size: 0.8rem;
-		color: var(--ink-soft);
+		margin-top: 0.7rem;
 		border-top: 1px dashed var(--paper-edge);
 		padding-top: 0.5rem;
 	}

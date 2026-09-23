@@ -317,14 +317,6 @@
 		text-decoration: underline;
 		font-size: inherit;
 	}
-	.note {
-		margin: 0;
-		font-size: 0.8rem;
-		color: var(--ink-soft);
-	}
-	.note.warn {
-		color: var(--signal-red);
-	}
 	.held {
 		display: flex;
 		gap: 0.5rem;

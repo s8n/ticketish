@@ -98,7 +98,7 @@
 				{:else}
 					<details class="element">
 						<summary>{el.name} <span class="soft">({el.hex.length / 2} bytes)</span></summary>
-						<code class="hex readout">{el.hex}</code>
+						<code class="hex-block readout">{el.hex}</code>
 					</details>
 				{/if}
 			{/each}
@@ -171,16 +171,5 @@
 		word-break: break-all;
 		display: block;
 		margin-top: 0.2rem;
-	}
-	.hex {
-		font-size: 0.72rem;
-		word-break: break-all;
-		display: block;
-		margin-top: 0.3rem;
-	}
-	.note {
-		margin: 0;
-		font-size: 0.8rem;
-		color: var(--ink-soft);
 	}
 </style>

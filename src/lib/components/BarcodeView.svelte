@@ -209,14 +209,6 @@
 		opacity: 0.45;
 		cursor: default;
 	}
-	.note {
-		margin: 0;
-		font-size: 0.8rem;
-		color: var(--ink-soft);
-	}
-	.note.warn {
-		color: var(--signal-red);
-	}
 	.rawtoggle summary {
 		font-size: 0.8rem;
 		color: var(--ink-soft);

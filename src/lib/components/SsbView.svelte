@@ -164,7 +164,7 @@
 		<p class="note">{envelope.unsupported ?? 'This SSB ticket type is not decoded yet.'}</p>
 		<details class="readout">
 			<summary>Raw body ({envelope.bodyHex.length / 2} bytes)</summary>
-			<code class="hex">{envelope.bodyHex}</code>
+			<code class="hex-block">{envelope.bodyHex}</code>
 		</details>
 	{/if}
 
@@ -213,11 +213,5 @@
 		cursor: pointer;
 		font-size: 0.8rem;
 		color: var(--ink-soft);
-	}
-	.hex {
-		font-size: 0.72rem;
-		word-break: break-all;
-		display: block;
-		margin-top: 0.3rem;
 	}
 </style>

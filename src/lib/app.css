@@ -163,6 +163,26 @@ button {
 	color: var(--ink-soft);
 }
 
+/* A line of explanation under a view, and the same in red where it warns.
+   Views that set theirs off with a rule or a margin add only that. */
+.note {
+	margin: 0;
+	font-size: 0.8rem;
+	color: var(--ink-soft);
+}
+.note.warn {
+	color: var(--signal-red);
+}
+
+/* Bytes nothing has been found in, shown whole: they wrap anywhere, since
+   there is no word in them to wrap at. */
+.hex-block {
+	display: block;
+	margin-top: 0.3rem;
+	font-size: 0.72rem;
+	word-break: break-all;
+}
+
 /* Anything shown as it came off the barcode: a hex dump, an undecoded body,
    the decoded data as a tree. Set in mono by whatever draws it, and boxed off
    here so that machine output is visibly not part of the ticket's face.
