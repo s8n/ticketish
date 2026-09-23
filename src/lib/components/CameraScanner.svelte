@@ -13,6 +13,8 @@
 	let error = $state<string | null>(null);
 	let found = false;
 	let running = false;
+	/** Set once the scanner is closed, and never unset: it is not reopened. */
+	let disposed = false;
 	let stream: MediaStream | null = null;
 
 	// Reused between frames; allocating a canvas per frame is wasteful.
@@ -65,6 +67,7 @@
 	}
 
 	function stop() {
+		disposed = true;
 		running = false;
 		stream?.getTracks().forEach((t) => t.stop());
 		stream = null;
@@ -94,13 +97,22 @@
 	onMount(() => {
 		(async () => {
 			try {
-				stream = await openCamera();
+				// Closing can happen while either of these is still pending. A
+				// stream that arrives after it has nobody left to stop it, and
+				// the camera light would stay on, so each await is checked.
+				const opened = await openCamera();
+				if (disposed) {
+					opened.getTracks().forEach((t) => t.stop());
+					return;
+				}
+				stream = opened;
 				video!.srcObject = stream;
 				await video!.play();
+				if (disposed) return;
 				running = true;
 				loop();
 			} catch (e) {
-				error = e instanceof Error ? e.message : String(e);
+				if (!disposed) error = errorMessage(e);
 			}
 		})();
 		return stop;
