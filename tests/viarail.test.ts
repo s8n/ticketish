@@ -12,66 +12,8 @@ import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
 import { isViaRail, parseViaRail } from '../src/lib/tickets/viarail/viarail.ts';
 import { ascii } from './helpers/build.ts';
+import { buildViaRail as build } from './helpers/viarail.ts';
 
-interface Parts {
-	ticketNumber?: string;
-	surname?: string;
-	car?: string;
-	seat?: string;
-	departureStation?: string;
-	arrivalStation?: string;
-	train?: string;
-	departureTime?: string;
-	givenName?: string;
-	loyalty?: string;
-	inventoryClass?: string;
-	passengerType?: string;
-	pnr?: string;
-	purchaseTime?: string;
-	/** Printers pad past the last field; the samples run to 130. */
-	length?: number;
-}
-
-/** Lay the fixed-width record out field by field, then pad. */
-function build(parts: Parts = {}): Uint8Array {
-	const p = {
-		ticketNumber: '1234567890123',
-		surname: 'TESTSURNAME',
-		car: '1',
-		seat: '11B',
-		departureStation: 'AAAA',
-		arrivalStation: 'ZZZZ',
-		train: 'VIA99',
-		departureTime: '202406021607',
-		givenName: 'TESTGIVEN',
-		loyalty: 'P3',
-		inventoryClass: 'J',
-		passengerType: 'ADT',
-		pnr: 'K00XYZ',
-		purchaseTime: '20240601101002',
-		length: 130,
-		...parts
-	};
-
-	const s =
-		p.ticketNumber + // 0
-		p.surname.padEnd(30, ' ') + // 13
-		p.car.padEnd(4, ' ') + // 43
-		p.seat.padEnd(3, ' ') + // 47
-		p.departureStation + // 50
-		p.arrivalStation + // 54
-		p.train.padEnd(7, ' ') + // 58
-		p.departureTime + // 65
-		p.givenName.padEnd(20, ' ') + // 77
-		p.loyalty.padEnd(2, ' ') + // 97
-		p.inventoryClass.padEnd(2, ' ') + // 99
-		p.passengerType.padEnd(3, ' ') + // 101
-		p.pnr + // 104
-		p.purchaseTime; // 110
-
-	expect(s.length).toBe(124);
-	return ascii(s.padEnd(p.length, ' '));
-}
 
 describe('VIA Rail boarding passes', () => {
 	it('reads the fields the boarding pass also prints', () => {

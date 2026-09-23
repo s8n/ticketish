@@ -12,6 +12,7 @@ mapping can be written out as a wallet pass:
 - TCDD
 - SSB1, as VR issues it
 - HŽPP, in the plaintext form (the encrypted one cannot be read)
+- VIA Rail
 
 It sits with the barcode because a pass is the same payload in another
 container rather than a reading of it. Passes are built and signed in the

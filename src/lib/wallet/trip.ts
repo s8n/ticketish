@@ -42,6 +42,7 @@ import { elbTrip } from './extract/elb.ts';
 import { tcddTrip } from './extract/tcdd.ts';
 import { ssb1Trip } from './extract/ssb1.ts';
 import { hzppTrip } from './extract/hzpp.ts';
+import { viaRailTrip } from './extract/viarail.ts';
 
 export type { TripField, TripSummary } from './summary.ts';
 
@@ -96,6 +97,9 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 		needs: ['stations'],
 		map: (c, tables) => hzppTrip(c.ticket, tables)
 	},
+	viarail: {
+		map: (c) => viaRailTrip(c.ticket)
+	},
 	bob: null,
 	// Everything below reads fine in the app but has no wallet mapping yet.
 	// Adding one is a matter of writing the extractor above and pointing the
@@ -109,7 +113,6 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 	trenitalia: null,
 	eav: null,
 	mav: null,
-	viarail: null,
 	'cd-legacy': null,
 	nsb: null,
 	uz: null,
