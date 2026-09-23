@@ -147,30 +147,48 @@ export async function tripFor(ticket: ParsedTicket): Promise<TripSummary | null>
  * thing that should be a surprise.
  */
 export function previewFields(trip: TripSummary): TripField[] {
+	return tripRows(trip).map(({ label, value }) => ({ label, value }));
+}
+
+/** A filled field of the trip, with an id the writers pick rows by. */
+export interface TripRow extends TripField {
+	/** Stable per field; `detail0`, `detail1` and so on for the details. */
+	id: string;
+}
+
+/**
+ * Every filled field of the trip, labelled and in one order, for the preview
+ * and for each writer to take the rows it has room for. Times are shown as
+ * written, with a space for the T. Keeping the labels here is what keeps the
+ * preview, the two wallets and the calendar saying the same thing.
+ */
+export function tripRows(trip: TripSummary): TripRow[] {
 	const at = (value: string | undefined) => value?.replace('T', ' ');
-	const rows: [string, string | undefined][] = [
+	const rows: [string, string, string | undefined][] = [
 		// the pass says ticketish for itself; this is what it says about the
 		// operator, which is the part that comes off the ticket
-		['Operator', trip.issuer],
-		['Ticket', trip.product],
-		['From', trip.from],
-		['To', trip.to],
-		['Route', trip.via],
-		['Train', trip.train],
-		['Departs', at(trip.departure)],
-		['Arrives', at(trip.arrival)],
-		['Class', trip.travelClass],
-		['Coach', trip.coach],
-		['Seat', trip.seat],
-		['Passenger', trip.passenger],
-		['Valid from', at(trip.validFrom)],
-		['Valid until', at(trip.validUntil)],
-		['Ticket number', trip.ticketId],
-		['Booking reference', trip.reference],
-		['Price', trip.price],
-		...trip.details.map((d) => [d.label, d.value] as [string, string])
+		['operator', 'Operator', trip.issuer],
+		['product', 'Ticket', trip.product],
+		['from', 'From', trip.from],
+		['to', 'To', trip.to],
+		['route', 'Route', trip.via],
+		['train', 'Train', trip.train],
+		['departs', 'Departs', at(trip.departure)],
+		['arrives', 'Arrives', at(trip.arrival)],
+		['class', 'Class', trip.travelClass],
+		['coach', 'Coach', trip.coach],
+		['seat', 'Seat', trip.seat],
+		['passenger', 'Passenger', trip.passenger],
+		['validFrom', 'Valid from', at(trip.validFrom)],
+		['validUntil', 'Valid until', at(trip.validUntil)],
+		['ticketId', 'Ticket number', trip.ticketId],
+		['reference', 'Booking reference', trip.reference],
+		['price', 'Price', trip.price],
+		...trip.details.map((d, i) => [`detail${i}`, d.label, d.value] as [string, string, string])
 	];
-	return rows.filter(([, value]) => !!value).map(([label, value]) => ({ label, value: value! }));
+	return rows
+		.filter(([, , value]) => !!value)
+		.map(([id, label, value]) => ({ id, label, value: value! }));
 }
 
 /**

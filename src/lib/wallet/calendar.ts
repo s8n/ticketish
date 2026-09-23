@@ -20,7 +20,7 @@
  * adding the same ticket twice updates one entry rather than making two.
  */
 import { isoDate, plusDays } from '../tickets/dates.ts';
-import { tripFileStem, tripTitle, APP_NAME, UNOFFICIAL_NOTE, type TripSummary } from './trip.ts';
+import { tripFileStem, tripRows, tripTitle, APP_NAME, UNOFFICIAL_NOTE, type TripSummary } from './trip.ts';
 import { localParts, utcOffsetLabel } from './time.ts';
 
 /**
@@ -203,24 +203,17 @@ function summary(trip: TripSummary): string {
 	return trip.train ? `${trip.train}: ${route}` : route;
 }
 
-/** Everything else the mapping found, one labelled line each. */
+/**
+ * Everything else the mapping found, one labelled line each. The stations,
+ * the train and the times are in the summary and the event's own start and
+ * end, so they are not repeated.
+ */
 function description(trip: TripSummary): string {
-	const rows: [string, string | undefined][] = [
-		['Operator', trip.issuer],
-		['Ticket', trip.product],
-		['Class', trip.travelClass],
-		['Coach', trip.coach],
-		['Seat', trip.seat],
-		['Passenger', trip.passenger],
-		['Route', trip.via],
-		['Valid from', trip.validFrom?.replace('T', ' ')],
-		['Valid until', trip.validUntil?.replace('T', ' ')],
-		['Ticket number', trip.ticketId],
-		['Booking reference', trip.reference],
-		['Price', trip.price]
-	];
-	const filled = rows.filter(([, value]) => !!value).map(([label, value]) => `${label}: ${value}`);
-	return [...filled, '', UNOFFICIAL_NOTE].join('\n');
+	const elsewhere = new Set(['from', 'to', 'train', 'departs', 'arrives']);
+	const lines = tripRows(trip)
+		.filter(({ id }) => !elsewhere.has(id))
+		.map(({ label, value }) => `${label}: ${value}`);
+	return [...lines, '', UNOFFICIAL_NOTE].join('\n');
 }
 
 export const ICS_MIME = 'text/calendar';

@@ -32,6 +32,7 @@ import type { SigningIdentity } from './identity.ts';
 import {
 	APP_NAME,
 	tripFileStem,
+	tripRows,
 	tripTitle,
 	UNOFFICIAL_LABEL,
 	UNOFFICIAL_NOTE,
@@ -139,15 +140,12 @@ export function buildPassJson(input: PassJsonInput): Record<string, unknown> {
 		push(auxiliary, 'passenger', 'Passenger', trip.passenger);
 	}
 
-	push(back, 'product', 'Product', journey ? trip.product : undefined);
-	push(back, 'route', 'Route', trip.via);
-	push(back, 'validFrom', 'Valid from', trip.validFrom?.replace('T', ' '));
-	push(back, 'validUntil', 'Valid until', trip.validUntil?.replace('T', ' '));
-	push(back, 'ticketId', 'Ticket number', trip.ticketId);
-	push(back, 'reference', 'Booking reference', trip.reference);
-	push(back, 'price', 'Price', trip.price);
-	for (const [i, detail] of trip.details.entries()) {
-		push(back, `detail${i}`, detail.label, detail.value);
+	// The back takes what the front had no room for. A period pass names its
+	// product on the front already.
+	const onBack = new Set(['route', 'validFrom', 'validUntil', 'ticketId', 'reference', 'price']);
+	if (journey) onBack.add('product');
+	for (const row of tripRows(trip)) {
+		if (onBack.has(row.id) || row.id.startsWith('detail')) push(back, row.id, row.label, row.value);
 	}
 	back.push({ key: 'unofficial', label: UNOFFICIAL_LABEL, value: UNOFFICIAL_NOTE });
 

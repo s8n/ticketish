@@ -47,6 +47,7 @@ import type { BarcodeSymbology } from '../tickets/types.ts';
 import { importPrivateKey } from './identity.ts';
 import {
 	APP_NAME,
+	tripRows,
 	tripTitle,
 	UNOFFICIAL_LABEL,
 	UNOFFICIAL_NOTE,
@@ -208,31 +209,14 @@ export function googlePassKind(
 
 /** The rows that go under the pass, whatever shape it is. */
 function textModules(trip: TripSummary, exclude: Set<string>): TextModule[] {
-	const rows: TextModule[] = [];
-	const add = (header: string, body: string | undefined, id: string) => {
-		if (body && !exclude.has(id)) rows.push({ header, body, id });
-	};
-	const departure = localParts(trip.departure);
-
-	// the product names the pass when there is no route to name it, so it only
-	// needs a row of its own when the title is saying something else
-	add('Ticket', trip.product === tripTitle(trip) ? undefined : trip.product, 'product');
-	add('Train', trip.train, 'train');
-	add(
-		'Departs',
-		departure ? `${departure.date} ${departure.time ?? ''}`.trim() : undefined,
-		'departs'
-	);
-	add('Class', trip.travelClass, 'class');
-	add('Coach', trip.coach, 'coach');
-	add('Seat', trip.seat, 'seat');
-	add('Passenger', trip.passenger, 'passenger');
-	add('Valid from', trip.validFrom?.replace('T', ' '), 'validFrom');
-	add('Valid until', trip.validUntil?.replace('T', ' '), 'validUntil');
-	add('Ticket number', trip.ticketId, 'ticketId');
-	add('Booking reference', trip.reference, 'reference');
-	add('Price', trip.price, 'price');
-	for (const [i, detail] of trip.details.entries()) add(detail.label, detail.value, `detail${i}`);
+	// The operator, the stations and the arrival are in the pass's own
+	// fields. The product names the pass when there is no route to name it,
+	// so it only needs a row of its own when the title is saying something else.
+	const elsewhere = new Set(['operator', 'from', 'to', 'route', 'arrives']);
+	if (trip.product === tripTitle(trip)) elsewhere.add('product');
+	const rows: TextModule[] = tripRows(trip)
+		.filter(({ id }) => !elsewhere.has(id) && !exclude.has(id))
+		.map(({ id, label, value }) => ({ header: label, body: value, id }));
 
 	// the note keeps a slot of its own rather than taking its chances with the
 	// cap, since it is the one row that has to be there
