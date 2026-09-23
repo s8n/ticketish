@@ -38,9 +38,12 @@ for zip_name, sub in [
     ("Muster 918-9.2025-04-03-11-58-17.zip", "9189"),
 ]:
     path = SAMPLES / zip_name
-    if path.exists():
-        with zipfile.ZipFile(path) as z:
-            z.extractall(LOCAL / sub)
+    # Both are needed: a missing one would regenerate half the fixtures and
+    # leave the rest as they were, which looks like a clean run.
+    if not path.exists():
+        sys.exit(f"missing {path.relative_to(REPO)}; download DB's Muster tickets first")
+    with zipfile.ZipFile(path) as z:
+        z.extractall(LOCAL / sub)
 
 FCB = {
     13: asn1tools.compile_files([ASN_DIR / "uicRailTicketData_v1.3.5.asn"], codec="uper"),
@@ -82,8 +85,10 @@ def barcodes_from_pdf(path):
                 if img.width < 100 or img.height < 100:
                     continue
                 out.extend(decode_image(img))
-            except Exception:
-                pass
+            except Exception as exc:  # noqa: BLE001 - the page render below still runs
+                # an embedded image may be a logo in a format PIL cannot open;
+                # the page is rendered whole below when nothing was found
+                print(f"   skipped image {xref} in {path.name}: {exc}", file=sys.stderr)
         if not out:
             pix = page.get_pixmap(dpi=300)
             img = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
@@ -183,6 +188,13 @@ def main():
             sources.append((slug(p.stem), barcodes_from_pdf(p)))
         elif p.suffix.lower() in (".png", ".jpeg", ".jpg"):
             sources.append((slug(p.stem), decode_image(Image.open(p))))
+
+    # Fixtures are named after their source file, so two sources with the same
+    # stem would write over each other's without a word.
+    names = [name for name, _ in sources]
+    clashes = sorted({n for n in names if names.count(n) > 1})
+    if clashes:
+        sys.exit(f"sources share a name, and their fixtures would collide: {clashes}")
 
     seen = set()
     for name, codes in sources:
