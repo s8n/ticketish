@@ -86,6 +86,29 @@ def write(path: pathlib.Path, stations: dict[str, str], key) -> None:
     print(f"{path.relative_to(REPO)}: {len(ordered)} entries")
 
 
+def keep_register_apart(catalogue: dict[str, str]) -> None:
+    """Drop from the PLC register any code the catalogue now has.
+
+    The two tables must never hold the same code (loadUicStations merges them
+    without arbitrating, and they come on different terms), and the register
+    is only rebuilt by hand from an export this workflow does not have. So a
+    code the catalogue gains is taken out of the register here. It is a
+    subtraction, which is all the register may undergo without its export.
+    """
+    path = DATA / "plc-stations.json"
+    if not path.exists():
+        return
+    table = json.loads(path.read_text(encoding="utf-8"))
+    stations = table["stations"]
+    covered = [code for code in stations if code in catalogue]
+    if not covered:
+        return
+    for code in covered:
+        del stations[code]
+    path.write_text(json.dumps(table, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
+    print(f"{path.relative_to(REPO)}: dropped {len(covered)} codes the catalogue now covers")
+
+
 def main() -> int:
     try:
         text = fetch()
@@ -117,6 +140,7 @@ def main() -> int:
 
     write(DATA / "uic-stations.json", uic, int)
     write(DATA / "benerail-stations.json", benerail, str)
+    keep_register_apart(uic)
     return 0
 
 

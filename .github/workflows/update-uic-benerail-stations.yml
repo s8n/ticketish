@@ -32,7 +32,7 @@ jobs:
 
       - name: Commit and push if changed
         run: |
-          paths="src/lib/tickets/data/uic-stations.json src/lib/tickets/data/benerail-stations.json"
+          paths="src/lib/tickets/data/uic-stations.json src/lib/tickets/data/benerail-stations.json src/lib/tickets/data/plc-stations.json"
           if git diff --quiet -- $paths; then
             echo "No changes to the station name tables."
             exit 0
