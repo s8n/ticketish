@@ -28,38 +28,39 @@ export interface DbVuData {
 	products: DbVuProduct[];
 }
 
-/** An unsigned big-endian integer of `len` bytes at `off`, the way the record counts fields. */
-const uintAt = (d: Uint8Array, off: number, len: number) => beUint(d, off, off + len);
+/** An unsigned big-endian integer of `length` bytes at `offset`, the way the record counts fields. */
+const uintAt = (data: Uint8Array, offset: number, length: number) =>
+	beUint(data, offset, offset + length);
 
 function parseDbVu(record: RawRecord): DbVuData {
 	if (record.version !== 1) throw new Error(`unsupported 0080VU version ${record.version}`);
-	const d = record.data;
-	let off = 5;
-	const travellerCount = d[off++];
-	const numProducts = d[off++];
+	const data = record.data;
+	let offset = 5;
+	const travellerCount = data[offset++];
+	const numProducts = data[offset++];
 	const products: DbVuProduct[] = [];
 	for (let i = 0; i < numProducts; i++) {
-		const authorizationNumber = uintAt(d, off, 4);
-		const kvpOrgId = uintAt(d, off + 4, 2);
-		const productNumber = uintAt(d, off + 6, 2);
-		const pvOrgId = uintAt(d, off + 8, 2);
-		const validFrom = vdvDateTime(d.subarray(off + 10, off + 14));
-		const validTo = vdvDateTime(d.subarray(off + 14, off + 18));
-		off += 18;
+		const authorizationNumber = uintAt(data, offset, 4);
+		const kvpOrgId = uintAt(data, offset + 4, 2);
+		const productNumber = uintAt(data, offset + 6, 2);
+		const pvOrgId = uintAt(data, offset + 8, 2);
+		const validFrom = vdvDateTime(data.subarray(offset + 10, offset + 14));
+		const validTo = vdvDateTime(data.subarray(offset + 14, offset + 18));
+		offset += 18;
 		let price: number | null = null;
 		let sequenceNumber: number | null = null;
 		let dataHex: string;
-		if (d[off] === 0x85) {
+		if (data[offset] === 0x85) {
 			// "separate data" variant: 0x85, total length, then TLV product data
-			const totalLen = d[off + 1];
-			dataHex = hex(d.subarray(off + 2, off + totalLen));
-			off += totalLen;
+			const totalLength = data[offset + 1];
+			dataHex = hex(data.subarray(offset + 2, offset + totalLength));
+			offset += totalLength;
 		} else {
-			price = uintAt(d, off, 3);
-			sequenceNumber = uintAt(d, off + 3, 4);
-			const fieldsLen = d[off + 7];
-			dataHex = hex(d.subarray(off + 8, off + 8 + fieldsLen));
-			off += 8 + fieldsLen;
+			price = uintAt(data, offset, 3);
+			sequenceNumber = uintAt(data, offset + 3, 4);
+			const fieldsLength = data[offset + 7];
+			dataHex = hex(data.subarray(offset + 8, offset + 8 + fieldsLength));
+			offset += 8 + fieldsLength;
 		}
 		products.push({
 			authorizationNumber,
