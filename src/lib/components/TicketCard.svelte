@@ -186,9 +186,9 @@
 		     belongs with the barcode rather than under the card: both are ways
 		     of carrying the symbol away, and neither is a reading of it. -->
 		<WalletExport {ticket} />
-	{:else if info.view}
-		{@const FormatView = info.view}
-		<FormatView {...info.props?.(container)} />
+	{:else if info.render}
+		{@const drawn = info.render(container)}
+		<drawn.view {...drawn.props} />
 	{:else if container.kind === 'text'}
 		<pre class="text-payload readout">{container.text}</pre>
 		<p class="note">This barcode carries plain text, not any form of supported ticket data.</p>

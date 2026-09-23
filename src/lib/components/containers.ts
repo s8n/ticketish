@@ -73,14 +73,29 @@ interface ContainerEntry<K extends Kind> {
 	/** The same for the airline designators. */
 	needsAirlines?: boolean;
 	/**
-	 * The component that draws this container's data. Absent for the envelope
-	 * formats, whose records each get their own view, and for the two that the
-	 * card renders inline because they have no data to lay out.
+	 * The component that draws this container's data, with its props. Absent
+	 * for the envelope formats, whose records each get their own view, and for
+	 * the two that the card renders inline because they have no data to lay
+	 * out. Built with `draw`, so the props are checked against the component.
 	 */
+	render?: (c: Of<K>) => Drawn;
+}
+
+/** A view and the props it is drawn with, checked against each other. */
+export interface Drawn {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	view?: Component<any>;
-	/** The props that view takes, which are named per format. */
-	props?: (c: Of<K>) => Record<string, unknown>;
+	view: Component<any>;
+	props: Record<string, unknown>;
+}
+
+/**
+ * Pair a view with its props. The props are not used to infer the view's
+ * prop type, so a misnamed or mistyped prop is an error here rather than an
+ * undefined inside the view.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function draw<P extends Record<string, any>>(view: Component<P>, props: NoInfer<P>): Drawn {
+	return { view, props };
 }
 
 const rics = (
@@ -107,8 +122,7 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 	rsp6: {
 		label: (c) => (c.ticket.ticketType === '08' ? 'RSP6 railcard' : 'RSP6'),
 		issuer: (c) => `National Rail (issuer ${c.ticket.issuerId})`,
-		view: Rsp6View,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(Rsp6View, { ticket: c.ticket })
 	},
 	swisspass: {
 		label: () => 'SwissPass / NOVA',
@@ -128,8 +142,7 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 		},
 		needsIssuerNames: true,
 		needsNovaOrgs: true,
-		view: SwissPassView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(SwissPassView, { ticket: c.ticket })
 	},
 	vdv: {
 		label: () => 'VDV-KA',
@@ -140,59 +153,50 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 			// first and fills the name in, the way it did before any table existed
 			return vdvOrgName(vdvOrgs, t.productOrgId) ?? `VDV org ${t.productOrgId}`;
 		},
-		view: VdvView,
-		props: (c) => ({ barcode: c.barcode })
+		render: (c) => draw(VdvView, { barcode: c.barcode })
 	},
 	ssb: {
 		label: (c) => `SSB v${c.envelope.version}`,
 		issuer: (c, ctx) => rics(c.envelope.issuerRics, 'SSB', ctx),
 		needsIssuerNames: true,
-		view: SsbView,
-		props: (c) => ({ envelope: c.envelope })
+		render: (c) => draw(SsbView, { envelope: c.envelope })
 	},
 	ssb1: {
 		label: (c) => `SSB1 v${c.ticket.version}`,
 		issuer: (c, ctx) => rics(c.ticket.issuerRics, 'SSB1', ctx),
 		needsIssuerNames: true,
-		view: Ssb1View,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(Ssb1View, { ticket: c.ticket })
 	},
 	renfe: {
 		label: () => 'Renfe',
 		issuer: () => 'Renfe',
-		view: RenfeView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(RenfeView, { ticket: c.ticket })
 	},
 	tcdd: {
 		label: () => 'TCDD',
 		issuer: () => 'TCDD Taşımacılık',
-		view: TcddView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(TcddView, { ticket: c.ticket })
 	},
 	trenitalia: {
 		label: () => 'Trenitalia',
 		issuer: () => 'Trenitalia',
-		view: TrenitaliaView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(TrenitaliaView, { ticket: c.ticket })
 	},
 	eav: {
 		label: () => 'EAV',
 		issuer: () => 'EAV / UNICO Campania',
-		view: EavView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(EavView, { ticket: c.ticket })
 	},
 	mav: {
 		label: (c) => `MÁV v${c.ticket.version}`,
 		issuer: (c, { issuerNames }) => ricsName(c.ticket.issuerRics, issuerNames) ?? 'MÁV',
 		needsIssuerNames: true,
-		view: MavView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(MavView, { ticket: c.ticket })
 	},
 	viarail: {
 		label: () => 'VIA Rail',
 		issuer: () => 'VIA Rail Canada',
-		view: ViaRailView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(ViaRailView, { ticket: c.ticket })
 	},
 	bcbp: {
 		label: (c) => (c.ticket.version === null ? 'IATA BCBP' : `IATA BCBP v${c.ticket.version}`),
@@ -215,26 +219,22 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 			);
 		},
 		needsAirlines: true,
-		view: BcbpView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(BcbpView, { ticket: c.ticket })
 	},
 	hzpp: {
 		label: (c) => (c.ticket.encrypted ? 'HŽPP (encrypted)' : 'HŽPP'),
 		issuer: () => 'HŽPP',
-		view: HzppView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(HzppView, { ticket: c.ticket })
 	},
 	'cd-legacy': {
 		label: () => 'ČD #CD01',
 		issuer: () => 'České dráhy',
-		view: CdLegacyView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(CdLegacyView, { ticket: c.ticket })
 	},
 	nsb: {
 		label: () => 'NSB',
 		issuer: () => 'NSB / Vy',
-		view: NsbView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(NsbView, { ticket: c.ticket })
 	},
 	bob: {
 		label: () => 'BoB',
@@ -243,20 +243,17 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 		// register names most ids; one it has not heard of shows as its number,
 		// since ids are allocated as participants join.
 		issuer: (c) => bobParticipantLabel(c.ticket.issuer.issuerId),
-		view: BobView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(BobView, { ticket: c.ticket })
 	},
 	uz: {
 		label: () => 'UZ boarding document',
 		issuer: () => 'Укрзалізниця (UZ)',
-		view: UzView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(UzView, { ticket: c.ticket })
 	},
 	'sncf-eticket': {
 		label: () => 'SNCF e-billet',
 		issuer: () => 'SNCF',
-		view: SncfETicketView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(SncfETicketView, { ticket: c.ticket })
 	},
 	elb: {
 		label: () => 'ELB (Element List Barcode)',
@@ -266,8 +263,7 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 		// Eurostar named as the carrier inside the record rather than as issuer.
 		issuer: (c) =>
 			({ IV: 'Eurostar', IZ: 'Eurostar', DV: 'SNCF' })[c.ticket.ticketCode] ?? 'ELB ticket',
-		view: ElbView,
-		props: (c) => ({ ticket: c.ticket })
+		render: (c) => draw(ElbView, { ticket: c.ticket })
 	},
 	'kbv-eau': {
 		label: () => 'KBV eAU (Muster 1)',
@@ -276,8 +272,7 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 		// an entry without an issuer at all reads as an unrecognised payload.
 		issuer: (c) =>
 			c.certificate.bsnr ? `Practice ${c.certificate.bsnr}` : 'Medical practice',
-		view: EauView,
-		props: (c) => ({ certificate: c.certificate })
+		render: (c) => draw(EauView, { certificate: c.certificate })
 	},
 	text: {
 		label: () => 'Plain text',
