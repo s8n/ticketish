@@ -79,30 +79,31 @@ export function parseTcdd(data: Uint8Array): TcddTicket {
 	const fields = fieldsOf(data);
 	if (!fields) throw new Error('not a TCDD record');
 	const magic = fields[0].startsWith('TCDD_') ? 0 : 1;
-	const f = (i: number) => fields[magic + i] ?? '';
+	/** Field `i` counted from the magic, which the newer layout puts second. */
+	const field = (i: number) => fields[magic + i] ?? '';
 	const last = fields[fields.length - 1];
 	const checksum = /^[0-9a-f]{40}$/.test(last) ? last : null;
 
 	// "tcddprod" in the slot the older layout uses for a version digit
-	const variant: TcddVariant = /^\d+$/.test(f(1)) ? 'classic' : 'tcddprod';
+	const variant: TcddVariant = /^\d+$/.test(field(1)) ? 'classic' : 'tcddprod';
 
 	if (variant === 'classic') {
 		if (fields.length < 21) throw new Error('truncated TCDD record');
 		return {
 			variant,
-			ticketNumber: f(4),
-			pnr: f(5),
-			departure: toIso(f(6)),
-			purchased: toIso(f(20)),
-			trainNumber: trainOf(f(11)),
-			originCode: f(12),
-			destinationCode: f(13),
-			coach: f(15),
-			seat: f(16),
-			price: money(f(18)),
-			fullPrice: money(f(19)),
+			ticketNumber: field(4),
+			pnr: field(5),
+			departure: toIso(field(6)),
+			purchased: toIso(field(20)),
+			trainNumber: trainOf(field(11)),
+			originCode: field(12),
+			destinationCode: field(13),
+			coach: field(15),
+			seat: field(16),
+			price: money(field(18)),
+			fullPrice: money(field(19)),
 			checksum,
-			extraFields: [f(7), f(8), f(9), f(10), f(14), f(17), f(25)].filter(
+			extraFields: [field(7), field(8), field(9), field(10), field(14), field(17), field(25)].filter(
 				(v) => v && v !== 'null'
 			)
 		};
@@ -111,23 +112,23 @@ export function parseTcdd(data: Uint8Array): TcddTicket {
 	if (fields.length < 18) throw new Error('truncated TCDD record');
 	return {
 		variant,
-		ticketNumber: f(2),
-		pnr: f(3),
-		departure: toIso(f(4), true),
-		purchased: toIso(f(15)),
+		ticketNumber: field(2),
+		pnr: field(3),
+		departure: toIso(field(4), true),
+		purchased: toIso(field(15)),
 		// the train and its date share a field, as on the printed ticket
-		trainNumber: trainOf(f(8)),
+		trainNumber: trainOf(field(8)),
 		// station ids in the current backend's numbering, not the 9 digit ids
 		// the older layout uses
-		originCode: f(9),
-		destinationCode: f(10),
+		originCode: field(9),
+		destinationCode: field(10),
 		// no field here matches the printed car, so none is claimed as one
 		coach: '',
-		seat: f(13),
-		price: money(f(14)),
+		seat: field(13),
+		price: money(field(14)),
 		fullPrice: null,
 		checksum,
-		extraFields: [f(1), f(5), f(6), f(7), f(11), f(12), f(16), f(17)].filter(
+		extraFields: [field(1), field(5), field(6), field(7), field(11), field(12), field(16), field(17)].filter(
 			(v) => v && v !== 'null'
 		)
 	};
