@@ -4,7 +4,7 @@
 
 	import type { Ssb1Ticket } from '../tickets/ssb/ssb1.ts';
 	import { fmtDate } from '../tickets/format.ts';
-	import SimpleTicketView from './SimpleTicketView.svelte';
+	import SimpleTicketView, { type Row } from './SimpleTicketView.svelte';
 
 	let { ticket }: { ticket: Ssb1Ticket } = $props();
 
@@ -19,7 +19,7 @@
 			.join(', ')
 	);
 
-	const rows = $derived<[string, string | null | undefined][]>([
+	const rows = $derived<Row[]>([
 		[
 			'Departure',
 			ticket.validFrom

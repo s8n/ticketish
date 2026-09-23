@@ -4,7 +4,7 @@
 
 	import type { HzppSegment, HzppTicket } from '../tickets/hzpp/hzpp.ts';
 	import { fmtPrice, fmtZoned } from '../tickets/format.ts';
-	import SimpleTicketView from './SimpleTicketView.svelte';
+	import SimpleTicketView, { type Row } from './SimpleTicketView.svelte';
 	import RouteLine from './RouteLine.svelte';
 	import { loadUicStations, uicStationLabel } from '../tickets/stations.ts';
 	import { table } from './table.svelte.ts';
@@ -55,7 +55,7 @@
 			: null
 	);
 
-	const rows = $derived<[string, string | null | undefined][]>(
+	const rows = $derived<Row[]>(
 		ticket.encrypted
 			? []
 			: [

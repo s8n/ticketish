@@ -24,6 +24,7 @@
 		loadAirports
 	} from '../tickets/bcbp/codes.ts';
 	import { table } from './table.svelte.ts';
+	import type { Row } from './SimpleTicketView.svelte';
 
 	let { ticket }: { ticket: BcbpTicket } = $props();
 
@@ -78,7 +79,7 @@
 		return billed && billed !== flying ? billed : null;
 	};
 
-	const legRows = (leg: BcbpLeg): [string, string | null | undefined][] => [
+	const legRows = (leg: BcbpLeg): Row[] => [
 		['Flight date', fmtDateOrNull(leg.flightDate)],
 		// ElbView does the same: once a name is on the route line, the code it
 		// came from should still be somewhere on the card.
@@ -121,7 +122,7 @@
 		)
 	);
 
-	const bookingRows = $derived<[string, string | null | undefined][]>([
+	const bookingRows = $derived<Row[]>([
 		['Passenger', ticket.passengerName],
 		['Passenger type', ticket.passengerDescriptionLabel ?? ticket.passengerDescription],
 		['Electronic ticket', yesNo(ticket.electronicTicket)],
@@ -135,7 +136,7 @@
 		['Unaccounted for', ticket.trailing]
 	]);
 
-	const visible = (rows: [string, string | null | undefined][]) =>
+	const visible = (rows: Row[]) =>
 		rows.filter(([, v]) => v !== null && v !== undefined && v !== '');
 </script>
 

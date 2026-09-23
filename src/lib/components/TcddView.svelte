@@ -5,7 +5,7 @@
 	import type { TcddTicket } from '../tickets/tcdd/tcdd.ts';
 	import { loadTcddStations, tcddStationName } from '../tickets/tcdd/stations.ts';
 	import { fmtDateOrNull } from '../tickets/format.ts';
-	import SimpleTicketView from './SimpleTicketView.svelte';
+	import SimpleTicketView, { type Row } from './SimpleTicketView.svelte';
 	import { table } from './table.svelte.ts';
 
 	let { ticket }: { ticket: TcddTicket } = $props();
@@ -16,7 +16,7 @@
 	const hasRoute = $derived(!!(ticket.originCode || ticket.destinationCode));
 	const station = (code: string) => tcddStationName(stations.value, code);
 
-	const rows = $derived<[string, string | null | undefined][]>([
+	const rows = $derived<Row[]>([
 		['Departure', fmtDateOrNull(ticket.departure)],
 		[
 			'Place',

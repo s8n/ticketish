@@ -4,7 +4,7 @@
 
 	import type { SncfETicket } from '../tickets/sncf/eticket.ts';
 	import { fmtDateOrNull } from '../tickets/format.ts';
-	import SimpleTicketView from './SimpleTicketView.svelte';
+	import SimpleTicketView, { type Row } from './SimpleTicketView.svelte';
 	import { loadBenerailStations, benerailStationLabel } from '../tickets/stations.ts';
 	import { table } from './table.svelte.ts';
 
@@ -46,7 +46,7 @@
 			: null
 	);
 
-	const rows = $derived<[string, string | null | undefined][]>([
+	const rows = $derived<Row[]>([
 		['Travel date', travelDate],
 		['Class', classLabel],
 		['Passenger', passenger],

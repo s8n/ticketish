@@ -4,7 +4,7 @@
 
 	import type { TrenitaliaTicket } from '../tickets/trenitalia/trenitalia.ts';
 	import { fmtDateOrNull } from '../tickets/format.ts';
-	import SimpleTicketView from './SimpleTicketView.svelte';
+	import SimpleTicketView, { type Row } from './SimpleTicketView.svelte';
 
 	let { ticket }: { ticket: TrenitaliaTicket } = $props();
 
@@ -14,7 +14,7 @@
 			.join(' · ')
 	);
 
-	const rows = $derived<[string, string | null | undefined][]>([
+	const rows = $derived<Row[]>([
 		['Departure', fmtDateOrNull(ticket.departureDate)],
 		['Place', place || 'No reservation'],
 		['PNR', ticket.pnr || null],

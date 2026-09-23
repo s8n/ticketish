@@ -4,7 +4,7 @@
 
 	import type { UzDateTime, UzTicket } from '../tickets/uz/uz.ts';
 	import { fmtPrice } from '../tickets/format.ts';
-	import SimpleTicketView from './SimpleTicketView.svelte';
+	import SimpleTicketView, { type Row } from './SimpleTicketView.svelte';
 
 	let { ticket }: { ticket: UzTicket } = $props();
 
@@ -22,7 +22,7 @@
 			.join(' · ')
 	);
 
-	const rows = $derived<[string, string | null | undefined][]>([
+	const rows = $derived<Row[]>([
 		['Departs', fmtWhen(ticket.departure)],
 		['Arrives', fmtWhen(ticket.arrival)],
 		['Place', place],

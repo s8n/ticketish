@@ -3,16 +3,11 @@
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
 	import type { ViaRailTicket } from '../tickets/viarail/viarail.ts';
-	import { fmtDate } from '../tickets/format.ts';
-	import SimpleTicketView from './SimpleTicketView.svelte';
+	import { fmtDateTimeOrNull } from '../tickets/format.ts';
+	import SimpleTicketView, { type Row } from './SimpleTicketView.svelte';
 
 	let { ticket }: { ticket: ViaRailTicket } = $props();
 
-	/** Both timestamps are local time at the station, so neither is converted. */
-	function fmtLocal(value: string | null): string | null {
-		if (!value) return null;
-		return `${fmtDate(value.slice(0, 10))} ${value.slice(11, 16)}`;
-	}
 
 	const passenger = $derived([ticket.givenName, ticket.surname].filter(Boolean).join(' '));
 
@@ -22,8 +17,8 @@
 			.join(' · ')
 	);
 
-	const rows = $derived<[string, string | null | undefined][]>([
-		['Departs', fmtLocal(ticket.departureTime)],
+	const rows = $derived<Row[]>([
+		['Departs', fmtDateTimeOrNull(ticket.departureTime)],
 		['Place', place],
 		['Passenger', passenger],
 		['Passenger type', ticket.passengerTypeLabel],
@@ -31,7 +26,7 @@
 		['VIA Préférence', ticket.loyaltyLevel],
 		['PNR', ticket.pnr],
 		['Ticket number', ticket.ticketNumber],
-		['Purchased', fmtLocal(ticket.purchaseTime)]
+		['Purchased', fmtDateTimeOrNull(ticket.purchaseTime)]
 	]);
 </script>
 

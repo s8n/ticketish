@@ -5,7 +5,7 @@
 	import type { EauCertificate } from '../tickets/kbv/eau.ts';
 	import { READS_VERSION } from '../tickets/kbv/eau.ts';
 	import { fmtDateOrNull } from '../tickets/format.ts';
-	import SimpleTicketView from './SimpleTicketView.svelte';
+	import SimpleTicketView, { type Row } from './SimpleTicketView.svelte';
 
 	let { certificate }: { certificate: EauCertificate } = $props();
 
@@ -48,7 +48,7 @@
 			.join(', ')
 	);
 
-	const rows = $derived<[string, string | null | undefined][]>([
+	const rows = $derived<Row[]>([
 		['Unfit for work since', fmtDateOrNull(certificate.unfitSince)],
 		['Expected until', fmtDateOrNull(certificate.unfitUntil)],
 		['Assessed on', fmtDateOrNull(certificate.assessedOn)],

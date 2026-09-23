@@ -6,7 +6,7 @@
 	import { mavStationLabel } from '../tickets/mav/mav.ts';
 	import { fmtDateOrNull, fmtPrice, fmtZoned } from '../tickets/format.ts';
 	import { loadIssuerNames, ricsName } from '../tickets/uic/rics.ts';
-	import SimpleTicketView from './SimpleTicketView.svelte';
+	import SimpleTicketView, { type Row } from './SimpleTicketView.svelte';
 	import { loadUicStations } from '../tickets/stations.ts';
 	import { table } from './table.svelte.ts';
 
@@ -52,7 +52,7 @@
 		trip && trip.via.length ? trip.via.map(station).filter(Boolean).join(' · ') : null
 	);
 
-	const rows = $derived<[string, string | null | undefined][]>([
+	const rows = $derived<Row[]>([
 		['Departs', fmtTime(trip?.departureTime ?? null)],
 		['Class', classLabel],
 		['Valid for', trip ? fmtMinutes(trip.validityMinutes) : null],

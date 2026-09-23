@@ -19,6 +19,17 @@ export function fmtDate(iso: string | null | undefined): string {
 export const fmtDateOrNull = (iso: string | null | undefined): string | null =>
 	iso ? fmtDate(iso) : null;
 
+/**
+ * A local date-time to the minute, as a ticket prints it, or null. The value
+ * is the wall clock the issuer wrote, so nothing is converted, and seconds
+ * the barcode happens to carry are left off.
+ */
+export function fmtDateTimeOrNull(iso: string | null | undefined): string | null {
+	if (!iso) return null;
+	const time = iso.slice(11, 16);
+	return time ? `${fmtDate(iso.slice(0, 10))} ${time}` : fmtDate(iso.slice(0, 10));
+}
+
 export function fmtPrice(cents: number | undefined, currency = 'EUR', fract = 2): string | null {
 	if (cents === undefined) return null;
 	const value = cents / 10 ** fract;

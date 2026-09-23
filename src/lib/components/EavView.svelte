@@ -4,11 +4,11 @@
 
 	import type { EavTicket } from '../tickets/eav/eav.ts';
 	import { fmtDateOrNull } from '../tickets/format.ts';
-	import SimpleTicketView from './SimpleTicketView.svelte';
+	import SimpleTicketView, { type Row } from './SimpleTicketView.svelte';
 
 	let { ticket }: { ticket: EavTicket } = $props();
 
-	const rows = $derived<[string, string | null | undefined][]>([
+	const rows = $derived<Row[]>([
 		['Valid from', fmtDateOrNull(ticket.validFrom)],
 		['Valid until', fmtDateOrNull(ticket.validUntil)],
 		['PNR', ticket.pnr],
