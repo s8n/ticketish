@@ -94,7 +94,13 @@
 		}
 	}
 
+	let closeButton = $state<HTMLButtonElement>();
+
 	onMount(() => {
+		// The dialog takes focus while it is open and hands it back after, so a
+		// keyboard lands in it rather than on the page behind it.
+		const opener = document.activeElement as HTMLElement | null;
+		closeButton?.focus();
 		(async () => {
 			try {
 				// Closing can happen while either of these is still pending. A
@@ -115,11 +121,16 @@
 				if (!disposed) error = errorMessage(e);
 			}
 		})();
-		return stop;
+		return () => {
+			stop();
+			opener?.focus?.();
+		};
 	});
 </script>
 
-<div class="backdrop" role="dialog" aria-label="Camera barcode scanner">
+<svelte:window onkeydown={(e) => e.key === 'Escape' && close()} />
+
+<div class="backdrop" role="dialog" aria-modal="true" aria-label="Camera barcode scanner">
 	<div class="panel">
 		{#if error}
 			<p class="error">Camera unavailable: {error}</p>
@@ -133,7 +144,7 @@
 			</div>
 			<p class="hint">Point at the barcode: Aztec, QR, PDF417 or Data Matrix</p>
 		{/if}
-		<button class="close" onclick={close}>Close</button>
+		<button class="close" bind:this={closeButton} onclick={close}>Close</button>
 	</div>
 </div>
 
