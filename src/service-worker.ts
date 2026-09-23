@@ -6,25 +6,12 @@
 // Offline support: precache the app shell and all built assets (including the
 // zxing WASM and pdf.js worker, which Vite emits as hashed assets).
 import { build, files, prerendered, version } from '$service-worker';
+import { precacheList } from './lib/precache.ts';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 const CACHE = `ticketish-${version}`;
 
-/**
- * Files in static/ that the host reads as configuration rather than serving.
- * Precaching one is pointless at best: the install is all or nothing, so a
- * host that answers 404 for it would take every update down with it.
- */
-const NOT_SERVED = /\/_(headers|redirects|routes\.json)$/;
-
-// prerendered covers the pages beside the shell, such as /credits: an
-// attribution page that is only there online is not much of an attribution.
-const ASSETS = [
-	...build,
-	...files.filter((path) => !NOT_SERVED.test(path)),
-	...prerendered,
-	'/'
-];
+const ASSETS = precacheList(build, files, prerendered, '/');
 
 sw.addEventListener('install', (event) => {
 	// No skipWaiting here on purpose. A new worker that takes over mid-session
