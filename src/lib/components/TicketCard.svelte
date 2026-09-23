@@ -159,6 +159,7 @@
 						class="tab"
 						class:active={i === activeIdx}
 						class:failed={!!r.error}
+						aria-pressed={i === activeIdx}
 						onclick={() => (openIdx = i)}
 					>
 						{recordLabel(r.id, r.kind)}
@@ -167,12 +168,22 @@
 			{:else}
 				<!-- The format tab would otherwise be the card header chip a second
 				     time; "data" says what it holds, opposite the barcode tab. -->
-				<button class="tab" class:active={activeIdx === 0} onclick={() => (openIdx = 0)}>
+				<button
+					class="tab"
+					class:active={activeIdx === 0}
+					aria-pressed={activeIdx === 0}
+					onclick={() => (openIdx = 0)}
+				>
 					{envelopeLabel} data
 				</button>
 			{/if}
 			{#if showBarcode}
-				<button class="tab" class:active={barcodeOpen} onclick={() => (openIdx = barcodeIdx)}>
+				<button
+					class="tab"
+					class:active={barcodeOpen}
+					aria-pressed={barcodeOpen}
+					onclick={() => (openIdx = barcodeIdx)}
+				>
 					Barcode
 				</button>
 			{/if}
