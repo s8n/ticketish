@@ -13,8 +13,8 @@
  * over the telematics infrastructure; when that fails, the practice prints the
  * Ausfertigung für die Krankenkasse and posts it, and this barcode is what the
  * insurer's scanner reads off that sheet. So it carries the diagnosis, which
- * the copy for the employer deliberately does not print, and it is absent from
- * the copies for the employer and the patient.
+ * the patient's copy also prints and the employer's copy deliberately leaves
+ * out. The barcode itself is printed on the insurer's copy only.
  *
  * Layout: KBV_ITA_VGEX Technische Anlage zur eAU, version 1.13, table 17 in
  * section 7.3, with the field semantics from table 18 in section 8. Keep a
@@ -57,7 +57,12 @@ export interface EauDiagnosis {
 	certainty: string | null;
 	/** Seitenlokalisation, one of R, L or B. Shown as issued. */
 	laterality: string | null;
+	/** Pieces after the code that are neither letter, kept in order. */
+	unread: string[];
 }
+
+const CERTAINTY = new Set(['G', 'V', 'Z', 'A']);
+const LATERALITY = new Set(['R', 'L', 'B']);
 
 export interface EauCertificate {
 	/** Barcode version, 11 and up. */
@@ -111,11 +116,17 @@ export interface EauCertificate {
 	extraFields: string[];
 }
 
-/** JJJJMMTT as an ISO date. Anything else is left out rather than repaired. */
+/**
+ * JJJJMMTT as an ISO date. Anything else, including a day the month does not
+ * have, is left out rather than repaired.
+ */
 function date(value: string): string | null {
 	if (!/^\d{8}$/.test(value)) return null;
-	const [month, day] = [+value.slice(4, 6), +value.slice(6, 8)];
-	if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+	const [year, month, day] = [+value.slice(0, 4), +value.slice(4, 6), +value.slice(6, 8)];
+	const d = new Date(Date.UTC(year, month - 1, day));
+	if (d.getUTCFullYear() !== year || d.getUTCMonth() !== month - 1 || d.getUTCDate() !== day) {
+		return null;
+	}
 	return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`;
 }
 
@@ -140,21 +151,35 @@ function split(data: Uint8Array): string[] | null {
 
 /**
  * Diagnoses run "code certainty laterality", the two letters optional, and
- * several are separated by a comma and a space. TeleClinic leaves the
- * separator before an absent Seitenlokalisation in place, so empty pieces are
- * dropped rather than counted as a field.
+ * several are separated by a comma and a space. Producers are loose about the
+ * spacing: TeleClinic leaves the separator before an absent
+ * Seitenlokalisation in place, so the comma may come with any whitespace
+ * around it and empty pieces are dropped rather than counted as a field.
+ *
+ * The two letter sets do not overlap, so each letter is placed by which set it
+ * belongs to rather than by position, and a code followed by a side alone does
+ * not have the side read as its certainty. Anything that fits neither is kept
+ * in `unread` rather than dropped.
  */
 function diagnoses(value: string): EauDiagnosis[] {
 	if (!value) return [];
 	return value
-		.split(', ')
-		.map((entry) => entry.split(' ').filter(Boolean))
+		.split(/\s*,\s*/)
+		.map((entry) => entry.split(/\s+/).filter(Boolean))
 		.filter((parts) => parts.length > 0)
-		.map(([code, certainty, laterality]) => ({
-			code,
-			certainty: certainty ?? null,
-			laterality: laterality ?? null
-		}));
+		.map(([code, ...rest]) => {
+			const d: EauDiagnosis = { code, certainty: null, laterality: null, unread: [] };
+			for (const piece of rest) {
+				if (d.certainty === null && d.laterality === null && CERTAINTY.has(piece)) {
+					d.certainty = piece;
+				} else if (d.laterality === null && LATERALITY.has(piece)) {
+					d.laterality = piece;
+				} else {
+					d.unread.push(piece);
+				}
+			}
+			return d;
+		});
 }
 
 export function isEau(data: Uint8Array): boolean {

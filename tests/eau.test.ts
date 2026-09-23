@@ -109,15 +109,15 @@ describe('eAU barcode', () => {
 		// a space between the code, the Diagnosesicherheit and the side
 		const t = parseEau(build({ 27: 'A00.0 G, B11.1 Z, C22.2 G L' }));
 		expect(t.diagnoses).toEqual([
-			{ code: 'A00.0', certainty: 'G', laterality: null },
-			{ code: 'B11.1', certainty: 'Z', laterality: null },
-			{ code: 'C22.2', certainty: 'G', laterality: 'L' }
+			{ code: 'A00.0', certainty: 'G', laterality: null, unread: [] },
+			{ code: 'B11.1', certainty: 'Z', laterality: null, unread: [] },
+			{ code: 'C22.2', certainty: 'G', laterality: 'L', unread: [] }
 		]);
 	});
 
 	it('reads a bare code with neither letter after it', () => {
 		expect(parseEau(build({ 27: 'A00.0' })).diagnoses).toEqual([
-			{ code: 'A00.0', certainty: null, laterality: null }
+			{ code: 'A00.0', certainty: null, laterality: null, unread: [] }
 		]);
 	});
 
@@ -125,7 +125,30 @@ describe('eAU barcode', () => {
 		// seen in the wild: the code, the Diagnosesicherheit, then the space
 		// that would have preceded a Seitenlokalisation that is not there
 		expect(parseEau(build({ 27: 'A00.0 G ' })).diagnoses).toEqual([
-			{ code: 'A00.0', certainty: 'G', laterality: null }
+			{ code: 'A00.0', certainty: 'G', laterality: null, unread: [] }
+		]);
+	});
+
+	it('splits on the comma whatever spacing comes with it', () => {
+		expect(parseEau(build({ 27: 'A00.0 G,B11.1 Z ,  C22.2' })).diagnoses).toEqual([
+			{ code: 'A00.0', certainty: 'G', laterality: null, unread: [] },
+			{ code: 'B11.1', certainty: 'Z', laterality: null, unread: [] },
+			{ code: 'C22.2', certainty: null, laterality: null, unread: [] }
+		]);
+	});
+
+	it('places each letter by its set rather than its position', () => {
+		// a side with no Diagnosesicherheit before it is still a side
+		expect(parseEau(build({ 27: 'A00.0 L' })).diagnoses).toEqual([
+			{ code: 'A00.0', certainty: null, laterality: 'L', unread: [] }
+		]);
+		// a certainty after the side, or a piece that is neither, is kept
+		// rather than read into a field or dropped
+		expect(parseEau(build({ 27: 'A00.0 G L X' })).diagnoses).toEqual([
+			{ code: 'A00.0', certainty: 'G', laterality: 'L', unread: ['X'] }
+		]);
+		expect(parseEau(build({ 27: 'A00.0 R G' })).diagnoses).toEqual([
+			{ code: 'A00.0', certainty: null, laterality: 'R', unread: ['G'] }
 		]);
 	});
 
@@ -150,6 +173,11 @@ describe('eAU barcode', () => {
 		expect(parseEau(build({ 17: '20241301' })).unfitSince).toBe(null);
 		expect(parseEau(build({ 18: '2024070' })).unfitUntil).toBe(null);
 		expect(parseEau(build({ 4: '' })).coverageEnd).toBe(null);
+		// a day the month does not have
+		expect(parseEau(build({ 17: '20240231' })).unfitSince).toBe(null);
+		expect(parseEau(build({ 18: '20230229' })).unfitUntil).toBe(null);
+		// but the leap day of a leap year is one
+		expect(parseEau(build({ 18: '20240229' })).unfitUntil).toBe('2024-02-29');
 	});
 
 	it('keeps fields a producer appends past the table', () => {

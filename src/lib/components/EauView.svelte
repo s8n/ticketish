@@ -44,7 +44,7 @@
 
 	const diagnoses = $derived(
 		certificate.diagnoses
-			.map((d) => [d.code, d.certainty, d.laterality].filter(Boolean).join(' '))
+			.map((d) => [d.code, d.certainty, d.laterality, ...d.unread].filter(Boolean).join(' '))
 			.join(', ')
 	);
 
@@ -70,7 +70,7 @@
 	]);
 
 	const note = $derived(
-		'This barcode is on the Krankenkasse copy of a German sick note, which a practice prints and posts only when sending the eAU to the insurer electronically fails. It carries the diagnosis; the copies for the employer and the patient do not print one. Insured type, person group and DMP are shown as issued, since the specification lists the permitted codes but not what they stand for.' +
+		'This barcode is on the Krankenkasse copy of a German sick note, which a practice prints and posts only when sending the eAU to the insurer electronically fails. It carries the diagnosis, which the patient\'s copy also prints and the employer\'s copy leaves out. Insured type, person group and DMP are shown as issued, since the specification lists the permitted codes but not what they stand for.' +
 			(certificate.version > READS_VERSION
 				? ` The barcode says version ${certificate.version} and is read against version ${READS_VERSION}, the published field table.`
 				: '')
