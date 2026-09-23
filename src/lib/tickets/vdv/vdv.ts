@@ -364,7 +364,7 @@ interface Authorization {
 	remainder: Uint8Array;
 }
 
-function readAuthorizations(tags: Map<number, Uint8Array>, raw: Uint8Array): Authorization[] {
+function readAuthorizations(tags: Map<number, Uint8Array>): Authorization[] {
 	const multi = tags.get(TAG_MULTIPLE_AUTHORIZATIONS);
 	if (multi) {
 		const items = parseTlv(multi);
@@ -386,7 +386,6 @@ function readAuthorizations(tags: Map<number, Uint8Array>, raw: Uint8Array): Aut
 	const sig = tags.get(TAG_SIGNATURE);
 	const rem = tags.get(TAG_REMAINDER);
 	if (!sig || !rem) throw new Error('missing VDV signature');
-	void raw;
 	return [{ signature: sig, remainder: rem }];
 }
 
@@ -463,7 +462,7 @@ export function parseVdv(data: Uint8Array, caKeys_: VdvCaKeyStore = CA_KEYS): Vd
 
 	let authorizations: Authorization[];
 	try {
-		authorizations = readAuthorizations(tags, data);
+		authorizations = readAuthorizations(tags);
 	} catch (e) {
 		return { ...base, error: e instanceof Error ? e.message : String(e) };
 	}

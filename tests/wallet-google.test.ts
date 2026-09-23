@@ -60,15 +60,15 @@ function serviceAccount() {
 
 describe('what Google Wallet will and will not take', () => {
 	it('refuses a symbology it cannot draw, which is the only hard stop', () => {
-		expect(googleProblem(ascii('HELLO'), { format: 'DataMatrix' })).toMatch(/cannot show/);
-		expect(googleProblem(ascii('HELLO'), undefined)).toMatch(/did not come from a barcode/);
+		expect(googleProblem({ format: 'DataMatrix' })).toMatch(/cannot show/);
+		expect(googleProblem(undefined)).toMatch(/did not come from a barcode/);
 	});
 
 	it('accepts a binary payload, with what could go wrong attached', () => {
 		// a zlib stream starts 0x78 0x9c: not text, and nothing in Google's
 		// documentation says what happens to it
 		const payload = new Uint8Array([0x23, 0x55, 0x54, 0x78, 0x9c, 0xff, 0x00]);
-		expect(googleProblem(payload, AZTEC)).toBeNull();
+		expect(googleProblem(AZTEC)).toBeNull();
 		const caveats = googleCaveats(payload);
 		expect(caveats.length).toBeGreaterThan(0);
 		expect(caveats[0]).toMatch(/undocumented|documents no encoding/);
@@ -87,8 +87,8 @@ describe('what Google Wallet will and will not take', () => {
 	});
 
 	it('says nothing about a payload that is text all the way through', () => {
-		expect(googleProblem(ascii('#UT01ABCDEF'), AZTEC)).toBeNull();
-		expect(googleProblem(ascii('SOMETICKET123'), QR)).toBeNull();
+		expect(googleProblem(AZTEC)).toBeNull();
+		expect(googleProblem(QR)).toBeNull();
 		expect(googleCaveats(ascii('SOMETICKET123'))).toEqual([]);
 	});
 

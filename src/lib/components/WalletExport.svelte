@@ -60,7 +60,7 @@
 	let setup = $state<'apple' | 'google' | null>(null);
 
 	const appleBlocked = $derived(barcodeProblem(ticket.symbology));
-	const googleBlocked = $derived(googleProblem(ticket.raw, ticket.symbology));
+	const googleBlocked = $derived(googleProblem(ticket.symbology));
 	/**
 	 * What could go wrong with a Google pass even though it can be built. The
 	 * signed link knows more than the ticket does, since only then is the

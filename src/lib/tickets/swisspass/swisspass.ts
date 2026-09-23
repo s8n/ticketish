@@ -253,15 +253,6 @@ export function parseSwissPass(data: Uint8Array): SwissPassTicket {
 	return msg;
 }
 
-export function isSwissPass(data: Uint8Array): boolean {
-	try {
-		parseSwissPass(data);
-		return true;
-	} catch {
-		return false;
-	}
-}
-
 /** Format an epoch-milliseconds timestamp in Swiss local time. */
 export const fmtZurich = (msecs: number | null | undefined) =>
 	msecs ? fmtZoned(msecs, 'Europe/Zurich') : null;

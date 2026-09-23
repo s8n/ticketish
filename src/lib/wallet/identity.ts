@@ -48,15 +48,6 @@ export function base64ToBytes(base64: string): Uint8Array {
 	return out;
 }
 
-export function bytesToBase64(bytes: Uint8Array): string {
-	let binary = '';
-	// chunked so a long certificate does not blow the argument limit
-	for (let i = 0; i < bytes.length; i += 0x8000) {
-		binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-	}
-	return btoa(binary);
-}
-
 /** Every PEM block in `text` with the given label, as DER. */
 export function pemBlocks(text: string, label: string): Uint8Array[] {
 	const pattern = new RegExp(

@@ -24,10 +24,6 @@ export function uicCountryName(code: number | string): string {
 	return entry.name;
 }
 
-export function uicCountryIso(code: number | string): string | null {
-	return UIC[String(code)]?.iso ?? null;
-}
-
 // ISO 3166-1 numeric → alpha-2, Europe and common neighbours.
 const ISO_NUMERIC: Record<number, string> = {
 	8: 'AL', 20: 'AD', 31: 'AZ', 40: 'AT', 51: 'AM', 56: 'BE', 70: 'BA', 100: 'BG',

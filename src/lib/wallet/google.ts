@@ -73,10 +73,7 @@ const BARCODE_TYPES: Record<string, string> = {
  * Only the symbology is a hard stop: a symbol Google will not draw is a pass
  * with no barcode on it.
  */
-export function googleProblem(
-	_payload: Uint8Array,
-	symbology: BarcodeSymbology | undefined
-): string | null {
+export function googleProblem(symbology: BarcodeSymbology | undefined): string | null {
 	if (!symbology) return 'the payload did not come from a barcode this app can identify';
 	if (!BARCODE_TYPES[symbology.format]) {
 		return `Google Wallet cannot show a ${symbology.format} barcode`;
@@ -436,7 +433,7 @@ export async function buildSaveLink(
 	issuer: GoogleIssuer,
 	origin?: string
 ): Promise<GoogleSaveLink> {
-	const problem = googleProblem(payload, symbology);
+	const problem = googleProblem(symbology);
 	if (problem) throw new Error(problem);
 
 	const claims = {

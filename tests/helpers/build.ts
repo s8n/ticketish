@@ -108,9 +108,8 @@ export function uicRecord(id: string, version: number, body: string): string {
 export function uicEnvelope(
 	issuerRics: number,
 	records: string,
-	{ version = 1, flags = '0' }: { version?: 1 | 2; flags?: string } = {}
+	{ version = 1 }: { version?: 1 | 2 } = {}
 ): Uint8Array {
-	void flags;
 	const compressed = zlibSync(strToU8(records));
 	const signatureLength = version === 1 ? 50 : 64;
 	const header = strToU8(

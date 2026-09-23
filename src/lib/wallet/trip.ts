@@ -864,8 +864,3 @@ export function asUtcInstant(value: string | undefined, offsetMinutes?: number):
 	const instant = Date.parse(`${local}Z`) - offsetMinutes * 60_000;
 	return new Date(instant).toISOString().replace(/\.\d+Z$/, 'Z');
 }
-
-/** Today, as the pass writers date things they have no date for. */
-export function isoNow(now: Date = new Date()): string {
-	return `${now.getUTCFullYear()}-${pad(now.getUTCMonth() + 1)}-${pad(now.getUTCDate())}T${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}Z`;
-}
