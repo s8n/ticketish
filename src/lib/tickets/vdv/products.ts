@@ -9,7 +9,7 @@
 import { lazyTable } from '../lazy.ts';
 
 export const loadVdvProducts = lazyTable(() =>
-	import('./products.json').then((m) => m.default as Record<string, string>)
+	import('./products.json').then((m) => (m.default as { products: Record<string, string> }).products)
 );
 
 /** Product name for an organisation/product pair, if the table knows it. */

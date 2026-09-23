@@ -28,6 +28,13 @@ REPO = pathlib.Path(__file__).parent.parent
 OUT = REPO / "src" / "lib" / "tickets" / "rsp" / "nlc.json"
 
 AUTH_URL = "https://opendata.nationalrail.co.uk/authenticate"
+
+NOTE = (
+    "UK location names by NLC code, from the .LOC file of the RDG / National "
+    "Rail fares feed, which is published to National Rail Open Data account "
+    "holders under the licence agreement that comes with the account. Rebuilt "
+    "by scripts/build-nlc-names.py; do not edit by hand."
+)
 FARES_URL = "https://opendata.nationalrail.co.uk/api/staticfeeds/2.0/fares"
 
 # Words that should stay upper case when title casing station names.
@@ -109,10 +116,16 @@ def main():
     entries = parse_loc(fetch_fares(), today)
     if len(entries) < 1000:
         raise SystemExit(f"only {len(entries)} NLC entries parsed, refusing to write")
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(entries, separators=(",", ":"), sort_keys=True))
+    write(entries)
     size_kb = OUT.stat().st_size / 1024
     print(f"wrote {len(entries)} NLC entries to {OUT} ({size_kb:.0f} KiB)")
+
+
+def write(entries: dict) -> None:
+    """The table with its note, compact since it is large and never read by eye."""
+    table = {"_note": NOTE, "names": {k: entries[k] for k in sorted(entries)}}
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(json.dumps(table, separators=(",", ":"), ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

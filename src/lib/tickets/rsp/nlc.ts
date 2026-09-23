@@ -16,7 +16,7 @@ export interface NlcEntry {
 }
 
 export const loadNlcNames = lazyTable(() =>
-	import('./nlc.json').then((m) => m.default as Record<string, NlcEntry>)
+	import('./nlc.json').then((m) => (m.default as { names: Record<string, NlcEntry> }).names)
 );
 
 /** Look up a code in an already-loaded table. NLCs are zero-padded to 4. */

@@ -30,6 +30,19 @@ OUT = REPO / "src" / "lib" / "tickets" / "tcdd" / "stations.json"
 
 URL = "https://cdn-api-prod-ytp.tcddtasimacilik.gov.tr/datas/stations.json"
 
+NOTE = (
+    "TCDD station names by the current booking backend's station id, from the "
+    "list TCDD Tasimacilik's e-ticket site reads, " + URL + ". No licence is "
+    "published for it. Rebuilt by scripts/build-tcdd-stations.py; do not edit "
+    "by hand, put corrections in src/lib/tickets/tcdd/stations.ts."
+)
+
+
+def write(names: dict[str, str]) -> None:
+    """The table with its note, stations in id order."""
+    table = {"_note": NOTE, "stations": {k: names[k] for k in sorted(names, key=int)}}
+    OUT.write_text(json.dumps(table, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
+
 
 def main() -> int:
     req = urllib.request.Request(URL, headers={"User-Agent": "ticketish-build"})
@@ -59,8 +72,7 @@ def main() -> int:
         print(f"only {len(names)} stations, refusing to write", file=sys.stderr)
         return 1
 
-    ordered = {k: names[k] for k in sorted(names, key=int)}
-    OUT.write_text(json.dumps(ordered, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
+    write(names)
     print(f"wrote {OUT.relative_to(REPO)} with {len(ordered)} stations")
     return 0
 

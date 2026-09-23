@@ -30,12 +30,18 @@ const LEGACY: Record<string, StationEntry> = {
 	'234516104': { name: 'İstanbul (Pendik)', source: 'printed beside the code on a ticket' }
 };
 
+/**
+ * Corrections to the generated table, for the current id space, each with a
+ * source. Empty.
+ */
+const OVERRIDES: Record<string, StationEntry> = {};
+
 export const loadTcddStations = lazyTable(() =>
-	import('./stations.json').then((m) => m.default as Record<string, string>)
+	import('./stations.json').then((m) => (m.default as { stations: Record<string, string> }).stations)
 );
 
 /** Display label for a station id, falling back to the raw code. */
 export function tcddStationName(names: Record<string, string> | null, code: string): string {
 	if (!code) return '';
-	return names?.[code] ?? LEGACY[code]?.name ?? `Station ${code}`;
+	return OVERRIDES[code]?.name ?? names?.[code] ?? LEGACY[code]?.name ?? `Station ${code}`;
 }

@@ -19,6 +19,15 @@ REPO = pathlib.Path(__file__).parent.parent
 SRC = REPO / "scripts" / "vdv-products"
 OUT = REPO / "src" / "lib" / "tickets" / "vdv" / "products.json"
 
+NOTE = (
+    "VDV product names by organisation and product number, merged by "
+    "scripts/build-vdv-products.py from scripts/vdv-products/. The files there "
+    "from zuegli (EUPL-1.2), compiled from the German transport associations' "
+    "published tariff data, make this table EUPL-1.2; see LICENSE.md. Do not "
+    "edit by hand: add or correct a name in "
+    "scripts/vdv-products/productids_ticketish.json and rebuild."
+)
+
 
 def main():
     products: dict[str, str] = {}
@@ -46,8 +55,9 @@ def main():
     for key, old, new, where in conflicts:
         print(f"note: {key} redefined in {where}: {old!r} -> {new!r}")
 
+    table = {"_note": NOTE, "products": {k: products[k] for k in sorted(products)}}
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(products, separators=(",", ":"), sort_keys=True, ensure_ascii=False))
+    OUT.write_text(json.dumps(table, separators=(",", ":"), ensure_ascii=False) + "\n", encoding="utf-8")
     orgs = {k.split("_")[0] for k in products}
     print(f"wrote {len(products)} products across {len(orgs)} organisations "
           f"to {OUT} ({OUT.stat().st_size / 1024:.0f} KiB)")

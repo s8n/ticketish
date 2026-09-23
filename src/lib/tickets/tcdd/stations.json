@@ -1,4 +1,6 @@
 {
+"_note": "TCDD station names by the current booking backend's station id, from the list TCDD Tasimacilik's e-ticket site reads, https://cdn-api-prod-ytp.tcddtasimacilik.gov.tr/datas/stations.json. No licence is published for it. Rebuilt by scripts/build-tcdd-stations.py; do not edit by hand, put corrections in src/lib/tickets/tcdd/stations.ts.",
+"stations": {
 "1": "KM.238+250",
 "2": "ENVERİYE (HAYDARPAŞA BM)",
 "3": "ADAPAZARI",
@@ -778,4 +780,5 @@
 "1420": "BUCURESTI NORD",
 "1421": "TÜRKMENTEPE",
 "1422": "YEDİ EYLÜL"
+}
 }
