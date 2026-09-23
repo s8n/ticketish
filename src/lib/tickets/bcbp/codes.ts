@@ -89,8 +89,18 @@ export const loadAirlines = lazyTable(() =>
 	)
 );
 
-const entry = (airports: AirportTable | null, code: string): AirportEntry | undefined =>
-	code ? airports?.[code.toUpperCase()] : undefined;
+/**
+ * The same for airports, which the table's `_note` points corrections at.
+ * Empty. An entry replaces the whole row, so it carries the town and country
+ * as well as the name, and a source like the airline ones.
+ */
+const AIRPORT_OVERRIDES: Record<string, { entry: AirportEntry; source: string }> = {};
+
+const entry = (airports: AirportTable | null, code: string): AirportEntry | undefined => {
+	if (!code) return undefined;
+	const key = code.toUpperCase();
+	return AIRPORT_OVERRIDES[key]?.entry ?? airports?.[key];
+};
 
 /**
  * What to put where the code went. The code itself until the table lands, and
