@@ -234,8 +234,53 @@ function decodeMessage(data: Uint8Array, schema: Schema): Record<string, unknown
 
 // ---- public API ----------------------------------------------------------
 
+/**
+ * The ticket as `decodeMessage` returns it for the TICKET schema above: each
+ * field under the schema's name, a repeated one as an array, a time as epoch
+ * milliseconds, an enum as its name. Every field is optional, since protobuf
+ * leaves out what was not set. A uint past the safe integer range comes back
+ * as a string, which only a ticket number could plausibly reach.
+ */
+export interface NovaTicketData {
+	ticketId?: number | string;
+	tariff?: {
+		product?: { language?: string; name?: string };
+		departureStation?: string;
+		arrivalStation?: string;
+		travelClass?: string;
+		journeyType?: string;
+		route?: string[];
+		validFrom?: number | null;
+		validUntil?: number | null;
+		returnValidFrom?: number | null;
+		returnValidUntil?: number | null;
+		productNumber?: number;
+		zones?: { allZones?: boolean; zoneId?: number; zoneOrg?: number }[];
+		tariff?: string;
+		reducedTariff?: boolean;
+		nightSurcharge?: boolean;
+		validityType?: string;
+		routeType?: string;
+	};
+	traveler?: {
+		customerNumber?: string;
+		swisspassId?: string;
+		surname?: string;
+		forename?: string;
+		birthday?: number | null;
+		mobileNumber?: string;
+		tariff?: string;
+		reduction?: string;
+	};
+	sale?: { sellingTime?: number | null; language?: string; salePoint?: number; issuingOrg?: number };
+	payment?: { paymentMethod?: string; currency?: string; price?: string };
+	extra?: { fallback?: boolean; extra?: string; specimen?: boolean };
+	transport?: { journeyNumber?: string; carriage?: string; seats?: string[]; type?: string }[];
+	tariffs?: { name?: string; passengerCount?: number }[];
+}
+
 export interface SwissPassTicket {
-	ticketData: Record<string, unknown>;
+	ticketData: NovaTicketData;
 	keyMeta?: { rics?: string; keyId?: string };
 	metadata?: { version?: number };
 }

@@ -2,44 +2,12 @@
 // SPDX-License-Identifier: MIT OR EUPL-1.2
 
 /** The wallet mapping for SwissPass (NOVA) tickets. */
-import type { SwissPassTicket } from '../../tickets/swisspass/swisspass.ts';
+import type { NovaTicketData, SwissPassTicket } from '../../tickets/swisspass/swisspass.ts';
 import { novaOrgLabel } from '../../tickets/swisspass/orgs.ts';
 import { localInZone } from '../../tickets/format.ts';
 import { ricsName } from '../../tickets/uic/rics.ts';
 import type { OperatorCode } from '../colors.ts';
 import { type TripField, type TripSummary, type Tables, travelClass, ricsOperator } from '../summary.ts';
-
-/**
- * The parts of a NOVA ticket a pass can hold.
- *
- * The decoder returns plain objects, since its schema is a wire-level map and
- * not a type. These are the fields this mapping reads, named as the decoder
- * names them, so a change there shows up here as a type error rather than as
- * an undefined on a pass.
- */
-interface NovaTicket {
-	ticketId?: number;
-	tariff?: {
-		product?: { name?: string };
-		departureStation?: string;
-		arrivalStation?: string;
-		travelClass?: string;
-		journeyType?: string;
-		route?: string[];
-		validFrom?: number | null;
-		validUntil?: number | null;
-		returnValidFrom?: number | null;
-		returnValidUntil?: number | null;
-		zones?: { allZones?: boolean; zoneId?: number; zoneOrg?: number }[];
-		routeType?: string;
-	};
-	traveler?: { surname?: string; forename?: string; tariff?: string; reduction?: string };
-	sale?: { sellingTime?: number | null; issuingOrg?: number };
-	payment?: { currency?: string; price?: string };
-	extra?: { specimen?: boolean };
-	transport?: { journeyNumber?: string; carriage?: string; seats?: string[] }[];
-	tariffs?: { name?: string; passengerCount?: number }[];
-}
 
 /**
  * NOVA timestamps are Swiss local time, which is the one zone the format
@@ -56,7 +24,7 @@ const NOVA_ZONE = 'Europe/Zurich';
  * the railway's, and either the selling organisation or the company code
  * beside the signing key says which railway.
  */
-function novaOperator(data: NovaTicket, rics: string | undefined): OperatorCode | undefined {
+function novaOperator(data: NovaTicketData, rics: string | undefined): OperatorCode | undefined {
 	const orgs = new Set((data.tariff?.zones ?? []).map((z) => z.zoneOrg).filter((o) => !!o));
 	const zoneOrg = orgs.size === 1 ? [...orgs][0] : undefined;
 	const code = zoneOrg ?? data.sale?.issuingOrg;
@@ -78,7 +46,7 @@ function novaOperator(data: NovaTicket, rics: string | undefined): OperatorCode 
  * stations, on the same reasoning as a flexible UIC ticket.
  */
 export function swissTrip(ticket: SwissPassTicket, tables: Tables): TripSummary | null {
-	const data = ticket.ticketData as unknown as NovaTicket;
+	const data = ticket.ticketData;
 	const tariff = data.tariff ?? {};
 
 	const from = tariff.departureStation || undefined;

@@ -58,8 +58,7 @@
 		// MÁV flags it the same way round, inside the trip block.
 		if (container.kind === 'mav') return container.ticket.specimen;
 		if (container.kind === 'swisspass') {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			return (container.ticket.ticketData as any)?.extra?.specimen === true;
+			return container.ticket.ticketData.extra?.specimen === true;
 		}
 		for (const r of records) {
 			if (r.kind === 'head') {

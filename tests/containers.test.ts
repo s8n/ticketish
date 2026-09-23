@@ -26,7 +26,7 @@ const SAMPLES: TicketContainer[] = [
 	{ kind: 'uic9183', envelope: { envelopeVersion: 2, issuerRics: 1080, records: [] } },
 	{ kind: 'dosipas', envelope: { headerVersion: 1, securityProvider: 1080, records: [] } },
 	{ kind: 'rsp6', ticket: { ticketType: '06', issuerId: '00' } },
-	{ kind: 'swisspass', ticket: {} },
+	{ kind: 'swisspass', ticket: { ticketData: {} } },
 	{ kind: 'vdv', barcode: { tickets: [{ productOrgId: 77 }] } },
 	{ kind: 'ssb', envelope: { version: 3, issuerRics: 1080 } },
 	{ kind: 'ssb1', ticket: { version: 1, issuerRics: 1080 } },

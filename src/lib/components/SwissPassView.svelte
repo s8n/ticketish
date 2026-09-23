@@ -16,8 +16,7 @@
 
 	const orgName = (code: number | undefined) => novaOrgLabel(orgs.value, code);
 
-	/* eslint-disable @typescript-eslint/no-explicit-any */
-	const data = $derived(ticket.ticketData as any);
+	const data = $derived(ticket.ticketData);
 	const tariff = $derived(data.tariff ?? {});
 	const traveler = $derived(data.traveler);
 	const sale = $derived(data.sale ?? {});

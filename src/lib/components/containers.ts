@@ -128,8 +128,7 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 		label: () => 'SwissPass / NOVA',
 		issuer: (c, { issuerNames, novaOrgs }) => {
 			const keyRics = c.ticket.keyMeta?.rics;
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const org = (c.ticket.ticketData as any)?.sale?.issuingOrg as number | undefined;
+			const org = c.ticket.ticketData.sale?.issuingOrg;
 			// The NOVA org is who sold the ticket; the key's RICS is whoever
 			// signed it, which on a Swiss ticket is often the association that
 			// runs NOVA rather than the operator. Sold beats signed here, and
