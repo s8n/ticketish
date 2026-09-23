@@ -38,6 +38,9 @@ jobs:
         continue-on-error: true
         run: python scripts/build-airlines.py
 
+      # A table the tests reject is not committed: nothing else checks a bot push.
+      - uses: ./.github/actions/check
+
       - name: Commit and push if changed
         run: |
           paths="src/lib/tickets/data/airports.json src/lib/tickets/data/airlines.json"

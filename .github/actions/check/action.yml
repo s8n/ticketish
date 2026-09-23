@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2026 ave
+# SPDX-License-Identifier: MIT OR EUPL-1.2
+
+name: Check
+description: Install the app's dependencies, then run the type check and the tests.
+
+# Shared by CI and by every workflow that regenerates a table, so a table the
+# tests reject is never committed: a bot push does not trigger CI, which makes
+# this the only thing standing between a bad export and main.
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Type check
+      shell: bash
+      run: npm run check
+
+    - name: Test
+      shell: bash
+      run: npm test

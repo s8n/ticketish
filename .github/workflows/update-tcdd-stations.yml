@@ -27,6 +27,9 @@ jobs:
       - name: Rebuild TCDD station table
         run: python scripts/build-tcdd-stations.py
 
+      # A table the tests reject is not committed: nothing else checks a bot push.
+      - uses: ./.github/actions/check
+
       - name: Commit and push if changed
         run: |
           if git diff --quiet -- src/lib/tickets/tcdd/stations.json; then

@@ -30,6 +30,9 @@ jobs:
       - name: Rebuild VDV CA key store
         run: python scripts/build-vdv-keys.py
 
+      # A table the tests reject is not committed: nothing else checks a bot push.
+      - uses: ./.github/actions/check
+
       - name: Commit and push if changed
         run: |
           if git diff --quiet -- src/lib/tickets/vdv/ca-keys.json; then

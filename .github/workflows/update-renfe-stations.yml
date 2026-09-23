@@ -28,6 +28,9 @@ jobs:
       - name: Rebuild Renfe station table
         run: python scripts/build-renfe-stations.py
 
+      # A table the tests reject is not committed: nothing else checks a bot push.
+      - uses: ./.github/actions/check
+
       - name: Commit and push if changed
         run: |
           if git diff --quiet -- src/lib/tickets/renfe/stations.json; then

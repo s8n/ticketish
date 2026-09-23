@@ -27,6 +27,9 @@ jobs:
       - name: Rebuild station name tables
         run: python scripts/build-uic-benerail-from-trainline.py
 
+      # A table the tests reject is not committed: nothing else checks a bot push.
+      - uses: ./.github/actions/check
+
       - name: Commit and push if changed
         run: |
           paths="src/lib/tickets/data/uic-stations.json src/lib/tickets/data/benerail-stations.json"

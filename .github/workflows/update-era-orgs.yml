@@ -29,6 +29,9 @@ jobs:
       - name: Rebuild ERA organisation table
         run: python scripts/build-era-orgs.py
 
+      # A table the tests reject is not committed: nothing else checks a bot push.
+      - uses: ./.github/actions/check
+
       - name: Commit and push if changed
         # The export is the source of both halves of the numbering: the codes
         # it calls Organisation Codes and the RICS ones it mirrors.
