@@ -29,8 +29,10 @@ import { loadRenfeStations } from '../tickets/renfe/stations.ts';
 import { loadIssuerNames } from '../tickets/uic/rics.ts';
 import { loadVdvOrgs } from '../tickets/vdv/orgs.ts';
 import { loadVdvProducts } from '../tickets/vdv/products.ts';
-import { loadUicStations } from '../tickets/stations.ts';
-import type { TripField, TripSummary, Kind, Extractor } from './summary.ts';
+import { loadBenerailStations, loadUicStations } from '../tickets/stations.ts';
+import { loadNlcNames } from '../tickets/rsp/nlc.ts';
+import { loadTcddStations } from '../tickets/tcdd/stations.ts';
+import type { TripField, TripSummary, Kind, Extractor, Tables } from './summary.ts';
 import { uicTrip } from './extract/uic.ts';
 import { vdvTrip } from './extract/vdv.ts';
 import { swissTrip } from './extract/swisspass.ts';
@@ -99,6 +101,19 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 	unknown: null
 };
 
+/** How each table a mapping may ask for is loaded. */
+const LOADERS: { [K in keyof Tables]: () => Promise<NonNullable<Tables[K]>> } = {
+	stations: loadUicStations,
+	vdvOrgs: loadVdvOrgs,
+	vdvProducts: loadVdvProducts,
+	renfeStations: loadRenfeStations,
+	issuerNames: loadIssuerNames,
+	novaOrgs: loadNovaOrgs,
+	nlcNames: loadNlcNames,
+	benerailStations: loadBenerailStations,
+	tcddStations: loadTcddStations
+};
+
 /** Whether this format has a mapping at all, without running it. */
 export function hasMapping(container: TicketContainer): boolean {
 	return EXTRACTORS[container.kind] !== null;
@@ -117,23 +132,10 @@ export async function tripFor(ticket: ParsedTicket): Promise<TripSummary | null>
 	if (!entry) return null;
 
 	const needs = new Set(entry.needs ?? []);
-	const [stations, vdvOrgs, vdvProducts, renfeStations, issuerNames, novaOrgs] = await Promise.all([
-		needs.has('stations') ? loadUicStations() : null,
-		needs.has('vdvOrgs') ? loadVdvOrgs() : null,
-		needs.has('vdvProducts') ? loadVdvProducts() : null,
-		needs.has('renfeStations') ? loadRenfeStations() : null,
-		needs.has('issuerNames') ? loadIssuerNames() : null,
-		needs.has('novaOrgs') ? loadNovaOrgs() : null
-	]);
-
-	return entry.map(container, {
-		stations,
-		vdvOrgs,
-		vdvProducts,
-		renfeStations,
-		issuerNames,
-		novaOrgs
-	});
+	const keys = Object.keys(LOADERS) as (keyof Tables)[];
+	const loaded = await Promise.all(keys.map((key) => (needs.has(key) ? LOADERS[key]() : null)));
+	const tables = Object.fromEntries(keys.map((key, i) => [key, loaded[i]])) as unknown as Tables;
+	return entry.map(container, tables);
 }
 
 /**

@@ -11,6 +11,7 @@ import type { NovaOrgTable } from '../tickets/swisspass/orgs.ts';
 import type { RenfeStationTable } from '../tickets/renfe/stations.ts';
 import type { IssuerTables } from '../tickets/uic/rics.ts';
 import type { StationTable } from '../tickets/stations.ts';
+import type { NlcEntry } from '../tickets/rsp/nlc.ts';
 import type { OperatorCode } from './colors.ts';
 
 /** A labelled row for the back of the pass, where anything unmapped goes. */
@@ -83,6 +84,12 @@ export interface Tables {
 	issuerNames: IssuerTables | null;
 	/** Swiss organisation numbers, which NOVA tickets name their seller by. */
 	novaOrgs: NovaOrgTable | null;
+	/** UK NLC names, for RSP6 tickets. */
+	nlcNames: Record<string, NlcEntry> | null;
+	/** Benerail mnemonics, for ELB and the SNCF e-billet. */
+	benerailStations: StationTable | null;
+	/** TCDD's station ids, for the newer TCDD layout. */
+	tcddStations: Record<string, string> | null;
 }
 
 export type Kind = TicketContainer['kind'];
@@ -90,14 +97,7 @@ export type Of<K extends Kind> = Extract<TicketContainer, { kind: K }>;
 
 export interface Extractor<K extends Kind> {
 	/** Which on-demand tables this mapping wants before it runs. */
-	needs?: (
-		| 'stations'
-		| 'vdvOrgs'
-		| 'vdvProducts'
-		| 'renfeStations'
-		| 'issuerNames'
-		| 'novaOrgs'
-	)[];
+	needs?: (keyof Tables)[];
 	map: (container: Of<K>, tables: Tables) => TripSummary | null;
 }
 
