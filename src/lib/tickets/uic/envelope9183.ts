@@ -5,11 +5,11 @@
 import { unzlibSync } from 'fflate';
 import type { RawRecord, Uic9183Envelope } from '../types.ts';
 import { parseRecord } from '../registry.ts';
-import { ascii, utf8OrNull } from '../bytes.ts';
+import { ascii, startsWith, utf8OrNull } from '../bytes.ts';
 
 
 export function isUic9183(data: Uint8Array): boolean {
-	return data.length >= 3 && data[0] === 0x23 && data[1] === 0x55 && data[2] === 0x54; // "#UT"
+	return startsWith(data, '#UT');
 }
 
 /**

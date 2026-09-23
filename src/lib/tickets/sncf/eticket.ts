@@ -35,7 +35,7 @@
  * populated.
  */
 import { isLatin1Text, latin1 } from '../bytes.ts';
-import { meaningful } from '../format.ts';
+import { meaningful, unpad } from '../format.ts';
 import { calendarDate } from '../dates.ts';
 
 export interface SncfReturnLeg {
@@ -88,8 +88,6 @@ export function isSncfETicket(data: Uint8Array): boolean {
 	return decode(data).startsWith('i0CV');
 }
 
-/** Drop leading zeros but keep a single one, so "000" reads as "0". */
-const unpad = (value: string) => value.replace(/^0+(?=\d)/, '');
 
 function parseDob(value: string): string | null {
 	const m = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);

@@ -97,6 +97,9 @@ export function localInZone(
 	};
 }
 
+/** Drop leading zeros but keep a single one, so "000" reads as "0". */
+export const unpad = (value: string) => value.replace(/^0+(?=\d)/, '');
+
 /** Blank and all-zero blocks carry nothing, so they are not worth showing. */
 export const meaningful = (value: string) => (/^[0\s]*$/.test(value) ? null : value.trim());
 

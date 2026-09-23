@@ -40,7 +40,7 @@
  * the last digit of its year, so both have to be resolved against something.
  * `flightDate` says what that came to and `yearFrom` says what fixed it.
  */
-import { isPrintableAscii } from '../bytes.ts';
+import { ascii, isPrintableAscii } from '../bytes.ts';
 import { meaningful } from '../format.ts';
 import { dayOfYearDate, lastDigitYear, resolveDayOfYear } from '../dates.ts';
 
@@ -418,7 +418,7 @@ class Reader {
 export function isBcbp(data: Uint8Array): boolean {
 	if (data.length < HEAD + LEG) return false;
 	if (!isPrintableAscii(data)) return false;
-	const s = new TextDecoder().decode(data);
+	const s = ascii(data);
 	// Version 3 caps an itinerary at four legs, to keep the symbol printable.
 	// Format S, the single leg one, was dropped from the standard in 2007.
 	if (s[0] !== 'M' || !/^[1-4]$/.test(s[1])) return false;
@@ -437,7 +437,7 @@ export function isBcbp(data: Uint8Array): boolean {
 
 export function parseBcbp(data: Uint8Array, now: Date = new Date()): BcbpTicket {
 	if (!isBcbp(data)) throw new Error('not a BCBP record');
-	const s = new TextDecoder().decode(data);
+	const s = ascii(data);
 	const r = new Reader(s);
 
 	r.take(1); // item 1, the format code, which isBcbp has already checked

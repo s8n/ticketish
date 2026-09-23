@@ -26,7 +26,7 @@
  * turn up at any offset or width, so they are left as bytes rather than
  * guessed at. Stations are printed as names and are plainly not in 63 bytes.
  */
-import { hex } from '../bytes.ts';
+import { hex, startsWith } from '../bytes.ts';
 import { isoDate, pad } from '../dates.ts';
 
 /** The whole record, magic included. */
@@ -63,9 +63,7 @@ const view = (data: Uint8Array) => new DataView(data.buffer, data.byteOffset, da
 
 export function isCdLegacy(data: Uint8Array): boolean {
 	if (data.length !== LENGTH) return false;
-	for (let i = 0; i < MAGIC.length; i++) {
-		if (data[i] !== MAGIC.charCodeAt(i)) return false;
-	}
+	if (!startsWith(data, MAGIC)) return false;
 	// the issuing stamp has to be a date, which is what tells this apart from
 	// anything else that might open with the same five bytes
 	return oleDate(view(data), 17) !== null;

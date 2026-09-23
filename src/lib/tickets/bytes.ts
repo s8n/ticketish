@@ -38,6 +38,12 @@ export function byteString(bytes: Uint8Array): string {
 /** A fixed-width ASCII field as a string. */
 export const ascii = byteString;
 
+/** Whether the data opens with these bytes, or with this ASCII text. */
+export function startsWith(data: Uint8Array, prefix: string | readonly number[]): boolean {
+	const bytes = typeof prefix === 'string' ? [...prefix].map((c) => c.charCodeAt(0)) : prefix;
+	return data.length >= bytes.length && bytes.every((b, i) => data[i] === b);
+}
+
 /** Standard base64, padded. */
 export const toBase64 = (bytes: Uint8Array) => btoa(byteString(bytes));
 

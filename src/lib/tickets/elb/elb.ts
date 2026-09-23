@@ -32,9 +32,9 @@
  * specimen flag, the barcode version and ticket sequence, the passenger
  * counts, and the dates.
  */
-import { isPrintableAscii } from '../bytes.ts';
+import { ascii, isPrintableAscii } from '../bytes.ts';
 import { dayOfYearDate, dayOfYearOnOrAfter, lastDigitYear } from '../dates.ts';
-import { meaningful } from '../format.ts';
+import { meaningful, unpad } from '../format.ts';
 
 export interface ElbSegment {
 	/** Five character station mnemonic, the same space SNCF e-billets use. */
@@ -104,7 +104,7 @@ const TWO_SEGMENTS = HEADER_SIZE + 2 * SEGMENT_SIZE;
 export function isElb(data: Uint8Array): boolean {
 	if (data.length < MIN_LENGTH) return false;
 	if (!isPrintableAscii(data)) return false;
-	const s = new TextDecoder().decode(data);
+	const s = ascii(data);
 	return (
 		s[0] === 'e' &&
 		// pectab plus the two character ticket code
@@ -116,8 +116,6 @@ export function isElb(data: Uint8Array): boolean {
 	);
 }
 
-/** Drop leading zeros but keep a single one, so "000" reads as "0". */
-const unpad = (value: string) => value.replace(/^0+(?=\d)/, '');
 
 function count(value: string): number | null {
 	return /^\d+$/.test(value) ? parseInt(value, 10) : null;
@@ -159,7 +157,7 @@ function parseSegment(s: string, at: number, dated: (day: number | null) => stri
 
 export function parseElb(data: Uint8Array, now?: Date): ElbTicket {
 	if (!isElb(data)) throw new Error('not an ELB record');
-	const s = new TextDecoder().decode(data);
+	const s = ascii(data);
 
 	const yearDigit = s.slice(39, 40);
 	const year = /^\d$/.test(yearDigit) ? lastDigitYear(Number(yearDigit), now) : null;

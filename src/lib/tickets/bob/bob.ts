@@ -43,6 +43,7 @@
  */
 import { unzlibSync } from 'fflate';
 import { decodeCbor, isCborMap, cborBytes, cborText, type CborValue } from './cbor.ts';
+import { ascii, hex } from '../bytes.ts';
 
 /** The container version, as the ASCII in the outer map's "v". */
 const CONTAINER_VERSION = 'a1';
@@ -139,9 +140,6 @@ export interface BobTicket {
 	issuer: BobIssuerSignature;
 	claims: BobClaim[];
 }
-
-const shortHex = (b: Uint8Array) =>
-	[...b].map((x) => x.toString(16).padStart(2, '0')).join('');
 
 /**
  * BoB writes timestamps in ISO 8601's basic form, `20260815T133346Z`, which
@@ -257,7 +255,7 @@ function unwrap(data: Uint8Array): { version: string; payload: Uint8Array } {
 	const version = cborBytes(container, 'v');
 	const payload = cborBytes(container, 'p');
 	if (!version || !payload) throw new Error('not a BoB container');
-	return { version: new TextDecoder().decode(version), payload };
+	return { version: ascii(version), payload };
 }
 
 export function isBob(data: Uint8Array): boolean {
@@ -296,7 +294,7 @@ export function parseBob(data: Uint8Array): BobTicket {
 			keyId: cborText(deviceHeader, 'kid'),
 			signedAt: expandTimestamp(cborText(deviceHeader, 't')),
 			appId: cborText(deviceHeader, 'app'),
-			signature: shortHex(deviceSig)
+			signature: hex(deviceSig)
 		},
 		issuer: {
 			algorithm: cborText(issuerHeader, 'alg'),
@@ -306,7 +304,7 @@ export function parseBob(data: Uint8Array): BobTicket {
 			deviceSignatureProvider: cborText(issuerHeader, 'dsp'),
 			deviceSignatureId: cborText(issuerHeader, 'dsi'),
 			miv: cborText(issuerHeader, 'miv'),
-			signature: shortHex(issuerSig)
+			signature: hex(issuerSig)
 		},
 		claims
 	};

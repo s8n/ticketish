@@ -32,7 +32,7 @@
  * settle the leg question immediately.
  */
 import { Bits } from '../bits.ts';
-import { fromBase64, hex, isPrintableAscii } from '../bytes.ts';
+import { fromBase64, hex, isPrintableAscii, startsWith } from '../bytes.ts';
 import { timeOfDay } from '../dates.ts';
 
 /** Every sample opens with this, and nothing else here does. */
@@ -76,7 +76,7 @@ function timeOrNull(minutes: number): string | null {
 }
 
 const hasMagic = (body: Uint8Array) =>
-	body.length >= MIN_BYTES && MAGIC.every((b, i) => body[i] === b);
+	body.length >= MIN_BYTES && startsWith(body, MAGIC);
 
 export function isNsb(data: Uint8Array): boolean {
 	const body = decodeBase64(data);

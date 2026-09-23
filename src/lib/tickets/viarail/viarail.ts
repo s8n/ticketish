@@ -19,7 +19,7 @@
  * at the station concerned, with no zone in the record, which matters in a
  * country spanning six of them.
  */
-import { isPrintableAscii } from '../bytes.ts';
+import { ascii, isPrintableAscii } from '../bytes.ts';
 import { calendarDate, pad } from '../dates.ts';
 
 /** Fields through the purchase time. Printers pad past this with spaces. */
@@ -80,7 +80,7 @@ function timestamp(value: string): string | null {
 export function isViaRail(data: Uint8Array): boolean {
 	if (data.length < LENGTH) return false;
 	if (!isPrintableAscii(data)) return false;
-	const s = new TextDecoder().decode(data);
+	const s = ascii(data);
 	return (
 		/^\d{13}$/.test(s.slice(0, 13)) &&
 		// the two station codes sit together, then the train
@@ -92,7 +92,7 @@ export function isViaRail(data: Uint8Array): boolean {
 
 export function parseViaRail(data: Uint8Array): ViaRailTicket {
 	if (!isViaRail(data)) throw new Error('not a VIA Rail record');
-	const s = new TextDecoder().decode(data);
+	const s = ascii(data);
 	const passengerType = s.slice(101, 104).trim() || null;
 
 	return {
