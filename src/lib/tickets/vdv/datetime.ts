@@ -14,16 +14,16 @@
  */
 import { isoDate, pad } from '../dates.ts';
 
-export function vdvDateTime(d: Uint8Array): string | null {
-	if (d.length < 4) return null;
-	const v = ((d[0] << 24) | (d[1] << 16) | (d[2] << 8) | d[3]) >>> 0;
-	if (v === 0) return null;
-	const year = 1990 + (v >>> 25);
-	const month = (v >>> 21) & 0xf;
-	const day = (v >>> 16) & 0x1f;
-	const hour = (v >>> 11) & 0x1f;
-	const minute = (v >>> 5) & 0x3f;
-	const second = (v & 0x1f) * 2;
+export function vdvDateTime(data: Uint8Array): string | null {
+	if (data.length < 4) return null;
+	const packed = ((data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3]) >>> 0;
+	if (packed === 0) return null;
+	const year = 1990 + (packed >>> 25);
+	const month = (packed >>> 21) & 0xf;
+	const day = (packed >>> 16) & 0x1f;
+	const hour = (packed >>> 11) & 0x1f;
+	const minute = (packed >>> 5) & 0x3f;
+	const second = (packed & 0x1f) * 2;
 	const date = new Date(Date.UTC(year, month - 1, day + Math.floor(hour / 24)));
 	return `${isoDate(date)}T${pad(hour % 24)}:${pad(minute)}:${pad(second)}`;
 }

@@ -45,10 +45,10 @@ export function startsWith(data: Uint8Array, prefix: string | readonly number[])
 }
 
 /** Bytes `start` to `end` as an unsigned big-endian integer. */
-export function beUint(d: Uint8Array, start: number, end: number): number {
-	let v = 0;
-	for (let i = start; i < end; i++) v = v * 256 + d[i];
-	return v;
+export function beUint(data: Uint8Array, start: number, end: number): number {
+	let value = 0;
+	for (let i = start; i < end; i++) value = value * 256 + data[i];
+	return value;
 }
 
 /** Standard base64, padded. */
