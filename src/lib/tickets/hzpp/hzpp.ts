@@ -34,6 +34,7 @@
  * that table is not bundled, so the number is shown as issued.
  */
 import { meaningful } from '../format.ts';
+import { isoInstant } from '../dates.ts';
 
 /** 2003-01-01T00:00:00+01:00, the instant the minute counters run from. */
 const HZPP_EPOCH = 1041375600;
@@ -190,7 +191,7 @@ export function isHzpp(data: Uint8Array): boolean {
 /** Minutes since the epoch as an ISO instant. Zero means the field is unset. */
 function minutesSince(minutes: number): string | null {
 	if (!Number.isFinite(minutes) || minutes <= 0) return null;
-	return new Date((HZPP_EPOCH + minutes * 60) * 1000).toISOString().replace('.000Z', 'Z');
+	return isoInstant((HZPP_EPOCH + minutes * 60) * 1000);
 }
 
 const int = (value: string) => {

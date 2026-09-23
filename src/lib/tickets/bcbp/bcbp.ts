@@ -42,7 +42,7 @@
  */
 import { ascii, isPrintableAscii } from '../bytes.ts';
 import { meaningful } from '../format.ts';
-import { dayOfYearDate, lastDigitYear, resolveDayOfYear } from '../dates.ts';
+import { dayOfYearDate, isDayOfYear, lastDigitYear, resolveDayOfYear } from '../dates.ts';
 
 /** Format code, leg count, passenger name, electronic ticket indicator. */
 const HEAD = 23;
@@ -322,7 +322,7 @@ function fieldSize(value: string): number | null {
 function dayOfYear(value: string): number | null {
 	if (!/^\d{3}$/.test(value)) return null;
 	const day = Number(value);
-	return day >= 1 && day <= 366 ? day : null;
+	return isDayOfYear(day) ? day : null;
 }
 
 /**

@@ -5,6 +5,7 @@
 import { decodeBarcodeHeader } from '../asn1/index.ts';
 import { parseRecord } from '../registry.ts';
 import type { DosipasEnvelope, ParsedRecord } from '../types.ts';
+import { dayOfYearUtc } from '../dates.ts';
 
 interface HeaderLevel1 {
 	securityProviderNum?: number;
@@ -43,8 +44,7 @@ export function parseDosipas(data: Uint8Array): DosipasEnvelope {
 
 	let endOfValidity: string | null = null;
 	if (l1.endOfValidityYear !== undefined && l1.endOfValidityDay !== undefined) {
-		const date = new Date(Date.UTC(l1.endOfValidityYear, 0, 1));
-		date.setUTCDate(date.getUTCDate() + l1.endOfValidityDay - 1);
+		const date = dayOfYearUtc(l1.endOfValidityYear, l1.endOfValidityDay);
 		date.setUTCMinutes(date.getUTCMinutes() + (l1.endOfValidityTime ?? 0));
 		endOfValidity = date.toISOString();
 	}

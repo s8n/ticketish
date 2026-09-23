@@ -32,7 +32,7 @@
  * read.
  */
 import { inflateSync } from 'fflate';
-import { calendarDate } from '../dates.ts';
+import { calendarDate, isoInstant } from '../dates.ts';
 import { uicStationName, type StationTable } from '../stations.ts';
 
 /** Seconds between the Unix epoch and 2017-01-01T00:00:00+01:00. */
@@ -223,7 +223,7 @@ class Reader {
 /** Seconds since 2017 as an ISO instant. Zero means the field is unset. */
 function timestamp(seconds: number): string | null {
 	if (!seconds) return null;
-	return new Date((seconds + MAV_EPOCH) * 1000).toISOString().replace('.000Z', 'Z');
+	return isoInstant((seconds + MAV_EPOCH) * 1000);
 }
 
 /** Birth dates are packed as year * 10000 + month * 100 + day. */

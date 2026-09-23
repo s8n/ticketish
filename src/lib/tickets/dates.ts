@@ -32,6 +32,12 @@ export function calendarDate(year: number, month: number, day: number): string |
 	return isoDate(d);
 }
 
+/** Whether a number can be a day of some year: 1 to 366. */
+export const isDayOfYear = (day: number) => Number.isInteger(day) && day >= 1 && day <= 366;
+
+/** A moment as ISO 8601 in UTC, to the second, the way the formats here write one. */
+export const isoInstant = (ms: number) => new Date(ms).toISOString().replace(/\.\d+Z$/, 'Z');
+
 /** A day of the year as a UTC date. 1 January is day 1. */
 export function dayOfYearUtc(year: number, dayOfYear: number): Date {
 	const d = new Date(Date.UTC(year, 0, 1));
@@ -51,7 +57,7 @@ export function plusDays(base: Date, days: number): Date {
  * year is rejected rather than rolled into the next one.
  */
 export function dayOfYearDate(year: number, dayOfYear: number): string | null {
-	if (!Number.isInteger(dayOfYear) || dayOfYear < 1 || dayOfYear > 366) return null;
+	if (!isDayOfYear(dayOfYear)) return null;
 	const d = dayOfYearUtc(year, dayOfYear);
 	if (d.getUTCFullYear() !== year) return null;
 	return isoDate(d);
@@ -65,7 +71,7 @@ export function dayOfYearDate(year: number, dayOfYear: number): string | null {
  * fall either side of today and the nearest candidate is the best guess.
  */
 export function resolveDayOfYear(day: number, now: Date = new Date()): string | null {
-	if (!Number.isInteger(day) || day < 1 || day > 366) return null;
+	if (!isDayOfYear(day)) return null;
 	const year = now.getUTCFullYear();
 	let best: Date | null = null;
 	for (const candidate of [year - 1, year, year + 1]) {

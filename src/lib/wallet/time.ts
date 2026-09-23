@@ -5,7 +5,7 @@
  * Times on a pass. The formats carry wall clocks and, now and then, an offset;
  * the pass writers need them as the parts and instants each platform takes.
  */
-import { pad } from '../tickets/dates.ts';
+import { isoInstant, pad } from '../tickets/dates.ts';
 
 /**
  * FCB's UTC offset as minutes east of UTC.
@@ -62,5 +62,5 @@ export function asUtcInstant(value: string | undefined, offsetMinutes?: number):
 	const local = localDateTime(parts);
 	if (offsetMinutes === undefined) return `${local}Z`;
 	const instant = Date.parse(`${local}Z`) - offsetMinutes * 60_000;
-	return new Date(instant).toISOString().replace(/\.\d+Z$/, 'Z');
+	return isoInstant(instant);
 }

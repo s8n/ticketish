@@ -33,7 +33,7 @@
  * counts, and the dates.
  */
 import { ascii, isPrintableAscii } from '../bytes.ts';
-import { dayOfYearDate, dayOfYearOnOrAfter, lastDigitYear } from '../dates.ts';
+import { dayOfYearDate, dayOfYearOnOrAfter, isDayOfYear, lastDigitYear } from '../dates.ts';
 import { meaningful, unpad } from '../format.ts';
 
 export interface ElbSegment {
@@ -124,7 +124,7 @@ function count(value: string): number | null {
 /** Day of the year as B.12 writes it, "1/1=1, 2/1=2", or null if unusable. */
 function day(value: string): number | null {
 	const n = count(value);
-	return n !== null && n >= 1 && n <= 366 ? n : null;
+	return n !== null && isDayOfYear(n) ? n : null;
 }
 
 /**
