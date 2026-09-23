@@ -93,6 +93,16 @@ describe('MÁV records', () => {
 			parseMav(buildMav({ person: { name: 'X', birthDate: 19921399, idCard: '' } })).person
 				?.dateOfBirth
 		).toBeNull();
+		// a day the month does not have
+		expect(
+			parseMav(buildMav({ person: { name: 'X', birthDate: 20000231, idCard: '' } })).person
+				?.dateOfBirth
+		).toBeNull();
+		// and the leap day of a leap year, which is one
+		expect(
+			parseMav(buildMav({ person: { name: 'X', birthDate: 20000229, idCard: '' } })).person
+				?.dateOfBirth
+		).toBe('2000-02-29');
 	});
 
 	it('drops empty route slots rather than showing fifteen zeros', () => {

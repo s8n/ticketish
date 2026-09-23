@@ -3,7 +3,7 @@
 
 /** The day of the year helpers that several formats date themselves with. */
 import { describe, expect, it } from 'vitest';
-import { dayOfYearOnOrAfter, resolveDayOfYear } from '../src/lib/tickets/dates.ts';
+import { calendarDate, dayOfYearOnOrAfter, resolveDayOfYear } from '../src/lib/tickets/dates.ts';
 
 describe('resolveDayOfYear', () => {
 	it('places a day in the nearest year', () => {
@@ -31,5 +31,20 @@ describe('dayOfYearOnOrAfter', () => {
 	it('rejects day 366 where neither year has one', () => {
 		expect(dayOfYearOnOrAfter(366, '2025-03-01')).toBeNull();
 		expect(dayOfYearOnOrAfter(366, '2023-03-01')).toBe('2024-12-31');
+	});
+});
+
+describe('calendarDate', () => {
+	it('writes a real date', () => {
+		expect(calendarDate(2026, 9, 23)).toBe('2026-09-23');
+		expect(calendarDate(2024, 2, 29)).toBe('2024-02-29');
+	});
+
+	it('refuses one the month does not have rather than rolling it over', () => {
+		expect(calendarDate(2026, 2, 29)).toBeNull();
+		expect(calendarDate(2026, 4, 31)).toBeNull();
+		expect(calendarDate(2026, 13, 1)).toBeNull();
+		expect(calendarDate(2026, 0, 10)).toBeNull();
+		expect(calendarDate(2026, 1, 0)).toBeNull();
 	});
 });

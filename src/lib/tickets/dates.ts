@@ -17,6 +17,21 @@ export const pad = (n: number, w = 2) => String(n).padStart(w, '0');
 export const isoDate = (d: Date) =>
 	`${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
 
+/**
+ * A year, month and day as an ISO date, or null where the month has no such
+ * day. Formats that pack a date as numbers can carry any of them, and 31
+ * February is not repaired into 3 March.
+ */
+export function calendarDate(year: number, month: number, day: number): string | null {
+	if (![year, month, day].every(Number.isInteger)) return null;
+	const d = new Date(Date.UTC(year, month - 1, day));
+	d.setUTCFullYear(year);
+	if (d.getUTCFullYear() !== year || d.getUTCMonth() !== month - 1 || d.getUTCDate() !== day) {
+		return null;
+	}
+	return isoDate(d);
+}
+
 /** A day of the year as a UTC date. 1 January is day 1. */
 export function dayOfYearUtc(year: number, dayOfYear: number): Date {
 	const d = new Date(Date.UTC(year, 0, 1));

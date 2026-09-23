@@ -32,7 +32,7 @@
  * read.
  */
 import { inflateSync } from 'fflate';
-import { pad } from '../dates.ts';
+import { calendarDate } from '../dates.ts';
 import { uicStationName, type StationTable } from '../stations.ts';
 
 /** Seconds between the Unix epoch and 2017-01-01T00:00:00+01:00. */
@@ -232,8 +232,8 @@ function birthDate(packed: number): string | null {
 	const year = Math.floor(packed / 10000);
 	const month = Math.floor((packed - year * 10000) / 100);
 	const day = packed - year * 10000 - month * 100;
-	if (year < 1900 || year > 2200 || month < 1 || month > 12 || day < 1 || day > 31) return null;
-	return `${year}-${pad(month)}-${pad(day)}`;
+	if (year < 1900 || year > 2200) return null;
+	return calendarDate(year, month, day);
 }
 
 export function parseMav(data: Uint8Array): MavTicket {
