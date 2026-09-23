@@ -9,9 +9,10 @@
 	 *
 	 * The section only exists at all when `hasMapping` says so, and each button
 	 * either works or says why it does not. What it must never do is produce a
-	 * pass with a barcode that will not scan, so the two refusals - a symbology
-	 * the platform cannot draw, and a binary payload Google cannot carry - are
-	 * shown in place of the button rather than discovered at a barrier.
+	 * pass with a barcode that will not scan, so a symbology the platform cannot
+	 * draw is refused in place of the button rather than discovered at a
+	 * barrier, and what might still go wrong with a Google pass is listed
+	 * before the button is pressed.
 	 */
 	import type { ParsedTicket } from '../tickets/types.ts';
 	import { hasMapping, previewFields, tripFor, type TripSummary } from '../wallet/trip.ts';

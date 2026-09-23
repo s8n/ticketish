@@ -12,18 +12,18 @@
  * the note is inside each JSON as `_note`, and repeated in the README credits.
  *
  * The UIC codes come from a second source as well. Trainline's list is a
- * distributor's catalogue and covers the countries it sells to: Poland had 141
- * stations of 4,670, Croatia 14 of 566, so a HŽPP or MÁV ticket showed numbers
- * where names belong. plc-stations.json fills those countries from the UIC
+ * distributor's catalogue and covers the countries it sells to, which leaves
+ * countries like Poland and Croatia with a small fraction of their stations, so
+ * a HŽPP or MÁV ticket would show numbers where names belong. plc-stations.json
+ * fills those countries from the UIC
  * Primary Location Code register and is consulted only where the catalogue is
  * silent, so the two never disagree about a station. Read the note at the top
  * of scripts/build-uic-from-plc.py before touching it: its terms are the least
  * settled of anything here.
  *
  * They are large, so they load on demand and separately: an SNCF barcode has
- * no use for 23k UIC codes and a DB ticket has none for the mnemonics. Until a
- * table arrives the raw code is shown, which is what happened for every
- * station before the tables existed.
+ * no use for the UIC codes and a DB ticket has none for the mnemonics. Until a
+ * table arrives the raw code is shown.
  *
  * OVERRIDES take precedence and are the entries where this repo has a better
  * source. Anything added by hand goes there rather than into the JSON, so
@@ -50,8 +50,9 @@ const UIC_OVERRIDES: Record<string, StationEntry> = {
 
 /**
  * Empty. Note that a name from the neighbouring `sncf_id` space is not a
- * source: the two disagree about 237 mnemonics, which is why this table is
- * built from `benerail_id` in the first place.
+ * source: the two name different stations for hundreds of the same mnemonics
+ * (DEFLS is Freilassing in one and Salzburg in the other), which is why this
+ * table is built from `benerail_id` in the first place.
  */
 const BENERAIL_OVERRIDES: Record<string, StationEntry> = {};
 

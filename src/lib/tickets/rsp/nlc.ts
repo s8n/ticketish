@@ -3,8 +3,8 @@
 
 /**
  * UK NLC (National Location Code) names, built from the RDG fares feed by
- * scripts/build-nlc-names.py. The table is a few hundred KiB, so it is
- * loaded on demand the first time an RSP6 ticket is displayed.
+ * scripts/build-nlc-names.py. The table is large, so it is loaded on demand
+ * the first time an RSP6 ticket is displayed.
  */
 import { lazyTable } from '../lazy.ts';
 

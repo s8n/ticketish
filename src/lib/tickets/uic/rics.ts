@@ -22,9 +22,8 @@
  * carry them when they do.
  *
  * Both load on demand. A caller loads them together with `loadIssuerNames` and
- * passes the result in; one that has not shows the raw code, the way every
- * caller did before either table existed. That keeps the lookup synchronous
- * inside markup, where most of the call sites are.
+ * passes the result in; one that has not shows the raw code. That keeps the
+ * lookup synchronous inside markup, where most of the call sites are.
  */
 import { eraCode, eraOrgLabel, loadEraOrgs, type EraOrgTable } from './era-orgs.ts';
 import { codeLabel, type OrgEntry } from '../orglabel.ts';

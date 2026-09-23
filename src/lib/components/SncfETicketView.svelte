@@ -10,8 +10,7 @@
 
 	let { ticket }: { ticket: SncfETicket } = $props();
 
-	// Loads on demand: until it lands the mnemonics show, the way they did
-	// before the table existed.
+	// Loads on demand: until it lands the mnemonics show.
 	const stations = table(loadBenerailStations);
 
 	const origin = $derived(benerailStationLabel(stations.value, ticket.originCode));

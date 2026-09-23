@@ -10,8 +10,7 @@
 
 	let { ticket }: { ticket: ElbTicket } = $props();
 
-	// Loads on demand: until it lands the mnemonics show, the way they did
-	// before the table existed.
+	// Loads on demand: until it lands the mnemonics show.
 	const stations = table(loadBenerailStations);
 
 	const outward = $derived(ticket.segments[0]);

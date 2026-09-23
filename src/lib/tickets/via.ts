@@ -14,7 +14,7 @@
  * monthly. It is an annual publication, so the JSON records which edition it
  * was built from.
  *
- * The table is imported statically rather than on demand: it is 16 KB, and a
+ * The table is imported statically rather than on demand: it is small, and a
  * Via text is drawn beside the ticket as it renders, so an await here would
  * push one into every caller for very little.
  */
@@ -71,7 +71,7 @@ function hasContent(items: ViaItem[]): boolean {
  * Parse a via string. Returns null when it doesn't look like a via route.
  *
  * The carrier codes are company codes, so a caller that has loaded the issuer
- * tables gets names for them; without them the codes show, as they always have.
+ * tables gets names for them; without them the codes show.
  */
 export function parseDbVia(via: string, names: IssuerTables | null = null): ViaCarrier[] | null {
 	let pos = 0;

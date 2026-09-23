@@ -24,8 +24,7 @@
 	const ticket = $derived(data.ticket as FcbTicket);
 	const issuing = $derived(ticket.issuingDetail);
 
-	// Loads on demand: until it lands the numeric codes show, the way they did
-	// before the table existed.
+	// Loads on demand: until it lands the numeric codes show.
 	const uicStations = table(loadUicStations);
 
 	// Issuer, carriers and the via route are all company codes. Same deal as

@@ -12,12 +12,13 @@
  * docs/credits.md, and the airline table's are the ones that bind.
  *
  * Both load on demand, so only flight tickets pay for them, and until they
- * arrive the codes show, which is what happened before the tables existed.
+ * arrive the codes show.
  *
- * What is deliberately not resolved: item 142, the three digit accounting
- * code, which is a different numbering that neither source records; and the
- * metropolitan area codes such as LON and NYC, which stand for a city rather
- * than an airport and are in no airport catalogue.
+ * Item 142, the three digit accounting code, is a different numbering from
+ * the designator, and the airline table carries it beside each holder, so
+ * `airlineByAccountingCode` resolves it. What is deliberately not resolved:
+ * the metropolitan area codes such as LON and NYC, which stand for a city
+ * rather than an airport and are in no airport catalogue.
  *
  * A designator outlives the airline that held it: IATA reassigns them, so AZ
  * is Alitalia on a pass from 2019 and ITA Airways on one from 2023. The
@@ -60,11 +61,10 @@ interface AirlineOverride {
  * Anywhere this repo has a better answer than the table. Corrections go here
  * rather than into the JSON, so that regenerating stays a clean copy.
  *
- * Empty, and worth keeping empty. The three entries this map used to hold
- * were all the source failing to say when a designator changed hands, and a
- * dated source answers them itself: AZ from its validity dates, LH from the
- * passenger type that tells it apart from Lufthansa Cargo, SQ because there
- * was never more than one holder to choose between.
+ * Empty, and worth keeping empty. A designator that looks as if it needs an
+ * entry here is usually one that changed hands, and the dated table answers
+ * those itself: AZ from its validity dates, LH from the passenger type that
+ * tells it apart from Lufthansa Cargo.
  *
  * An override answers for every date at once, so it belongs to a fact the
  * source has plainly wrong, never to a reassignment. Those are the table's

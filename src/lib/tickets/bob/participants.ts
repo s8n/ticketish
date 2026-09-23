@@ -10,7 +10,7 @@
  * register; see participants.json's `_note` for where it comes from and what
  * was left out of it.
  *
- * Imported statically rather than on demand. It is under 3 KB, and the issuer
+ * Imported statically rather than on demand. It is small, and the issuer
  * is drawn in the card header as the ticket renders, so making this a promise
  * would push an await into `containerInfo` for very little. The larger tables
  * here load lazily for the opposite reason.

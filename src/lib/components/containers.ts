@@ -5,14 +5,12 @@
  * What the card needs to know about each container kind: what to call the
  * format, who issued the ticket, and which component draws it.
  *
- * These three used to be three parallel chains of twenty branches in
- * TicketCard, keyed on the same discriminant and easy to update in two places
- * out of three. One entry per kind keeps them together, the way
- * `records/index.ts` already does for the records inside an envelope.
+ * One entry per kind keeps the three together, so a format cannot be updated
+ * in two of them and missed in the third, the way `records/index.ts` does for
+ * the records inside an envelope.
  *
  * The map is typed over every kind in `TicketContainer`, so a new format is a
- * compile error here until it is named, which is what the `never` check in the
- * old switch was for.
+ * compile error here until it is named.
  */
 import type { Component } from 'svelte';
 import type { PkpassInfo, TicketContainer } from '../tickets/types.ts';

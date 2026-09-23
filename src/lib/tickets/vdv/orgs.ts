@@ -15,8 +15,7 @@
  * rather than into orgs.json, so regenerating stays a clean copy.
  *
  * The table is large, so it loads on demand: only VDV tickets pay for it, and
- * until it arrives the numeric ID is shown, which is what happened for every
- * organisation before the table existed.
+ * until it arrives the numeric ID is shown.
  */
 import { lazyTable } from '../lazy.ts';
 

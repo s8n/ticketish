@@ -10,7 +10,7 @@
 
 	let { barcode }: { barcode: VdvBarcode } = $props();
 
-	// Both tables are a few dozen KiB, so they load only for VDV tickets.
+	// Both tables load on demand, so only VDV tickets pay for them.
 	const products = table(loadVdvProducts);
 	const orgs = table(loadVdvOrgs);
 

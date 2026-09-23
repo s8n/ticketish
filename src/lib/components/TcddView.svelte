@@ -10,7 +10,7 @@
 
 	let { ticket }: { ticket: TcddTicket } = $props();
 
-	// a few hundred names, so they only come along when a Turkish ticket is shown
+	// the names only come along when a Turkish ticket is shown
 	const stations = table(loadTcddStations);
 
 	const hasRoute = $derived(!!(ticket.originCode || ticket.destinationCode));

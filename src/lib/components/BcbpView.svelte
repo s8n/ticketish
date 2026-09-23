@@ -28,7 +28,7 @@
 	let { ticket }: { ticket: BcbpTicket } = $props();
 
 	// Both load on demand: until they land the codes show, which is what the
-	// pass itself prints and what this view showed before the tables existed.
+	// pass itself prints.
 	const airports = table(loadAirports);
 	const airlines = table(loadAirlines);
 

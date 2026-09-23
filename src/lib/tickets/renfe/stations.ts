@@ -13,9 +13,8 @@
  * inside the JSON as `_note`, and repeated in the build script and the README
  * credits. Origen de los datos: Renfe Operadora.
  *
- * A thousand names is more than a Spanish ticket's worth for everyone else to
- * carry, so the table loads on demand. Until it arrives the raw code is shown,
- * which is what happened for every station before the table existed.
+ * Only Spanish tickets need the table, so it loads on demand. Until it
+ * arrives the raw code is shown.
  *
  * Names are upper case because that is how Renfe issues them and how they are
  * printed on the ticket, so a pass built here reads like the paper it came
@@ -34,9 +33,9 @@ interface StationEntry {
 }
 
 /**
- * Empty, and that is the point: what used to be here was a dozen codes read
- * off tickets and guessed at, most of them wrong. Renfe publishes the table,
- * so a correction now needs a source better than Renfe's own.
+ * Empty, and meant to stay that way. Renfe publishes the table, so a
+ * correction needs a source better than Renfe's own, and a code read off a
+ * ticket and guessed at is not one.
  */
 const OVERRIDES: Record<string, StationEntry> = {};
 
@@ -50,8 +49,10 @@ export const loadRenfeStations = lazyTable(() =>
 	import('./stations.json').then((m) => (m as unknown as StationFile).default.stations)
 );
 
-/** Codes are five digits; a barcode pads them and the parser strips that. */
-/** Codes are five digits and the leading zero counts: 04040 is Zaragoza. */
+/**
+ * Codes are five digits and the leading zero counts: 04040 is Zaragoza. A
+ * barcode pads them and the parser strips that, so the key puts it back.
+ */
 const key = (code: string) => code.padStart(5, '0');
 
 /** The station's name, or null when nothing here knows the code. */

@@ -576,15 +576,13 @@ function swissTrip(ticket: SwissPassTicket, tables: Tables): TripSummary | null 
  * Matching it against the whole register would turn a bad assumption into a
  * pass in another operator's colour, which is the one failure `colors.ts`
  * exists to avoid, so the check runs the other way round and only recognises
- * Renfe. That matters more now than it did: `ricsName` falls back to ERA's
- * register, so an unguarded lookup would name thousands of codes confidently
- * and wrongly.
+ * Renfe. `ricsName` falls back to ERA's register, so an unguarded lookup
+ * would name thousands of codes confidently and wrongly.
  *
- * 71 was in here as Renfe Operadora until the register said otherwise: it is
- * ADIF, the infrastructure manager, which issues no passenger tickets, so it
- * failed the test this set exists to apply. Renfe Viajeros is 1171 and Renfe
- * Mercancías 2171; neither has turned up in the field, and a code goes in
- * here when a ticket carries it, not because the register lists it.
+ * Do not add 71: it is ADIF, the infrastructure manager, which issues no
+ * passenger tickets. Renfe Viajeros is 1171 and Renfe Mercancías 2171; neither
+ * has turned up in the field, and a code goes in here when a ticket carries
+ * it, not because the register lists it.
  */
 const RENFE_RICS = new Set([1071]);
 

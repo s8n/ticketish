@@ -16,7 +16,7 @@
  *
  * It expires on 10 December 2030. A pass signed after that will be refused,
  * so this file needs replacing before then with whichever intermediate Apple
- * has moved to; `passSigningProblem` in identity.ts is where that turns into
+ * has moved to; `identityProblem` in identity.ts is where that turns into
  * something a reader can act on rather than a silent failure.
  */
 

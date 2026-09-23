@@ -13,7 +13,7 @@
 
 	let { ticket }: { ticket: RenfeTicket } = $props();
 
-	// a thousand names, so they only come along when a Spanish ticket is shown
+	// the names only come along when a Spanish ticket is shown
 	const stations = table(loadRenfeStations);
 </script>
 

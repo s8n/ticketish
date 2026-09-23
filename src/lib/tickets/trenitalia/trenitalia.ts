@@ -40,7 +40,7 @@ export interface TrenitaliaTicket {
 	departureDate: string | null;
 	dayOfYear: number;
 	trainNumber: number;
-	/** Empty on tickets without a reservation, e.g. regional fares. */
+	/** 0 on tickets without a reservation, e.g. regional fares. */
 	coach: number;
 	seat: string;
 	pnr: string;

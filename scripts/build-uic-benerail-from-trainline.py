@@ -26,13 +26,12 @@ Two tables come out of it, because tickets identify stations two ways:
   covers the foreign stations sold to as well, and the German ones are a large
   part of ELB's traffic.
 
-  Not `sncf_id`, which is the neighbouring column and was what this built
-  before. The two mostly agree, which is what made the mistake survive: FRPST,
-  FRPLY and DEKOH are the same string in both. But 237 mnemonics name a
-  *different station* in the two spaces, 207 of them German, so a table built
-  from the wrong column called DEFLS Freilassing where the barcode meant
-  Salzburg, and DEAND Kulmbach where it meant Andernach. `benerail_id` also
-  covers 11k stations against `sncf_id`'s 8k.
+  Not `sncf_id`, the neighbouring column. The two mostly agree, which makes
+  the mistake easy to miss: FRPST, FRPLY and DEKOH are the same string in
+  both. But hundreds of mnemonics name a *different station* in the two
+  spaces, most of them German, so a table built from the wrong column calls
+  DEFLS Freilassing where the barcode means Salzburg, and DEAND Kulmbach where
+  it means Andernach. `benerail_id` also covers more stations.
 
   Codes that appear only as an `sncf_id` are deliberately not merged in as a
   fallback. A code that is not a Benerail id is not made into one by there
@@ -66,9 +65,9 @@ NOTE = (
     "corrections in the OVERRIDES map in src/lib/tickets/stations.ts."
 )
 
-# Sanity floors. The source has held around 23k UIC codes and 11k mnemonics for
-# a long time, so a collapse means the CSV changed shape rather than half of
-# Europe closing its stations.
+# Sanity floors, set comfortably below what the source has held for years, so
+# a collapse means the CSV changed shape rather than half of Europe closing
+# its stations.
 MIN_UIC = 20000
 MIN_BENERAIL = 9000
 

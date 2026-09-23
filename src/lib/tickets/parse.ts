@@ -103,8 +103,8 @@ export function parsePayload(data: Uint8Array): TicketContainer {
 /**
  * Text QRs are not all UTF-8. Portuguese CP tickets carry the operator's own
  * address, and it is ISO-8859-1: a strict UTF-8 decode throws on the ç in
- * "Calçada", which used to leave the whole payload showing as unidentified
- * binary.
+ * "Calçada", so Latin-1 is tried as well rather than showing the payload as
+ * unidentified binary.
  *
  * The printability test runs on the bytes rather than on the decoded string,
  * for a reason worth knowing. Labelling a decoder "iso-8859-1" gets you
