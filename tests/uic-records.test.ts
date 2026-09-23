@@ -8,6 +8,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { parsePayload } from '../src/lib/tickets/parse.ts';
+import { parseUic9183 } from '../src/lib/tickets/uic/envelope9183.ts';
 import type { HeadData } from '../src/lib/tickets/records/uhead.ts';
 import type { LayoutData } from '../src/lib/tickets/records/utlay.ts';
 import { uicEnvelope, uicHead, uicLayout, uicRecord } from './helpers/build.ts';
@@ -133,5 +134,20 @@ describe('RICS issuer names', () => {
 		expect(ricsName('1073', names)).toBe(ricsName(1073, names));
 		expect(ricsName(99999, names)).toBeNull();
 		expect(ricsName(null, names)).toBeNull();
+	});
+});
+
+describe('record framing', () => {
+	it('refuses a record length shorter than its own header', () => {
+		// a length of 0000 would leave the reader on the same record forever
+		for (const length of ['0000', '0011', ' 012', '-012']) {
+			const records = `U_TEST01${length}` + uicRecord('U_TEST', 1, 'x');
+			expect(() => parseUic9183(uicEnvelope(1080, records)), length).toThrow(/malformed record header/);
+		}
+	});
+
+	it('still reads a record whose length is exactly the header', () => {
+		const env = parseUic9183(uicEnvelope(1080, uicRecord('U_TEST', 1, '')));
+		expect(env.records.map((r) => r.id)).toEqual(['U_TEST']);
 	});
 });

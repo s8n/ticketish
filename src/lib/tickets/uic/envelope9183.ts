@@ -26,8 +26,11 @@ function splitRecords(raw: Uint8Array): RawRecord[] {
 		if (chunk.length < 12) throw new Error('trailing garbage in UIC record stream');
 		const id = ascii(chunk.subarray(0, 6));
 		const version = parseInt(ascii(chunk.subarray(6, 8)), 10);
-		let length = parseInt(ascii(chunk.subarray(8, 12)), 10);
-		if (!/^[ -~]{6}$/.test(id) || Number.isNaN(version) || Number.isNaN(length)) {
+		const lengthField = ascii(chunk.subarray(8, 12));
+		let length = parseInt(lengthField, 10);
+		// The length counts the 12 header bytes, so anything shorter would
+		// leave the offset where it is and read the same record forever.
+		if (!/^[ -~]{6}$/.test(id) || Number.isNaN(version) || !/^\d{4}$/.test(lengthField) || length < 12) {
 			throw new Error(`malformed record header at offset ${off}`);
 		}
 		let utf8Length = false;
