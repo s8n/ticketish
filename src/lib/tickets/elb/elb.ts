@@ -101,6 +101,26 @@ const SEGMENT_SIZE = 36;
 const MIN_LENGTH = HEADER_SIZE + SEGMENT_SIZE;
 const TWO_SEGMENTS = HEADER_SIZE + 2 * SEGMENT_SIZE;
 
+/**
+ * Who issued an ELB ticket, from its ticket code: the prefix printed beside
+ * the ticket number, and the only thing in the record that says. Eurostar
+ * tickets are SNCF stock and carry its logo, with Eurostar named as the
+ * carrier inside the record rather than as issuer.
+ */
+export function elbIssuer(ticketCode: string): string {
+	return ({ IV: 'Eurostar', IZ: 'Eurostar', DV: 'SNCF' } as Record<string, string>)[ticketCode] ?? 'ELB ticket';
+}
+
+/**
+ * A segment's class as a label. "1" and "2" are the only codes seen that mean
+ * a class; anything else is a fare letter (e.g. "H") and is shown as printed.
+ */
+export function elbClassLabel(code: string): string | null {
+	const trimmed = code.trim();
+	if (!trimmed) return null;
+	return ({ '1': '1st class', '2': '2nd class' } as Record<string, string>)[trimmed] ?? trimmed;
+}
+
 export function isElb(data: Uint8Array): boolean {
 	if (data.length < MIN_LENGTH) return false;
 	if (!isPrintableAscii(data)) return false;

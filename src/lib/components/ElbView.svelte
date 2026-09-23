@@ -2,7 +2,7 @@
 	// SPDX-FileCopyrightText: 2026 ave
 	// SPDX-License-Identifier: MIT OR EUPL-1.2
 
-	import type { ElbSegment, ElbTicket } from '../tickets/elb/elb.ts';
+	import { elbClassLabel, type ElbSegment, type ElbTicket } from '../tickets/elb/elb.ts';
 	import { fmtDate, fmtDateOrNull } from '../tickets/format.ts';
 	import SimpleTicketView, { type Row } from './SimpleTicketView.svelte';
 	import { loadBenerailStations, benerailStationLabel } from '../tickets/stations.ts';
@@ -25,10 +25,6 @@
 			? `${outward.departureStation} → ${outward.arrivalStation}`
 			: null
 	);
-
-	// "1" and "2" are the only codes seen that mean a class; anything else is a
-	// fare letter (e.g. "H") and is shown as printed.
-	const classLabel = (c: string) => ({ '1': '1st class', '2': '2nd class' })[c] ?? c;
 
 	const place = (s: ElbSegment) =>
 		[s.coach ? `coach ${s.coach}` : null, s.seat ? `seat ${s.seat}` : null]
@@ -60,7 +56,7 @@
 					inward.trainNumber ? `train ${inward.trainNumber}` : null,
 					fmtDateOrNull(inward.departureDate),
 					place(inward) || null,
-					inward.travelClass.trim() ? classLabel(inward.travelClass) : null
+					elbClassLabel(inward.travelClass)
 				]
 					.filter(Boolean)
 					.join(' · ')
@@ -69,7 +65,7 @@
 
 	const rows = $derived<Row[]>([
 		['Travel date', fmtDateOrNull(outward.departureDate)],
-		['Class', outward.travelClass.trim() ? classLabel(outward.travelClass) : null],
+		['Class', elbClassLabel(outward.travelClass)],
 		['Place', place(outward)],
 		['Passengers', passengers],
 		['PNR', ticket.pnr],

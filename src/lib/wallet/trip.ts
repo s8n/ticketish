@@ -38,6 +38,7 @@ import { vdvTrip } from './extract/vdv.ts';
 import { swissTrip } from './extract/swisspass.ts';
 import { renfeTrip } from './extract/renfe.ts';
 import { rsp6Trip } from './extract/rsp6.ts';
+import { elbTrip } from './extract/elb.ts';
 
 export type { TripField, TripSummary } from './summary.ts';
 
@@ -76,6 +77,10 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 		needs: ['nlcNames'],
 		map: (c, tables) => rsp6Trip(c.ticket, tables)
 	},
+	elb: {
+		needs: ['benerailStations'],
+		map: (c, tables) => elbTrip(c.ticket, tables)
+	},
 	bob: null,
 	// Everything below reads fine in the app but has no wallet mapping yet.
 	// Adding one is a matter of writing the extractor above and pointing the
@@ -90,7 +95,6 @@ const EXTRACTORS: { [K in Kind]: Extractor<K> | null } = {
 	tcdd: null,
 	trenitalia: null,
 	eav: null,
-	elb: null,
 	mav: null,
 	viarail: null,
 	hzpp: null,

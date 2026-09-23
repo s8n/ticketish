@@ -39,6 +39,7 @@ import UzView from './UzView.svelte';
 import SncfETicketView from './SncfETicketView.svelte';
 import BobView from './BobView.svelte';
 import EauView from './EauView.svelte';
+import { elbIssuer } from '../tickets/elb/elb.ts';
 
 type Kind = TicketContainer['kind'];
 type Of<K extends Kind> = Extract<TicketContainer, { kind: K }>;
@@ -256,12 +257,8 @@ const containers: { [K in Kind]: ContainerEntry<K> } = {
 	},
 	elb: {
 		label: () => 'ELB (Element List Barcode)',
-		// ELB is not one operator's format. The ticket code is the prefix printed
-		// beside the ticket number, and is the only thing in the record that says
-		// who issued it. Eurostar tickets are SNCF stock and carry its logo, with
-		// Eurostar named as the carrier inside the record rather than as issuer.
-		issuer: (c) =>
-			({ IV: 'Eurostar', IZ: 'Eurostar', DV: 'SNCF' })[c.ticket.ticketCode] ?? 'ELB ticket',
+		// ELB is not one operator's format; the ticket code says who issued it
+		issuer: (c) => elbIssuer(c.ticket.ticketCode),
 		render: (c) => draw(ElbView, { ticket: c.ticket })
 	},
 	'kbv-eau': {
