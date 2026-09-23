@@ -31,14 +31,7 @@ jobs:
       # A table the tests reject is not committed: nothing else checks a bot push.
       - uses: ./.github/actions/check
 
-      - name: Commit and push if changed
-        run: |
-          if git diff --quiet -- src/lib/tickets/renfe/stations.json; then
-            echo "No changes to the Renfe station table."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/lib/tickets/renfe/stations.json
-          git commit -m "Update Renfe station names"
-          git push
+      - uses: ./.github/actions/commit-tables
+        with:
+          paths: src/lib/tickets/renfe/stations.json
+          message: Update Renfe station names

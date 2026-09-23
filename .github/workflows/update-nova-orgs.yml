@@ -32,14 +32,7 @@ jobs:
       # A table the tests reject is not committed: nothing else checks a bot push.
       - uses: ./.github/actions/check
 
-      - name: Commit and push if changed
-        run: |
-          if git diff --quiet -- src/lib/tickets/swisspass/orgs.json; then
-            echo "No changes to the Swiss organisation table."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/lib/tickets/swisspass/orgs.json
-          git commit -m "Update Swiss organisation numbers"
-          git push
+      - uses: ./.github/actions/commit-tables
+        with:
+          paths: src/lib/tickets/swisspass/orgs.json
+          message: Update Swiss organisation numbers

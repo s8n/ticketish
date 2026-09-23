@@ -32,16 +32,9 @@ jobs:
       # A table the tests reject is not committed: nothing else checks a bot push.
       - uses: ./.github/actions/check
 
-      - name: Commit and push if changed
+      - uses: ./.github/actions/commit-tables
         # The export is the source of both halves of the numbering: the codes
         # it calls Organisation Codes and the RICS ones it mirrors.
-        run: |
-          if git diff --quiet -- src/lib/tickets/uic/era-orgs.json src/lib/tickets/uic/rics.json; then
-            echo "No changes to the organisation tables."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/lib/tickets/uic/era-orgs.json src/lib/tickets/uic/rics.json
-          git commit -m "Update ERA organisation codes"
-          git push
+        with:
+          paths: src/lib/tickets/uic/era-orgs.json src/lib/tickets/uic/rics.json
+          message: Update ERA organisation codes

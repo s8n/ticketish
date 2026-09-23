@@ -30,15 +30,7 @@ jobs:
       # A table the tests reject is not committed: nothing else checks a bot push.
       - uses: ./.github/actions/check
 
-      - name: Commit and push if changed
-        run: |
-          paths="src/lib/tickets/data/uic-stations.json src/lib/tickets/data/benerail-stations.json src/lib/tickets/data/plc-stations.json"
-          if git diff --quiet -- $paths; then
-            echo "No changes to the station name tables."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add $paths
-          git commit -m "Update station names"
-          git push
+      - uses: ./.github/actions/commit-tables
+        with:
+          paths: src/lib/tickets/data/uic-stations.json src/lib/tickets/data/benerail-stations.json src/lib/tickets/data/plc-stations.json
+          message: Update station names
