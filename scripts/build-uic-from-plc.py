@@ -8,9 +8,9 @@ Provenance, please read before touching this data
 -------------------------------------------------
 `uic-stations.json` comes from trainline-eu/stations, which is a distributor's
 catalogue: it knows the stations Trainline sells to, and its coverage follows
-that. Germany and France are near complete; Poland has 141 stations of 4,670,
-Romania 10 of 2,335, Croatia 14 of 566. A HŽPP or MÁV ticket therefore shows
-numbers where names belong, and no amount of refreshing that table fixes it,
+that. Germany and France are near complete, while countries like Poland,
+Romania and Croatia have a small fraction of their stations in it. A HŽPP or
+MÁV ticket would therefore show numbers where names belong, and no amount of refreshing that table fixes it,
 because the missing rows are stations nobody sells through Trainline.
 
 The register those codes actually come from is the UIC Primary Location Code
@@ -37,16 +37,16 @@ newer export re-answers the question instead of preserving today's one:
 * Where the register's Passenger_Possible_Flag is maintained, a country is thin
   when the catalogue has under half of its passenger locations, and only those
   passenger locations are taken. This is most of Europe.
-* Where the flag is unset on nearly everything, it cannot be a filter: France
-  marks 1 location of 8,841, Austria 37 of 2,558, Croatia none of 566. There a
+* Where the flag is unset on nearly everything, it cannot be a filter, as in
+  the France, Austria and Croatia sections of the register. There a
   country is thin only when the catalogue has under a quarter of *all* its
   active locations, and then everything active is taken. The higher bar is
   because taking everything means taking the freight sidings too.
 
-Britain falls out of this on the second rule, at 37%, which is the right answer
-for a different reason: British tickets here are RSP6 and carry NLC codes, and
-the 4,491 the register would add are the freight tail of a passenger network
-the catalogue already covers.
+Britain falls out of this on the second rule, which is the right answer for a
+different reason: British tickets here are RSP6 and carry NLC codes, and what
+the register would add is the freight tail of a passenger network the
+catalogue already covers.
 
 Only codes absent from `uic-stations.json` are written, so the two tables never
 disagree about a station and never have to be reconciled: this one is consulted
