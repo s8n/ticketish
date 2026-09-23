@@ -102,7 +102,7 @@ describe('UZ boarding documents', () => {
 	});
 
 	it('keeps the fare in kopiykas, the way the other formats keep minor units', () => {
-		expect(parseUz(build({ price: '854.72' })).price).toBe(85472);
+		expect(parseUz(build({ price: '543.21' })).price).toBe(54321);
 		expect(parseUz(build({ price: '9.00' })).price).toBe(900);
 	});
 

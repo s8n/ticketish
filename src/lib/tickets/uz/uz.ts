@@ -4,22 +4,23 @@
 /**
  * Ukrainian Railways (Укрзалізниця, UZ) boarding documents.
  *
- * The QR is plain UTF-8 text, one field per line, Cyrillic and all:
+ * The QR is plain UTF-8 text, one field per line, Cyrillic and all. With
+ * invented values:
  *
- *   723 ОА ФІРМ ІС+                train and category
- *   (2204001) ХАРКІВ-ПАС           origin, station code then name
- *   (2200001) КИЇВ-ПАСАЖИРСЬКИЙ    destination
- *   01.07 13:15                    departure, with no year
- *   01.07 18:00                    arrival
- *   02 С/1 КЛ                      coach and class
- *   038 Повний                     seat and fare type
- *   ANDREW BRABIN                  passenger
- *   854.72                         fare in hryvnia
- *   000B3FC6-FBF85787-0001         document number
- *   59A3D90E72D8CDF8F02D320700771066   authentication code
+ *   111 ТЕСТ ПОЇЗД                 train and category
+ *   (1000001) ТЕСТ-ПЕРШИЙ          origin, station code then name
+ *   (1000002) ТЕСТ-ДРУГИЙ          destination
+ *   02.03 08:05                    departure, with no year
+ *   02.03 12:45                    arrival
+ *   07 Т/2 КЛ                      coach and class
+ *   021 Повний                     seat and fare type
+ *   TEST PASSENGER                 passenger
+ *   123.45                         fare in hryvnia
+ *   00000001-0000ABCD-0002         document number
+ *   0123456789ABCDEF0123456789ABCDEF   authentication code
  *
- * Every one of those was read off the printed face of the ticket it came
- * from, which prints the same values in the same order.
+ * The printed face of the ticket carries the same values in the same order,
+ * which is how each line was identified.
  *
  * Lines are classified by shape rather than counted off from the top. With a
  * single sample to go on, a fixed line index would be a guess about a layout
@@ -70,7 +71,7 @@ export interface UzTicket {
 	seat: string | null;
 	fareType: string | null;
 	passenger: string | null;
-	/** Fare in kopiykas, so 85472 is 854.72 hryvnia. */
+	/** Fare in kopiykas, so 12345 is 123.45 hryvnia. */
 	price: number | null;
 	documentNumber: string | null;
 	authentication: string | null;
