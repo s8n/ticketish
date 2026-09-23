@@ -22,9 +22,14 @@
 import { Bits } from '../bits.ts';
 import { resolveDayOfYear } from '../dates.ts';
 
-/** 6-bit alphanumeric, zero-padded to the field width. */
-function str(d: Bits, start: number, chars: number): string {
-	return d.strAlpha(start, start + 6 * chars).replace(/0+$/, '').trim();
+/**
+ * The PNR, six 6-bit alphanumerics. A ticket without a reservation fills the
+ * field with zeros, which reads as no PNR; a real one uses the full width, and
+ * any zeros at its end are part of it.
+ */
+function pnr(d: Bits, start: number): string {
+	const value = d.strAlpha(start, start + 36).trim();
+	return /^0*$/.test(value) ? '' : value;
 }
 
 export interface TrenitaliaTicket {
@@ -70,7 +75,7 @@ export function parseTrenitalia(data: Uint8Array, now: Date = new Date()): Treni
 		trainNumber: d.int(177, 194),
 		coach: d.int(246, 250),
 		seat: seatOf(d),
-		pnr: str(d, 270, 6),
+		pnr: pnr(d, 270),
 		entitlementNumber: d.int(468, 500)
 	};
 }

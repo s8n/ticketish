@@ -238,6 +238,8 @@ describe('Trenitalia tickets', () => {
 		expect(t.coach).toBe(8);
 		expect(t.seat).toBe('4D');
 		expect(t.pnr).toBe('ABCDEF');
+		// a zero at the end is part of the PNR, not padding
+		expect(parseTrenitalia(trenitalia({ pnr: 'XY1200' }), REFERENCE).pnr).toBe('XY1200');
 		expect(t.entitlementNumber).toBe(1234567890);
 	});
 
