@@ -71,6 +71,58 @@ describe('a DB ticket with a train binding', () => {
 	});
 });
 
+describe('an FCB reservation that leaves out the departure time', () => {
+	// built as the decoder would return it: a reservation on the day after
+	// issue, with a train and stations but no departureTime
+	const ticket: ParsedTicket = {
+		id: 'test',
+		source: { kind: 'raw' },
+		raw: new Uint8Array(),
+		scannedAt: 0,
+		container: {
+			kind: 'uic9183',
+			envelope: {
+				envelopeVersion: 2,
+				issuerRics: 1080,
+				records: [
+					{
+						id: 'U_FLEX',
+						version: 3,
+						raw: new Uint8Array(),
+						kind: 'flex',
+						data: {
+							fcbVersion: 3,
+							ticket: {
+								issuingDetail: { issuingYear: 2026, issuingDay: 100 },
+								transportDocument: [
+									{
+										ticket: {
+											__choice__: 'reservation',
+											value: {
+												trainNum: 1234,
+												departureDate: 1,
+												fromStationNameUTF8: 'Alpha',
+												toStationNameUTF8: 'Beta'
+											}
+										}
+									}
+								]
+							}
+						}
+					}
+				]
+			}
+		} as ParsedTicket['container']
+	};
+
+	it('departs on the date alone rather than on a date with an empty time', async () => {
+		const trip = (await tripFor(ticket))!;
+		expect(trip.departure).toBe('2026-04-11');
+		expect(trip.train).toBe('1234');
+		expect(localParts(trip.departure)).toEqual({ date: '2026-04-11', time: null });
+	});
+});
+
 describe('a flexible ticket with a route but no train', () => {
 	it('is still a journey, because the route is the point of it', async () => {
 		const ticket = muster('muster-918-9-normalpreis.bin');

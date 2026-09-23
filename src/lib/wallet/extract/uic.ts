@@ -104,7 +104,11 @@ function fromFcb(flex: FlexData, tables: Tables): Partial<TripSummary> {
 	const binding = doc.trainBindings[0];
 	if (binding) {
 		out.train = binding.train;
-		out.departure = `${binding.departureDate}T${binding.departureTime}`;
+		// a reservation may leave the time out, and a date alone is still a
+		// departure where a date with an empty time is not one at all
+		out.departure = binding.departureTime
+			? `${binding.departureDate}T${binding.departureTime}`
+			: binding.departureDate;
 		out.from ??= binding.fromStation;
 		out.to ??= binding.toStation;
 	}
