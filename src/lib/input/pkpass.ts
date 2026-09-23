@@ -52,6 +52,18 @@ export interface PkpassResult {
 	info: PkpassInfo;
 }
 
+/**
+ * Apple's barcode constants to zxing's format names, which is what the rest
+ * of the app keys on. The names do not follow from each other: Apple's QR is
+ * zxing's QRCode, and a mismatch leaves the symbol unrenderable.
+ */
+const PASS_FORMATS: Record<string, string> = {
+	PKBarcodeFormatQR: 'QRCode',
+	PKBarcodeFormatPDF417: 'PDF417',
+	PKBarcodeFormatAztec: 'Aztec',
+	PKBarcodeFormatCode128: 'Code128'
+};
+
 export function readPkpass(data: Uint8Array): PkpassResult {
 	const files = unzipSync(data, { filter: (f) => f.name === 'pass.json' });
 	const passFile = files['pass.json'];
@@ -60,7 +72,7 @@ export function readPkpass(data: Uint8Array): PkpassResult {
 
 	const barcodes = pass.barcodes ?? (pass.barcode ? [pass.barcode] : []);
 	const hits = barcodes.map((b) => ({
-		format: b.format?.replace('PKBarcodeFormat', '') ?? 'unknown',
+		format: (b.format && PASS_FORMATS[b.format]) ?? b.format ?? 'unknown',
 		bytes: encodeMessage(b.message, b.messageEncoding)
 	}));
 

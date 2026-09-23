@@ -22,7 +22,7 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createVerify, X509Certificate } from 'node:crypto';
-import { unzipSync, strFromU8 } from 'fflate';
+import { unzipSync, zipSync, strFromU8, strToU8 } from 'fflate';
 import { children, oidString, readNode, TAG, tlv } from '../src/lib/wallet/der.ts';
 import { identityProblem, loadIdentity } from '../src/lib/wallet/identity.ts';
 import {
@@ -33,6 +33,7 @@ import {
 	serialForPayload
 } from '../src/lib/wallet/pkpass.ts';
 import { readPkpass } from '../src/lib/input/pkpass.ts';
+import { canRender } from '../src/lib/input/render.ts';
 import { sha1 } from '../src/lib/tickets/vdv/sha1.ts';
 import { hex } from '../src/lib/tickets/bytes.ts';
 import type { TripSummary } from '../src/lib/wallet/trip.ts';
@@ -265,6 +266,25 @@ describe('the barcode survives the round trip', () => {
 		expect(read.hits).toHaveLength(1);
 		expect(read.hits[0].format).toBe('Aztec');
 		expect([...read.hits[0].bytes]).toEqual([...payload]);
+	});
+
+	it('names each Wallet symbology the way zxing does, so it can be drawn', () => {
+		const cases: [string, string][] = [
+			['PKBarcodeFormatQR', 'QRCode'],
+			['PKBarcodeFormatPDF417', 'PDF417'],
+			['PKBarcodeFormatAztec', 'Aztec'],
+			['PKBarcodeFormatCode128', 'Code128']
+		];
+		for (const [apple, zxing] of cases) {
+			const pass = zipSync({
+				'pass.json': strToU8(
+					JSON.stringify({ barcodes: [{ format: apple, message: 'x', messageEncoding: 'iso-8859-1' }] })
+				)
+			});
+			const [hit] = readPkpass(pass).hits;
+			expect(hit.format, apple).toBe(zxing);
+		}
+		expect(canRender({ format: 'QRCode' })).toBe(true);
 	});
 
 	it('carries every byte value as one Latin-1 character', () => {
