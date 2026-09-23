@@ -173,9 +173,13 @@ export const airlineLabel = (
 /**
  * The airline behind item 142, the three digit accounting code, which is a
  * different numbering from the designator and the only other identification a
- * pass carries. Worth having because it answers where a designator does not:
- * the code the pass bills under does not change hands the way a two letter
- * one does.
+ * pass carries. Worth having because it answers where a designator does not.
+ *
+ * The code can pass from one airline to the next with the business, as 055
+ * went from Alitalia to ITA Airways, so it is read against the flight date
+ * like a designator. Where no holding covers that date, the answer stands
+ * only if every holder of the code is the same airline; otherwise naming one
+ * would be a guess about which.
  */
 export function airlineByAccountingCode(
 	airlines: AirlineTable | null,
@@ -188,5 +192,8 @@ export function airlineByAccountingCode(
 	const matches = Object.values(airlines)
 		.flat()
 		.filter((e) => e[3] === num);
-	return holder(matches, on)?.[0] ?? matches[0]?.[0] ?? null;
+	const dated = holder(matches, on);
+	if (dated) return dated[0];
+	const names = new Set(matches.map((e) => e[0]));
+	return names.size === 1 ? [...names][0] : null;
 }

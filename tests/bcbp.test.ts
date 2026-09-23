@@ -476,6 +476,23 @@ describe('naming the codes a boarding pass is written in', () => {
 		expect(airlineByAccountingCode(null, '149')).toBeNull();
 	});
 
+	it('reads the accounting code against the flight date, and does not guess', () => {
+		const airlines: AirlineTable = {
+			AZ: [
+				['Alitalia', '1999-03-01', '2021-10-15', 55],
+				['ITA Airways', '2021-10-15', '', 55]
+			],
+			XX: [['One Air', '2001-01-01', '2005-01-01', 777]],
+			XY: [['One Air', '2005-01-01', '2010-01-01', 777]]
+		};
+		expect(airlineByAccountingCode(airlines, '055', '2019-06-05')).toBe('Alitalia');
+		expect(airlineByAccountingCode(airlines, '055', '2023-06-05')).toBe('ITA Airways');
+		// before either held it: two airlines, so no answer rather than the first
+		expect(airlineByAccountingCode(airlines, '055', '1990-01-01')).toBeNull();
+		// outside every holding, but only one airline ever held it
+		expect(airlineByAccountingCode(airlines, '777', '2020-01-01')).toBe('One Air');
+	});
+
 	it('shows a designator it cannot name as the designator', () => {
 		expect(airlineName({}, 'QQ')).toBeNull();
 		expect(airlineLabel({}, 'QQ')).toBe('QQ');
