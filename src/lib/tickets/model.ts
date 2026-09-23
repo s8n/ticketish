@@ -59,9 +59,57 @@ export interface TrainBinding {
 	toStation?: string;
 }
 
+/**
+ * One transport document as the decoder returns it: whichever of the FCB
+ * document types it is, as a plain object keyed by the schema's field names.
+ *
+ * The fields listed are the ones read by name here and in the wallet mapping,
+ * typed as the schema defines them, so a renamed field is a type error rather
+ * than an undefined. Everything else a document carries is still there, for
+ * the views that lay out all of it.
+ */
+export interface FcbDocument {
+	stationCodeTable?: string;
+	fromStationNum?: number;
+	fromStationIA5?: string;
+	fromStationNameUTF8?: string;
+	toStationNum?: number;
+	toStationIA5?: string;
+	toStationNameUTF8?: string;
+	validRegion?: Choice[];
+	validRegionDesc?: string;
+	/** Days counted from the issuing date, and minutes into the day. */
+	validFromDay?: number;
+	validFromTime?: number;
+	validFromUTCOffset?: number;
+	/** Days counted from the valid-from date. */
+	validUntilDay?: number;
+	validUntilTime?: number;
+	validUntilUTCOffset?: number;
+	/** A customer card's absolute year, and its end as years after it. */
+	validFromYear?: number;
+	validUntilYear?: number;
+	departureDate?: number;
+	departureTime?: number;
+	departureUTCOffset?: number;
+	arrivalDate?: number;
+	arrivalTime?: number;
+	arrivalUTCOffset?: number;
+	trainNum?: number;
+	trainIA5?: string;
+	classCode?: string;
+	price?: number;
+	productIdIA5?: string;
+	serviceBrandNameUTF8?: string;
+	serviceBrandAbrUTF8?: string;
+	referenceIA5?: string;
+	referenceNum?: number;
+	[k: string]: unknown;
+}
+
 export interface DocumentSummary {
 	type: string; // openTicket | reservation | pass | ...
-	data: Record<string, unknown>;
+	data: FcbDocument;
 	trainBindings: TrainBinding[];
 	validFrom?: string; // ISO local date-time
 	validUntil?: string;
@@ -108,7 +156,7 @@ interface TrainLink {
 function trainLinkBinding(
 	link: TrainLink,
 	issued: Date,
-	doc: Record<string, unknown>,
+	doc: FcbDocument,
 	stations: StationTable | null
 ): TrainBinding {
 	const named = (num: number | undefined, table: string | undefined) =>
@@ -116,7 +164,7 @@ function trainLinkBinding(
 	// A trainLink numbers its own stations in its own code table; falling back
 	// to the document's stations means falling back to the document's too.
 	const linkTable = link.stationCodeTable;
-	const docTable = doc.stationCodeTable as string | undefined;
+	const docTable = doc.stationCodeTable;
 	return {
 		train: link.trainIA5 ?? (link.trainNum !== undefined ? String(link.trainNum) : '?'),
 		departureDate: offsetDate(issued, link.travelDate),
@@ -126,13 +174,14 @@ function trainLinkBinding(
 			link.fromStationNameUTF8 ??
 			link.fromStationIA5 ??
 			named(link.fromStationNum, linkTable) ??
-			((doc.fromStationNameUTF8 as string) ??
-				named(doc.fromStationNum as number, docTable)),
+			doc.fromStationNameUTF8 ??
+			named(doc.fromStationNum, docTable),
 		toStation:
 			link.toStationNameUTF8 ??
 			link.toStationIA5 ??
 			named(link.toStationNum, linkTable) ??
-			((doc.toStationNameUTF8 as string) ?? named(doc.toStationNum as number, docTable))
+			doc.toStationNameUTF8 ??
+			named(doc.toStationNum, docTable)
 	};
 }
 
@@ -156,40 +205,37 @@ export function summarizeFcb(
 	return docs.map((doc) => {
 		const choice = doc.ticket;
 		const type = choice.__choice__;
-		const data = (choice.value ?? {}) as Record<string, unknown>;
+		// the one place the decoder's untyped value meets the named fields
+		const data = (choice.value ?? {}) as FcbDocument;
 		const bindings: TrainBinding[] = [];
 		let validFrom: string | undefined;
 		let validUntil: string | undefined;
 
 		if (type === 'openTicket' || type === 'pass') {
-			validFrom = dateTime(issued, data.validFromDay as number, data.validFromTime as number);
+			validFrom = dateTime(issued, data.validFromDay, data.validFromTime);
 			if (data.validUntilDay !== undefined || data.validUntilTime !== undefined) {
 				// validUntilDay counts from the valid-from date
-				const fromDays = (data.validFromDay as number) ?? 0;
-				validUntil = dateTime(
-					issued,
-					fromDays + ((data.validUntilDay as number) ?? 0),
-					data.validUntilTime as number
-				);
+				const fromDays = data.validFromDay ?? 0;
+				validUntil = dateTime(issued, fromDays + (data.validUntilDay ?? 0), data.validUntilTime);
 			}
-			const region = (data.validRegion ?? []) as Choice[];
+			const region = data.validRegion ?? [];
 			for (const r of region) {
 				if (r.__choice__ === 'trainLink')
 					bindings.push(trainLinkBinding(r.value as TrainLink, issued, data, stations));
 			}
 		} else if (type === 'reservation') {
-			const dep = dateTime(issued, (data.departureDate as number) ?? 0, data.departureTime as number);
+			const dep = dateTime(issued, data.departureDate ?? 0, data.departureTime);
 			validFrom = dep;
 			if (data.arrivalTime !== undefined) {
 				validUntil = dateTime(
 					issued,
-					((data.departureDate as number) ?? 0) + ((data.arrivalDate as number) ?? 0),
-					data.arrivalTime as number
+					(data.departureDate ?? 0) + (data.arrivalDate ?? 0),
+					data.arrivalTime
 				);
 			}
-			const train = (data.trainIA5 as string) ?? numStr(data.trainNum as number);
+			const train = data.trainIA5 ?? numStr(data.trainNum);
 			if (train && dep) {
-				const uic = isUicCodeTable(data.stationCodeTable as string | undefined);
+				const uic = isUicCodeTable(data.stationCodeTable);
 				const named = (num: number | undefined) =>
 					uic ? (uicStationName(stations, num) ?? numStr(num)) : numStr(num);
 				bindings.push({
@@ -197,23 +243,19 @@ export function summarizeFcb(
 					departureDate: dep.slice(0, 10),
 					departureTime: dep.slice(11) || '',
 					fromStation:
-						(data.fromStationNameUTF8 as string) ??
-						(data.fromStationIA5 as string) ??
-						named(data.fromStationNum as number),
+						data.fromStationNameUTF8 ?? data.fromStationIA5 ?? named(data.fromStationNum),
 					toStation:
-						(data.toStationNameUTF8 as string) ??
-						(data.toStationIA5 as string) ??
-						named(data.toStationNum as number)
+						data.toStationNameUTF8 ?? data.toStationIA5 ?? named(data.toStationNum)
 				});
 			}
 		} else if (type === 'customerCard') {
 			// Cards date themselves absolutely instead of counting from the
 			// issuing date, and validUntilYear counts from the valid-from year.
-			const fromYear = data.validFromYear as number;
-			validFrom = yearDay(fromYear, data.validFromDay as number);
+			const fromYear = data.validFromYear;
+			validFrom = yearDay(fromYear, data.validFromDay);
 			validUntil = yearDay(
-				fromYear === undefined ? undefined : fromYear + ((data.validUntilYear as number) ?? 0),
-				data.validUntilDay as number
+				fromYear === undefined ? undefined : fromYear + (data.validUntilYear ?? 0),
+				data.validUntilDay
 			);
 		}
 

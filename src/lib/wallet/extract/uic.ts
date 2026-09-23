@@ -6,7 +6,13 @@ import type { ParsedRecord } from '../../tickets/types.ts';
 import type { DbBlData } from '../../tickets/records/dbbl.ts';
 import type { HeadData } from '../../tickets/records/uhead.ts';
 import type { FlexData } from '../../tickets/records/uflex.ts';
-import { type FcbTicket, type Traveler, summarizeFcb, type DocumentSummary } from '../../tickets/model.ts';
+import {
+	type DocumentSummary,
+	type FcbDocument,
+	type FcbTicket,
+	type Traveler,
+	summarizeFcb
+} from '../../tickets/model.ts';
 import { ricsName } from '../../tickets/uic/rics.ts';
 import { uicStationName, isUicCodeTable } from '../../tickets/stations.ts';
 import { type TripField, type TripSummary, type Tables, travelClass, ricsOperator } from '../summary.ts';
@@ -43,18 +49,15 @@ function leadDocument(docs: DocumentSummary[]): DocumentSummary | undefined {
 }
 
 /** Station name from whichever of the three ways a document names one. */
-function stationName(
-	data: Record<string, unknown>,
-	side: 'from' | 'to',
-	tables: Tables
-): string | undefined {
-	const utf8 = data[`${side}StationNameUTF8`];
-	if (typeof utf8 === 'string' && utf8) return utf8;
-	const ia5 = data[`${side}StationIA5`];
-	if (typeof ia5 === 'string' && ia5) return ia5;
-	const num = data[`${side}StationNum`];
-	if (typeof num !== 'number') return undefined;
-	if (isUicCodeTable(data.stationCodeTable as string | undefined)) {
+function stationName(data: FcbDocument, side: 'from' | 'to', tables: Tables): string | undefined {
+	const [utf8, ia5, num] =
+		side === 'from'
+			? [data.fromStationNameUTF8, data.fromStationIA5, data.fromStationNum]
+			: [data.toStationNameUTF8, data.toStationIA5, data.toStationNum];
+	if (utf8) return utf8;
+	if (ia5) return ia5;
+	if (num === undefined) return undefined;
+	if (isUicCodeTable(data.stationCodeTable)) {
 		return uicStationName(tables.stations, num) ?? String(num);
 	}
 	return String(num);
@@ -68,12 +71,8 @@ function fromFcb(flex: FlexData, tables: Tables): Partial<TripSummary> {
 	const out: Partial<TripSummary> = {};
 
 	// FCB leaves out the end's offset where it is the same as the start's
-	const startOffset = (doc?.data.departureUTCOffset ?? doc?.data.validFromUTCOffset) as
-		| number
-		| undefined;
-	const endOffset = (doc?.data.arrivalUTCOffset ?? doc?.data.validUntilUTCOffset) as
-		| number
-		| undefined;
+	const startOffset = doc?.data.departureUTCOffset ?? doc?.data.validFromUTCOffset;
+	const endOffset = doc?.data.arrivalUTCOffset ?? doc?.data.validUntilUTCOffset;
 	out.startUtcOffset = fcbUtcOffset(startOffset);
 	out.endUtcOffset = fcbUtcOffset(endOffset ?? startOffset);
 	out.passenger = travellerName(ticket.travelerDetail?.traveler?.[0]);
@@ -165,15 +164,19 @@ function dbBlDetails(bl: DbBlData): TripField[] {
  * substance and FCB is the one with code tables behind it.
  */
 function fill(target: Partial<TripSummary>, source: Partial<TripSummary>): void {
-	for (const [key, value] of Object.entries(source)) {
-		if (value !== undefined && value !== '' && target[key as keyof TripSummary] === undefined) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(target as any)[key] = value;
+	for (const key of Object.keys(source) as (keyof TripSummary)[]) {
+		const value = source[key];
+		if (value !== undefined && value !== '' && target[key] === undefined) {
+			Object.assign(target, { [key]: value });
 		}
 	}
 }
 
-export function uicTrip(records: ParsedRecord[], issuerRics: number | string | null, tables: Tables) {
+export function uicTrip(
+	records: ParsedRecord[],
+	issuerRics: number | string | null,
+	tables: Tables
+): TripSummary | null {
 	const parts: Partial<TripSummary> = {};
 	const details: TripField[] = [];
 
@@ -202,10 +205,10 @@ export function uicTrip(records: ParsedRecord[], issuerRics: number | string | n
 	// showing it as an area pass would throw the route away.
 	const journey = !!parts.departure || !!(parts.from && parts.to);
 	return {
-		shape: journey ? 'journey' : ('period' as const),
 		...parts,
+		shape: journey ? 'journey' : 'period',
 		issuer,
 		operator: ricsOperator(issuerRics),
 		details
-	} as TripSummary;
+	};
 }
