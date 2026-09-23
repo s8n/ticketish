@@ -3,6 +3,7 @@
 
 import { registerRecordParser, type RecordContext } from '../registry.ts';
 import type { RawRecord } from '../types.ts';
+import { ascii } from '../bytes.ts';
 
 export interface HeadData {
 	distributingRics: number;
@@ -19,7 +20,6 @@ export interface HeadData {
 // on genuine tickets, so the specimen bit can't be trusted from them.
 const UNRELIABLE_SPECIMEN_RICS = new Set([1084, 1184]);
 
-const ascii = (b: Uint8Array) => String.fromCharCode(...b);
 
 function parseHead(record: RawRecord, ctx: RecordContext): HeadData {
 	const d = record.data;

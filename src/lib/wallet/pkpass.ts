@@ -24,7 +24,7 @@
  */
 import { zipSync } from 'fflate';
 import { sha1 } from '../tickets/vdv/sha1.ts';
-import { hex } from '../tickets/bytes.ts';
+import { byteString, hex } from '../tickets/bytes.ts';
 import type { BarcodeSymbology } from '../tickets/types.ts';
 import { signDetached } from './cms.ts';
 import { passColors } from './colors.ts';
@@ -60,13 +60,7 @@ export function barcodeProblem(symbology: BarcodeSymbology | undefined): string 
 }
 
 /** One character per byte, which `messageEncoding` then reads back as bytes. */
-export function latin1Message(bytes: Uint8Array): string {
-	let out = '';
-	for (let i = 0; i < bytes.length; i += 0x8000) {
-		out += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-	}
-	return out;
-}
+export const latin1Message = byteString;
 
 interface PassField {
 	key: string;

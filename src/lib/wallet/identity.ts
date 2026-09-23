@@ -31,6 +31,7 @@ import {
 	TAG,
 	type DerNode
 } from './der.ts';
+import { fromBase64 } from '../tickets/bytes.ts';
 import type { CmsSigner } from './cms.ts';
 import { WWDR_G4_BASE64, WWDR_G4_EXPIRES } from './wwdr.ts';
 
@@ -41,12 +42,7 @@ const SUBJECT_OID = {
 	userId: '0.9.2342.19200300.100.1.1'
 } as const;
 
-export function base64ToBytes(base64: string): Uint8Array {
-	const binary = atob(base64.replace(/\s+/g, ''));
-	const out = new Uint8Array(binary.length);
-	for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
-	return out;
-}
+export const base64ToBytes = (base64: string) => fromBase64(base64.replace(/\s+/g, ''));
 
 /** Every PEM block in `text` with the given label, as DER. */
 export function pemBlocks(text: string, label: string): Uint8Array[] {

@@ -16,6 +16,7 @@
  * answer.
  */
 import { parsePayload } from '../tickets/parse.ts';
+import { fromBase64 } from '../tickets/bytes.ts';
 
 /** How the text was read, in the order the readings are tried. */
 export type Reading = 'text' | 'latin1' | 'base64';
@@ -50,10 +51,7 @@ function base64Bytes(text: string): Uint8Array | null {
 	if (compact.length < 8 || !/^[A-Za-z0-9+/]+={0,2}$/.test(compact)) return null;
 	const padded = compact.padEnd(Math.ceil(compact.length / 4) * 4, '=');
 	try {
-		const binary = atob(padded);
-		const out = new Uint8Array(binary.length);
-		for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
-		return out;
+		return fromBase64(padded);
 	} catch {
 		return null;
 	}

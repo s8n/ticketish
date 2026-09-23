@@ -42,7 +42,7 @@
  * thing in this app that leaves the device, it happens only when the reader
  * clicks the button, and the ticket is inside the token when it does.
  */
-import { isPrintableAscii } from '../tickets/bytes.ts';
+import { isPrintableAscii, toBase64 } from '../tickets/bytes.ts';
 import type { BarcodeSymbology } from '../tickets/types.ts';
 import { importPrivateKey } from './identity.ts';
 import {
@@ -126,11 +126,7 @@ const encoder = new TextEncoder();
 
 /** base64url without padding, which is what a JWT is made of. */
 function base64url(bytes: Uint8Array): string {
-	let binary = '';
-	for (let i = 0; i < bytes.length; i += 0x8000) {
-		binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-	}
-	return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+	return toBase64(bytes).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 const jsonPart = (value: unknown) => base64url(encoder.encode(JSON.stringify(value)));

@@ -32,7 +32,7 @@
  * settle the leg question immediately.
  */
 import { Bits } from '../bits.ts';
-import { hex, isPrintableAscii } from '../bytes.ts';
+import { fromBase64, hex, isPrintableAscii } from '../bytes.ts';
 import { timeOfDay } from '../dates.ts';
 
 /** Every sample opens with this, and nothing else here does. */
@@ -64,10 +64,7 @@ function decodeBase64(data: Uint8Array): Uint8Array | null {
 	if (!BASE64.test(text)) return null;
 	const padded = text + '='.repeat((4 - (text.length % 4)) % 4);
 	try {
-		const binary = atob(padded);
-		const out = new Uint8Array(binary.length);
-		for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
-		return out;
+		return fromBase64(padded);
 	} catch {
 		return null;
 	}

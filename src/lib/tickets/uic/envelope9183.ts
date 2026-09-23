@@ -5,8 +5,8 @@
 import { unzlibSync } from 'fflate';
 import type { RawRecord, Uic9183Envelope } from '../types.ts';
 import { parseRecord } from '../registry.ts';
+import { ascii } from '../bytes.ts';
 
-const ascii = (b: Uint8Array) => String.fromCharCode(...b);
 const utf8Strict = new TextDecoder('utf-8', { fatal: true });
 
 export function isUic9183(data: Uint8Array): boolean {
