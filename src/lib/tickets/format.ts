@@ -51,6 +51,17 @@ export function fmtZoned(
 }
 
 /**
+ * An ISO date-time that may or may not say which zone it is in. One that
+ * does is an instant, and is shown as the wall clock in `timeZone`, the way
+ * `fmtZoned` shows it; one that does not is a wall clock already, and is
+ * shown as written.
+ */
+export function fmtStamp(value: string | null | undefined, timeZone: string): string {
+	if (value && /(?:Z|[+-]\d{2}:\d{2})$/.test(value)) return fmtZoned(value, timeZone) ?? value;
+	return fmtDate(value);
+}
+
+/**
  * An instant as the wall clock in a named zone, with the offset that applied
  * at that moment.
  *

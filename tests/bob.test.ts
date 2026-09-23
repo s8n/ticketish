@@ -91,6 +91,11 @@ describe('BoB parsing', () => {
 		expect(ticket.issuer.signature).toHaveLength(128);
 	});
 
+	it('widens an offset along with the rest of the timestamp', () => {
+		const ticket = parseBob(buildBob({ issuer: { exp: '20300401T020000+0200' } }));
+		expect(ticket.issuer.expires).toBe('2030-04-01T02:00:00+02:00');
+	});
+
 	it('reads the ticket id, travellers and validity', () => {
 		const [claim] = parseBob(
 			buildBob({

@@ -154,7 +154,9 @@ function expandTimestamp(value: string | null): string | null {
 	const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?(Z|[+-]\d{2}:?\d{2})?$/.exec(value);
 	if (!m) return value;
 	const [, y, mo, d, h, mi, s, zone] = m;
-	return `${y}-${mo}-${d}T${h}:${mi}${s ? `:${s}` : ''}${zone ?? ''}`;
+	// an offset is widened too, "+0200" to "+02:00", so the result parses
+	const offset = zone && zone !== 'Z' ? `${zone.slice(0, 3)}:${zone.slice(-2)}` : (zone ?? '');
+	return `${y}-${mo}-${d}T${h}:${mi}${s ? `:${s}` : ''}${offset}`;
 }
 
 /** A JWS layer: the three byte strings a CBOR signature array holds. */

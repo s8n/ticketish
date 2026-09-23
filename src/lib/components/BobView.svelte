@@ -12,9 +12,12 @@
 	 */
 	import type { BobTicket } from '../tickets/bob/bob.ts';
 	import { bobParticipantLabel } from '../tickets/bob/participants.ts';
-	import { fmtDate } from '../tickets/format.ts';
+	import { fmtStamp } from '../tickets/format.ts';
 
 	let { ticket }: { ticket: BobTicket } = $props();
+
+	/** BoB stamps are UTC where they say so, and read in Swedish time. */
+	const stamp = (value: string | null) => fmtStamp(value, 'Europe/Stockholm');
 
 	const passengerText = (p: { category: string | null; count: string | null }) =>
 		[p.count, p.category].filter(Boolean).join(' × ') || null;
@@ -31,7 +34,7 @@
 			<dl class="fields">
 				{#if claim.condition?.validFrom || claim.condition?.validUntil}
 					<dt>Valid</dt>
-					<dd>{fmtDate(claim.condition.validFrom)} – {fmtDate(claim.condition.validUntil)}</dd>
+					<dd>{stamp(claim.condition.validFrom)} – {stamp(claim.condition.validUntil)}</dd>
 				{/if}
 				{#each claim.passengers as p, j (j)}
 					{@const text = passengerText(p)}
@@ -60,11 +63,11 @@
 	<dl class="fields sig">
 		<dt>Issuer signature</dt>
 		<dd>
-			{ticket.issuer.algorithm ?? '–'}, expires {fmtDate(ticket.issuer.expires)}
+			{ticket.issuer.algorithm ?? '–'}, expires {stamp(ticket.issuer.expires)}
 		</dd>
 		<dt>Device signature</dt>
 		<dd>
-			{ticket.device.algorithm ?? '–'}, stamped {fmtDate(ticket.device.signedAt)}
+			{ticket.device.algorithm ?? '–'}, stamped {stamp(ticket.device.signedAt)}
 		</dd>
 	</dl>
 </div>
