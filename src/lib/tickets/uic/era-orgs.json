@@ -1,6 +1,6 @@
 {
 "_note": "Organisation Codes from the Organisation Code Register (OCR) published by the European Union Agency for Railways at https://teleref.era.europa.eu/. Reproduction is authorised provided the source is acknowledged, per ERA's copyright notice at https://www.era.europa.eu/content/disclaimer-and-copyright-notice, so keep this credit wherever the table goes: source, European Union Agency for Railways. Modified from the original: of the fifteen columns ERA publishes only the code, the organisation name, the acronym and the country are kept, the country as a two letter code, the address, contact and role columns are dropped, second codes are listed as further keys for the same organisation, and codes from the revoked sheet are included with their revocation date. Use is subject to ERA's Terms of Use, https://teleref.era.europa.eu/termsOfUsage-OCR-v1.0.pdf. Rebuilt by scripts/build-era-orgs.py; do not edit by hand, put corrections in the OVERRIDES map in src/lib/tickets/uic/era-orgs.ts.",
-"_edition": "2026-09-07",
+"_edition": "2026-10-07",
 "orgs": {
 "0006": {
 "n": "Stena Line Holland BV",
@@ -127,8 +127,8 @@
 "c": "HR"
 },
 "0079": {
-"n": "Slovenske železnice - Infrastruktura, d.o.o.",
-"revoked": "2026-07-15"
+"n": "SŽ-Infrastruktura, d.o.o.",
+"c": "SI"
 },
 "0080": {
 "n": "DB InfraGO Aktiengesellschaft",
@@ -195,6 +195,11 @@
 "n": "Lühring & Fuchs GmbH",
 "a": "Lühring & Fuchs",
 "c": "DE"
+},
+"0290": {
+"n": "Posázavský Pacifik - doprava s.r.o.",
+"a": "PP",
+"c": "CZ"
 },
 "02OK": {
 "n": "Puma Energy Baltics AS",
@@ -306,6 +311,11 @@
 "n": "BRM Investment AG",
 "c": "CH"
 },
+"08AO": {
+"n": "TÜV Austria Rail",
+"a": "TAR",
+"c": "DE"
+},
 "08ET": {
 "n": "Vanormelingen-Stas",
 "a": "V.S.",
@@ -314,6 +324,11 @@
 "08W4": {
 "n": "Český svaz ochránců památek z.s. - I. základní organizace Iron monument club v Plzni",
 "c": "CZ"
+},
+"0915": {
+"n": "Aartalbahn Infrastruktur gGmbH",
+"a": "ATB",
+"c": "DE"
 },
 "0988": {
 "n": "Förderverein Welzheimer Bahn e.V.",
@@ -623,6 +638,11 @@
 "a": "MAV Co.",
 "c": "HU"
 },
+"1063": {
+"n": "Bremer Straßenbahn AG",
+"a": "BSAG",
+"c": "DE"
+},
 "1071": {
 "n": "Renfe Operadora",
 "c": "ES"
@@ -869,6 +889,11 @@
 "a": "MAV Volan",
 "c": "HU"
 },
+"1459": {
+"n": "DAYNING ENERGY",
+"a": "TBDTP",
+"c": "BG"
+},
 "147Q": {
 "n": "Centralna Energoremontna Baza EAD",
 "a": "CERB",
@@ -964,7 +989,7 @@
 },
 "1976": {
 "n": "INFRABEL S.A./N.V.",
-"revoked": "2026-08-13"
+"revoked": "2026-09-04"
 },
 "1978": {
 "n": "DB RegioNetz Infrastruktur GmbH",
@@ -1055,7 +1080,7 @@
 "c": "PL"
 },
 "1GR6": {
-"n": "M+K Tief- und Kabelbau GmbH",
+"n": "M+K Tief-u.Kabelbau GmbH",
 "c": "DE"
 },
 "1HJM": {
@@ -1628,6 +1653,11 @@
 "n": "ZPS Sp. z o.o.",
 "c": "PL"
 },
+"2408": {
+"n": "Gepard Infra, s.r.o.",
+"a": "GI",
+"c": "CZ"
+},
 "246N": {
 "n": "INTER-M",
 "c": "KR"
@@ -1798,6 +1828,11 @@
 "n": "3 plus 1, s.r.o.",
 "c": "CZ"
 },
+"2GZK": {
+"n": "ARDEALUL SA",
+"a": "ARD",
+"c": "RO"
+},
 "2HGA": {
 "n": "Televic Rail N.V.",
 "a": "Televic GSP",
@@ -1833,6 +1868,11 @@
 "n": "DUOmobile GmbH",
 "a": "DUO",
 "c": "DE"
+},
+"2JEC": {
+"n": "AB \"Akmenės cementas\"",
+"a": "AB AC",
+"c": "LT"
 },
 "2JMS": {
 "n": "JKS RAIL CZECHIA s.r.o.",
@@ -1902,6 +1942,11 @@
 "n": "FFWD Rail B.V.",
 "a": "FFWD",
 "c": "NL"
+},
+"2P7G": {
+"n": "Południowy Serwis Kolejowy Jakub Gawlak",
+"a": "PSK",
+"c": "PL"
 },
 "2PH8": {
 "n": "ROTHLEHNER pracovní plošiny s.r.o.",
@@ -3031,7 +3076,8 @@
 },
 "3242": {
 "n": "Colas Rail",
-"revoked": "2025-04-29"
+"a": "COLRA",
+"c": "FR"
 },
 "3243": {
 "n": "üstra Hannoversche Verkehrsbetriebe AG",
@@ -3249,7 +3295,6 @@
 },
 "3291": {
 "n": "RheinCargo GmbH & Co. KG",
-"a": "RheinCargo",
 "c": "DE"
 },
 "3292": {
@@ -4117,8 +4162,8 @@
 "c": "IT"
 },
 "3483": {
-"n": "LTE Polska sp. z o.o.",
-"a": "LTE PL",
+"n": "LTE POLSKA SP. Z O.O.",
+"a": "LTE-PL",
 "c": "PL"
 },
 "3484": {
@@ -4137,8 +4182,8 @@
 "c": "FI"
 },
 "3487": {
-"n": "Salzburg AG für Energie, Verkehr und Telekommunikation",
-"a": "Salzburg AG",
+"n": "Salzburg Linien Verkehrsbetriebe GmbH",
+"a": "SLV",
 "c": "AT"
 },
 "3488": {
@@ -4529,7 +4574,8 @@
 "c": "RO"
 },
 "3572": {
-"n": "Ferrovie del Sud Est e Servizi Automobilistici S.r.l. (Gruppo Ferrovie dello Stato Italiane)",
+"n": "FS Sud Est S.r.l. (Gruppo Ferrovie dello Stato Italiane)",
+"a": "FS SE",
 "c": "IT"
 },
 "3573": {
@@ -4838,7 +4884,7 @@
 "c": "CZ"
 },
 "3643": {
-"n": "OLOMOUCKÁ DOPRAVNÍ",
+"n": "OLOMOUCKÁ DOPRAVNÍ s.r.o.",
 "a": "OLDOP",
 "c": "CZ"
 },
@@ -5429,7 +5475,8 @@
 "revoked": "2025-11-13"
 },
 "3776": {
-"n": "CFL cargo Sverige AB",
+"n": "SHN cargo AB",
+"a": "SHN cargo",
 "c": "SE"
 },
 "3777": {
@@ -8466,9 +8513,8 @@
 "c": "IT"
 },
 "4403": {
-"n": "FS Sud Est S.r.l. (Gruppo Ferrovie dello Stato Italiane)",
-"a": "FS SE",
-"c": "IT"
+"n": "Ferrovie del Sud Est e Servizi Automobilistici S.r.l. (Gruppo Ferrovie dello Stato Italiane)",
+"revoked": "2026-09-15"
 },
 "441U": {
 "n": "Liberty Galati SA",
@@ -9499,8 +9545,8 @@
 "c": "SE"
 },
 "5151": {
-"n": "Statens Maritima och Transporthistoriska museer",
-"a": "SMTM",
+"n": "Statens Museer för Maritim-, Transport- och Försvarshistoria",
+"a": "SMMTF",
 "c": "SE"
 },
 "5152": {
@@ -10437,7 +10483,7 @@
 },
 "5352": {
 "n": "Hanse Bahn Nord GmbH",
-"a": "HBN",
+"a": "HBN GmbH",
 "c": "DE"
 },
 "5353": {
@@ -12385,6 +12431,10 @@
 "n": "Schiffahrt der Inselgemeinde Langeoog",
 "c": "DE"
 },
+"5793": {
+"n": "SmartTrain GmbH",
+"c": "DE"
+},
 "57XH": {
 "n": "Erste Leasing Spółka Akcyjna",
 "a": "Erste Leasing S.A.",
@@ -12492,8 +12542,8 @@
 "c": "GB"
 },
 "5EYY": {
-"n": "SŽ-Infrastruktura, d.o.o.",
-"c": "SI"
+"n": "Slovenske železnice - Infrastruktura, d.o.o.",
+"revoked": "2026-09-24"
 },
 "5FV4": {
 "n": "CTL Service Sp. z o.o.",
@@ -12713,6 +12763,10 @@
 "n": "TOK Kontrol doo",
 "a": "TOK Kontrol",
 "c": "RS"
+},
+"5Y7M": {
+"n": "\"ENUT\" Spółka Akcyjna",
+"c": "PL"
 },
 "5YK5": {
 "n": "ALBATROS klub oz",
@@ -12996,6 +13050,11 @@
 "a": "KTB e.V.",
 "c": "DE"
 },
+"6I06": {
+"n": "Thielmann Infra GmbH",
+"a": "TINFR",
+"c": "DE"
+},
 "6I0G": {
 "n": "Stadtwerke Osnabrück AG",
 "a": "SWO",
@@ -13032,6 +13091,10 @@
 "n": "SERVICE FAUR S.R.L.",
 "a": "SF",
 "c": "RO"
+},
+"6LQD": {
+"n": "JIP - Papírny Větřní, a. s.",
+"c": "CZ"
 },
 "6NNU": {
 "n": "Duferco Wallonie SA",
@@ -13430,6 +13493,10 @@
 "n": "DR-TECH Ltd",
 "c": "PL"
 },
+"7H8O": {
+"n": "Modertrans Poznan Sp. z o.o.",
+"c": "PL"
+},
 "7I22": {
 "n": "ISARail s.p.a.",
 "c": "IT"
@@ -13708,6 +13775,10 @@
 "a": "STI",
 "c": "RO"
 },
+"8376": {
+"n": "ENERGREEN SPA",
+"c": "IT"
+},
 "83NI": {
 "n": "RAILMAC",
 "a": "RAILMAC SLU",
@@ -13770,8 +13841,7 @@
 },
 "887E": {
 "n": "Alstom",
-"a": "ALS",
-"c": "FR"
+"revoked": "2026-09-10"
 },
 "88IC": {
 "n": "Správa Ústecké dráhy s.r.o.",
@@ -14125,6 +14195,10 @@
 "a": "PRW",
 "c": "SK"
 },
+"911J": {
+"n": "LogiRAIL S.M.E. S.A",
+"c": "ES"
+},
 "9183": {
 "n": "Duisburger Verkehrsgesellschaft AG",
 "a": "DVG",
@@ -14139,9 +14213,18 @@
 "n": "SIGNON Deutschland GmbH",
 "c": "DE"
 },
+"92FE": {
+"n": "KUNDA TRANS OÜ",
+"c": "EE"
+},
 "92HN": {
 "n": "TRANSSERVIS, a.s. Košice",
 "c": "SK"
+},
+"9310": {
+"n": "Metallbau Fahrzeugservice Gottesgabe",
+"a": "MFG",
+"c": "DE"
 },
 "9333": {
 "n": "G5 Rail Sp. z o.o.",
@@ -14177,6 +14260,11 @@
 "n": "TEKNO COSTRUZIONI SRL",
 "a": "TEKCO",
 "c": "IT"
+},
+"9576": {
+"n": "Wyss&Lila Germany GmbH",
+"a": "W&L",
+"c": "DE"
 },
 "95N2": {
 "n": "ALUSTA S.A",
@@ -14303,6 +14391,11 @@
 "9CS7": {
 "n": "RiFER srl",
 "c": "IT"
+},
+"9CUF": {
+"n": "Klub železničnej nostalgie Bratislava východ",
+"a": "KŽN",
+"c": "SK"
 },
 "9D1R": {
 "n": "Altun Gleis- und Tiefbau GmbH",
@@ -14534,6 +14627,11 @@
 "n": "TrainXperts GmbH",
 "c": "DE"
 },
+"9Z2D": {
+"n": "Maschinenfabrik Liezen und Gießerei Ges.m.b.H.",
+"a": "MFL",
+"c": "AT"
+},
 "9ZIH": {
 "n": "Railtrans International CEE s.r.o.",
 "a": "RTI CEE s.r.o.",
@@ -14648,10 +14746,20 @@
 "a": "KDSSK",
 "c": "SK"
 },
+"A9RS": {
+"n": "Skinest Rail Polska Spółka z o. o.",
+"a": "Skinest Rail Polska",
+"c": "PL"
+},
 "A9SJ": {
 "n": "Unstad AS",
 "a": "UNST",
 "c": "NO"
+},
+"AALJ": {
+"n": "Elbecargo RAIL Assets GmbH",
+"a": "ERA",
+"c": "DE"
 },
 "AAQD": {
 "n": "quadrante servizi srl",
@@ -14702,6 +14810,10 @@
 "ADQU": {
 "n": "Lucchini RS S.p.A.",
 "c": "IT"
+},
+"AE0Z": {
+"n": "SWK MOBIL",
+"c": "DE"
 },
 "AEFY": {
 "n": "cz loko italia",
@@ -15258,6 +15370,11 @@
 "n": "Tobias Knapp Consulting",
 "a": "TKC",
 "c": "DE"
+},
+"BR6P": {
+"n": "Stellantis NV",
+"a": "Stella",
+"c": "FR"
 },
 "BRAR": {
 "n": "Diringer & Scheidel Bauunternehmung GmbH & Co.KG",
@@ -16152,6 +16269,11 @@
 "n": "LUGO TERMINAL SPA",
 "c": "IT"
 },
+"E3JH": {
+"n": "Mladoboleslavský železniční spolek",
+"a": "MBŽS",
+"c": "CZ"
+},
 "E3VJ": {
 "n": "Nordic Rail AS",
 "a": "NRAS",
@@ -16179,6 +16301,11 @@
 "n": "CER Hungary Central-European Railway Transport, Trading and Service Co.",
 "a": "CER HU",
 "c": "HU"
+},
+"ESBI": {
+"n": "KWL Trans OÜ",
+"a": "KWLT",
+"c": "EE"
 },
 "EUAR": {
 "n": "European Union Agency for Railways",
@@ -16504,6 +16631,11 @@
 "n": "STAR SAN DUO Sp. z o.o.",
 "a": "STAR SAN DUO",
 "c": "PL"
+},
+"FSH5": {
+"n": "Claudia Hahn",
+"a": "CH",
+"c": "DE"
 },
 "FSSE": {
 "n": "SIA \"Linas Agro\" Graudu centrs",
@@ -17066,6 +17198,21 @@
 "a": "Elme",
 "c": "EE"
 },
+"H7OX": {
+"n": "PIT INDUSTRY SP. Z O.O.",
+"a": "PIT INDUSTRY",
+"c": "PL"
+},
+"H7W7": {
+"n": "Metsaveod Group OÜ",
+"a": "MVG",
+"c": "EE"
+},
+"H7ZW": {
+"n": "Si.Gi.Fer. Srl",
+"a": "SGFIT",
+"c": "IT"
+},
 "H8FT": {
 "n": "AKIEM SAS",
 "a": "AKIEM",
@@ -17075,6 +17222,11 @@
 "n": "Saarbahn Netz GmbH",
 "a": "SBS",
 "c": "DE"
+},
+"H8T1": {
+"n": "SNCF Voyageurs Terre Atlantique",
+"a": "SVTA",
+"c": "FR"
 },
 "H8V7": {
 "n": "LOCTRON GmbH",
@@ -17774,7 +17926,7 @@
 },
 "IXEW": {
 "n": "SIA LDZ CARGO",
-"c": "LV"
+"revoked": "2026-10-05"
 },
 "IYZR": {
 "n": "Trans Vagon Group Eesti OÜ",
@@ -18062,8 +18214,7 @@
 },
 "JOU3": {
 "n": "Salzburg Linien Verkehrsbetriebe GmbH",
-"a": "SLV",
-"c": "AT"
+"revoked": "2026-10-01"
 },
 "JOV4": {
 "n": "Saarstahl Rail",
@@ -18369,6 +18520,11 @@
 "a": "TORHAMER",
 "c": "PL"
 },
+"KHAM": {
+"n": "KOTOKORP ltd",
+"a": "KOTOKORP",
+"c": "BG"
+},
 "KHFF": {
 "n": "AB Storstockholms Lokaltrafik",
 "a": "SL",
@@ -18403,6 +18559,11 @@
 "KKV3": {
 "n": "Alstom Holding B.V.",
 "c": "NL"
+},
+"KKZ1": {
+"n": "Tomáš Hodr",
+"a": "THo",
+"c": "CZ"
 },
 "KL62": {
 "n": "KRAFTLER, s.r.o.",
@@ -18517,6 +18678,11 @@
 "n": "Kai Edelmann",
 "a": "KE",
 "c": "DE"
+},
+"KTU6": {
+"n": "Rover Rail, S.A. y Coalvi, S.A. UTE Ley",
+"a": "Mantenimiento Requena UTE",
+"c": "ES"
 },
 "KU6Z": {
 "n": "GREENBRIER LEASING IRELAND LIMITED",
@@ -19147,6 +19313,7 @@
 },
 "MKGE": {
 "n": "Trainbutlers GmbH",
+"a": "MKGE",
 "c": "DE"
 },
 "MKV4": {
@@ -19203,6 +19370,10 @@
 "n": "Astra Vagoane Calatori",
 "a": "AVC",
 "c": "RO"
+},
+"MRBE": {
+"n": "Gepard Depo, s.r.o.",
+"c": "CZ"
 },
 "MRH7": {
 "n": "Miroslav Chybík s.r.o.",
@@ -19590,6 +19761,10 @@
 "NLMG": {
 "n": "Transdev Verkehr GmbH",
 "revoked": "2025-11-25"
+},
+"NLY0": {
+"n": "SC COLECT METAL",
+"c": "RO"
 },
 "NLYO": {
 "n": "Sendogan Bahndienste GmbH",
@@ -21915,8 +22090,8 @@
 "revoked": "2021-08-17"
 },
 "P0CT": {
-"n": "Friedrich Duensing GmbH",
-"a": "Hoch-, Tief-, und Eisenbahnbau",
+"n": "Friedrich Duensing GmbH, Hoch-, Tief- und Eisenbahnbau",
+"a": "Duensing",
 "c": "DE"
 },
 "P0CV": {
@@ -22149,8 +22324,7 @@
 },
 "P0EF": {
 "n": "ALSTOM Transportation Germany GmbH",
-"a": "ATG",
-"c": "DE"
+"revoked": "2026-09-11"
 },
 "P0EG": {
 "n": "Transchem Spółka z o.o.",
@@ -23070,6 +23244,10 @@
 "n": "Berger Bau Polska Sp. z o. o.",
 "c": "PL"
 },
+"PP5L": {
+"n": "DANUBE RAIL TRADING SRL",
+"c": "RO"
+},
 "PP64": {
 "n": "SALCEF S.P.A. - NUF",
 "c": "NO"
@@ -23119,6 +23297,11 @@
 "n": "Zakład Przeróbki Mechanicznej Węgla Pol-Carbon",
 "a": "POLCA",
 "c": "PL"
+},
+"PTRT": {
+"n": "Cimpor - Indústria de Cimentos, S.A.",
+"a": "Cimpor",
+"c": "PT"
 },
 "PU0Y": {
 "n": "JAXAN KOLEJ NA PRZYSZŁE POKOLENIA FUNDACJA RODZINNA",
@@ -24103,6 +24286,11 @@
 "a": "LSL",
 "c": "DE"
 },
+"SB5I": {
+"n": "Telematix Software a.s.",
+"a": "TMX SW",
+"c": "CZ"
+},
 "SBA6": {
 "n": "Regione Autonoma Friuli Venezia Giulia",
 "a": "RAFVG",
@@ -24494,6 +24682,11 @@
 "n": "Firesta -Fišer, rekonstrukce, stavby a.s.",
 "c": "CZ"
 },
+"T4LE": {
+"n": "Rail Cruise Europe UG (haftungsbeschränkt)",
+"a": "RCE",
+"c": "DE"
+},
 "T4RR": {
 "n": "Verein Kaltenleutgebner Bahn",
 "a": "KlgB",
@@ -24625,6 +24818,11 @@
 "TG7I": {
 "n": "KORPORACJA VENIR POLSKA SP. Z O.O.",
 "c": "PL"
+},
+"TGEZ": {
+"n": "EUROVIA Železniční stavby a.s.",
+"a": "EZS",
+"c": "CZ"
 },
 "TGQ7": {
 "n": "INT Rail GmbH",
@@ -24798,10 +24996,20 @@
 "n": "Województo Łódzkie",
 "c": "PL"
 },
+"U509": {
+"n": "RAIL ECM SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+"a": "RECM",
+"c": "PL"
+},
 "U6JR": {
 "n": "Leo Express Bohemia s.r.o.",
 "a": "LEB s.r.o.",
 "c": "CZ"
+},
+"U6QR": {
+"n": "PORT OF BILBAO AUTHORITY",
+"a": "Bilbao Port",
+"c": "ES"
 },
 "U72N": {
 "n": "Balt-Adria Logistics Sp. z o.o.",
@@ -25545,6 +25753,10 @@
 "n": "GRAB.ING.ER Tief- und Gleisbau GmbH",
 "c": "DE"
 },
+"WYRP": {
+"n": "Strabag EAD - Bulgaria",
+"c": "BG"
+},
 "WYTS": {
 "n": "PROTOR GROUP Spółka z ograniczoną odpowiedzialnością",
 "a": "PROTOR",
@@ -25559,6 +25771,10 @@
 "n": "SRL Fabrice Debaisieux",
 "a": "FD",
 "c": "BE"
+},
+"X6BE": {
+"n": "Oldrich Hajek",
+"c": "CZ"
 },
 "X9RJ": {
 "n": "RailHub sp. z o. o.",
@@ -26400,6 +26616,15 @@
 "ZUHZ": {
 "n": "HCAP UG",
 "c": "DE"
+},
+"ZUSI": {
+"n": "SNCF Voyageurs Cœur Picardie",
+"a": "SVCP",
+"c": "FR"
+},
+"ZVBB": {
+"n": "EARTHMOVING, s.r.o.",
+"c": "CZ"
 },
 "ZVCO": {
 "n": "Veritum OU",
