@@ -359,9 +359,8 @@
 "a": "BRSB"
 },
 "106": {
-"n": "Städtische Verkehrsbetriebe Bern",
-"a": "SVB",
-"until": "2026-07-02"
+"n": "öV Plus App",
+"a": "OEVP"
 },
 "107": {
 "n": "Bürgenstock Bahn AG",
@@ -1452,8 +1451,8 @@
 "until": "2011-12-31"
 },
 "405": {
-"n": "Auszahlungen an Dritte 1 (7,7 % MWSt)",
-"a": "Dri 7.7%"
+"n": "Verrechnung Druckkosten",
+"a": "Druckkost."
 },
 "406": {
 "n": "Auszahlungen an Dritte 2 (0,0 % MWSt)",
