@@ -2522,7 +2522,7 @@
 "CN"
 ],
 "AYO": [
-"Aeropuerto Nacional Juan de Ayolas",
+"Juan de Ayolas National",
 "Ayolas",
 "PY"
 ],
@@ -6737,7 +6737,7 @@
 "CA"
 ],
 "CJJ": [
-"Cheongju International Airport/Cheongju Air Base (K-59/G-513)",
+"Cheongju International",
 "Cheongju",
 "KR"
 ],
@@ -9431,6 +9431,11 @@
 "Devonport",
 "AU"
 ],
+"DPP": [
+"Datia",
+"Datia",
+"IN"
+],
 "DPS": [
 "Denpasar I Gusti Ngurah Rai International",
 "Kuta, Badung",
@@ -10217,7 +10222,7 @@
 "US"
 ],
 "EFL": [
-"Kefallinia",
+"Kefalonia International Airport \"Anna Pollatou\"",
 "Kefallinia Island",
 "GR"
 ],
@@ -11657,7 +11662,7 @@
 "US"
 ],
 "FLM": [
-"Aeródromo de Filadelfia",
+"Fernheim",
 "Filadelfia",
 "PY"
 ],
@@ -16885,6 +16890,11 @@
 "Invercargill",
 "Invercargill",
 "NZ"
+],
+"IVD": [
+"Nusantara International",
+"Nusantara",
+"ID"
 ],
 "IVG": [
 "Berane",
@@ -23042,7 +23052,7 @@
 "GA"
 ],
 "MBD": [
-"Mmabatho International",
+"George Dick Montshioa",
 "Mafeking",
 "ZA"
 ],
@@ -28272,7 +28282,7 @@
 "VU"
 ],
 "OLK": [
-"Aeródromo de Fuerte",
+"Fuerte Olimpo",
 "Fuerte Olimpo",
 "PY"
 ],
@@ -29362,7 +29372,7 @@
 "GT"
 ],
 "PBT": [
-"Aeródromo de Puerto Leda",
+"Puerto Leda",
 "Puerto Leda",
 "PY"
 ],
@@ -29972,7 +29982,7 @@
 "GB"
 ],
 "PIL": [
-"Aeródromo Don Carlos Miguel Gimenez",
+"Don Carlos Miguel Gimenez",
 "Pilar",
 "PY"
 ],
@@ -30052,7 +30062,7 @@
 "US"
 ],
 "PJC": [
-"Aeropuerto Nacional Dr. Augusto Roberto Fuster",
+"Dr. Augusto Roberto Fuster International",
 "Pedro Juan Caballero",
 "PY"
 ],
@@ -33782,7 +33792,7 @@
 "SB"
 ],
 "SDB": [
-"Langebaanweg",
+"Langebaanweg Air Force Base",
 "Langebaanweg",
 "ZA"
 ],
@@ -36860,11 +36870,6 @@
 "Sasereme",
 "Sasereme",
 "PG"
-],
-"TDT": [
-"Tanda Tula",
-"Timbavati",
-"ZA"
 ],
 "TDV": [
 "Samangoky",
@@ -40482,7 +40487,7 @@
 "AR"
 ],
 "VMI": [
-"Aeropuerto Nacional Doctor Juan Plate",
+"Doctor Juan Plate National",
 "Puerto Vallemi",
 "PY"
 ],
@@ -42764,6 +42769,11 @@
 "YCW": [
 "Chilliwack",
 "Chilliwack",
+"CA"
+],
+"YCX": [
+"CFB Gagetown Heliport",
+"Oromocto",
 "CA"
 ],
 "YCY": [
@@ -45147,7 +45157,7 @@
 "CA"
 ],
 "ZTH": [
-"Zakynthos International Airport Dionysios Solomos",
+"Zakynthos International Airport \"Dionysios Solomos\"",
 "Zakynthos",
 "GR"
 ],
